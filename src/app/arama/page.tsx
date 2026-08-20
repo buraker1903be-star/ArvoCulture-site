@@ -1,0 +1,2 @@
+import {products} from "@/lib/products";import {ProductCard} from "@/components/product-card";
+export default function Search(){return <main className="simple-page"><p className="eyebrow">ARAMA</p><h1>Ne arıyorsun?</h1><input className="search-input" placeholder="Ürün, kategori veya koleksiyon ara" aria-label="Ürün ara"/><div className="product-grid search-grid">{products.slice(0,3).map((p,i)=><ProductCard key={p.slug} product={p} index={i}/>)}</div></main>}
