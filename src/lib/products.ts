@@ -128,7 +128,19 @@ const inferCategory = (row: StorefrontRow) => {
     return "Giyim";
   if (/parfüm|parfum|eau de parfum|eau de toilette| edp| edt/.test(text))
     return "Parfüm";
-  return row.product_type || "Kişisel Bakım";
+  if (
+    /ruj|maskara|fondöten|fondoten|highlighter|makyaj|lipgloss|dudak|eyeliner|concealer|bronzer|pudra/.test(
+      text,
+    )
+  )
+    return "Kozmetik";
+  if (
+    /vitamin|kapsül|kapsul|protein|pro balance|probalance|colostrum|drinking gel|takviye|omega|mineraller/.test(
+      text,
+    )
+  )
+    return "Takviyeler";
+  return "Kişisel Bakım";
 };
 
 const mapProduct = (row: StorefrontRow, index = 0): Product => {
