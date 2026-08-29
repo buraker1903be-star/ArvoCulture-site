@@ -87,7 +87,7 @@ export const defaultTheme: StorefrontTheme = {
   show_search: true,
   show_account: true,
   product_card_style: "editorial",
-  product_image_ratio: "portrait",
+  product_image_ratio: "square",
   products_per_row: 4,
   show_vendor: true,
   show_badges: true,
