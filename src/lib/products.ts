@@ -1,7 +1,4 @@
-import {
-  SUPABASE_PUBLISHABLE_KEY,
-  SUPABASE_URL,
-} from "@/lib/supabase-public";
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabase-public";
 
 export type Product = {
   slug: string;
@@ -114,6 +111,53 @@ type StorefrontRow = {
   available: boolean;
   image_paths: unknown;
 };
+
+const plainText = (value: string | null | undefined) =>
+  (value ?? "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const inferCategory = (row: StorefrontRow) => {
+  const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase(
+    "tr-TR",
+  );
+  if (/tişört|tisort|sweat|hoodie|giyim|oversize|regular fit/.test(text))
+    return "Giyim";
+  if (/parfüm|parfum|eau de parfum|eau de toilette| edp| edt/.test(text))
+    return "Parfüm";
+  return row.product_type || "Kişisel Bakım";
+};
+
+const mapProduct = (row: StorefrontRow, index = 0): Product => {
+  const paths = Array.isArray(row.image_paths)
+    ? row.image_paths.filter((x): x is string => typeof x === "string")
+    : [];
+  const description = plainText(row.description);
+  return {
+    slug: row.slug,
+    name: row.name,
+    category: inferCategory(row),
+    price: Number(row.price) / 100,
+    oldPrice: row.compare_at_price
+      ? Number(row.compare_at_price) / 100
+      : undefined,
+    eyebrow: row.vendor || "ARVOCULTURE",
+    tone: ["mint", "graphite", "ivory", "sage", "sun", "rose"][index % 6],
+    subtitle:
+      plainText(row.subtitle) ||
+      "ArvoCulture seçkisinden özenle seçilmiş ürün.",
+    description: description || plainText(row.subtitle),
+    tags: row.product_type ? [row.product_type] : [],
+    image: paths[0]
+      ? `${SUPABASE_URL}/storage/v1/object/public/organization-assets/${paths[0]}`
+      : undefined,
+    available: row.available,
+  };
+};
+
 export async function getStorefrontProducts(limit = 24): Promise<Product[]> {
   const url = SUPABASE_URL;
   const key = SUPABASE_PUBLISHABLE_KEY;
@@ -129,37 +173,40 @@ export async function getStorefrontProducts(limit = 24): Promise<Product[]> {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ p_limit: Math.min(100, Math.max(1, limit)) }),
+      body: JSON.stringify({ p_limit: Math.min(200, Math.max(1, limit)) }),
       next: { revalidate: 60, tags: ["storefront-products"] },
     });
     if (!response.ok) return products;
     const rows = (await response.json()) as StorefrontRow[];
-    return rows.map((row, index) => {
-      const paths = Array.isArray(row.image_paths)
-        ? row.image_paths.filter((x): x is string => typeof x === "string")
-        : [];
-      const image = paths[0]
-        ? `${url}/storage/v1/object/public/organization-assets/${paths[0]}`
-        : undefined;
-      return {
-        slug: row.slug,
-        name: row.name,
-        category: row.product_type || "Seçkiler",
-        price: Number(row.price) / 100,
-        oldPrice: row.compare_at_price
-          ? Number(row.compare_at_price) / 100
-          : undefined,
-        eyebrow: row.vendor || "ARVOCULTURE",
-        tone: ["mint", "graphite", "ivory", "sage", "sun", "rose"][index % 6],
-        subtitle:
-          row.subtitle || "ArvoCulture seçkisinden özenle seçilmiş ürün.",
-        description: row.description || row.subtitle || "",
-        tags: row.product_type ? [row.product_type] : [],
-        image,
-        available: row.available,
-      };
-    });
+    return rows.map(mapProduct);
   } catch {
     return products;
+  }
+}
+
+export async function getStorefrontProduct(
+  slug: string,
+): Promise<Product | undefined> {
+  if (!/^[a-z0-9][a-z0-9-]{0,199}$/.test(slug)) return undefined;
+  try {
+    const endpoint = new URL(
+      "/rest/v1/rpc/get_arvoculture_storefront_product",
+      SUPABASE_URL,
+    );
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ p_slug: slug }),
+      next: { revalidate: 60, tags: [`storefront-product-${slug}`] },
+    });
+    if (!response.ok) return undefined;
+    const rows = (await response.json()) as StorefrontRow[];
+    return rows[0] ? mapProduct(rows[0]) : undefined;
+  } catch {
+    return undefined;
   }
 }
