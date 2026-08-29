@@ -1,2 +1,88 @@
-import {notFound} from "next/navigation";import {products,formatPrice} from "@/lib/products";import {AddButton} from "@/components/cart";
-export default async function ProductPage({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const p=products.find(x=>x.slug===slug);if(!p)notFound();return <main className="product-page"><div className={`product-gallery ${p.tone}`}><span className="gallery-index">ARVOCULTURE / {p.category.toUpperCase()}</span><div className="product-object"/><b>AC</b></div><div className="product-info"><p className="eyebrow">{p.eyebrow}</p><h1>{p.name}</h1><p className="lead">{p.subtitle}</p><div className="detail-price">{formatPrice(p.price)} {p.oldPrice&&<del>{formatPrice(p.oldPrice)}</del>}</div><div className="tags">{p.tags.map(t=><span key={t}>{t}</span>)}</div>{p.category==="Giyim"&&<><label className="option-label">Beden seç</label><div className="sizes">{["XS","S","M","L","XL"].map(s=><button key={s}>{s}</button>)}</div></>}<AddButton/><div className="assurances"><span>✓ Güvenli alışveriş</span><span>✓ Özenli gönderim</span><span>✓ 14 gün içinde iade</span></div><details open><summary>Ürün açıklaması</summary><p>{p.description}</p></details><details><summary>Teslimat ve iade</summary><p>Siparişler özenle hazırlanır. Kullanılmamış ürünler yasal koşullar kapsamında iade edilebilir.</p></details></div></main>}
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { AddButton } from "@/components/cart";
+import { formatPrice, getStorefrontProduct } from "@/lib/products";
+
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const product = await getStorefrontProduct(slug);
+  if (!product) notFound();
+
+  return (
+    <main className="product-page">
+      <div className={`product-gallery ${product.tone}`}>
+        <span className="gallery-index">
+          ARVOCULTURE / {product.category.toLocaleUpperCase("tr-TR")}
+        </span>
+        {product.image ? (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            priority
+            sizes="(max-width: 900px) 100vw, 50vw"
+            style={{ objectFit: "contain" }}
+          />
+        ) : (
+          <>
+            <div className="product-object" />
+            <b>AC</b>
+          </>
+        )}
+      </div>
+      <div className="product-info">
+        <p className="eyebrow">{product.eyebrow}</p>
+        <h1>{product.name}</h1>
+        <p className="lead">{product.subtitle}</p>
+        <div className="detail-price">
+          {formatPrice(product.price)}{" "}
+          {product.oldPrice && <del>{formatPrice(product.oldPrice)}</del>}
+        </div>
+        <div className="tags">
+          {product.tags.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
+        {product.category === "Giyim" && (
+          <>
+            <label className="option-label">Beden seç</label>
+            <div className="sizes">
+              {["XS", "S", "M", "L", "XL"].map((size) => (
+                <button type="button" key={size}>
+                  {size}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        {product.available === false ? (
+          <button className="add-button" type="button" disabled>
+            Tükendi
+          </button>
+        ) : (
+          <AddButton />
+        )}
+        <div className="assurances">
+          <span>✓ Güvenli alışveriş</span>
+          <span>✓ Özenli gönderim</span>
+          <span>✓ 14 gün içinde iade</span>
+        </div>
+        <details open>
+          <summary>Ürün açıklaması</summary>
+          <p>{product.description}</p>
+        </details>
+        <details>
+          <summary>Teslimat ve iade</summary>
+          <p>
+            Siparişler özenle hazırlanır. Kullanılmamış ürünler yasal koşullar
+            kapsamında iade edilebilir.
+          </p>
+        </details>
+      </div>
+    </main>
+  );
+}
