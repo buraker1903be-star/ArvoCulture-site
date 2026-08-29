@@ -1,2 +1,44 @@
-import Image from "next/image";import Link from "next/link";import {CartLink} from "./cart";import type {StorefrontTheme} from "@/lib/storefront-theme";
-export function Header({theme}:{theme:StorefrontTheme}){return <><div className="announcement">{theme.announcement}</div><header><Link href="/" className="logo" aria-label={`${theme.store_name??"ArvoCulture"} ana sayfa`}>{theme.logo_url?<Image src={theme.logo_url} alt={theme.store_name??"ArvoCulture"} width={220} height={60} priority/>:<><b>ARVO</b><i>CULTURE</i></>}</Link><nav aria-label="Ana menü"><Link href="/koleksiyon/giyim">Giyim</Link><Link href="/koleksiyon/bakim">Kişisel Bakım</Link><Link href="/koleksiyon/parfum">Parfüm</Link><Link href="/#hikaye">Hikâyemiz</Link></nav><div className="actions">{theme.show_search&&<Link href="/arama">Ara</Link>}{theme.show_account&&<Link href="/hesap">Hesap</Link>}<CartLink/></div></header></>}
+import Image from "next/image";
+import Link from "next/link";
+import { CartLink } from "./cart";
+import type { StorefrontTheme } from "@/lib/storefront-theme";
+export function Header({ theme }: { theme: StorefrontTheme }) {
+  return (
+    <>
+      <div className="announcement">{theme.announcement}</div>
+      <header>
+        <Link
+          href="/"
+          className="logo"
+          aria-label={`${theme.store_name ?? "ArvoCulture"} ana sayfa`}
+        >
+          {theme.logo_url ? (
+            <Image
+              src={theme.logo_url}
+              alt={theme.store_name ?? "ArvoCulture"}
+              width={220}
+              height={60}
+              priority
+            />
+          ) : (
+            <>
+              <b>ARVO</b>
+              <i>CULTURE</i>
+            </>
+          )}
+        </Link>
+        <nav aria-label="Ana menü">
+          <Link href="/koleksiyon/giyim">Giyim</Link>
+          <Link href="/koleksiyon/bakim">Kişisel Bakım</Link>
+          <Link href="/koleksiyon/parfum">Parfüm</Link>
+          <Link href="/hakkimizda">Hikâyemiz</Link>
+        </nav>
+        <div className="actions">
+          {theme.show_search && <Link href="/arama">Ara</Link>}
+          {theme.show_account && <Link href="/hesap">Hesap</Link>}
+          <CartLink />
+        </div>
+      </header>
+    </>
+  );
+}
