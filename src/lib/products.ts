@@ -152,7 +152,7 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     description: description || plainText(row.subtitle),
     tags: row.product_type ? [row.product_type] : [],
     image: paths[0]
-      ? `${SUPABASE_URL}/storage/v1/object/public/organization-assets/${paths[0]}`
+      ? `${SUPABASE_URL}/storage/v1/object/public/arc-product-images/${paths[0]}`
       : undefined,
     available: row.available,
   };
