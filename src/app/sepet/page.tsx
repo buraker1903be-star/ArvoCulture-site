@@ -1,2 +1,10 @@
-import Link from "next/link";
-export default function CartPage(){return <main className="simple-page"><p className="eyebrow">SEPETİN</p><h1>Seçimlerini tamamla.</h1><div className="empty-cart"><h2>Sepet deneyimi hazır.</h2><p>Ürünler tarayıcınızda tutuluyor. Kalıcı sipariş ve PayTR ödeme akışı sonraki entegrasyon aşamasında bağlanacak.</p><Link className="button button-dark" href="/koleksiyon/tumu">Alışverişe devam et</Link></div></main>}
+import { CartView } from "@/components/cart";
+export default function CartPage() {
+  return (
+    <main className="simple-page">
+      <p className="eyebrow">SEPETİN</p>
+      <h1>Seçimlerini tamamla.</h1>
+      <CartView />
+    </main>
+  );
+}
