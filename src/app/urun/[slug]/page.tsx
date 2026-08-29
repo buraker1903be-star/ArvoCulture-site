@@ -64,7 +64,7 @@ export default async function ProductPage({
             Tükendi
           </button>
         ) : (
-          <AddButton />
+          <AddButton product={product} />
         )}
         <div className="assurances">
           <span>✓ Güvenli alışveriş</span>
