@@ -5,7 +5,9 @@ import Link from "next/link";
 const labels: Record<string, string> = {
   giyim: "Giyim",
   bakim: "Kişisel Bakım",
+  kozmetik: "Kozmetik",
   parfum: "Parfüm",
+  takviyeler: "Takviyeler",
   tumu: "Tüm Ürünler",
 };
 
