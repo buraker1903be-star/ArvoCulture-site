@@ -11,6 +11,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { formatPrice, type Product } from "@/lib/products";
+import type { StorefrontDiscount } from "@/lib/discounts";
 
 type CartItem = Pick<
   Product,
@@ -23,6 +24,7 @@ type CartValue = {
   add: (product: Product) => void;
   remove: (slug: string) => void;
   setQuantity: (slug: string, quantity: number) => void;
+  discounts: StorefrontDiscount[];
 };
 
 const CART_KEY = "arvo-cart-v2";
@@ -45,9 +47,16 @@ const CartContext = createContext<CartValue>({
   add: () => {},
   remove: () => {},
   setQuantity: () => {},
+  discounts: [],
 });
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
+export function CartProvider({
+  children,
+  discounts,
+}: {
+  children: React.ReactNode;
+  discounts: StorefrontDiscount[];
+}) {
   const snapshot = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -110,7 +119,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
   return (
     <CartContext.Provider
-      value={{ items, count, total, add, remove, setQuantity }}
+      value={{ items, count, total, add, remove, setQuantity, discounts }}
     >
       {children}
     </CartContext.Provider>
@@ -150,7 +159,32 @@ export function AddButton({ product }: { product: Product }) {
 }
 
 export function CartView() {
-  const { items, total, remove, setQuantity } = useContext(CartContext);
+  const { items, total, remove, setQuantity, discounts } =
+    useContext(CartContext);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [couponMessage, setCouponMessage] = useState("");
+  const coupon = discounts.find(
+    (rule) => rule.code?.toLocaleUpperCase("tr-TR") === couponCode,
+  );
+  const couponEligible = Boolean(
+    coupon && total * 100 >= coupon.minimum_subtotal,
+  );
+  const discountAmount =
+    couponEligible && coupon
+      ? coupon.discount_type === "percentage"
+        ? total * (coupon.value / 100)
+        : coupon.discount_type === "fixed_amount"
+          ? Math.min(total, coupon.value / 100)
+          : 0
+      : 0;
+  const automaticShipping = discounts.find(
+    (rule) =>
+      !rule.code &&
+      rule.discount_type === "free_shipping" &&
+      total * 100 >= rule.minimum_subtotal,
+  );
+  const finalTotal = Math.max(0, total - discountAmount);
   if (!items.length)
     return (
       <div className="empty-cart">
@@ -218,11 +252,56 @@ export function CartView() {
         </div>
         <div>
           <span>Kargo</span>
-          <b>{total >= 2000 ? "Ücretsiz" : "Ödeme adımında"}</b>
+          <b>{automaticShipping ? "Ücretsiz" : "Ödeme adımında"}</b>
         </div>
+        <form
+          className="coupon-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const normalized = couponInput.trim().toLocaleUpperCase("tr-TR");
+            const rule = discounts.find((item) => item.code === normalized);
+            if (!rule) {
+              setCouponCode("");
+              setCouponMessage("Bu indirim kodu geçerli değil.");
+              return;
+            }
+            if (total * 100 < rule.minimum_subtotal) {
+              setCouponCode("");
+              setCouponMessage(
+                `Kod için sepet tutarı en az ${formatPrice(rule.minimum_subtotal / 100)} olmalı.`,
+              );
+              return;
+            }
+            setCouponCode(normalized);
+            setCouponMessage(`${rule.badge} sepetine uygulandı.`);
+          }}
+        >
+          <label htmlFor="coupon">İndirim kodu</label>
+          <div>
+            <input
+              id="coupon"
+              value={couponInput}
+              onChange={(event) => setCouponInput(event.target.value)}
+              placeholder="Örn. ARVO10"
+              maxLength={40}
+            />
+            <button type="submit">Uygula</button>
+          </div>
+          {couponMessage && (
+            <small className={couponCode ? "success" : "error"}>
+              {couponMessage}
+            </small>
+          )}
+        </form>
+        {discountAmount > 0 && (
+          <div className="cart-saving">
+            <span>{coupon?.badge ?? "İndirim"}</span>
+            <b>− {formatPrice(discountAmount)}</b>
+          </div>
+        )}
         <div className="cart-total">
           <span>Toplam</span>
-          <b>{formatPrice(total)}</b>
+          <b>{formatPrice(finalTotal)}</b>
         </div>
         <Link className="button button-dark full" href="/odeme">
           Güvenli ödemeye geç
