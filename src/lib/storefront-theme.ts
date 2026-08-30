@@ -69,6 +69,8 @@ export const defaultTheme: StorefrontTheme = {
   hero_emphasis: "senin hikâyen.",
   hero_description:
     "Tarzını, bakımını ve gündelik ritüellerini tek bir kültürde buluşturan özgün seçkiler.",
+  hero_image_url:
+    "https://cdn.shopify.com/s/files/1/0995/6740/3322/files/uN9qiyIinOoNTblcW4xwy_xsN8HDzN_00001.png?v=1782830698&width=1920",
   primary_cta_label: "Giyimi keşfet",
   primary_cta_href: "/koleksiyon/giyim",
   secondary_cta_label: "Bakımı keşfet",
@@ -158,7 +160,9 @@ export async function getStorefrontTheme(): Promise<StorefrontTheme> {
       hero_emphasis: str(c.hero_emphasis, d.hero_emphasis, 100),
       hero_description: str(c.hero_description, d.hero_description),
       hero_image_url:
-        typeof c.hero_image_url === "string" ? c.hero_image_url : undefined,
+        typeof c.hero_image_url === "string" && c.hero_image_url.trim()
+          ? c.hero_image_url
+          : d.hero_image_url,
       primary_cta_label: str(c.primary_cta_label, d.primary_cta_label, 60),
       primary_cta_href: path(c.primary_cta_href, d.primary_cta_href),
       secondary_cta_label: str(
