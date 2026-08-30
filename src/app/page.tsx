@@ -1,4 +1,3 @@
-fatal: bad revision '9a270e8'
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
