@@ -53,19 +53,12 @@ export default async function RootLayout({
           {children}
           <footer>
             <div className="logo light">
-              {theme.logo_url ? (
-                <Image
-                  src={theme.logo_url}
-                  alt={theme.store_name ?? "ArvoCulture"}
-                  width={220}
-                  height={60}
-                />
-              ) : (
-                <>
-                  <b>ARVO</b>
-                  <i>CULTURE</i>
-                </>
-              )}
+              <Image
+                src="/arvoculture-logo-transparent.png"
+                alt={theme.store_name ?? "ArvoCulture"}
+                width={320}
+                height={39}
+              />
             </div>
             <p>{theme.footer_tagline}</p>
             <div className="footer-links">
