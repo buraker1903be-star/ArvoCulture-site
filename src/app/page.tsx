@@ -219,17 +219,17 @@ export default async function Home() {
           <Link href="/koleksiyon/giyim">Editoryali keşfet <span>↗</span></Link>
         </div>
         <Link href="/koleksiyon/giyim" className="visual-frame visual-frame-main">
-          <Image src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-285ebc65-a225-49fe-b7ed-060bd21bb9fd.jpg?v=1783214697&width=1800" alt="ArvoCulture şehir stili" fill sizes="(max-width: 800px) 92vw, 58vw" />
+          <Image unoptimized src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-285ebc65-a225-49fe-b7ed-060bd21bb9fd.jpg?v=1783214697&width=1800" alt="ArvoCulture şehir stili" fill sizes="(max-width: 800px) 92vw, 58vw" />
           <span>01 · CITY FRAME</span>
         </Link>
         <Link href="/koleksiyon/giyim" className="visual-frame visual-frame-float">
-          <Image src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-3f9d4554-9007-4879-9689-249df3f7dbdd.jpg?v=1783214697&width=1000" alt="ArvoCulture Akdeniz koleksiyonu" fill sizes="(max-width: 800px) 48vw, 25vw" />
+          <Image unoptimized src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-3f9d4554-9007-4879-9689-249df3f7dbdd.jpg?v=1783214697&width=1000" alt="ArvoCulture Akdeniz koleksiyonu" fill sizes="(max-width: 800px) 48vw, 25vw" />
           <span>02 · SUN CULTURE</span>
         </Link>
       </section>
       <section className="lookbook-band">
         <Link href="/koleksiyon/giyim" className="lookbook-shot lookbook-shot-wide">
-          <Image src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-4d757e38-6869-4311-a370-abe8b576d993.jpg?v=1783214697&width=1600" alt="ArvoCulture günlük stil" fill sizes="(max-width: 760px) 100vw, 60vw" />
+          <Image unoptimized src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-4d757e38-6869-4311-a370-abe8b576d993.jpg?v=1783214697&width=1600" alt="ArvoCulture günlük stil" fill sizes="(max-width: 760px) 100vw, 60vw" />
         </Link>
         <div className="lookbook-note">
           <span>THE ARVO EDIT</span>
@@ -238,7 +238,7 @@ export default async function Home() {
           <Link href="/koleksiyon/giyim" className="button button-dark">Giyim seçkisi</Link>
         </div>
         <Link href="/koleksiyon/giyim" className="lookbook-shot lookbook-shot-tall">
-          <Image src="https://arvoculture.com/cdn/shop/files/Flat_lay-0f96f5c6-94b8-4354-994e-536fbe0b9046.jpg?v=1783214697&width=1000" alt="ArvoCulture ürün detayı" fill sizes="(max-width: 760px) 100vw, 28vw" />
+          <Image unoptimized src="https://arvoculture.com/cdn/shop/files/Flat_lay-0f96f5c6-94b8-4354-994e-536fbe0b9046.jpg?v=1783214697&width=1000" alt="ArvoCulture ürün detayı" fill sizes="(max-width: 760px) 100vw, 28vw" />
         </Link>
       </section>
       <section className="category-showcase">
