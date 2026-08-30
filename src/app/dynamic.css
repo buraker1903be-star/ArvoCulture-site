@@ -250,6 +250,10 @@ footer .logo img {
   color: var(--luxury);
   font-style: normal;
 }
+.beauty-focus{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(420px,.85fr);width:min(calc(100% - clamp(24px,4vw,72px)),1780px);min-height:760px;margin:clamp(70px,8vw,125px) auto;background:#e7ded8;overflow:hidden}
+.beauty-focus-media{position:relative;min-height:760px;overflow:hidden}.beauty-focus-media img{object-fit:cover;object-position:center;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}.beauty-focus-media:hover img{transform:scale(1.035)}.beauty-focus-media>span{position:absolute;left:24px;bottom:22px;padding:9px 12px;background:rgba(255,255,255,.84);font-size:8px;letter-spacing:.17em;backdrop-filter:blur(10px)}
+.beauty-focus-copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:clamp(45px,6vw,100px)}.beauty-focus-copy h2{margin:14px 0 27px;font-size:clamp(45px,4.5vw,74px);font-weight:400;line-height:.98;letter-spacing:-.055em}.beauty-focus-copy h2 em{color:#827064;font-style:normal}.beauty-focus-copy>p:not(.eyebrow){max-width:560px;color:#655c57;line-height:1.8}.beauty-focus-copy>.button{margin-top:23px}
+.beauty-mini-products{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;margin-top:45px;padding-top:25px;border-top:1px solid rgba(30,25,22,.16)}.beauty-mini-products>a{min-width:0}.beauty-mini-image{position:relative;display:block;aspect-ratio:1;background:#fff;overflow:hidden}.beauty-mini-image img{object-fit:contain;padding:10%;transition:transform .45s}.beauty-mini-products>a:hover img{transform:scale(1.06)}.beauty-mini-products small{display:block;margin-top:9px;color:#554d49;font-size:9px;line-height:1.4}
 .worlds {
   min-height: 680px;
   gap: 14px;
@@ -592,6 +596,7 @@ footer .logo img {
   .editorial-strip {
     min-height: 540px;
   }
+  .beauty-focus{grid-template-columns:1fr;width:calc(100% - 20px);min-height:0}.beauty-focus-media{min-height:620px}.beauty-focus-copy{padding:65px 35px}
   .visual-story{grid-template-columns:1fr;grid-template-rows:auto minmax(540px,70vh);width:calc(100% - 30px)}
   .visual-story-heading{padding:0 0 45px}.visual-frame-main{grid-column:1;grid-row:2}.visual-frame-float{right:18px;bottom:-55px;width:38vw}
   .lookbook-band{grid-template-columns:1fr 1fr}.lookbook-shot-wide{grid-column:1/-1;min-height:520px}.lookbook-note{min-height:430px}.lookbook-shot-tall{min-height:430px}
@@ -657,6 +662,7 @@ footer .logo img {
   .editorial-strip h2 {
     font-size: 42px;
   }
+  .beauty-focus{margin:60px auto 85px}.beauty-focus-media{min-height:520px}.beauty-focus-media img{object-position:58% center}.beauty-focus-copy{padding:50px 24px}.beauty-focus-copy h2{font-size:42px}.beauty-mini-products{gap:8px;margin-top:35px}.beauty-mini-products small{font-size:8px}
   .visual-story{grid-template-rows:auto 510px;margin:85px auto 120px}.visual-story-heading h2{font-size:45px}.visual-frame-main img{object-position:62% center}.visual-frame-float{right:10px;bottom:-70px;width:46vw;border-width:6px}
   .lookbook-band{grid-template-columns:1fr}.lookbook-shot-wide{min-height:420px}.lookbook-note{min-height:0;padding:55px 25px}.lookbook-shot-tall{min-height:520px}.lookbook-note h2{font-size:43px}
 }

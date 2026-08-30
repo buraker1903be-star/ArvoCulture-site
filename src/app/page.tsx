@@ -23,6 +23,9 @@ export default async function Home() {
     products.find((product) => product.category === "Kişisel Bakım") ??
     products.find((product) => product.category !== "Giyim");
   const scent = products.find((product) => product.category === "Parfüm");
+  const beautySelection = products
+    .filter((product) => product.category === "Kişisel Bakım")
+    .slice(0, 3);
   const categoryTiles = [
     {
       label: "Giyim",
@@ -205,6 +208,37 @@ export default async function Home() {
           <i>✦</i>
         </div>
       </div>
+      <section className="beauty-focus" aria-label="Kişisel bakım ritüeli">
+        <Link href="/koleksiyon/bakim" className="beauty-focus-media">
+          <Image
+            unoptimized
+            src="https://arvoculture.com/cdn/shop/collections/zsYrJrOa0d55JIq11-LAI_OsD30aZg_00001_08533ee2-3c57-4092-b28e-d1dccb1d178f.webp?v=1784578872&width=1800"
+            alt="ArvoCulture kişisel bakım dünyası"
+            fill
+            priority
+            sizes="(max-width: 850px) 100vw, 58vw"
+          />
+          <span>BEAUTY &amp; CARE · 01</span>
+        </Link>
+        <div className="beauty-focus-copy">
+          <p className="eyebrow">KENDİNE İYİ BAK</p>
+          <h2>Bakım bir rutin değil.<br /><em>Kendine ayırdığın zaman.</em></h2>
+          <p>Günlük ritüelini daha iyi hissettiren, cildine ve yaşam tarzına özenle eşlik eden seçilmiş bakım ürünleri.</p>
+          <Link href="/koleksiyon/bakim" className="button button-dark">Bakım dünyasını keşfet <span>↗</span></Link>
+          {beautySelection.length > 0 && (
+            <div className="beauty-mini-products">
+              {beautySelection.map((product) => (
+                <Link href={`/urun/${product.slug}`} key={product.slug}>
+                  <span className="beauty-mini-image">
+                    {product.image && <Image unoptimized src={product.image} alt={product.name} fill sizes="110px" />}
+                  </span>
+                  <small>{product.name}</small>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
       {sections
         .filter((section): section is { order: number; node: ReactNode } =>
           Boolean(section),
