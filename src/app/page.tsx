@@ -4,21 +4,51 @@ import type { CSSProperties, ReactNode } from "react";
 import { ProductCard } from "@/components/product-card";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
 import { getStorefrontProducts, type Product } from "@/lib/products";
+import { getStorefrontDiscounts } from "@/lib/discounts";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
 } from "@/lib/storefront-theme";
 
 export default async function Home() {
-  const [theme, products] = await Promise.all([
+  const [theme, products, discounts] = await Promise.all([
     getStorefrontTheme(),
-    getStorefrontProducts(48),
+    getStorefrontProducts(120),
+    getStorefrontDiscounts(),
   ]);
+  const coupon = discounts.find((discount) => discount.code);
+  const automaticOffer = discounts.find((discount) => !discount.code);
   const apparel = products.find((product) => product.category === "Giyim");
   const beauty =
     products.find((product) => product.category === "Kişisel Bakım") ??
     products.find((product) => product.category !== "Giyim");
   const scent = products.find((product) => product.category === "Parfüm");
+  const categoryTiles = [
+    {
+      label: "Giyim",
+      note: "Tarzını yansıtan parçalar",
+      href: "/koleksiyon/giyim",
+    },
+    {
+      label: "Kişisel Bakım",
+      note: "Günlük bakım ritüelleri",
+      href: "/koleksiyon/bakim",
+    },
+    {
+      label: "Kozmetik",
+      note: "Kendini ifade eden dokunuşlar",
+      href: "/koleksiyon/kozmetik",
+    },
+    { label: "Parfüm", note: "Görünmeyen imzan", href: "/koleksiyon/parfum" },
+    {
+      label: "Takviyeler",
+      note: "Günlük yaşam desteği",
+      href: "/koleksiyon/takviyeler",
+    },
+  ].map((tile) => ({
+    ...tile,
+    product: products.find((product) => product.category === tile.label),
+  }));
   const sections: Array<{ order: number; node: ReactNode } | false> = [
     theme.show_manifest && {
       order: theme.order_manifest,
@@ -112,10 +142,17 @@ export default async function Home() {
           <span>%10</span>
           <div>
             <p className="eyebrow">ARVOCULTURE’A HOŞ GELDİN</p>
-            <h2 data-arvo-field="campaign_title">{theme.campaign_title}</h2>
+            <h2 data-arvo-field="campaign_title">
+              {coupon?.badge ?? theme.campaign_title}
+            </h2>
             <p data-arvo-field="campaign_description">
-              {theme.campaign_description}
+              {coupon
+                ? `${coupon.code} kodunu kullan; ${coupon.name.toLocaleLowerCase("tr-TR")} avantajından yararlan.`
+                : theme.campaign_description}
             </p>
+            {coupon?.code && (
+              <strong className="campaign-code">{coupon.code}</strong>
+            )}
           </div>
           <Link className="button button-light" href="/koleksiyon/tumu">
             Alışverişe başla
@@ -156,6 +193,12 @@ export default async function Home() {
           <i>✦</i>
           <span>KARAKTERİNE ÖZEL KOKULAR</span>
           <i>✦</i>
+          {automaticOffer && (
+            <>
+              <span>{automaticOffer.badge}</span>
+              <i>✦</i>
+            </>
+          )}
           <span>YENİ NESİL YAŞAM KÜLTÜRÜ</span>
           <i>✦</i>
         </div>
@@ -166,6 +209,37 @@ export default async function Home() {
         )
         .sort((a, b) => a.order - b.order)
         .map((section) => section.node)}
+      <section className="category-showcase">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">TÜM ARVOCULTURE DÜNYASI</p>
+            <h2>Ritmini seç.</h2>
+          </div>
+          <p>Stilden bakıma, her gününe eşlik eden seçilmiş koleksiyonlar.</p>
+        </div>
+        <div className="category-rail">
+          {categoryTiles.map((tile, index) => (
+            <Link href={tile.href} className="category-tile" key={tile.href}>
+              <span>0{index + 1}</span>
+              <div className="category-image">
+                {tile.product?.image ? (
+                  <Image
+                    src={tile.product.image}
+                    alt={tile.product.name}
+                    fill
+                    sizes="(max-width:700px) 76vw, 25vw"
+                  />
+                ) : (
+                  <b>AC</b>
+                )}
+              </div>
+              <h3>{tile.label}</h3>
+              <p>{tile.note}</p>
+              <b>Keşfet ↗</b>
+            </Link>
+          ))}
+        </div>
+      </section>
       {scent?.image && (
         <Link href="/koleksiyon/parfum" className="editorial-strip">
           <Image src={scent.image} alt="Parfüm seçkisi" fill sizes="100vw" />
