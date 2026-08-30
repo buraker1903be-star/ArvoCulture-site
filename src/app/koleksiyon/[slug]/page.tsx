@@ -1,5 +1,9 @@
 import { ProductCard } from "@/components/product-card";
-import { getStorefrontProducts } from "@/lib/products";
+import { getStorefrontCollections } from "@/lib/collections";
+import {
+  getStorefrontCollectionProducts,
+  getStorefrontProducts,
+} from "@/lib/products";
 import Link from "next/link";
 
 const labels: Record<string, string> = {
@@ -9,6 +13,21 @@ const labels: Record<string, string> = {
   parfum: "Parfüm",
   takviyeler: "Takviyeler",
   tumu: "Tüm Ürünler",
+};
+
+const menuGroups: Record<string, string[]> = {
+  giyim: ["Giyim"],
+  bakim: [
+    "Kişisel Bakım",
+    "Cilt Bakımı",
+    "Saç Bakımı",
+    "Vücut Bakımı",
+    "Diğer Bakımlar",
+    "Sorununa Göre",
+  ],
+  kozmetik: ["Kozmetik"],
+  parfum: ["Parfüm"],
+  takviyeler: ["Takviyeler"],
 };
 
 export default async function Collection({
@@ -22,16 +41,18 @@ export default async function Collection({
   const requestedPage = Number((await searchParams).sayfa ?? "1");
   const page =
     Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
-  const label = labels[slug] ?? "Tüm Ürünler";
-  const products = await getStorefrontProducts(200);
+  const collections = await getStorefrontCollections();
+  const exactCollection = collections.find(
+    (collection) => collection.slug === slug,
+  );
+  const label = exactCollection?.title ?? labels[slug] ?? "Tüm Ürünler";
   const list =
-    slug === "tumu" || !labels[slug]
-      ? products
-      : products.filter((product) =>
-          slug === "bakim"
-            ? product.category === "Kişisel Bakım"
-            : product.category === label,
-        );
+    slug === "tumu"
+      ? await getStorefrontProducts(200)
+      : await getStorefrontCollectionProducts({
+          collectionSlug: exactCollection?.slug,
+          menuGroups: exactCollection ? undefined : menuGroups[slug],
+        });
   const pageSize = 24;
   const pageCount = Math.max(1, Math.ceil(list.length / pageSize));
   const currentPage = Math.min(page, pageCount);
@@ -46,8 +67,8 @@ export default async function Collection({
         <p className="eyebrow">ARVOCULTURE SEÇKİSİ</p>
         <h1>{label}</h1>
         <p>
-          Kendine ait olanı keşfet. Her ürün; tasarım, nitelik ve kullanım
-          deneyimi gözetilerek seçildi.
+          {exactCollection?.description ||
+            "Kendine ait olanı keşfet. Her ürün; tasarım, nitelik ve kullanım deneyimi gözetilerek seçildi."}
         </p>
       </section>
       <section className="featured">

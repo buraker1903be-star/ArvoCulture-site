@@ -9,6 +9,7 @@ import { CartProvider } from "@/components/cart";
 import { Header } from "@/components/header";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStorefrontDiscounts } from "@/lib/discounts";
+import { getStorefrontCollections } from "@/lib/collections";
 
 const poppins = Poppins({
   subsets: ["latin", "latin-ext"],
@@ -32,9 +33,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, discounts] = await Promise.all([
+  const [theme, discounts, collections] = await Promise.all([
     getStorefrontTheme(),
     getStorefrontDiscounts(),
+    getStorefrontCollections(),
   ]);
   const style = {
     "--ink": theme.primary_color,
@@ -49,7 +51,7 @@ export default async function RootLayout({
         className={`${poppins.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio}`}
       >
         <CartProvider discounts={discounts}>
-          <Header theme={theme} />
+          <Header theme={theme} collections={collections} />
           {children}
           <footer>
             <div className="logo light">

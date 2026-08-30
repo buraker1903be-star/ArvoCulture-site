@@ -56,8 +56,8 @@ footer .logo img {
   top: calc(100% + 29px);
   left: 50%;
   display: grid;
-  grid-template-columns: minmax(600px, 1fr) 250px;
-  width: min(930px, 88vw);
+  grid-template-columns: minmax(690px, 1fr) 230px;
+  width: min(1020px, 92vw);
   padding: 20px;
   background: rgba(255, 255, 255, 0.98);
   border: 1px solid rgba(17, 18, 16, 0.09);
@@ -77,7 +77,7 @@ footer .logo img {
 .mega-menu:hover > button span {
   transform: rotate(180deg);
 }
-.mega-panel-main{padding:8px 22px 12px 8px}.mega-quick{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);margin-bottom:19px}.mega-quick a{display:flex!important;flex-direction:row!important;justify-content:space-between;padding:10px 18px 15px 0!important}.mega-quick a+ a{padding-left:20px!important;border-left:1px solid var(--line)}.mega-columns{display:grid;grid-template-columns:.85fr 1.2fr .9fr;gap:28px}.mega-columns>div>p{margin:0 0 8px;color:#8b8b85;font-size:8px;font-weight:600;letter-spacing:.16em}
+.mega-panel-main{padding:8px 22px 12px 8px}.mega-quick{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);margin-bottom:19px}.mega-quick a{display:flex!important;flex-direction:row!important;justify-content:space-between;padding:10px 18px 15px 0!important}.mega-quick a+ a{padding-left:20px!important;border-left:1px solid var(--line)}.mega-columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}.mega-columns>div>p{margin:0 0 8px;color:#8b8b85;font-size:8px;font-weight:600;letter-spacing:.16em}
 .mega-panel a {
   display: flex;
   flex-direction: column;
@@ -555,6 +555,32 @@ footer .logo img {
   .mobile-menu nav a small {
     margin-top: 4px;
     color: var(--muted);
+  }
+  .mobile-menu nav .mobile-collection-group {
+    display: block;
+    padding: 17px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .mobile-collection-group > p {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+  }
+  .mobile-menu nav .mobile-collection-group > a {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 8px 0;
+    border: 0;
+  }
+  .mobile-menu nav .mobile-collection-group > a b {
+    font-size: 15px;
+  }
+  .mobile-menu nav .mobile-collection-group > a small {
+    font-size: 9px;
+    text-align: right;
   }
   .mobile-menu > div:last-child {
     display: flex;

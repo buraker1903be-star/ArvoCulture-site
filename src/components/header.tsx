@@ -5,38 +5,25 @@ import Link from "next/link";
 import { useState } from "react";
 import { CartLink } from "./cart";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
+import type { StorefrontCollection } from "@/lib/collections";
 
-const categories = [
-  {
-    label: "Giyim",
-    href: "/koleksiyon/giyim",
-    note: "Oversize · Regular Fit · Basic",
-  },
-  {
-    label: "Kişisel Bakım",
-    href: "/koleksiyon/bakim",
-    note: "Cilt · Saç · Vücut",
-  },
-  {
-    label: "Kozmetik",
-    href: "/koleksiyon/kozmetik",
-    note: "Ten · Göz · Dudak",
-  },
-  {
-    label: "Parfüm",
-    href: "/koleksiyon/parfum",
-    note: "Kadın · Erkek · Unisex",
-  },
-  {
-    label: "Takviyeler",
-    href: "/koleksiyon/takviyeler",
-    note: "Günlük yaşam · Spor",
-  },
-];
-
-export function Header({ theme }: { theme: StorefrontTheme }) {
+export function Header({ theme, collections }: { theme: StorefrontTheme; collections: StorefrontCollection[] }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
+  const collectionColumns = [
+    { title: "GİYİM", groups: ["Giyim"], limit: 6 },
+    { title: "CİLT & BAKIM", groups: ["Kişisel Bakım", "Cilt Bakımı", "Sorununa Göre"], limit: 7 },
+    { title: "SAÇ & VÜCUT", groups: ["Saç Bakımı", "Vücut Bakımı", "Diğer Bakımlar"], limit: 7 },
+    { title: "GÜZELLİK & YAŞAM", groups: ["Kozmetik", "Parfüm", "Takviyeler"], limit: 7 },
+  ].map((column) => ({
+    ...column,
+    items: collections
+      .filter((collection) => column.groups.includes(collection.menu_group))
+      .sort((a, b) => b.product_count - a.product_count || a.title.localeCompare(b.title, "tr"))
+      .slice(0, column.limit),
+  }));
+  const bestSeller = collections.find((item) => item.title === "Çok Satanlar");
+  const offers = collections.find((item) => item.title === "Haftanın Fırsatları");
   return (
     <>
       <div className="announcement">
@@ -70,26 +57,14 @@ export function Header({ theme }: { theme: StorefrontTheme }) {
             <div className="mega-panel">
               <div className="mega-panel-main">
                 <div className="mega-quick">
-                  <Link href="/koleksiyon/tumu"><b>Yeni gelenler</b><span>↗</span></Link>
-                  <Link href="/koleksiyon/tumu"><b>Çok satanlar</b><span>↗</span></Link>
+                  <Link href={offers ? `/koleksiyon/${offers.slug}` : "/koleksiyon/tumu"}><b>Haftanın fırsatları</b><span>↗</span></Link>
+                  <Link href={bestSeller ? `/koleksiyon/${bestSeller.slug}` : "/koleksiyon/tumu"}><b>Çok satanlar</b><span>↗</span></Link>
                 </div>
                 <div className="mega-columns">
-                  <div>
-                    <p>GİYİM</p>
-                    <Link href="/koleksiyon/giyim"><b>Tüm Giyim</b><small>Yeni sezon seçkisi</small></Link>
-                    <Link href="/koleksiyon/giyim"><b>Tişörtler</b><small>Oversize · Regular Fit</small></Link>
-                  </div>
-                  <div>
-                    <p>BAKIM &amp; GÜZELLİK</p>
-                    <Link href="/koleksiyon/bakim"><b>Kişisel Bakım</b><small>Cilt · Saç · Vücut</small></Link>
-                    <Link href="/koleksiyon/kozmetik"><b>Kozmetik</b><small>Ten · Göz · Dudak</small></Link>
-                    <Link href="/koleksiyon/parfum"><b>Parfüm</b><small>Kadın · Erkek · Unisex</small></Link>
-                  </div>
-                  <div>
-                    <p>LIFESTYLE</p>
-                    <Link href="/koleksiyon/takviyeler"><b>Takviyeler</b><small>Günlük yaşam desteği</small></Link>
-                    <Link href="/hakkimizda"><b>Hikâyemiz</b><small>ArvoCulture dünyası</small></Link>
-                  </div>
+                  {collectionColumns.map((column) => <div key={column.title}>
+                    <p>{column.title}</p>
+                    {column.items.map((item) => <Link href={`/koleksiyon/${item.slug}`} key={item.slug}><b>{item.title}</b><small>{item.product_count} ürün</small></Link>)}
+                  </div>)}
                 </div>
               </div>
               <aside className="mega-feature">
@@ -133,13 +108,10 @@ export function Header({ theme }: { theme: StorefrontTheme }) {
           </button>
         </div>
         <nav>
-          {categories.map((item, index) => (
-            <Link href={item.href} key={item.href} onClick={close}>
-              <span>0{index + 1}</span>
-              <b>{item.label}</b>
-              <small>{item.note}</small>
-            </Link>
-          ))}
+          {collectionColumns.map((column) => <div className="mobile-collection-group" key={column.title}>
+            <p>{column.title}</p>
+            {column.items.map((item) => <Link href={`/koleksiyon/${item.slug}`} key={item.slug} onClick={close}><b>{item.title}</b><small>{item.product_count} ürün</small></Link>)}
+          </div>)}
           <Link href="/hakkimizda" onClick={close}>
             <span>06</span>
             <b>Hikâyemiz</b>

@@ -196,6 +196,56 @@ export async function getStorefrontProducts(limit = 24): Promise<Product[]> {
   }
 }
 
+export async function getStorefrontCollectionProducts({
+  collectionSlug,
+  menuGroups,
+  limit = 200,
+}: {
+  collectionSlug?: string;
+  menuGroups?: string[];
+  limit?: number;
+}): Promise<Product[]> {
+  if (
+    collectionSlug &&
+    !/^[a-z0-9][a-z0-9-]{0,199}$/.test(collectionSlug)
+  ) {
+    return [];
+  }
+
+  try {
+    const endpoint = new URL(
+      "/rest/v1/rpc/get_arvoculture_storefront_collection_products",
+      SUPABASE_URL,
+    );
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        p_collection_slug: collectionSlug ?? null,
+        p_menu_groups: menuGroups?.length ? menuGroups : null,
+        p_limit: Math.min(200, Math.max(1, limit)),
+      }),
+      next: {
+        revalidate: 60,
+        tags: [
+          collectionSlug
+            ? `storefront-collection-${collectionSlug}`
+            : "storefront-collection-groups",
+        ],
+      },
+    });
+    if (!response.ok) return [];
+    const rows = (await response.json()) as StorefrontRow[];
+    return rows.map(mapProduct);
+  } catch {
+    return [];
+  }
+}
+
 export async function getStorefrontProduct(
   slug: string,
 ): Promise<Product | undefined> {
