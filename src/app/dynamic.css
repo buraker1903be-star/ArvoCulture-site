@@ -256,6 +256,14 @@
   padding: 7%;
   transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
+.world-media {
+  position: absolute;
+  z-index: -3;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
 .world-shade {
   position: absolute;
   z-index: -1;
@@ -281,8 +289,15 @@
 .world:hover {
   padding-bottom: 0;
 }
-.world:hover > img {
+.world:hover > img,
+.world:hover .world-media {
   transform: scale(1.045);
+}
+.world.apparel .world-media {
+  background-position: center;
+}
+.world.beauty .world-media {
+  background-position: center 34%;
 }
 .world:hover b {
   letter-spacing: 0.2em;
