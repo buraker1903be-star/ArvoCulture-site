@@ -13,6 +13,10 @@ export type Product = {
   tags: string[];
   image?: string;
   available?: boolean;
+  badge?: string;
+  badgeTone?: "green" | "navy" | "gold" | "red";
+  bestSeller?: boolean;
+  discountPercent?: number;
 };
 
 export const products: Product[] = [
@@ -112,6 +116,41 @@ type StorefrontRow = {
   image_paths: unknown;
 };
 
+type ProductBadgeRow = {
+  slug: string;
+  badge: string | null;
+  badge_tone: string | null;
+  is_best_seller: boolean;
+  discount_percent: number;
+};
+
+const badgeTones = new Set(["green", "navy", "gold", "red"]);
+
+async function getProductBadges(): Promise<Map<string, ProductBadgeRow>> {
+  try {
+    const endpoint = new URL(
+      "/rest/v1/rpc/get_arvoculture_storefront_product_badges",
+      SUPABASE_URL,
+    );
+    const [response, badges] = await Promise.all([
+      fetch(endpoint, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: "{}",
+      next: { revalidate: 60, tags: ["storefront-product-badges"] },
+    });
+    if (!response.ok) return new Map();
+    const rows = (await response.json()) as ProductBadgeRow[];
+    return new Map(rows.map((row) => [row.slug, row]));
+  } catch {
+    return new Map();
+  }
+}
+
 const plainText = (value: string | null | undefined) =>
   (value ?? "")
     .replace(/<[^>]*>/g, " ")
@@ -170,6 +209,22 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
   };
 };
 
+const applyBadge = (
+  product: Product,
+  badge: ProductBadgeRow | undefined,
+): Product => ({
+  ...product,
+  badge: badge?.badge ?? undefined,
+  badgeTone: badgeTones.has(badge?.badge_tone ?? "")
+    ? (badge?.badge_tone as Product["badgeTone"])
+    : "green",
+  bestSeller: badge?.is_best_seller ?? false,
+  discountPercent:
+    badge?.discount_percent && badge.discount_percent > 0
+      ? badge.discount_percent
+      : undefined,
+});
+
 export async function getStorefrontProducts(limit = 24): Promise<Product[]> {
   const url = SUPABASE_URL;
   const key = SUPABASE_PUBLISHABLE_KEY;
@@ -178,7 +233,8 @@ export async function getStorefrontProducts(limit = 24): Promise<Product[]> {
       "/rest/v1/rpc/get_arvoculture_storefront_products",
       url,
     );
-    const response = await fetch(endpoint, {
+    const [response, badges] = await Promise.all([
+      fetch(endpoint, {
       method: "POST",
       headers: {
         apikey: key,
@@ -187,10 +243,14 @@ export async function getStorefrontProducts(limit = 24): Promise<Product[]> {
       },
       body: JSON.stringify({ p_limit: Math.min(200, Math.max(1, limit)) }),
       next: { revalidate: 60, tags: ["storefront-products"] },
-    });
+      }),
+      getProductBadges(),
+    ]);
     if (!response.ok) return products;
     const rows = (await response.json()) as StorefrontRow[];
-    return rows.map(mapProduct);
+    return rows.map((row, index) =>
+      applyBadge(mapProduct(row, index), badges.get(row.slug)),
+    );
   } catch {
     return products;
   }
@@ -217,7 +277,8 @@ export async function getStorefrontCollectionProducts({
       "/rest/v1/rpc/get_arvoculture_storefront_collection_products",
       SUPABASE_URL,
     );
-    const response = await fetch(endpoint, {
+    const [response, badges] = await Promise.all([
+      fetch(endpoint, {
       method: "POST",
       headers: {
         apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -237,10 +298,14 @@ export async function getStorefrontCollectionProducts({
             : "storefront-collection-groups",
         ],
       },
-    });
+      }),
+      getProductBadges(),
+    ]);
     if (!response.ok) return [];
     const rows = (await response.json()) as StorefrontRow[];
-    return rows.map(mapProduct);
+    return rows.map((row, index) =>
+      applyBadge(mapProduct(row, index), badges.get(row.slug)),
+    );
   } catch {
     return [];
   }
@@ -264,10 +329,14 @@ export async function getStorefrontProduct(
       },
       body: JSON.stringify({ p_slug: slug }),
       next: { revalidate: 60, tags: [`storefront-product-${slug}`] },
-    });
+      }),
+      getProductBadges(),
+    ]);
     if (!response.ok) return undefined;
     const rows = (await response.json()) as StorefrontRow[];
-    return rows[0] ? mapProduct(rows[0]) : undefined;
+    return rows[0]
+      ? applyBadge(mapProduct(rows[0]), badges.get(rows[0].slug))
+      : undefined;
   } catch {
     return undefined;
   }

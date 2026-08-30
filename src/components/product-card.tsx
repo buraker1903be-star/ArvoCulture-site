@@ -12,6 +12,12 @@ export function ProductCard({
   index?: number;
   theme?: StorefrontTheme;
 }) {
+  const showBadges = theme?.show_badges !== false;
+  const discountPercent =
+    product.discountPercent ??
+    (product.oldPrice && product.oldPrice > product.price
+      ? Math.round((1 - product.price / product.oldPrice) * 100)
+      : 0);
   return (
     <article className="product-card">
       <Link
@@ -19,8 +25,21 @@ export function ProductCard({
         className={`product-art ${product.tone}`}
         aria-label={`${product.name} ürününü incele`}
       >
-        {theme?.show_badges !== false && product.oldPrice && (
-          <b className="product-badge">İNDİRİM</b>
+        {showBadges && (
+          <span className="product-badges">
+            {product.bestSeller && (
+              <b className="product-badge bestseller">ÇOK SATAN</b>
+            )}
+            {discountPercent > 0 && (
+              <b className="product-badge discount">-%{discountPercent}</b>
+            )}
+            {product.badge &&
+              product.badge.toLocaleLowerCase("tr-TR") !== "çok satan" && (
+                <b className={`product-badge ${product.badgeTone ?? "green"}`}>
+                  {product.badge}
+                </b>
+              )}
+          </span>
         )}
         {product.image ? (
           <Image
