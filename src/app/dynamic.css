@@ -56,9 +56,9 @@ footer .logo img {
   top: calc(100% + 29px);
   left: 50%;
   display: grid;
-  grid-template-columns: minmax(360px, 1.25fr) minmax(280px, 0.75fr);
-  width: min(780px, 80vw);
-  padding: 32px;
+  grid-template-columns: minmax(600px, 1fr) 250px;
+  width: min(930px, 88vw);
+  padding: 20px;
   background: rgba(255, 255, 255, 0.98);
   border: 1px solid rgba(17, 18, 16, 0.09);
   box-shadow: 0 30px 80px rgba(14, 15, 12, 0.14);
@@ -77,19 +77,12 @@ footer .logo img {
 .mega-menu:hover > button span {
   transform: rotate(180deg);
 }
-.mega-panel > div {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 28px;
-}
-.mega-panel .eyebrow {
-  grid-column: 1/-1;
-}
+.mega-panel-main{padding:8px 22px 12px 8px}.mega-quick{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);margin-bottom:19px}.mega-quick a{display:flex!important;flex-direction:row!important;justify-content:space-between;padding:10px 18px 15px 0!important}.mega-quick a+ a{padding-left:20px!important;border-left:1px solid var(--line)}.mega-columns{display:grid;grid-template-columns:.85fr 1.2fr .9fr;gap:28px}.mega-columns>div>p{margin:0 0 8px;color:#8b8b85;font-size:8px;font-weight:600;letter-spacing:.16em}
 .mega-panel a {
   display: flex;
   flex-direction: column;
   padding: 13px 0;
-  border-top: 1px solid var(--line);
+  border-top: 0;
 }
 .mega-panel a:after {
   display: none;
@@ -104,13 +97,13 @@ footer .logo img {
   font-size: 9px;
 }
 .mega-panel aside {
-  padding: 27px;
-  background: #1a1c18;
+  position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:285px;padding:22px;
+  background:#776f68;
   color: #fff;
 }
-.mega-panel aside h3 {
-  margin: 12px 0;
-  font-size: 25px;
+.mega-feature>div{position:absolute;inset:0;background:linear-gradient(0deg,rgba(12,12,10,.65),rgba(12,12,10,.04) 70%),url("https://arvoculture.com/cdn/shop/collections/zsYrJrOa0d55JIq11-LAI_OsD30aZg_00001_08533ee2-3c57-4092-b28e-d1dccb1d178f.webp?v=1784578872&width=700") center/cover}.mega-feature>*:not(div){position:relative}.mega-feature>p{margin:0;font-size:8px;letter-spacing:.16em}.mega-panel aside h3 {
+  margin: 8px 0;
+  font-size: 23px;
   font-weight: 400;
   line-height: 1.15;
 }
@@ -809,6 +802,13 @@ footer .logo img {
 .coupon-form .error {
   color: #a34646;
 }
+/* Pure white retail canvas */
+:root{--paper:#fff;--line:#e8e8e4}
+html,body,.site-header,.mobile-menu,.collection-hero,.info-hero,.product-info,.simple-page{background:#fff}
+.site-header{border-color:#ecece8;box-shadow:0 1px 0 rgba(17,18,16,.02)}
+.featured,.category-showcase{background:#fff}
+.product-art,.category-image,.beauty-mini-image{border-color:#ededeb!important}
+.info-hero{border-color:#ecece8}
 @media (max-width: 1100px) {
   .category-rail {
     grid-template-columns: repeat(3, minmax(0, 1fr));

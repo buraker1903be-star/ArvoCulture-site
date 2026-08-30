@@ -63,36 +63,47 @@ export function Header({ theme }: { theme: StorefrontTheme }) {
           />
         </Link>
         <nav className="desktop-nav" aria-label="Ana menü">
-          <div className="mega-menu">
+          <div className="mega-menu mega-shop">
             <button type="button">
-              Keşfet <span>⌄</span>
+              Alışveriş <span>⌄</span>
             </button>
             <div className="mega-panel">
-              <div>
-                <p className="eyebrow">KOLEKSİYONLAR</p>
-                {categories.map((item) => (
-                  <Link key={item.href} href={item.href}>
-                    <b>{item.label}</b>
-                    <small>{item.note}</small>
-                  </Link>
-                ))}
+              <div className="mega-panel-main">
+                <div className="mega-quick">
+                  <Link href="/koleksiyon/tumu"><b>Yeni gelenler</b><span>↗</span></Link>
+                  <Link href="/koleksiyon/tumu"><b>Çok satanlar</b><span>↗</span></Link>
+                </div>
+                <div className="mega-columns">
+                  <div>
+                    <p>GİYİM</p>
+                    <Link href="/koleksiyon/giyim"><b>Tüm Giyim</b><small>Yeni sezon seçkisi</small></Link>
+                    <Link href="/koleksiyon/giyim"><b>Tişörtler</b><small>Oversize · Regular Fit</small></Link>
+                  </div>
+                  <div>
+                    <p>BAKIM &amp; GÜZELLİK</p>
+                    <Link href="/koleksiyon/bakim"><b>Kişisel Bakım</b><small>Cilt · Saç · Vücut</small></Link>
+                    <Link href="/koleksiyon/kozmetik"><b>Kozmetik</b><small>Ten · Göz · Dudak</small></Link>
+                    <Link href="/koleksiyon/parfum"><b>Parfüm</b><small>Kadın · Erkek · Unisex</small></Link>
+                  </div>
+                  <div>
+                    <p>LIFESTYLE</p>
+                    <Link href="/koleksiyon/takviyeler"><b>Takviyeler</b><small>Günlük yaşam desteği</small></Link>
+                    <Link href="/hakkimizda"><b>Hikâyemiz</b><small>ArvoCulture dünyası</small></Link>
+                  </div>
+                </div>
               </div>
-              <aside>
-                <p className="eyebrow">ARVOCULTURE EDIT</p>
-                <h3>
-                  İki dünya.
-                  <br />
-                  Tek yaşam kültürü.
-                </h3>
-                <p>Stilini ve günlük ritüelini tamamlayan seçkileri keşfet.</p>
-                <Link href="/koleksiyon/tumu">Tüm ürünler ↗</Link>
+              <aside className="mega-feature">
+                <div />
+                <p>BEAUTY &amp; CARE</p>
+                <h3>Kendine iyi bak.</h3>
+                <Link href="/koleksiyon/bakim">Bakım seçkisi ↗</Link>
               </aside>
             </div>
           </div>
+          <Link href="/koleksiyon/tumu">Yeni &amp; Çok Satan</Link>
+          <Link href="/koleksiyon/bakim">Kişisel Bakım</Link>
           <Link href="/koleksiyon/giyim">Giyim</Link>
-          <Link href="/koleksiyon/bakim">Bakım</Link>
           <Link href="/koleksiyon/parfum">Parfüm</Link>
-          <Link href="/hakkimizda">Hikâyemiz</Link>
         </nav>
         <div className="actions">
           {theme.show_search && (
