@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { ProductCard } from "@/components/product-card";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
-import { getStorefrontProducts, type Product } from "@/lib/products";
+import { getStorefrontProducts } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import {
   getStorefrontTheme,
@@ -18,10 +18,6 @@ export default async function Home() {
   ]);
   const coupon = discounts.find((discount) => discount.code);
   const automaticOffer = discounts.find((discount) => !discount.code);
-  const apparel = products.find((product) => product.category === "Giyim");
-  const beauty =
-    products.find((product) => product.category === "Kişisel Bakım") ??
-    products.find((product) => product.category !== "Giyim");
   const scent = products.find((product) => product.category === "Parfüm");
   const beautySelection = products
     .filter((product) => product.category === "Kişisel Bakım")
@@ -53,50 +49,6 @@ export default async function Home() {
     product: products.find((product) => product.category === tile.label),
   }));
   const sections: Array<{ order: number; node: ReactNode } | false> = [
-    theme.show_manifest && {
-      order: theme.order_manifest,
-      node: (
-        <section
-          data-arvo-section="manifest"
-          className="manifest"
-          id="hikaye"
-          key="manifest"
-        >
-          <p className="eyebrow">ARVOCULTURE DÜNYASI</p>
-          <h2 data-arvo-field="manifest_title">{theme.manifest_title}</h2>
-          <p data-arvo-field="manifest_description">
-            {theme.manifest_description}
-          </p>
-        </section>
-      ),
-    },
-    theme.show_worlds && {
-      order: theme.order_worlds,
-      node: (
-        <section data-arvo-section="worlds" className="worlds" key="worlds">
-          <World
-            number="01"
-            label="APPAREL"
-            title={theme.apparel_title}
-            description={theme.apparel_description}
-            href="/koleksiyon/giyim"
-            product={apparel}
-            imageUrl="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-218cb1dd-ee3f-4309-998f-ba890d2e82be.jpg?v=1783214697&width=1600"
-            className="apparel"
-          />
-          <World
-            number="02"
-            label="BEAUTY & CARE"
-            title={theme.beauty_title}
-            description={theme.beauty_description}
-            href="/koleksiyon/bakim"
-            product={beauty}
-            imageUrl="https://arvoculture.com/cdn/shop/collections/zsYrJrOa0d55JIq11-LAI_OsD30aZg_00001_08533ee2-3c57-4092-b28e-d1dccb1d178f.webp?v=1784578872&width=1600"
-            className="beauty"
-          />
-        </section>
-      ),
-    },
     theme.show_featured && {
       order: theme.order_featured,
       node: (
@@ -245,36 +197,6 @@ export default async function Home() {
         )
         .sort((a, b) => a.order - b.order)
         .map((section) => section.node)}
-      <section className="visual-story" aria-label="ArvoCulture editoryal seçkisi">
-        <div className="visual-story-heading">
-          <p className="eyebrow">ARVOCULTURE EDITORIAL · 2026</p>
-          <h2>Giyinmek değil.<br /><em>Kendini anlatmak.</em></h2>
-          <p>Günün ritmine, bulunduğun şehre ve kendi karakterine uyum sağlayan parçalar. Sade çizgiler, güçlü detaylar ve zahmetsiz bir görünüm.</p>
-          <Link href="/koleksiyon/giyim">Editoryali keşfet <span>↗</span></Link>
-        </div>
-        <Link href="/koleksiyon/giyim" className="visual-frame visual-frame-main">
-          <Image unoptimized src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-285ebc65-a225-49fe-b7ed-060bd21bb9fd.jpg?v=1783214697&width=1800" alt="ArvoCulture şehir stili" fill sizes="(max-width: 800px) 92vw, 58vw" />
-          <span>01 · CITY FRAME</span>
-        </Link>
-        <Link href="/koleksiyon/giyim" className="visual-frame visual-frame-float">
-          <Image unoptimized src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-3f9d4554-9007-4879-9689-249df3f7dbdd.jpg?v=1783214697&width=1000" alt="ArvoCulture Akdeniz koleksiyonu" fill sizes="(max-width: 800px) 48vw, 25vw" />
-          <span>02 · SUN CULTURE</span>
-        </Link>
-      </section>
-      <section className="lookbook-band">
-        <Link href="/koleksiyon/giyim" className="lookbook-shot lookbook-shot-wide">
-          <Image unoptimized src="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-4d757e38-6869-4311-a370-abe8b576d993.jpg?v=1783214697&width=1600" alt="ArvoCulture günlük stil" fill sizes="(max-width: 760px) 100vw, 60vw" />
-        </Link>
-        <div className="lookbook-note">
-          <span>THE ARVO EDIT</span>
-          <h2>Cool görün.<br />Kendin kal.</h2>
-          <p>Zamansız renkler ve gün boyu rahat hissettiren seçilmiş parçalarla kendi üniformanı yarat.</p>
-          <Link href="/koleksiyon/giyim" className="button button-dark">Giyim seçkisi</Link>
-        </div>
-        <Link href="/koleksiyon/giyim" className="lookbook-shot lookbook-shot-tall">
-          <Image unoptimized src="https://arvoculture.com/cdn/shop/files/Flat_lay-0f96f5c6-94b8-4354-994e-536fbe0b9046.jpg?v=1783214697&width=1000" alt="ArvoCulture ürün detayı" fill sizes="(max-width: 760px) 100vw, 28vw" />
-        </Link>
-      </section>
       <section className="category-showcase">
         <div className="section-head">
           <div>
@@ -362,47 +284,5 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
       <span className="hero-index">01 / 05</span>
       <span className="hero-scroll">KEŞFETMEK İÇİN KAYDIR ↓</span>
     </section>
-  );
-}
-
-function World({
-  number,
-  label,
-  title,
-  description,
-  href,
-  product,
-  imageUrl,
-  className,
-}: {
-  number: string;
-  label: string;
-  title: string;
-  description: string;
-  href: string;
-  product?: Product;
-  imageUrl?: string;
-  className: string;
-}) {
-  return (
-    <Link href={href} className={`world ${className}`}>
-      {(imageUrl ?? product?.image) && (
-        <div
-          className="world-media"
-          role="img"
-          aria-label={`${title} koleksiyonu`}
-          style={{ backgroundImage: `url("${imageUrl ?? product?.image}")` }}
-        />
-      )}
-      <div className="world-shade" />
-      <div className="world-copy">
-        <span>
-          {number} / {label}
-        </span>
-        <h2>{title}</h2>
-        <p>{description}</p>
-        <b>Koleksiyonu keşfet ↗</b>
-      </div>
-    </Link>
   );
 }

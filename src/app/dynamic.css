@@ -15,6 +15,7 @@
 }
 .site-header {
   grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
+  height: 76px;
 }
 .site-header .logo {
   width: clamp(210px, 17vw, 285px);
@@ -150,7 +151,7 @@ footer .logo img {
   display: block;
   width: calc(100% - clamp(24px, 4vw, 72px));
   max-width: 1780px;
-  min-height: min(800px, calc(100vh - 145px));
+  min-height: min(680px, calc(100vh - 125px));
   margin: clamp(12px, 1.5vw, 24px) auto 0;
   border: 0;
   border-radius: clamp(16px, 1.5vw, 26px);
@@ -240,7 +241,7 @@ footer .logo img {
   align-items: center;
   gap: 38px;
   width: max-content;
-  padding: 15px 0;
+  padding: 11px 0;
   font-size: 9px;
   letter-spacing: 0.17em;
   white-space: nowrap;
@@ -250,10 +251,10 @@ footer .logo img {
   color: var(--luxury);
   font-style: normal;
 }
-.beauty-focus{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(420px,.85fr);width:min(calc(100% - clamp(24px,4vw,72px)),1780px);min-height:760px;margin:clamp(70px,8vw,125px) auto;background:#e7ded8;overflow:hidden}
-.beauty-focus-media{position:relative;min-height:760px;overflow:hidden}.beauty-focus-media img{object-fit:cover;object-position:center;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}.beauty-focus-media:hover img{transform:scale(1.035)}.beauty-focus-media>span{position:absolute;left:24px;bottom:22px;padding:9px 12px;background:rgba(255,255,255,.84);font-size:8px;letter-spacing:.17em;backdrop-filter:blur(10px)}
-.beauty-focus-copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:clamp(45px,6vw,100px)}.beauty-focus-copy h2{margin:14px 0 27px;font-size:clamp(45px,4.5vw,74px);font-weight:400;line-height:.98;letter-spacing:-.055em}.beauty-focus-copy h2 em{color:#827064;font-style:normal}.beauty-focus-copy>p:not(.eyebrow){max-width:560px;color:#655c57;line-height:1.8}.beauty-focus-copy>.button{margin-top:23px}
-.beauty-mini-products{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;margin-top:45px;padding-top:25px;border-top:1px solid rgba(30,25,22,.16)}.beauty-mini-products>a{min-width:0}.beauty-mini-image{position:relative;display:block;aspect-ratio:1;background:#fff;overflow:hidden}.beauty-mini-image img{object-fit:contain;padding:10%;transition:transform .45s}.beauty-mini-products>a:hover img{transform:scale(1.06)}.beauty-mini-products small{display:block;margin-top:9px;color:#554d49;font-size:9px;line-height:1.4}
+.beauty-focus{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(420px,.92fr);width:min(calc(100% - clamp(24px,4vw,72px)),1680px);min-height:590px;margin:clamp(48px,5vw,82px) auto;background:#e7ded8;overflow:hidden}
+.beauty-focus-media{position:relative;min-height:590px;overflow:hidden}.beauty-focus-media img{object-fit:cover;object-position:center;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}.beauty-focus-media:hover img{transform:scale(1.025)}.beauty-focus-media>span{position:absolute;left:24px;bottom:22px;padding:9px 12px;background:rgba(255,255,255,.84);font-size:8px;letter-spacing:.17em;backdrop-filter:blur(10px)}
+.beauty-focus-copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:clamp(38px,5vw,72px)}.beauty-focus-copy h2{margin:12px 0 20px;font-size:clamp(40px,3.8vw,62px);font-weight:400;line-height:1;letter-spacing:-.05em}.beauty-focus-copy h2 em{color:#827064;font-style:normal}.beauty-focus-copy>p:not(.eyebrow){max-width:530px;color:#655c57;line-height:1.65}.beauty-focus-copy>.button{margin-top:18px}
+.beauty-mini-products{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;margin-top:28px;padding-top:20px;border-top:1px solid rgba(30,25,22,.16)}.beauty-mini-products>a{min-width:0}.beauty-mini-image{position:relative;display:block;aspect-ratio:1;background:#fff;overflow:hidden}.beauty-mini-image img{object-fit:contain;padding:10%;transition:transform .45s}.beauty-mini-products>a:hover img{transform:scale(1.06)}.beauty-mini-products small{display:block;margin-top:9px;color:#554d49;font-size:9px;line-height:1.4}
 .worlds {
   min-height: 680px;
   gap: 14px;
@@ -688,8 +689,11 @@ footer .logo img {
 .category-showcase {
   max-width: 1760px;
   margin: 0 auto;
-  padding: clamp(85px, 9vw, 140px) clamp(24px, 4.2vw, 80px);
+  padding: clamp(55px, 6vw, 90px) clamp(24px, 4.2vw, 80px);
 }
+.featured{padding-top:clamp(60px,6vw,90px);padding-bottom:clamp(60px,6vw,90px)}
+.featured .section-head{margin-bottom:30px}.campaign{margin-bottom:clamp(55px,6vw,90px);padding:clamp(38px,4vw,58px)}
+.values div{padding-top:38px;padding-bottom:38px}.values h3{font-size:21px}
 .category-showcase .section-head > p {
   max-width: 430px;
   margin: 0;
