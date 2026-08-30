@@ -8,6 +8,7 @@ import "./dynamic.css";
 import { CartProvider } from "@/components/cart";
 import { Header } from "@/components/header";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
+import { getStorefrontDiscounts } from "@/lib/discounts";
 
 const poppins = Poppins({
   subsets: ["latin", "latin-ext"],
@@ -31,7 +32,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const theme = await getStorefrontTheme();
+  const [theme, discounts] = await Promise.all([
+    getStorefrontTheme(),
+    getStorefrontDiscounts(),
+  ]);
   const style = {
     "--ink": theme.primary_color,
     "--acid": theme.accent_color,
@@ -44,7 +48,7 @@ export default async function RootLayout({
         style={style}
         className={`${poppins.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio}`}
       >
-        <CartProvider>
+        <CartProvider discounts={discounts}>
           <Header theme={theme} />
           {children}
           <footer>
