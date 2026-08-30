@@ -132,8 +132,7 @@ async function getProductBadges(): Promise<Map<string, ProductBadgeRow>> {
       "/rest/v1/rpc/get_arvoculture_storefront_product_badges",
       SUPABASE_URL,
     );
-    const [response, badges] = await Promise.all([
-      fetch(endpoint, {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         apikey: SUPABASE_PUBLISHABLE_KEY,
