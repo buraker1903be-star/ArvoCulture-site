@@ -54,20 +54,13 @@ export function Header({ theme }: { theme: StorefrontTheme }) {
           aria-label={`${theme.store_name ?? "ArvoCulture"} ana sayfa`}
           onClick={close}
         >
-          {theme.logo_url ? (
-            <Image
-              src={theme.logo_url}
-              alt={theme.store_name ?? "ArvoCulture"}
-              width={220}
-              height={60}
-              priority
-            />
-          ) : (
-            <>
-              <b>ARVO</b>
-              <i>CULTURE</i>
-            </>
-          )}
+          <Image
+            src="/arvoculture-logo-transparent.png"
+            alt={theme.store_name ?? "ArvoCulture"}
+            width={320}
+            height={39}
+            priority
+          />
         </Link>
         <nav className="desktop-nav" aria-label="Ana menü">
           <div className="mega-menu">
