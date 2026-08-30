@@ -19,12 +19,19 @@ export default function Terms() {
           müşteriye onay iletilmesiyle kesinleşir.
         </p>
       </InfoSection>
+      <InfoSection title="Hesap ve güvenlik">
+        <p>Kullanıcı, verdiği bilgilerin güncel ve doğru olmasından ve hesabına ait erişim bilgilerinin korunmasından sorumludur. Şüpheli kullanım güvenlik amacıyla geçici olarak durdurulabilir.</p>
+      </InfoSection>
       <InfoSection title="Fikri haklar">
         <p>
           ArvoCulture markası, tasarım sistemi, metinleri ve görsel içerikleri
           ilgili hak sahiplerine aittir; izinsiz ticari kullanım yapılamaz.
         </p>
       </InfoSection>
+      <InfoSection title="Sorumluluğun sınırı">
+        <p>Site bakım, güvenlik veya mücbir sebep nedeniyle geçici olarak kesintiye uğrayabilir. Bu hüküm, tüketicinin emredici mevzuattan doğan haklarını sınırlamaz.</p>
+      </InfoSection>
+      <InfoSection title="Uygulanacak hukuk"><p>Koşullara Türkiye Cumhuriyeti hukuku uygulanır. Tüketicilerin yetkili tüketici hakem heyetleri ve tüketici mahkemelerine başvuru hakları saklıdır. Son güncelleme: 30 Ağustos 2026.</p></InfoSection>
     </InfoPage>
   );
 }

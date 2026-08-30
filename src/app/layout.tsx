@@ -62,20 +62,33 @@ export default async function RootLayout({
             </div>
             <p>{theme.footer_tagline}</p>
             <div className="footer-links">
-              <Link href="/hakkimizda">Hakkımızda</Link>
-              <Link href="/iletisim">İletişim</Link>
-              <Link href="/sss">SSS</Link>
-              <Link href="/teslimat-iade">Teslimat & İade</Link>
-              <Link href="/gizlilik">Gizlilik</Link>
-              <Link href="/kullanim-kosullari">Kullanım Koşulları</Link>
-              {theme.instagram_url && (
-                <a href={theme.instagram_url}>Instagram</a>
-              )}
-              {theme.facebook_url && <a href={theme.facebook_url}>Facebook</a>}
+              <div className="footer-link-group">
+                <strong>ArvoCulture</strong>
+                <Link href="/hakkimizda">Hakkımızda</Link>
+                <Link href="/iletisim">İletişim</Link>
+                <Link href="/sss">Sık Sorulan Sorular</Link>
+                {theme.instagram_url && <a href={theme.instagram_url}>Instagram</a>}
+              </div>
+              <div className="footer-link-group">
+                <strong>Müşteri Hizmetleri</strong>
+                <Link href="/teslimat">Teslimat Politikası</Link>
+                <Link href="/iptal-iade">İptal ve İade</Link>
+                <Link href="/on-bilgilendirme-formu">Ön Bilgilendirme Formu</Link>
+                <Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link>
+              </div>
+              <div className="footer-link-group">
+                <strong>Yasal</strong>
+                <Link href="/kvkk-aydinlatma-metni">KVKK Aydınlatma Metni</Link>
+                <Link href="/gizlilik">Gizlilik ve Çerez Politikası</Link>
+                <Link href="/kullanim-kosullari">Kullanım Koşulları</Link>
+                <Link href="/yasal-bildirim">Yasal Bildirim</Link>
+                <Link href="/ticari-elektronik-ileti">Ticari Elektronik İleti</Link>
+              </div>
             </div>
-            <small>
-              © 2026 {theme.store_name ?? "ArvoCulture"}. Tüm hakları saklıdır.
-            </small>
+            <div className="footer-legal">
+              <small>© 2026 {theme.store_name ?? "ArvoCulture"}. Tüm hakları saklıdır.</small>
+              <small>ARVOCULTURE GROUP TEKNOLOJİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ · VKN 0861785335 · Ticaret Sicil No 1149259</small>
+            </div>
           </footer>
         </CartProvider>
       </body>
