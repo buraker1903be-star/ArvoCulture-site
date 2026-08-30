@@ -320,15 +320,16 @@ export async function getStorefrontProduct(
       "/rest/v1/rpc/get_arvoculture_storefront_product",
       SUPABASE_URL,
     );
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ p_slug: slug }),
-      next: { revalidate: 60, tags: [`storefront-product-${slug}`] },
+    const [response, badges] = await Promise.all([
+      fetch(endpoint, {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ p_slug: slug }),
+        next: { revalidate: 60, tags: [`storefront-product-${slug}`] },
       }),
       getProductBadges(),
     ]);
