@@ -16,6 +16,22 @@
 .site-header {
   grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
 }
+.site-header .logo {
+  width: clamp(210px, 17vw, 285px);
+  height: 56px;
+  overflow: visible;
+}
+.site-header .logo img {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: contain;
+}
+footer .logo img {
+  width: min(320px, 78vw);
+  max-width: none;
+  filter: brightness(0) invert(1);
+}
 .desktop-nav {
   align-items: center;
 }
@@ -550,8 +566,9 @@
   .site-header {
     padding: 0 17px;
   }
-  .logo img {
-    max-width: 145px;
+  .site-header .logo {
+    width: 185px;
+    height: 48px;
   }
   .signature-hero {
     width: calc(100% - 20px);
