@@ -9,19 +9,68 @@ import type { StorefrontCollection } from "@/lib/collections";
 
 export function Header({ theme, collections }: { theme: StorefrontTheme; collections: StorefrontCollection[] }) {
   const [open, setOpen] = useState(false);
+  const [mobileSection, setMobileSection] = useState<string | null>(null);
   const close = () => setOpen(false);
-  const collectionColumns = [
-    { title: "GİYİM", groups: ["Giyim"], limit: 6 },
-    { title: "CİLT & BAKIM", groups: ["Kişisel Bakım", "Cilt Bakımı", "Sorununa Göre"], limit: 7 },
-    { title: "SAÇ & VÜCUT", groups: ["Saç Bakımı", "Vücut Bakımı", "Diğer Bakımlar"], limit: 7 },
-    { title: "GÜZELLİK & YAŞAM", groups: ["Kozmetik", "Parfüm", "Takviyeler"], limit: 7 },
-  ].map((column) => ({
-    ...column,
-    items: collections
-      .filter((collection) => column.groups.includes(collection.menu_group))
-      .sort((a, b) => b.product_count - a.product_count || a.title.localeCompare(b.title, "tr"))
-      .slice(0, column.limit),
-  }));
+  const collectionItems = (groups: string[], limit = 8) =>
+    collections
+      .filter((collection) => groups.includes(collection.menu_group))
+      .sort(
+        (a, b) =>
+          b.product_count - a.product_count ||
+          a.title.localeCompare(b.title, "tr"),
+      )
+      .slice(0, limit);
+  const navigation = [
+    {
+      title: "Giyim",
+      href: "/koleksiyon/giyim",
+      sections: [
+        { title: "GİYİM KOLEKSİYONLARI", items: collectionItems(["Giyim"]) },
+      ],
+    },
+    {
+      title: "Kişisel Bakım",
+      href: "/koleksiyon/bakim",
+      sections: [
+        {
+          title: "CİLT BAKIMI",
+          items: collectionItems(["Cilt Bakımı", "Kişisel Bakım"], 7),
+        },
+        {
+          title: "SAÇ & VÜCUT",
+          items: collectionItems(
+            ["Saç Bakımı", "Vücut Bakımı", "Diğer Bakımlar"],
+            7,
+          ),
+        },
+        {
+          title: "İHTİYACA GÖRE",
+          items: collectionItems(["Sorununa Göre"], 6),
+        },
+      ],
+    },
+    {
+      title: "Kozmetik",
+      href: "/koleksiyon/kozmetik",
+      sections: [
+        { title: "MAKYAJ", items: collectionItems(["Kozmetik"]) },
+      ],
+    },
+    {
+      title: "Parfüm",
+      href: "/koleksiyon/parfum",
+      sections: [
+        { title: "PARFÜM", items: collectionItems(["Parfüm"]) },
+      ],
+    },
+    {
+      title: "Takviyeler",
+      href: "/koleksiyon/takviyeler",
+      sections: [
+        { title: "TAKVİYELER", items: collectionItems(["Takviyeler"]) },
+      ],
+    },
+  ];
   const bestSeller = collections.find((item) => item.title === "Çok Satanlar");
   const offers = collections.find((item) => item.title === "Haftanın Fırsatları");
   return (
@@ -50,35 +99,39 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
           />
         </Link>
         <nav className="desktop-nav" aria-label="Ana menü">
-          <div className="mega-menu mega-shop">
-            <button type="button">
-              Alışveriş <span>⌄</span>
-            </button>
-            <div className="mega-panel">
-              <div className="mega-panel-main">
-                <div className="mega-quick">
-                  <Link href={offers ? `/koleksiyon/${offers.slug}` : "/koleksiyon/tumu"}><b>Haftanın fırsatları</b><span>↗</span></Link>
-                  <Link href={bestSeller ? `/koleksiyon/${bestSeller.slug}` : "/koleksiyon/tumu"}><b>Çok satanlar</b><span>↗</span></Link>
+          <div className="mega-menu menu-featured">
+            <Link href={bestSeller ? `/koleksiyon/${bestSeller.slug}` : "/koleksiyon/tumu"}>
+              Yeni &amp; Çok Satan
+            </Link>
+          </div>
+          {navigation.map((menu) => (
+            <div className="mega-menu" key={menu.title}>
+              <Link href={menu.href} className="mega-trigger">
+                {menu.title} <span>⌄</span>
+              </Link>
+              <div
+                className={`mega-panel mega-panel-sections-${menu.sections.length}`}
+              >
+                <div className="mega-panel-head">
+                  <p>{menu.title}</p>
+                  <Link href={menu.href}>Tümünü gör ↗</Link>
                 </div>
                 <div className="mega-columns">
-                  {collectionColumns.map((column) => <div key={column.title}>
-                    <p>{column.title}</p>
-                    {column.items.map((item) => <Link href={`/koleksiyon/${item.slug}`} key={item.slug}><b>{item.title}</b><small>{item.product_count} ürün</small></Link>)}
-                  </div>)}
+                  {menu.sections.map((section) => (
+                    <div key={section.title}>
+                      <p>{section.title}</p>
+                      {section.items.map((item) => (
+                        <Link href={`/koleksiyon/${item.slug}`} key={item.slug}>
+                          <b>{item.title}</b>
+                          <small>{item.product_count} ürün</small>
+                        </Link>
+                      ))}
+                    </div>
+                  ))}
                 </div>
               </div>
-              <aside className="mega-feature">
-                <div />
-                <p>BEAUTY &amp; CARE</p>
-                <h3>Kendine iyi bak.</h3>
-                <Link href="/koleksiyon/bakim">Bakım seçkisi ↗</Link>
-              </aside>
             </div>
-          </div>
-          <Link href="/koleksiyon/tumu">Yeni &amp; Çok Satan</Link>
-          <Link href="/koleksiyon/bakim">Kişisel Bakım</Link>
-          <Link href="/koleksiyon/giyim">Giyim</Link>
-          <Link href="/koleksiyon/parfum">Parfüm</Link>
+          ))}
         </nav>
         <div className="actions">
           {theme.show_search && (
@@ -108,14 +161,52 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
           </button>
         </div>
         <nav>
-          {collectionColumns.map((column) => <div className="mobile-collection-group" key={column.title}>
-            <p>{column.title}</p>
-            {column.items.map((item) => <Link href={`/koleksiyon/${item.slug}`} key={item.slug} onClick={close}><b>{item.title}</b><small>{item.product_count} ürün</small></Link>)}
-          </div>)}
-          <Link href="/hakkimizda" onClick={close}>
-            <span>06</span>
-            <b>Hikâyemiz</b>
-            <small>ArvoCulture dünyası</small>
+          <Link
+            href={offers ? `/koleksiyon/${offers.slug}` : "/koleksiyon/tumu"}
+            className="mobile-featured"
+            onClick={close}
+          >
+            Haftanın Fırsatları <span>↗</span>
+          </Link>
+          {navigation.map((menu) => {
+            const expanded = mobileSection === menu.title;
+            return (
+              <div className="mobile-collection-group" key={menu.title}>
+                <button
+                  type="button"
+                  aria-expanded={expanded}
+                  onClick={() =>
+                    setMobileSection(expanded ? null : menu.title)
+                  }
+                >
+                  <b>{menu.title}</b>
+                  <span>{expanded ? "−" : "+"}</span>
+                </button>
+                {expanded && (
+                  <div className="mobile-submenu">
+                    <Link href={menu.href} onClick={close}>
+                      <b>Tüm {menu.title} ürünleri</b>
+                      <small>Seçkiyi gör</small>
+                    </Link>
+                    {menu.sections.flatMap((section) =>
+                      section.items.map((item) => (
+                        <Link
+                          href={`/koleksiyon/${item.slug}`}
+                          key={item.slug}
+                          onClick={close}
+                        >
+                          <b>{item.title}</b>
+                          <small>{item.product_count}</small>
+                        </Link>
+                      )),
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <Link href="/hakkimizda" className="mobile-story" onClick={close}>
+            Hikâyemiz <span>↗</span>
           </Link>
         </nav>
         <div>
