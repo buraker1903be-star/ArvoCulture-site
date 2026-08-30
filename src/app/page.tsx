@@ -78,6 +78,7 @@ export default async function Home() {
             description={theme.apparel_description}
             href="/koleksiyon/giyim"
             product={apparel}
+            imageUrl="https://arvoculture.com/cdn/shop/collections/Urun_sahneleme-218cb1dd-ee3f-4309-998f-ba890d2e82be.jpg?v=1783214697&width=1600"
             className="apparel"
           />
           <World
@@ -87,6 +88,7 @@ export default async function Home() {
             description={theme.beauty_description}
             href="/koleksiyon/bakim"
             product={beauty}
+            imageUrl="https://arvoculture.com/cdn/shop/collections/zsYrJrOa0d55JIq11-LAI_OsD30aZg_00001_08533ee2-3c57-4092-b28e-d1dccb1d178f.webp?v=1784578872&width=1600"
             className="beauty"
           />
         </section>
@@ -306,6 +308,7 @@ function World({
   description,
   href,
   product,
+  imageUrl,
   className,
 }: {
   number: string;
@@ -314,11 +317,19 @@ function World({
   description: string;
   href: string;
   product?: Product;
+  imageUrl?: string;
   className: string;
 }) {
   return (
     <Link href={href} className={`world ${className}`}>
-      {product?.image && <Image src={product.image} alt="" fill sizes="50vw" />}
+      {(imageUrl ?? product?.image) && (
+        <div
+          className="world-media"
+          role="img"
+          aria-label={`${title} koleksiyonu`}
+          style={{ backgroundImage: `url("${imageUrl ?? product?.image}")` }}
+        />
+      )}
       <div className="world-shade" />
       <div className="world-copy">
         <span>
