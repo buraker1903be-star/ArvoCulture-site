@@ -266,6 +266,27 @@ export default async function Home() {
           ))}
         </div>
       </section>
+      <section className="intent-selector" aria-labelledby="intent-title">
+        <div className="intent-selector-head">
+          <p className="eyebrow">ARVOCULTURE CONCIERGE</p>
+          <h2 id="intent-title">Bugün neye<br /><em>ihtiyacın var?</em></h2>
+          <p>Aradığın dünyayı seç; sana uygun koleksiyona doğrudan ulaş.</p>
+        </div>
+        <div className="intent-options">
+          {[
+            { index: "01", title: "Tarzımı yenile", note: "Giyim seçkisi", href: "/koleksiyon/giyim" },
+            { index: "02", title: "Kendime iyi bak", note: "Bakım ritüelleri", href: "/koleksiyon/bakim" },
+            { index: "03", title: "İmzamı bul", note: "Parfüm dünyası", href: "/koleksiyon/parfum" },
+            { index: "04", title: "Ritmime destek ol", note: "Günlük takviyeler", href: "/koleksiyon/takviyeler" },
+          ].map((option) => (
+            <Link href={option.href} key={option.href}>
+              <small>{option.index}</small>
+              <b>{option.title}</b>
+              <span>{option.note} <i>↗</i></span>
+            </Link>
+          ))}
+        </div>
+      </section>
       {scent?.image && (
         <Link href="/koleksiyon/parfum" className="editorial-strip">
           <Image src={scent.image} alt="Parfüm seçkisi" fill sizes="100vw" />
