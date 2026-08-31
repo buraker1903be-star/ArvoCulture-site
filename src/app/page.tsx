@@ -22,6 +22,9 @@ export default async function Home() {
   const beautySelection = products
     .filter((product) => product.category === "Kişisel Bakım")
     .slice(0, 3);
+  const apparelSelection = products
+    .filter((product) => product.category === "Giyim")
+    .slice(0, 3);
   const categoryTiles = [
     {
       label: "Giyim",
@@ -160,6 +163,41 @@ export default async function Home() {
           <i>✦</i>
         </div>
       </div>
+      <section className="apparel-focus" aria-label="ArvoCulture giyim dünyası">
+        <div className="apparel-focus-copy">
+          <p className="eyebrow">KENDİNİ GİY</p>
+          <h2>Tarz bir kalıp değil.<br /><em>Kendini anlatma biçimin.</em></h2>
+          <p>Zamansız kesimler, özgün grafikler ve günün ritmine eşlik eden rahat parçalar. Kendine ait görünümü ArvoCulture koleksiyonlarıyla oluştur.</p>
+          <div className="apparel-focus-actions">
+            <Link href="/koleksiyon/giyim" className="button button-dark">Giyim dünyasını keşfet <span>↗</span></Link>
+            <Link href="/koleksiyon/oversize-tisortler">Oversize seçkisi</Link>
+          </div>
+          {apparelSelection.length > 0 && (
+            <div className="focus-mini-products">
+              {apparelSelection.map((product) => (
+                <Link href={`/urun/${product.slug}`} key={product.slug}>
+                  <span className="focus-mini-image">
+                    {product.image && <Image src={product.image} alt={product.name} fill sizes="110px" />}
+                  </span>
+                  <small>{product.name}</small>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+        <Link href="/koleksiyon/giyim" className="apparel-focus-media">
+          {theme.hero_image_url ? (
+            <Image unoptimized src={theme.hero_image_url} alt="ArvoCulture giyim koleksiyonu" fill sizes="(max-width: 850px) 100vw, 58vw" />
+          ) : apparelSelection[0]?.image ? (
+            <Image src={apparelSelection[0].image} alt="ArvoCulture giyim koleksiyonu" fill sizes="(max-width: 850px) 100vw, 58vw" />
+          ) : null}
+          <span>APPAREL · 01</span>
+          <div className="apparel-focus-caption">
+            <small>ARVOCULTURE APPAREL</small>
+            <b>Giydiğin şey,<br />senin hikâyen.</b>
+          </div>
+        </Link>
+      </section>
       <section className="beauty-focus" aria-label="Kişisel bakım ritüeli">
         <Link href="/koleksiyon/bakim" className="beauty-focus-media">
           <Image
@@ -178,10 +216,10 @@ export default async function Home() {
           <p>Günlük ritüelini daha iyi hissettiren, cildine ve yaşam tarzına özenle eşlik eden seçilmiş bakım ürünleri.</p>
           <Link href="/koleksiyon/bakim" className="button button-dark">Bakım dünyasını keşfet <span>↗</span></Link>
           {beautySelection.length > 0 && (
-            <div className="beauty-mini-products">
+            <div className="focus-mini-products beauty-mini-products">
               {beautySelection.map((product) => (
                 <Link href={`/urun/${product.slug}`} key={product.slug}>
-                  <span className="beauty-mini-image">
+                  <span className="focus-mini-image beauty-mini-image">
                     {product.image && <Image unoptimized src={product.image} alt={product.name} fill sizes="110px" />}
                   </span>
                   <small>{product.name}</small>
