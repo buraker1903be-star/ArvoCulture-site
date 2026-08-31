@@ -942,3 +942,270 @@ html,body,.site-header,.mobile-menu,.collection-hero,.info-hero,.product-info,.s
     padding-right: 24px;
   }
 }
+
+
+/* Floating glass retail canvas */
+html {
+  background: #f6f7f3;
+}
+body {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  background: transparent !important;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(146, 161, 128, 0.16), transparent 27%),
+    radial-gradient(circle at 88% 34%, rgba(210, 190, 169, 0.18), transparent 25%),
+    radial-gradient(circle at 36% 88%, rgba(175, 186, 162, 0.13), transparent 30%),
+    linear-gradient(rgba(104, 116, 92, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(104, 116, 92, 0.045) 1px, transparent 1px),
+    #fbfcf9;
+  background-size: auto, auto, auto, 52px 52px, 52px 52px, auto;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto -10vw -24vh auto;
+  z-index: -1;
+  width: min(58vw, 880px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(112, 126, 99, 0.1);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 70px rgba(112, 126, 99, 0.025),
+    0 0 0 150px rgba(112, 126, 99, 0.018);
+  pointer-events: none;
+}
+.site-header {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 12px 34px rgba(37, 42, 31, 0.065);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+.mobile-menu {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.signature-hero,
+.featured,
+.apparel-focus,
+.beauty-focus,
+.category-showcase,
+.editorial-strip,
+.values,
+.collection-hero,
+.product-page,
+.simple-page,
+.info-hero {
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  box-shadow:
+    0 26px 70px rgba(38, 44, 31, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+.featured,
+.category-showcase,
+.collection-hero,
+.product-page,
+.simple-page,
+.info-hero,
+.values {
+  width: min(1760px, calc(100% - 48px));
+  margin-right: auto;
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(17px) saturate(118%);
+  -webkit-backdrop-filter: blur(17px) saturate(118%);
+}
+.featured,
+.category-showcase,
+.collection-hero,
+.simple-page,
+.info-hero {
+  border-radius: 30px;
+}
+.featured {
+  margin-top: 34px;
+  margin-bottom: 34px;
+}
+.category-showcase {
+  margin-top: 34px;
+  margin-bottom: 34px;
+}
+.apparel-focus,
+.beauty-focus,
+.editorial-strip {
+  overflow: hidden;
+  border-radius: 30px;
+}
+.apparel-focus,
+.beauty-focus {
+  background: rgba(255, 255, 255, 0.83);
+  backdrop-filter: blur(15px) saturate(120%);
+  -webkit-backdrop-filter: blur(15px) saturate(120%);
+}
+.campaign {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  box-shadow: 0 28px 70px rgba(19, 22, 17, 0.18);
+}
+.values {
+  overflow: hidden;
+  margin-top: 34px;
+  margin-bottom: 34px;
+  border-radius: 28px;
+}
+.product-page {
+  overflow: hidden;
+  margin-top: 34px;
+  margin-bottom: 34px;
+  border-radius: 30px;
+}
+.collection-hero,
+.simple-page,
+.info-hero {
+  margin-top: 34px;
+  margin-bottom: 34px;
+}
+.product-info,
+.collection-hero,
+.info-hero,
+.simple-page {
+  background: transparent !important;
+}
+.product-art,
+.category-image,
+.focus-mini-image {
+  background: #fff;
+  box-shadow: 0 14px 35px rgba(39, 43, 34, 0.055);
+}
+footer {
+  width: min(1760px, calc(100% - 48px));
+  margin: 34px auto 18px;
+  border-radius: 32px;
+  box-shadow: 0 28px 70px rgba(20, 23, 18, 0.2);
+}
+.signature-hero,
+.featured,
+.apparel-focus,
+.beauty-focus,
+.category-showcase,
+.editorial-strip,
+.campaign,
+.values {
+  transition:
+    transform 0.55s cubic-bezier(0.2, 0.72, 0.2, 1),
+    box-shadow 0.55s ease;
+}
+@media (hover: hover) {
+  .featured:hover,
+  .apparel-focus:hover,
+  .beauty-focus:hover,
+  .category-showcase:hover,
+  .editorial-strip:hover,
+  .campaign:hover,
+  .values:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 34px 88px rgba(38, 44, 31, 0.13);
+  }
+}
+@supports (animation-timeline: view()) {
+  .featured,
+  .apparel-focus,
+  .beauty-focus,
+  .category-showcase,
+  .editorial-strip,
+  .campaign,
+  .values {
+    animation: floating-panel-reveal both linear;
+    animation-timeline: view();
+    animation-range: entry 5% cover 28%;
+  }
+}
+@keyframes floating-panel-reveal {
+  from {
+    opacity: 0.7;
+    transform: translateY(24px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (max-width: 700px) {
+  body::before {
+    background:
+      radial-gradient(circle at 5% 14%, rgba(146, 161, 128, 0.13), transparent 28%),
+      radial-gradient(circle at 98% 46%, rgba(210, 190, 169, 0.14), transparent 26%),
+      linear-gradient(rgba(104, 116, 92, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(104, 116, 92, 0.035) 1px, transparent 1px),
+      #fbfcf9;
+    background-size: auto, auto, 34px 34px, 34px 34px, auto;
+  }
+  .featured,
+  .category-showcase,
+  .collection-hero,
+  .product-page,
+  .simple-page,
+  .info-hero,
+  .values,
+  footer {
+    width: calc(100% - 20px);
+  }
+  .featured,
+  .category-showcase,
+  .collection-hero,
+  .simple-page,
+  .info-hero,
+  .product-page,
+  .apparel-focus,
+  .beauty-focus,
+  .editorial-strip,
+  .values,
+  footer {
+    border-radius: 19px;
+  }
+  .featured,
+  .category-showcase,
+  .collection-hero,
+  .simple-page,
+  .info-hero,
+  .product-page,
+  .values,
+  footer {
+    margin-top: 18px;
+    margin-bottom: 18px;
+  }
+  .featured,
+  .category-showcase,
+  .collection-hero,
+  .product-page,
+  .simple-page,
+  .info-hero,
+  .values {
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    box-shadow: 0 16px 38px rgba(38, 44, 31, 0.075);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signature-hero,
+  .featured,
+  .apparel-focus,
+  .beauty-focus,
+  .category-showcase,
+  .editorial-strip,
+  .campaign,
+  .values {
+    transform: none !important;
+  }
+}
