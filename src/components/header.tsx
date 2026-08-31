@@ -75,12 +75,18 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
   const offers = collections.find((item) => item.title === "Haftanın Fırsatları");
   return (
     <>
-      <div className="announcement">
+      <div className="announcement" aria-label="Mağaza duyuruları">
         <div className="announcement-track">
-          <span>{theme.announcement}</span>
-          <span>ÖZENLİ PAKETLEME</span>
-          <span>GÜVENLİ ÖDEME</span>
-          <span>{theme.announcement}</span>
+          <div className="announcement-group">
+            <span>{theme.announcement}</span>
+            <span>ÖZENLİ PAKETLEME</span>
+            <span>GÜVENLİ ÖDEME</span>
+          </div>
+          <div className="announcement-group" aria-hidden="true">
+            <span>{theme.announcement}</span>
+            <span>ÖZENLİ PAKETLEME</span>
+            <span>GÜVENLİ ÖDEME</span>
+          </div>
         </div>
       </div>
       <header className="site-header">
