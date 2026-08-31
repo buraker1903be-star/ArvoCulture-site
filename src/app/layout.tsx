@@ -89,7 +89,7 @@ export default async function RootLayout({
             </div>
             <div className="footer-legal">
               <small>© 2026 {theme.store_name ?? "ArvoCulture"}. Tüm hakları saklıdır.</small>
-              <small>ARVOCULTURE GROUP TEKNOLOJİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ · VKN 0861785335 · Ticaret Sicil No 1149259</small>
+              <small>ARVOCULTURE GROUP TEKNOLOJİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ</small>
             </div>
           </footer>
         </CartProvider>
