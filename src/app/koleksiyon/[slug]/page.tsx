@@ -5,6 +5,7 @@ import {
   getStorefrontProducts,
 } from "@/lib/products";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 const labels: Record<string, string> = {
   giyim: "Giyim",
@@ -29,6 +30,23 @@ const menuGroups: Record<string, string[]> = {
   parfum: ["Parfüm"],
   takviyeler: ["Takviyeler"],
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const label = labels[slug] ?? "Koleksiyon";
+
+  return {
+    title: label,
+    description: `ArvoCulture ${label} seçkisi. Güncel ürünler, fiyatlar ve stok durumu.`,
+    // Sayfalama parametresi (?sayfa=2) kanonik adresi bölmesin.
+    alternates: { canonical: `/koleksiyon/${slug}` },
+    openGraph: { url: `/koleksiyon/${slug}`, title: label },
+  };
+}
 
 export default async function Collection({
   params,

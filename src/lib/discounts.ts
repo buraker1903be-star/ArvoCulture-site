@@ -1,4 +1,5 @@
-import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabase-public";
+import { cache } from "react";
+import { rpcOrEmpty } from "@/lib/arc";
 
 export type StorefrontDiscount = {
   id: string;
@@ -11,25 +12,11 @@ export type StorefrontDiscount = {
   badge: string;
 };
 
-export async function getStorefrontDiscounts(): Promise<StorefrontDiscount[]> {
-  try {
-    const endpoint = new URL(
-      "/rest/v1/rpc/get_arvoculture_storefront_discounts",
-      SUPABASE_URL,
-    );
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: "{}",
-      next: { revalidate: 30, tags: ["storefront-discounts"] },
-    });
-    if (!response.ok) return [];
-    return (await response.json()) as StorefrontDiscount[];
-  } catch {
-    return [];
-  }
-}
+export const getStorefrontDiscounts = cache(
+  async (): Promise<StorefrontDiscount[]> =>
+    rpcOrEmpty<StorefrontDiscount>(
+      "get_arvoculture_storefront_discounts",
+      {},
+      { revalidate: 30, tags: ["storefront-discounts"] },
+    ),
+);

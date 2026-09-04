@@ -1,13 +1,39 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { AddButton } from "@/components/cart";
-import { formatPrice, getStorefrontProduct } from "@/lib/products";
+import { JsonLd } from "@/components/json-ld";
+import { getStorefrontProduct } from "@/lib/products";
+import { formatPrice } from "@/lib/product-types";
+import { breadcrumbSchema, productSchema } from "@/lib/seo";
 
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getStorefrontProduct(slug);
+  if (!product) return { title: "Ürün bulunamadı" };
+
+  const description =
+    product.subtitle || product.description.slice(0, 155) || product.name;
+
+  return {
+    title: product.name,
+    description,
+    alternates: { canonical: `/urun/${product.slug}` },
+    openGraph: {
+      type: "website",
+      title: product.name,
+      description,
+      url: `/urun/${product.slug}`,
+      ...(product.image ? { images: [{ url: product.image }] } : {}),
+    },
+    // Tükenmiş ürünü dizine ekletmiyoruz; stok gelince tekrar açılır.
+    robots: { index: product.available !== false, follow: true },
+  };
+}
+
+export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
   const product = await getStorefrontProduct(slug);
   if (!product) notFound();
@@ -83,6 +109,15 @@ export default async function ProductPage({
           </p>
         </details>
       </div>
+
+      <JsonLd data={productSchema(product)} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Ana sayfa", path: "/" },
+          { name: product.category, path: "/koleksiyon/tumu" },
+          { name: product.name, path: `/urun/${product.slug}` },
+        ])}
+      />
     </main>
   );
 }

@@ -1,9 +1,6 @@
 import "server-only";
-import {
-  ARVOCULTURE_ORGANIZATION_ID,
-  SUPABASE_PUBLISHABLE_KEY,
-  SUPABASE_URL,
-} from "@/lib/supabase-public";
+import { cache } from "react";
+import { env } from "@/lib/env";
 export type StorefrontTheme = {
   announcement: string;
   hero_eyebrow: string;
@@ -132,10 +129,14 @@ const color = (v: unknown, f: string) =>
   typeof v === "string" && /^#[0-9a-f]{6}$/i.test(v) ? v : f;
 const path = (v: unknown, f: string) =>
   typeof v === "string" && v.startsWith("/") ? v.slice(0, 240) : f;
-export async function getStorefrontTheme(): Promise<StorefrontTheme> {
-  const url = SUPABASE_URL;
-  const key = SUPABASE_PUBLISHABLE_KEY;
-  const id = ARVOCULTURE_ORGANIZATION_ID;
+/**
+ * Tema görsel yapılandırmadır. Fiyat verisinden farklı olarak burada
+ * varsayılana düşmek güvenlidir; renk hatası satış hatası değildir.
+ */
+export const getStorefrontTheme = cache(async (): Promise<StorefrontTheme> => {
+  const url = env.supabaseUrl;
+  const key = env.supabaseKey;
+  const id = env.organizationId;
   try {
     const endpoint = new URL("/rest/v1/arc_store_themes", url);
     endpoint.searchParams.set("organization_id", `eq.${id}`);
@@ -255,4 +256,4 @@ export async function getStorefrontTheme(): Promise<StorefrontTheme> {
   } catch {
     return defaultTheme;
   }
-}
+});

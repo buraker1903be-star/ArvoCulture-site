@@ -10,7 +10,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { formatPrice, type Product } from "@/lib/products";
+import { formatPrice, type Product } from "@/lib/product-types";
 import type { StorefrontDiscount } from "@/lib/discounts";
 
 type CartItem = Pick<

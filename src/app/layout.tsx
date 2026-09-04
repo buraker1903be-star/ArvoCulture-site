@@ -10,6 +10,9 @@ import { Header } from "@/components/header";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getStorefrontCollections } from "@/lib/collections";
+import { JsonLd } from "@/components/json-ld";
+import { storeSchema } from "@/lib/seo";
+import { env } from "@/lib/env";
 
 const poppins = Poppins({
   subsets: ["latin", "latin-ext"],
@@ -19,12 +22,27 @@ const poppins = Poppins({
 });
 export async function generateMetadata(): Promise<Metadata> {
   const theme = await getStorefrontTheme();
+  const name = theme.store_name ?? "ArvoCulture";
   return {
+    // metadataBase olmadan canonical ve OG adresleri göreli kalır;
+    // sosyal paylaşımlarda önizleme kırık gelir.
+    metadataBase: new URL(env.siteUrl),
     title: {
-      default: `${theme.store_name ?? "ArvoCulture"} — Seçtiğin Şey Sensin`,
-      template: `%s | ${theme.store_name ?? "ArvoCulture"}`,
+      default: `${name} — Seçtiğin Şey Sensin`,
+      template: `%s | ${name}`,
     },
     description: theme.hero_description,
+    alternates: { canonical: "/" },
+    openGraph: {
+      type: "website",
+      locale: "tr_TR",
+      siteName: name,
+      url: env.siteUrl,
+      title: `${name} — Seçtiğin Şey Sensin`,
+      description: theme.hero_description,
+    },
+    twitter: { card: "summary_large_image" },
+    robots: { index: true, follow: true },
     icons: theme.favicon_url ? { icon: theme.favicon_url } : undefined,
   };
 }
@@ -92,6 +110,7 @@ export default async function RootLayout({
               <small>ARVOCULTURE GROUP TEKNOLOJİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ</small>
             </div>
           </footer>
+          <JsonLd data={storeSchema()} />
         </CartProvider>
       </body>
     </html>

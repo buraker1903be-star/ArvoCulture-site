@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatPrice, Product } from "@/lib/products";
+import { formatPrice, type Product } from "@/lib/product-types";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 
 export function ProductCard({

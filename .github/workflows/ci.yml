@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -15,5 +15,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install --no-audit --no-fund
+      # npm install yerine npm ci: lockfile birebir uygulanir.
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
       - run: npm run build
+        env:
+          ARC_SUPABASE_URL: ${{ secrets.ARC_SUPABASE_URL }}
+          ARC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.ARC_SUPABASE_PUBLISHABLE_KEY }}
+          ARC_ORGANIZATION_ID: ${{ secrets.ARC_ORGANIZATION_ID }}
+          NEXT_PUBLIC_SITE_URL: https://arvoculture.com

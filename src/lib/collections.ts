@@ -1,4 +1,5 @@
-import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabase-public";
+import { cache } from "react";
+import { rpcOrEmpty } from "@/lib/arc";
 
 export type StorefrontCollection = {
   title: string;
@@ -8,25 +9,11 @@ export type StorefrontCollection = {
   product_count: number;
 };
 
-export async function getStorefrontCollections(): Promise<StorefrontCollection[]> {
-  try {
-    const endpoint = new URL(
-      "/rest/v1/rpc/get_arvoculture_storefront_collections",
-      SUPABASE_URL,
-    );
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: "{}",
-      next: { revalidate: 60, tags: ["storefront-collections"] },
-    });
-    if (!response.ok) return [];
-    return (await response.json()) as StorefrontCollection[];
-  } catch {
-    return [];
-  }
-}
+export const getStorefrontCollections = cache(
+  async (): Promise<StorefrontCollection[]> =>
+    rpcOrEmpty<StorefrontCollection>(
+      "get_arvoculture_storefront_collections",
+      {},
+      { revalidate: 60, tags: ["storefront-collections"] },
+    ),
+);

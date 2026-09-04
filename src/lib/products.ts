@@ -1,108 +1,11 @@
-import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabase-public";
+import { cache } from "react";
+import { rpc, rpcOrEmpty } from "@/lib/arc";
+import { env } from "@/lib/env";
+import type { Product } from "@/lib/product-types";
 
-export type Product = {
-  slug: string;
-  name: string;
-  category: string;
-  price: number;
-  oldPrice?: number;
-  eyebrow: string;
-  tone: string;
-  subtitle: string;
-  description: string;
-  tags: string[];
-  image?: string;
-  available?: boolean;
-  badge?: string;
-  badgeTone?: "green" | "navy" | "gold" | "red";
-  bestSeller?: boolean;
-  discountPercent?: number;
-};
+export { formatPrice } from "@/lib/product-types";
+export type { Product } from "@/lib/product-types";
 
-export const products: Product[] = [
-  {
-    slug: "basic-regular-fit-mint",
-    name: "Basic Regular Fit Mint Yeşili Tişört",
-    category: "Giyim",
-    price: 599.9,
-    eyebrow: "ARVOCULTURE APPAREL",
-    tone: "mint",
-    subtitle:
-      "Dengeli regular fit kalıbı ve pamuklu dokusuyla zamansız bir günlük stil.",
-    description:
-      "Penye cotton kumaşı, bisiklet yakası ve kısa kollu regular fit kalıbıyla günlük kullanıma uygun olarak tasarlandı.",
-    tags: ["Regular Fit", "Pamuk", "Erkek"],
-  },
-  {
-    slug: "basic-regular-fit-fume",
-    name: "Basic Regular Fit Füme Tişört",
-    category: "Giyim",
-    price: 599.9,
-    eyebrow: "ARVOCULTURE APPAREL",
-    tone: "graphite",
-    subtitle:
-      "Dengeli regular fit kalıbı ve pamuklu dokusuyla zamansız bir günlük stil.",
-    description:
-      "Penye cotton kumaşı, bisiklet yakası ve kısa kollu regular fit kalıbıyla günlük kullanıma uygun olarak tasarlandı.",
-    tags: ["Regular Fit", "Pamuk", "Erkek"],
-  },
-  {
-    slug: "society-vancouver",
-    name: "The Society Vancouver Oversize Tişört",
-    category: "Giyim",
-    price: 1000,
-    eyebrow: "THE SOCIETY COLLECTION",
-    tone: "ivory",
-    subtitle:
-      "Rahat oversize kalıbı ve özgün baskısıyla günlük stilin güçlü parçası.",
-    description:
-      "Şehir kültüründen ilham alan tasarımı, rahat kalıbı ve yumuşak dokusuyla modern stile eşlik eder.",
-    tags: ["Oversize", "Unisex", "Koleksiyon"],
-  },
-  {
-    slug: "l-recapin-set",
-    name: "L-Recapin Şampuan + Tonik İkilisi",
-    category: "Bakım",
-    price: 3423.63,
-    oldPrice: 4027.8,
-    eyebrow: "BEAUTY & CARE",
-    tone: "sage",
-    subtitle:
-      "Saç ve saç derisi bakım rutininizi tamamlamak için seçilmiş bakım seti.",
-    description:
-      "Şampuan ve toniği bir araya getiren iki aşamalı set, düzenli saç bakım rutininizi tamamlamak üzere sunulur.",
-    tags: ["Saç Bakımı", "Set", "Çok Satan"],
-  },
-  {
-    slug: "aloe-via-spf50",
-    name: "Aloe Via Güneş Koruyucu SPF 50",
-    category: "Bakım",
-    price: 1699.9,
-    eyebrow: "BEAUTY & CARE",
-    tone: "sun",
-    subtitle:
-      "Günlük güneş bakımını yüksek koruma faktörüyle tamamlayan bakım ürünü.",
-    description:
-      "SPF 50 koruma faktörü ve Aloe Vera içeren formülüyle günlük güneş bakım rutininize eşlik eder.",
-    tags: ["SPF 50", "Güneş Bakımı", "Aloe Vera"],
-  },
-  {
-    slug: "iconic-elixirs",
-    name: "Iconic Elixirs Eau de Parfum",
-    category: "Parfüm",
-    price: 1899.9,
-    eyebrow: "SIGNATURE SCENTS",
-    tone: "rose",
-    subtitle: "Karakterinizi tamamlayan, özgün ve kalıcı bir koku deneyimi.",
-    description:
-      "Günün ritmine eşlik eden karakterli koku profiliyle stilinize özgün bir imza kazandırır.",
-    tags: ["Parfüm", "Unisex", "Yeni"],
-  },
-];
-export const formatPrice = (n: number) =>
-  new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(
-    n,
-  );
 type StorefrontRow = {
   slug: string;
   name: string;
@@ -126,29 +29,16 @@ type ProductBadgeRow = {
 
 const badgeTones = new Set(["green", "navy", "gold", "red"]);
 
-async function getProductBadges(): Promise<Map<string, ProductBadgeRow>> {
-  try {
-    const endpoint = new URL(
-      "/rest/v1/rpc/get_arvoculture_storefront_product_badges",
-      SUPABASE_URL,
+const getProductBadges = cache(
+  async (): Promise<Map<string, ProductBadgeRow>> => {
+    const rows = await rpcOrEmpty<ProductBadgeRow>(
+      "get_arvoculture_storefront_product_badges",
+      {},
+      { revalidate: 60, tags: ["storefront-product-badges"] },
     );
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: "{}",
-      next: { revalidate: 60, tags: ["storefront-product-badges"] },
-    });
-    if (!response.ok) return new Map();
-    const rows = (await response.json()) as ProductBadgeRow[];
     return new Map(rows.map((row) => [row.slug, row]));
-  } catch {
-    return new Map();
-  }
-}
+  },
+);
 
 const plainText = (value: string | null | undefined) =>
   (value ?? "")
@@ -159,9 +49,7 @@ const plainText = (value: string | null | undefined) =>
     .trim();
 
 const inferCategory = (row: StorefrontRow) => {
-  const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase(
-    "tr-TR",
-  );
+  const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase("tr-TR");
   if (/tişört|tisort|sweat|hoodie|giyim|oversize|regular fit/.test(text))
     return "Giyim";
   if (/parfüm|parfum|eau de parfum|eau de toilette| edp| edt/.test(text))
@@ -181,6 +69,8 @@ const inferCategory = (row: StorefrontRow) => {
   return "Kişisel Bakım";
 };
 
+const TONES = ["mint", "graphite", "ivory", "sage", "sun", "rose"];
+
 const mapProduct = (row: StorefrontRow, index = 0): Product => {
   const paths = Array.isArray(row.image_paths)
     ? row.image_paths.filter((x): x is string => typeof x === "string")
@@ -195,14 +85,13 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
       ? Number(row.compare_at_price) / 100
       : undefined,
     eyebrow: row.vendor || "ARVOCULTURE",
-    tone: ["mint", "graphite", "ivory", "sage", "sun", "rose"][index % 6],
+    tone: TONES[index % TONES.length] as string,
     subtitle:
-      plainText(row.subtitle) ||
-      "ArvoCulture seçkisinden özenle seçilmiş ürün.",
+      plainText(row.subtitle) || "ArvoCulture seçkisinden özenle seçilmiş ürün.",
     description: description || plainText(row.subtitle),
     tags: row.product_type ? [row.product_type] : [],
     image: paths[0]
-      ? `${SUPABASE_URL}/storage/v1/object/public/arc-product-images/${paths[0]}`
+      ? `${env.supabaseUrl}/storage/v1/object/public/arc-product-images/${paths[0]}`
       : undefined,
     available: row.available,
   };
@@ -224,120 +113,81 @@ const applyBadge = (
       : undefined,
 });
 
-export async function getStorefrontProducts(limit = 24): Promise<Product[]> {
-  const url = SUPABASE_URL;
-  const key = SUPABASE_PUBLISHABLE_KEY;
-  try {
-    const endpoint = new URL(
-      "/rest/v1/rpc/get_arvoculture_storefront_products",
-      url,
-    );
-    const [response, badges] = await Promise.all([
-      fetch(endpoint, {
-      method: "POST",
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ p_limit: Math.min(200, Math.max(1, limit)) }),
-      next: { revalidate: 60, tags: ["storefront-products"] },
-      }),
+const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,199}$/;
+
+/**
+ * Katalog listesi. ARC ulaşılamazsa boş liste döner; sayfa "katalog
+ * geçici olarak görüntülenemiyor" durumunu gösterir. Eski fiyat gösterilmez.
+ */
+export const getStorefrontProducts = cache(
+  async (limit = 24): Promise<Product[]> => {
+    const [rows, badges] = await Promise.all([
+      rpcOrEmpty<StorefrontRow>(
+        "get_arvoculture_storefront_products",
+        { p_limit: Math.min(200, Math.max(1, limit)) },
+        { revalidate: 60, tags: ["storefront-products"] },
+      ),
       getProductBadges(),
     ]);
-    if (!response.ok) return products;
-    const rows = (await response.json()) as StorefrontRow[];
     return rows.map((row, index) =>
       applyBadge(mapProduct(row, index), badges.get(row.slug)),
     );
-  } catch {
-    return products;
-  }
-}
+  },
+);
 
-export async function getStorefrontCollectionProducts({
-  collectionSlug,
-  menuGroups,
-  limit = 200,
-}: {
-  collectionSlug?: string;
-  menuGroups?: string[];
-  limit?: number;
-}): Promise<Product[]> {
-  if (
-    collectionSlug &&
-    !/^[a-z0-9][a-z0-9-]{0,199}$/.test(collectionSlug)
-  ) {
-    return [];
-  }
+export const getStorefrontCollectionProducts = cache(
+  async ({
+    collectionSlug,
+    menuGroups,
+    limit = 200,
+  }: {
+    collectionSlug?: string;
+    menuGroups?: string[];
+    limit?: number;
+  }): Promise<Product[]> => {
+    if (collectionSlug && !SLUG_PATTERN.test(collectionSlug)) return [];
 
-  try {
-    const endpoint = new URL(
-      "/rest/v1/rpc/get_arvoculture_storefront_collection_products",
-      SUPABASE_URL,
-    );
-    const [response, badges] = await Promise.all([
-      fetch(endpoint, {
-      method: "POST",
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        p_collection_slug: collectionSlug ?? null,
-        p_menu_groups: menuGroups?.length ? menuGroups : null,
-        p_limit: Math.min(200, Math.max(1, limit)),
-      }),
-      next: {
-        revalidate: 60,
-        tags: [
-          collectionSlug
-            ? `storefront-collection-${collectionSlug}`
-            : "storefront-collection-groups",
-        ],
-      },
-      }),
-      getProductBadges(),
-    ]);
-    if (!response.ok) return [];
-    const rows = (await response.json()) as StorefrontRow[];
-    return rows.map((row, index) =>
-      applyBadge(mapProduct(row, index), badges.get(row.slug)),
-    );
-  } catch {
-    return [];
-  }
-}
-
-export async function getStorefrontProduct(
-  slug: string,
-): Promise<Product | undefined> {
-  if (!/^[a-z0-9][a-z0-9-]{0,199}$/.test(slug)) return undefined;
-  try {
-    const endpoint = new URL(
-      "/rest/v1/rpc/get_arvoculture_storefront_product",
-      SUPABASE_URL,
-    );
-    const [response, badges] = await Promise.all([
-      fetch(endpoint, {
-        method: "POST",
-        headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-          "Content-Type": "application/json",
+    const [rows, badges] = await Promise.all([
+      rpcOrEmpty<StorefrontRow>(
+        "get_arvoculture_storefront_collection_products",
+        {
+          p_collection_slug: collectionSlug ?? null,
+          p_menu_groups: menuGroups ?? null,
+          p_limit: Math.min(200, Math.max(1, limit)),
         },
-        body: JSON.stringify({ p_slug: slug }),
-        next: { revalidate: 60, tags: [`storefront-product-${slug}`] },
-      }),
+        {
+          revalidate: 60,
+          tags: [`storefront-collection-${collectionSlug ?? "all"}`],
+        },
+      ),
       getProductBadges(),
     ]);
-    if (!response.ok) return undefined;
-    const rows = (await response.json()) as StorefrontRow[];
-    return rows[0]
-      ? applyBadge(mapProduct(rows[0]), badges.get(rows[0].slug))
-      : undefined;
-  } catch {
-    return undefined;
-  }
-}
+    return rows.map((row, index) =>
+      applyBadge(mapProduct(row, index), badges.get(row.slug)),
+    );
+  },
+);
+
+/**
+ * Tek ürün. Burada hata bilinçli olarak yutulmuyor: ARC erişilemezse
+ * istisna fırlar ve hata sınırı devreye girer. Aksi hâlde geçici bir
+ * kesinti sırasında Google'a "bu ürün yok" (404) sinyali gider ve ürün
+ * dizinden düşer.
+ */
+export const getStorefrontProduct = cache(
+  async (slug: string): Promise<Product | undefined> => {
+    if (!SLUG_PATTERN.test(slug)) return undefined;
+
+    const [rows, badges] = await Promise.all([
+      rpc<StorefrontRow>(
+        "get_arvoculture_storefront_product",
+        { p_slug: slug },
+        { revalidate: 60, tags: [`storefront-product-${slug}`] },
+      ),
+      getProductBadges(),
+    ]);
+
+    const row = rows[0];
+    return row ? applyBadge(mapProduct(row), badges.get(row.slug)) : undefined;
+  },
+);
