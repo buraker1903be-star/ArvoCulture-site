@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { formatPrice } from "@/lib/product-types";
+import { formatPrice, type Product } from "@/lib/product-types";
 import { ProductCard } from "@/components/product-card";
 import { ProductRail } from "@/components/product-rail";
 import { AssuranceBar } from "@/components/assurance-bar";
@@ -14,411 +14,334 @@ import {
   type StorefrontTheme,
 } from "@/lib/storefront-theme";
 
+/**
+ * Ana sayfa bir satın alma hunisi olarak sıralanmıştır:
+ *
+ *   1. Hero            — ne satıyoruz, tek net eylem
+ *   2. Güven şeridi    — "bu siteye güvenebilir miyim"
+ *   3. Kupon           — ilk alışveriş engelini düşür
+ *   4. Çok satanlar    — sosyal kanıt, doğrudan ürüne geçiş
+ *   5. Kategoriler     — niyeti belli ziyaretçiye kısayol
+ *   6. İndirimdekiler  — aciliyet
+ *   7. ARC bölümleri   — panelden yönetilen öne çıkanlar/kampanya/değerler
+ *   8. Dünyalar        — marka anlatısı
+ *   9. Yardım şeridi   — ayrılmadan önce kalan soruları kapat
+ *
+ * `data-arvo-section` ve `data-arvo-field` nitelikleri ARC panelinin
+ * canlı düzenleme modunun bağlantı noktalarıdır. Kaldırılırsa paneldeki
+ * tema editörü o bölümü seçemez — dokunmayın.
+ */
+
+const CATEGORIES = [
+  { label: "Giyim", note: "Zamansız kesimler", href: "/koleksiyon/giyim" },
+  {
+    label: "Kişisel Bakım",
+    note: "Günlük ritüeller",
+    href: "/koleksiyon/bakim",
+  },
+  {
+    label: "Kozmetik",
+    note: "İfade dokunuşları",
+    href: "/koleksiyon/kozmetik",
+  },
+  { label: "Parfüm", note: "Görünmeyen imzan", href: "/koleksiyon/parfum" },
+  {
+    label: "Takviyeler",
+    note: "Günlük destek",
+    href: "/koleksiyon/takviyeler",
+  },
+];
+
+const HELP_LINKS = [
+  { label: "Kargo ne zaman çıkar?", href: "/teslimat" },
+  { label: "İade nasıl yapılır?", href: "/iptal-iade" },
+  { label: "Sık sorulan sorular", href: "/sss" },
+  { label: "Bize ulaşın", href: "/iletisim" },
+];
+
+function discountOf(product: Product) {
+  if (product.discountPercent) return product.discountPercent;
+  if (product.oldPrice && product.oldPrice > product.price) {
+    return Math.round((1 - product.price / product.oldPrice) * 100);
+  }
+  return 0;
+}
+
 export default async function Home() {
   const [theme, products, discounts] = await Promise.all([
     getStorefrontTheme(),
     getStorefrontProducts(120),
     getStorefrontDiscounts(),
   ]);
-  const coupon = discounts.find((discount) => discount.code);
-  const automaticOffer = discounts.find((discount) => !discount.code);
-  const scent = products.find((product) => product.category === "Parfüm");
-  const beautySelection = products
-    .filter((product) => product.category === "Kişisel Bakım")
-    .slice(0, 3);
-  const apparelSelection = products
-    .filter((product) => product.category === "Giyim")
-    .slice(0, 3);
 
-  // Satış odaklı seçimler. Ana sayfada eskiden yalnızca 4 ürün
-  // görünüyordu; katalogda 200'den fazla ürün var.
+  const coupon = discounts.find((discount) => discount.code);
+
+  // Tükenmiş ürünü ana sayfada öne çıkarmak, ziyaretçiyi satın
+  // alamayacağı bir sayfaya götürür. Baştan eliyoruz.
   const inStock = products.filter((product) => product.available !== false);
 
-  const bestSellers = inStock
-    .filter((product) => product.bestSeller)
-    .slice(0, 8);
+  const flagged = inStock.filter((product) => product.bestSeller);
+  const bestSellers = (flagged.length >= 4 ? flagged : inStock).slice(0, 8);
 
   const discounted = inStock
-    .filter(
-      (product) =>
-        (product.discountPercent ?? 0) > 0 ||
-        (product.oldPrice != null && product.oldPrice > product.price),
-    )
-    .sort(
-      (a, b) =>
-        (b.discountPercent ??
-          (b.oldPrice ? Math.round((1 - b.price / b.oldPrice) * 100) : 0)) -
-        (a.discountPercent ??
-          (a.oldPrice ? Math.round((1 - a.price / a.oldPrice) * 100) : 0)),
-    )
+    .filter((product) => discountOf(product) > 0)
+    .sort((a, b) => discountOf(b) - discountOf(a))
     .slice(0, 8);
 
-  // Çok satan işaretlenmemişse katalog başındaki stoktaki ürünlerle doldur;
-  // boş bir bölüm göstermektense gerçek ürün göstermek daha iyi.
-  const highlightRail = bestSellers.length >= 4 ? bestSellers : inStock.slice(0, 8);
-  const categoryTiles = [
-    {
-      label: "Giyim",
-      note: "Tarzını yansıtan parçalar",
-      href: "/koleksiyon/giyim",
-    },
-    {
-      label: "Kişisel Bakım",
-      note: "Günlük bakım ritüelleri",
-      href: "/koleksiyon/bakim",
-    },
-    {
-      label: "Kozmetik",
-      note: "Kendini ifade eden dokunuşlar",
-      href: "/koleksiyon/kozmetik",
-    },
-    { label: "Parfüm", note: "Görünmeyen imzan", href: "/koleksiyon/parfum" },
-    {
-      label: "Takviyeler",
-      note: "Günlük yaşam desteği",
-      href: "/koleksiyon/takviyeler",
-    },
-  ].map((tile) => ({
-    ...tile,
-    product: products.find((product) => product.category === tile.label),
+  const featured = inStock.slice(0, Math.max(theme.products_per_row, 4));
+
+  const categories = CATEGORIES.map((category) => ({
+    ...category,
+    product: inStock.find((product) => product.category === category.label),
   }));
-  const sections: Array<{ order: number; node: ReactNode } | false> = [
+
+  const apparel = inStock
+    .filter((product) => product.category === "Giyim")
+    .slice(0, 3);
+  const beauty = inStock
+    .filter((product) => product.category === "Kişisel Bakım")
+    .slice(0, 3);
+
+  /* Sırası ve görünürlüğü ARC panelinden yönetilen bölümler. */
+  const managed: Array<{ order: number; node: ReactNode } | false> = [
     theme.show_featured && {
       order: theme.order_featured,
       node: (
         <section
-          data-arvo-section="featured"
-          className="featured"
           key="featured"
+          data-arvo-section="featured"
+          className="rail"
+          aria-labelledby="featured-title"
         >
           <div className="section-head">
             <div>
               <p data-arvo-field="featured_eyebrow" className="eyebrow">
                 {theme.featured_eyebrow}
               </p>
-              <h2 data-arvo-field="featured_title">{theme.featured_title}</h2>
+              <h2 data-arvo-field="featured_title" id="featured-title">
+                {theme.featured_title}
+              </h2>
             </div>
-            <Link href="/koleksiyon/tumu">Tüm ürünler →</Link>
+            <Link href="/koleksiyon/tumu">Tüm ürünler</Link>
           </div>
-          <div className="product-grid">
-            {products
-              .slice(0, Math.max(theme.products_per_row, 4))
-              .map((product, index) => (
-                <ProductCard
-                  key={product.slug}
-                  product={product}
-                  index={index}
-                  theme={theme}
-                />
-              ))}
+          <div className="rail-track">
+            {featured.map((product, index) => (
+              <ProductCard
+                key={product.slug}
+                product={product}
+                index={index}
+                theme={theme}
+              />
+            ))}
           </div>
         </section>
       ),
     },
+
     theme.show_campaign && {
       order: theme.order_campaign,
       node: (
         <section
-          data-arvo-section="campaign"
-          className="campaign"
           key="campaign"
-          style={
-            theme.campaign_image_url
-              ? {
-                  backgroundImage: `linear-gradient(90deg,rgba(17,18,16,.94),rgba(17,18,16,.45)),url(${theme.campaign_image_url})`,
-                }
-              : undefined
-          }
+          data-arvo-section="campaign"
+          className="campaign-band"
         >
-          <span>%10</span>
-          <div>
-            <p className="eyebrow">ARVOCULTURE’A HOŞ GELDİN</p>
-            <h2 data-arvo-field="campaign_title">
-              {coupon?.badge ?? theme.campaign_title}
-            </h2>
+          {theme.campaign_image_url ? (
+            <Image
+              unoptimized
+              src={theme.campaign_image_url}
+              alt=""
+              fill
+              sizes="100vw"
+            />
+          ) : null}
+          <div className="campaign-copy">
+            <h2 data-arvo-field="campaign_title">{theme.campaign_title}</h2>
             <p data-arvo-field="campaign_description">
-              {coupon
-                ? `${coupon.code} kodunu kullan; ${coupon.name.toLocaleLowerCase("tr-TR")} avantajından yararlan.`
-                : theme.campaign_description}
+              {theme.campaign_description}
             </p>
-            {coupon?.code && (
-              <strong className="campaign-code">{coupon.code}</strong>
-            )}
+            <Link className="button button-light" href="/koleksiyon/tumu">
+              Alışverişe başla
+            </Link>
           </div>
-          <Link className="button button-light" href="/koleksiyon/tumu">
-            Alışverişe başla
-          </Link>
         </section>
       ),
     },
+
     theme.show_values && {
       order: theme.order_values,
       node: (
-        <section data-arvo-section="values" className="values" key="values">
+        <section
+          key="values"
+          data-arvo-section="values"
+          className="values"
+          aria-label="Çalışma ilkelerimiz"
+        >
           {[
             theme.trust_one,
             theme.trust_two,
             theme.trust_three,
             theme.trust_four,
-          ].map((value, index) => (
-            <div key={`${value}-${index}`}>
-              <span>0{index + 1}</span>
-              <h3>{value}</h3>
-            </div>
-          ))}
+          ]
+            .filter(Boolean)
+            .map((value) => (
+              <div key={value}>
+                <h3>{value}</h3>
+              </div>
+            ))}
         </section>
       ),
     },
   ];
+
+  const managedSections = managed
+    .filter((section): section is { order: number; node: ReactNode } =>
+      Boolean(section),
+    )
+    .sort((a, b) => a.order - b.order)
+    .map((section) => section.node);
+
   return (
     <main>
       <ThemePreviewBridge />
+
       <Hero theme={theme} />
 
-      {/*
-        Güven şeridi hero'nun hemen altında. Ziyaretçinin ilk sorusu
-        "bu siteye güvenebilir miyim"; bu soruya kaydırmadan cevap
-        verilmesi terk oranını düşürür.
-      */}
       <AssuranceBar />
 
-      {/* Kupon, kaydırmadan görünür ve tek tıkla kopyalanır. */}
       {coupon?.code && (
         <CouponStrip
           code={coupon.code}
-          headline={`İlk alışverişinde ${
+          headline={
             coupon.discount_type === "percentage"
-              ? `%${coupon.value}`
-              : formatPrice(coupon.value / 100)
-          } indirim`}
+              ? `İlk alışverişinde %${coupon.value} indirim`
+              : `İlk alışverişinde ${formatPrice(coupon.value / 100)} indirim`
+          }
           note="Kodu sepette uygula"
         />
       )}
 
-      {/*
-        Ürün rayları. Ana sayfada eskiden yalnızca 4 ürün vardı;
-        ziyaretçinin ürün görmeden kategoriye tıklaması gerekiyordu.
-        Çok satanlar sosyal kanıt, indirimliler aciliyet üretir.
-      */}
       <ProductRail
         eyebrow="EN ÇOK TERCİH EDİLENLER"
         title="Çok satanlar"
-        note="Müşterilerimizin en sık seçtiği ürünler"
+        note="Müşterilerimizin en sık seçtiği ürünler."
         href="/koleksiyon/cok-satan-cilt-bakim-urunleri"
         hrefLabel="Tümünü gör"
-        products={highlightRail}
+        products={bestSellers}
         theme={theme}
       />
+
+      <section className="category-grid" aria-labelledby="kategoriler">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">NEREDEN BAŞLAMAK İSTERSİN</p>
+            <h2 id="kategoriler">Kategoriler</h2>
+          </div>
+          <Link href="/koleksiyon/tumu">Tüm katalog</Link>
+        </div>
+        <div className="category-track">
+          {categories.map((category) => (
+            <Link
+              key={category.label}
+              href={category.href}
+              className="category-tile"
+            >
+              <span className="category-art">
+                {category.product?.image && (
+                  <Image
+                    src={category.product.image}
+                    alt=""
+                    fill
+                    sizes="(max-width: 900px) 45vw, 19vw"
+                  />
+                )}
+              </span>
+              <strong>{category.label}</strong>
+              <small>{category.note}</small>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <ProductRail
         eyebrow="FIRSATLAR"
         title="İndirimdeki ürünler"
-        note="Sınırlı stokla sunulan güncel indirimler"
+        note="Sınırlı stokla sunulan güncel indirimler."
         href="/koleksiyon/firsatlar"
         hrefLabel="Tüm fırsatlar"
         products={discounted}
         theme={theme}
       />
 
-      <div className="culture-ticker" aria-label="ArvoCulture özellikleri">
-        <div>
-          <span>YENİ NESİL YAŞAM KÜLTÜRÜ</span>
-          <i>✦</i>
-          <span>PREMIUM GİYİM</span>
-          <i>✦</i>
-          <span>SEÇİLMİŞ BAKIM</span>
-          <i>✦</i>
-          <span>KARAKTERİNE ÖZEL KOKULAR</span>
-          <i>✦</i>
-          {automaticOffer && (
-            <>
-              <span>{automaticOffer.badge}</span>
-              <i>✦</i>
-            </>
-          )}
-          <span>YENİ NESİL YAŞAM KÜLTÜRÜ</span>
-          <i>✦</i>
-        </div>
-      </div>
-      <section className="apparel-focus" aria-label="ArvoCulture giyim dünyası">
-        <div className="apparel-focus-copy">
-          <p className="eyebrow">KENDİNİ GİY</p>
-          <h2>Tarz bir kalıp değil.<br /><em>Kendini anlatma biçimin.</em></h2>
-          <p>Zamansız kesimler, özgün grafikler ve günün ritmine eşlik eden rahat parçalar. Kendine ait görünümü ArvoCulture koleksiyonlarıyla oluştur.</p>
-          <div className="apparel-focus-actions">
-            <Link href="/koleksiyon/giyim" className="button button-dark">Giyim dünyasını keşfet <span>↗</span></Link>
-            <Link href="/koleksiyon/oversize-tisortler">Oversize seçkisi</Link>
-          </div>
-          {apparelSelection.length > 0 && (
-            <div className="focus-mini-products">
-              {apparelSelection.map((product) => (
-                <Link href={`/urun/${product.slug}`} key={product.slug}>
-                  <span className="focus-mini-image">
-                    {product.image && <Image src={product.image} alt={product.name} fill sizes="110px" />}
-                  </span>
-                  <small>{product.name}</small>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-        <Link href="/koleksiyon/giyim" className="apparel-focus-media">
-          {theme.hero_image_url ? (
-            <Image unoptimized src={theme.hero_image_url} alt="ArvoCulture giyim koleksiyonu" fill sizes="(max-width: 850px) 100vw, 58vw" />
-          ) : apparelSelection[0]?.image ? (
-            <Image src={apparelSelection[0].image} alt="ArvoCulture giyim koleksiyonu" fill sizes="(max-width: 850px) 100vw, 58vw" />
-          ) : null}
-          <span>APPAREL · 01</span>
-          <div className="apparel-focus-caption">
-            <small>ARVOCULTURE APPAREL</small>
-            <b>Giydiğin şey,<br />senin hikâyen.</b>
-          </div>
-        </Link>
+      {managedSections}
+
+      <section className="worlds" aria-label="ArvoCulture dünyaları">
+        <World
+          href="/koleksiyon/giyim"
+          eyebrow="ARVOCULTURE APPAREL"
+          title="Giydiğin şey, senin hikâyen."
+          note="Zamansız kesimler ve özgün grafikler."
+          products={apparel}
+          tone="apparel"
+        />
+        <World
+          href="/koleksiyon/bakim"
+          eyebrow="BEAUTY & CARE"
+          title="Bakım, kendine ayırdığın zaman."
+          note="Günlük ritüelini tamamlayan seçilmiş ürünler."
+          products={beauty}
+          tone="beauty"
+        />
       </section>
-      <section className="beauty-focus" aria-label="Kişisel bakım ritüeli">
-        <Link href="/koleksiyon/bakim" className="beauty-focus-media">
-          {/*
-            Eskiden burada Shopify'dan kalma bir CDN adresi vardı
-            (arvoculture.com/cdn/shop/...). O yol artık mevcut değil ve
-            görsel kırık geliyordu. Artık bakım seçkisinin ilk ürünü
-            kullanılıyor; katalog değiştikçe kendini günceller.
-          */}
-          {theme.campaign_image_url ? (
-            <Image
-              unoptimized
-              src={theme.campaign_image_url}
-              alt="ArvoCulture kişisel bakım dünyası"
-              fill
-              sizes="(max-width: 850px) 100vw, 58vw"
-            />
-          ) : beautySelection[0]?.image ? (
-            <Image
-              src={beautySelection[0].image}
-              alt="ArvoCulture kişisel bakım dünyası"
-              fill
-              sizes="(max-width: 850px) 100vw, 58vw"
-            />
-          ) : null}
-          <span>BEAUTY &amp; CARE · 01</span>
-        </Link>
-        <div className="beauty-focus-copy">
-          <p className="eyebrow">KENDİNE İYİ BAK</p>
-          <h2>Bakım bir rutin değil.<br /><em>Kendine ayırdığın zaman.</em></h2>
-          <p>Günlük ritüelini daha iyi hissettiren, cildine ve yaşam tarzına özenle eşlik eden seçilmiş bakım ürünleri.</p>
-          <Link href="/koleksiyon/bakim" className="button button-dark">Bakım dünyasını keşfet <span>↗</span></Link>
-          {beautySelection.length > 0 && (
-            <div className="focus-mini-products beauty-mini-products">
-              {beautySelection.map((product) => (
-                <Link href={`/urun/${product.slug}`} key={product.slug}>
-                  <span className="focus-mini-image beauty-mini-image">
-                    {product.image && <Image unoptimized src={product.image} alt={product.name} fill sizes="110px" />}
-                  </span>
-                  <small>{product.name}</small>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-      {sections
-        .filter((section): section is { order: number; node: ReactNode } =>
-          Boolean(section),
-        )
-        .sort((a, b) => a.order - b.order)
-        .map((section) => section.node)}
-      <section className="category-showcase">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">TÜM ARVOCULTURE DÜNYASI</p>
-            <h2>Ritmini seç.</h2>
-          </div>
-          <p>Stilden bakıma, her gününe eşlik eden seçilmiş koleksiyonlar.</p>
-        </div>
-        <div className="category-rail">
-          {categoryTiles.map((tile, index) => (
-            <Link href={tile.href} className="category-tile" key={tile.href}>
-              <span>0{index + 1}</span>
-              <div className="category-image">
-                {tile.product?.image ? (
-                  <Image
-                    src={tile.product.image}
-                    alt={tile.product.name}
-                    fill
-                    sizes="(max-width:700px) 76vw, 25vw"
-                  />
-                ) : (
-                  <b>AC</b>
-                )}
-              </div>
-              <h3>{tile.label}</h3>
-              <p>{tile.note}</p>
-              <b>Keşfet ↗</b>
-            </Link>
+
+      <section className="help-strip" aria-label="Yardım">
+        <p>Aklında bir soru mu var?</p>
+        <ul>
+          {HELP_LINKS.map((link) => (
+            <li key={link.href}>
+              <Link href={link.href}>{link.label}</Link>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
-      <section className="intent-selector" aria-labelledby="intent-title">
-        <div className="intent-selector-head">
-          <p className="eyebrow">ARVOCULTURE CONCIERGE</p>
-          <h2 id="intent-title">Bugün neye<br /><em>ihtiyacın var?</em></h2>
-          <p>Aradığın dünyayı seç; sana uygun koleksiyona doğrudan ulaş.</p>
-        </div>
-        <div className="intent-options">
-          {[
-            { index: "01", title: "Tarzımı yenile", note: "Giyim seçkisi", href: "/koleksiyon/giyim" },
-            { index: "02", title: "Kendime iyi bak", note: "Bakım ritüelleri", href: "/koleksiyon/bakim" },
-            { index: "03", title: "İmzamı bul", note: "Parfüm dünyası", href: "/koleksiyon/parfum" },
-            { index: "04", title: "Ritmime destek ol", note: "Günlük takviyeler", href: "/koleksiyon/takviyeler" },
-          ].map((option) => (
-            <Link href={option.href} key={option.href}>
-              <small>{option.index}</small>
-              <b>{option.title}</b>
-              <span>{option.note} <i>↗</i></span>
-            </Link>
-          ))}
-        </div>
-      </section>
-      {scent?.image && (
-        <Link href="/koleksiyon/parfum" className="editorial-strip">
-          <Image src={scent.image} alt="Parfüm seçkisi" fill sizes="100vw" />
-          <div>
-            <p className="eyebrow">SIGNATURE SCENTS</p>
-            <h2>Kokun, görünmeyen imzan.</h2>
-            <span>Parfüm seçkisini keşfet →</span>
-          </div>
-        </Link>
-      )}
     </main>
   );
 }
+
+/* ---------- Alt bileşenler ---------- */
 
 function Hero({ theme }: { theme: StorefrontTheme }) {
   const style = theme.hero_image_url
     ? ({ backgroundImage: `url(${theme.hero_image_url})` } as CSSProperties)
     : undefined;
+
   return (
     <section data-arvo-section="hero" className="hero signature-hero">
       <div className="hero-copy">
         <p data-arvo-field="hero_eyebrow" className="eyebrow">
           {theme.hero_eyebrow}
         </p>
-        <h1>
-          <span data-arvo-field="hero_title">{theme.hero_title}</span>
-          <br />
+        <h1 data-arvo-field="hero_title">
+          {theme.hero_title}{" "}
           <em data-arvo-field="hero_emphasis">{theme.hero_emphasis}</em>
         </h1>
         <p data-arvo-field="hero_description">{theme.hero_description}</p>
         <div className="hero-actions">
+          {/*
+            Tek baskın eylem. Eşit ağırlıkta iki buton ziyaretçiyi karar
+            vermek zorunda bırakıp ikisine de tıklamamasına yol açıyordu;
+            ikincisi artık sessiz bir bağlantı.
+          */}
           <Link
             data-arvo-field="primary_cta_label"
             className="button button-light"
             href={theme.primary_cta_href}
           >
-            {theme.primary_cta_label} <span>↗</span>
+            {theme.primary_cta_label}
           </Link>
           <Link
             data-arvo-field="secondary_cta_label"
-            className="button button-glass"
+            className="hero-secondary"
             href={theme.secondary_cta_href}
           >
             {theme.secondary_cta_label}
@@ -431,8 +354,51 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
       >
         {!theme.hero_image_url && <div className="hero-monogram">AC</div>}
       </div>
-      <span className="hero-index">01 / 05</span>
-      <span className="hero-scroll">KEŞFETMEK İÇİN KAYDIR ↓</span>
     </section>
+  );
+}
+
+function World({
+  href,
+  eyebrow,
+  title,
+  note,
+  products,
+  tone,
+}: {
+  href: string;
+  eyebrow: string;
+  title: string;
+  note: string;
+  products: Product[];
+  tone: "apparel" | "beauty";
+}) {
+  return (
+    <div className={`world ${tone}`}>
+      <div className="world-copy">
+        <span>{eyebrow}</span>
+        <h2>{title}</h2>
+        <p>{note}</p>
+        <Link href={href} className="world-link">
+          Keşfet
+        </Link>
+      </div>
+      <div className="world-thumbs">
+        {products.map((product) => (
+          <Link
+            key={product.slug}
+            href={`/urun/${product.slug}`}
+            className="world-thumb"
+          >
+            <span>
+              {product.image && (
+                <Image src={product.image} alt="" fill sizes="120px" />
+              )}
+            </span>
+            <small>{product.name}</small>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
