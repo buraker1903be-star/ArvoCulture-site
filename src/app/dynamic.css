@@ -1553,3 +1553,31 @@ footer {
     transition: none;
   }
 }
+
+/* ==========================================================
+   TİPOGRAFİ KİLİDİ
+   Bu blok en son yüklenen stil dosyasının sonundadır ve
+   bilinçli olarak !important kullanır.
+
+   Neden: kod tabanında font ailesi 13 ayrı yerde `font:`
+   kısayoluyla yeniden tanımlanıyor (11'i var(--serif)
+   üzerinden). Kısayol, font-family'yi de sıfırladığı için
+   tek bir değişkenin bozulması ya da yeni bir kural eklenmesi
+   sitenin bir bölümünü sessizce başka bir yazı tipine
+   düşürüyordu. Burada aile tek noktadan sabitleniyor;
+   boyut, ağırlık ve satır yüksekliği kurallara bırakılıyor.
+   ========================================================== */
+
+*,
+*::before,
+*::after {
+  font-family: var(--font-poppins), system-ui, -apple-system, sans-serif !important;
+}
+
+/* Kod blokları varsa okunabilirlik için eşaralıklı kalsın. */
+code,
+kbd,
+pre,
+samp {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace !important;
+}
