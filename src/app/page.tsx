@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
+import { formatPrice } from "@/lib/product-types";
 import { ProductCard } from "@/components/product-card";
+import { ProductRail } from "@/components/product-rail";
+import { AssuranceBar } from "@/components/assurance-bar";
+import { CouponStrip } from "@/components/coupon-strip";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
 import { getStorefrontProducts } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
@@ -25,6 +29,33 @@ export default async function Home() {
   const apparelSelection = products
     .filter((product) => product.category === "Giyim")
     .slice(0, 3);
+
+  // Satış odaklı seçimler. Ana sayfada eskiden yalnızca 4 ürün
+  // görünüyordu; katalogda 200'den fazla ürün var.
+  const inStock = products.filter((product) => product.available !== false);
+
+  const bestSellers = inStock
+    .filter((product) => product.bestSeller)
+    .slice(0, 8);
+
+  const discounted = inStock
+    .filter(
+      (product) =>
+        (product.discountPercent ?? 0) > 0 ||
+        (product.oldPrice != null && product.oldPrice > product.price),
+    )
+    .sort(
+      (a, b) =>
+        (b.discountPercent ??
+          (b.oldPrice ? Math.round((1 - b.price / b.oldPrice) * 100) : 0)) -
+        (a.discountPercent ??
+          (a.oldPrice ? Math.round((1 - a.price / a.oldPrice) * 100) : 0)),
+    )
+    .slice(0, 8);
+
+  // Çok satan işaretlenmemişse katalog başındaki stoktaki ürünlerle doldur;
+  // boş bir bölüm göstermektense gerçek ürün göstermek daha iyi.
+  const highlightRail = bestSellers.length >= 4 ? bestSellers : inStock.slice(0, 8);
   const categoryTiles = [
     {
       label: "Giyim",
@@ -143,6 +174,52 @@ export default async function Home() {
     <main>
       <ThemePreviewBridge />
       <Hero theme={theme} />
+
+      {/*
+        Güven şeridi hero'nun hemen altında. Ziyaretçinin ilk sorusu
+        "bu siteye güvenebilir miyim"; bu soruya kaydırmadan cevap
+        verilmesi terk oranını düşürür.
+      */}
+      <AssuranceBar />
+
+      {/* Kupon, kaydırmadan görünür ve tek tıkla kopyalanır. */}
+      {coupon?.code && (
+        <CouponStrip
+          code={coupon.code}
+          headline={`İlk alışverişinde ${
+            coupon.discount_type === "percentage"
+              ? `%${coupon.value}`
+              : formatPrice(coupon.value / 100)
+          } indirim`}
+          note="Kodu sepette uygula"
+        />
+      )}
+
+      {/*
+        Ürün rayları. Ana sayfada eskiden yalnızca 4 ürün vardı;
+        ziyaretçinin ürün görmeden kategoriye tıklaması gerekiyordu.
+        Çok satanlar sosyal kanıt, indirimliler aciliyet üretir.
+      */}
+      <ProductRail
+        eyebrow="EN ÇOK TERCİH EDİLENLER"
+        title="Çok satanlar"
+        note="Müşterilerimizin en sık seçtiği ürünler"
+        href="/koleksiyon/cok-satan-cilt-bakim-urunleri"
+        hrefLabel="Tümünü gör"
+        products={highlightRail}
+        theme={theme}
+      />
+
+      <ProductRail
+        eyebrow="FIRSATLAR"
+        title="İndirimdeki ürünler"
+        note="Sınırlı stokla sunulan güncel indirimler"
+        href="/koleksiyon/firsatlar"
+        hrefLabel="Tüm fırsatlar"
+        products={discounted}
+        theme={theme}
+      />
+
       <div className="culture-ticker" aria-label="ArvoCulture özellikleri">
         <div>
           <span>YENİ NESİL YAŞAM KÜLTÜRÜ</span>

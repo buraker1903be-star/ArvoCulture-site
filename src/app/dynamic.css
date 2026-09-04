@@ -1555,6 +1555,169 @@ footer {
 }
 
 /* ==========================================================
+   Satış odaklı ana sayfa katmanı
+   ========================================================== */
+
+/* ---------- Güven şeridi ---------- */
+
+.assurance-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+
+.assurance-item {
+  display: grid;
+  gap: 4px;
+  padding: 22px 4vw;
+  border-right: 1px solid var(--line);
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+
+.assurance-item:last-child {
+  border-right: 0;
+}
+
+.assurance-item:hover {
+  background: var(--paper);
+}
+
+.assurance-item strong {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.assurance-item small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .assurance-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .assurance-item:nth-child(2n) {
+    border-right: 0;
+  }
+  .assurance-item:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+/* ---------- Kupon şeridi ---------- */
+
+.coupon-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 4vw;
+  background: var(--ink);
+  color: #fff;
+}
+
+.coupon-strip strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.coupon-strip small {
+  font-size: 12px;
+  color: #b8b9b5;
+}
+
+.coupon-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 16px;
+  background: transparent;
+  border: 1px dashed var(--acid);
+  color: var(--acid);
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.coupon-code span {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.coupon-code em {
+  font-style: normal;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.coupon-code:hover {
+  background: var(--acid);
+  color: var(--ink);
+}
+
+/* ---------- Ürün rayı ---------- */
+
+.rail {
+  padding: 70px 4vw;
+  border-top: 1px solid var(--line);
+}
+
+.rail-note {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 46ch;
+}
+
+/*
+  Masaüstünde ızgara, mobilde yatay kaydırma. Mobilde ürünleri alt
+  alta yığmak sayfayı uzatıp diğer bölümleri görünmez kılıyor;
+  kaydırılabilir ray daha çok ürünün görülmesini sağlıyor.
+*/
+.rail-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .rail {
+    padding: 55px 0 55px 5vw;
+  }
+  .rail .section-head {
+    padding-right: 5vw;
+  }
+  .rail-track {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-right: 5vw;
+    scrollbar-width: none;
+  }
+  .rail-track::-webkit-scrollbar {
+    display: none;
+  }
+  .rail-track > * {
+    flex: 0 0 62vw;
+    scroll-snap-align: start;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .rail-track {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ==========================================================
    TİPOGRAFİ KİLİDİ
    Bu blok en son yüklenen stil dosyasının sonundadır ve
    bilinçli olarak !important kullanır.

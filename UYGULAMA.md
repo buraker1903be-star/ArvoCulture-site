@@ -1,42 +1,44 @@
-# Uygulama
+# Ana sayfa — satış düzenlemesi
 
 Zip'i `C:\ArvoCulture-site` içine açın, üzerine yazın. Sonra:
 
 ```powershell
 cd C:\ArvoCulture-site
-
-# Ölü dosya: içinde hardcoded Supabase anahtarı var, hiçbir yerden
-# kullanılmıyor. Zip üzerine yazma bunu silmez.
 git rm src/lib/supabase-public.ts
-
 git add -A
-git status
-git commit -m "Tipografi, urun sayfasi ve kirik gorsel duzeltmeleri"
+git commit -m "Satis odakli ana sayfa, global Poppins, urun sayfasi iyilestirmeleri"
 git push
 ```
 
-## Bu pakette ne var
+## Ana sayfada ne değişti
 
-**Tipografi**
-- Butonlar, input, select ve textarea artık Poppins kullanıyor. Tarayıcılar
-  form elemanlarına font'u kalıtım yoluyla geçirmez; bunlar işletim
-  sisteminin arayüz fontuyla render ediliyordu.
-- ARC panelindeki "modern" ve "minimal" tema seçenekleri başlık fontunu
-  Arial'a çeviriyordu. Artık yalnızca ağırlığı değiştiriyorlar.
-- Fiyatlar ve tutarlar tabular rakam kullanıyor, sütunlarda kaymıyor.
-- `adjustFontFallback` eklendi: Poppins yüklenirken sayfa zıplamıyor.
+Yeni sıralama: Hero → Güven şeridi → Kupon → Çok satanlar → İndirimdekiler
+→ (mevcut bölümler)
 
-**Ürün sayfası**
-- Çalışan beden seçimi. Eskiden butonlar durum tutmuyordu ve seçim sepete
-  taşınmıyordu — müşteri beden seçtiğini sanıp bedensiz sipariş verebilirdi.
-- Görsel galerisi. ARC her üründe birden çok görsel tutuyor ama yalnızca
-  ilki gösteriliyordu.
-- Görünür ekmek kırıntısı ve stok durumu satırı.
+**Güven şeridi.** Hero'nun hemen altında, kaydırmadan görünür. Dört madde:
+ücretsiz kargo eşiği, iade süresi, güvenli ödeme, orijinallik. Hepsi
+tıklanabilir ve iddianın arkasındaki sayfaya gidiyor.
 
-**Düzeltmeler**
-- Anasayfadaki Shopify'dan kalma kırık görsel (`arvoculture.com/cdn/shop/...`)
-- `supabase-public.ts` ölü dosyası
+**Kupon şeridi.** Kod tek tıkla panoya kopyalanıyor. Eskiden müşteri kodu
+elle yazmak zorundaydı; her elle yazım bir terk noktası.
 
-## Vercel
+**Çok satanlar rayı.** 8 ürün. ARC'ta "çok satan" işaretli ürünler
+kullanılıyor; yeterli işaretli ürün yoksa stoktaki ilk ürünlerle doluyor.
 
-Ortam değişkenleri zaten tanımlı, ek ayar gerekmiyor.
+**İndirimdekiler rayı.** 8 ürün, indirim oranına göre sıralı. Yalnızca
+stokta olanlar.
+
+Her iki ray da mobilde yatay kaydırılabilir. Alt alta yığmak sayfayı
+uzatıp diğer bölümleri görünmez kılıyordu.
+
+Önceden ana sayfada **toplam 4 ürün** görünüyordu; katalogda 200'den
+fazla ürün var. Artık 16 ürün ana sayfadan doğrudan erişilebilir.
+
+## Doldurulması gerekenler
+
+- ARC panelinde ürünleri "çok satan" olarak işaretleyin; şu an
+  işaretli ürün yoksa ray katalog sırasıyla doluyor.
+- `/koleksiyon/firsatlar` koleksiyonunun dolu olduğundan emin olun.
+- `src/components/assurance-bar.tsx` içindeki kargo eşiği ve iade
+  süresi sabit yazılı. Değiştirirseniz duyuru çubuğuyla birlikte
+  güncelleyin.
