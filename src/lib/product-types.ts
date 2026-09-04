@@ -16,6 +16,8 @@ export type Product = {
   description: string;
   tags: string[];
   image?: string;
+  /** Galeri için tüm görseller. image, bunun ilk elemanıdır. */
+  images: string[];
   available?: boolean;
   badge?: string;
   badgeTone?: "green" | "navy" | "gold" | "red";

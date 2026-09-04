@@ -40,7 +40,7 @@ const write = (items: CartItem[]) => {
   localStorage.setItem(CART_KEY, JSON.stringify(items));
   listeners.forEach((listener) => listener());
 };
-const CartContext = createContext<CartValue>({
+export const CartContext = createContext<CartValue>({
   items: [],
   count: 0,
   total: 0,

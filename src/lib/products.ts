@@ -76,6 +76,10 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     ? row.image_paths.filter((x): x is string => typeof x === "string")
     : [];
   const description = plainText(row.description);
+  const images = paths.map(
+    (path) =>
+      `${env.supabaseUrl}/storage/v1/object/public/arc-product-images/${path}`,
+  );
   return {
     slug: row.slug,
     name: row.name,
@@ -90,9 +94,8 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
       plainText(row.subtitle) || "ArvoCulture seçkisinden özenle seçilmiş ürün.",
     description: description || plainText(row.subtitle),
     tags: row.product_type ? [row.product_type] : [],
-    image: paths[0]
-      ? `${env.supabaseUrl}/storage/v1/object/public/arc-product-images/${paths[0]}`
-      : undefined,
+    image: images[0],
+    images,
     available: row.available,
   };
 };

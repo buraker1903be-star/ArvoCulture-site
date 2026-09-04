@@ -200,14 +200,28 @@ export default async function Home() {
       </section>
       <section className="beauty-focus" aria-label="Kişisel bakım ritüeli">
         <Link href="/koleksiyon/bakim" className="beauty-focus-media">
-          <Image
-            unoptimized
-            src="https://arvoculture.com/cdn/shop/collections/zsYrJrOa0d55JIq11-LAI_OsD30aZg_00001_08533ee2-3c57-4092-b28e-d1dccb1d178f.webp?v=1784578872&width=1800"
-            alt="ArvoCulture kişisel bakım dünyası"
-            fill
-            priority
-            sizes="(max-width: 850px) 100vw, 58vw"
-          />
+          {/*
+            Eskiden burada Shopify'dan kalma bir CDN adresi vardı
+            (arvoculture.com/cdn/shop/...). O yol artık mevcut değil ve
+            görsel kırık geliyordu. Artık bakım seçkisinin ilk ürünü
+            kullanılıyor; katalog değiştikçe kendini günceller.
+          */}
+          {theme.campaign_image_url ? (
+            <Image
+              unoptimized
+              src={theme.campaign_image_url}
+              alt="ArvoCulture kişisel bakım dünyası"
+              fill
+              sizes="(max-width: 850px) 100vw, 58vw"
+            />
+          ) : beautySelection[0]?.image ? (
+            <Image
+              src={beautySelection[0].image}
+              alt="ArvoCulture kişisel bakım dünyası"
+              fill
+              sizes="(max-width: 850px) 100vw, 58vw"
+            />
+          ) : null}
           <span>BEAUTY &amp; CARE · 01</span>
         </Link>
         <div className="beauty-focus-copy">

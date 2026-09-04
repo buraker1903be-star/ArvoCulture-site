@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { AddButton } from "@/components/cart";
+import { ProductGallery } from "@/components/product-gallery";
+import { SizePicker } from "@/components/size-picker";
 import { JsonLd } from "@/components/json-ld";
 import { getStorefrontProduct } from "@/lib/products";
 import { formatPrice } from "@/lib/product-types";
@@ -40,27 +42,20 @@ export default async function ProductPage({ params }: Params) {
 
   return (
     <main className="product-page">
-      <div className={`product-gallery ${product.tone}`}>
-        <span className="gallery-index">
-          ARVOCULTURE / {product.category.toLocaleUpperCase("tr-TR")}
-        </span>
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            priority
-            sizes="(max-width: 900px) 100vw, 50vw"
-            style={{ objectFit: "contain" }}
-          />
-        ) : (
-          <>
-            <div className="product-object" />
-            <b>AC</b>
-          </>
-        )}
-      </div>
+      <ProductGallery
+        images={product.images}
+        name={product.name}
+        tone={product.tone}
+        category={product.category}
+      />
       <div className="product-info">
+        <nav className="crumbs" aria-label="Konum">
+          <Link href="/">Ana sayfa</Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/koleksiyon/tumu">{product.category}</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{product.name}</span>
+        </nav>
         <p className="eyebrow">{product.eyebrow}</p>
         <h1>{product.name}</h1>
         <p className="lead">{product.subtitle}</p>
@@ -73,25 +68,20 @@ export default async function ProductPage({ params }: Params) {
             <span key={tag}>{tag}</span>
           ))}
         </div>
-        {product.category === "Giyim" && (
-          <>
-            <label className="option-label">Beden seç</label>
-            <div className="sizes">
-              {["XS", "S", "M", "L", "XL"].map((size) => (
-                <button type="button" key={size}>
-                  {size}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
         {product.available === false ? (
           <button className="add-button" type="button" disabled>
             Tükendi
           </button>
+        ) : product.category === "Giyim" ? (
+          <SizePicker product={product} />
         ) : (
           <AddButton product={product} />
         )}
+        <p className="stock-line" data-in-stock={product.available !== false}>
+          {product.available === false
+            ? "Şu anda stokta yok"
+            : "Stokta — bugün kargoya hazırlanır"}
+        </p>
         <div className="assurances">
           <span>✓ Güvenli alışveriş</span>
           <span>✓ Özenli gönderim</span>
