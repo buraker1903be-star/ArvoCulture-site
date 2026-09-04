@@ -70,7 +70,33 @@ optgroup {
   letter-spacing: inherit;
 }
 
-/* Büyük başlıklar: sıkı harf aralığı Poppins'te daha oturaklı durur. */
+/*
+  Başlıklar `font:` kısayoluyla tanımlandığı için font ailesini
+  --serif değişkeninden alıyorlar. Değişken zinciri kırılırsa
+  tarayıcının varsayılan serif'ine düşüyorlar — bu yüzden aileyi
+  burada açıkça tekrar yazıyoruz. Tek kaynak yine Poppins.
+*/
+.hero h1,
+.hero h1 em,
+.collection-hero h1,
+.product-info h1,
+.simple-page h1,
+.manifest h2,
+.manifest em,
+.section-head h2,
+.campaign h2,
+.campaign > span,
+.world h2,
+.product-card h3,
+.values h3,
+.empty-cart h2,
+.hero-monogram,
+.product-gallery > b,
+.art-mark,
+.search-input {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+}
+
 .hero h1,
 .collection-hero h1,
 .product-info h1,
