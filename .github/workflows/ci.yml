@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -15,5 +15,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install --no-audit --no-fund
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
       - run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://arvoculture.com

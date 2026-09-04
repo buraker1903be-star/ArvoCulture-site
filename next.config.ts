@@ -1,19 +1,24 @@
 import type { NextConfig } from "next";
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  images: {
-    remotePatterns: [
+  reactStrictMode: true,
+  async headers() {
+    return [
       {
-        protocol: "https",
-        hostname: "oahshpkgdzrraqdzjqau.supabase.co",
-        pathname: "/storage/v1/object/public/organization-assets/**",
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "DENY" },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
       },
-      {
-        protocol: "https",
-        hostname: "oahshpkgdzrraqdzjqau.supabase.co",
-        pathname: "/storage/v1/object/public/arc-product-images/**",
-      },
-    ],
+    ];
   },
 };
+
 export default nextConfig;
