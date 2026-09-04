@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
+import { Poppins } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import "./globals.css";
@@ -13,7 +14,15 @@ import { JsonLd } from "@/components/json-ld";
 import { storeSchema } from "@/lib/seo";
 import { env } from "@/lib/env";
 
-const poppins = { variable: "f" };
+const poppins = Poppins({
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+  // Yedek font metrikleriyle eşleştirilir; Poppins yüklenirken
+  // sayfanın zıplamasını (layout shift) engeller.
+  adjustFontFallback: true,
+});
 export async function generateMetadata(): Promise<Metadata> {
   const theme = await getStorefrontTheme();
   const name = theme.store_name ?? "ArvoCulture";
