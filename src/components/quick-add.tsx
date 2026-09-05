@@ -6,15 +6,9 @@ import { CartContext } from "@/components/cart";
 import type { Product } from "@/lib/product-types";
 
 /**
- * Kartlardaki hızlı ekleme.
- *
- * Eskiden bu etiket, ürün bağlantısının içinde duran bir <span>'di:
- * "Hızlı ekle +" yazıyor ama tıklayınca sepete eklemek yerine ürün
- * sayfasına gidiyordu. Verilen sözün tutulmaması, dönüşümü doğrudan
- * düşüren türden bir hatadır.
- *
- * Giyimde beden seçimi zorunlu olduğu için hızlı ekleme yapılmaz;
- * bunun yerine ürün sayfasına yönlendiren açık bir bağlantı gösterilir.
+ * Kartlardan doğrudan sepete ekleme.
+ * Giyimde beden zorunlu olduğu için hızlı ekleme yapılmaz;
+ * bedensiz sipariş, iade sebeplerinin başında gelir.
  */
 export function QuickAdd({ product }: { product: Product }) {
   const { add } = useContext(CartContext);
@@ -22,15 +16,15 @@ export function QuickAdd({ product }: { product: Product }) {
 
   if (product.available === false) {
     return (
-      <span className="quick-add is-disabled" aria-hidden="true">
+      <button className="btn btn-ghost btn-block" type="button" disabled>
         Tükendi
-      </span>
+      </button>
     );
   }
 
   if (product.category === "Giyim") {
     return (
-      <Link className="quick-add" href={`/urun/${product.slug}`}>
+      <Link className="btn btn-ghost btn-block" href={`/urun/${product.slug}`}>
         Beden seç
       </Link>
     );
@@ -39,7 +33,7 @@ export function QuickAdd({ product }: { product: Product }) {
   return (
     <button
       type="button"
-      className="quick-add"
+      className="btn btn-ghost btn-block"
       disabled={done}
       onClick={() => {
         add(product);
@@ -47,7 +41,7 @@ export function QuickAdd({ product }: { product: Product }) {
         setTimeout(() => setDone(false), 1600);
       }}
     >
-      {done ? "Sepete eklendi" : "Sepete ekle +"}
+      {done ? "Sepete eklendi ✓" : "Sepete ekle"}
     </button>
   );
 }

@@ -4,7 +4,7 @@ import { Poppins } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import "./globals.css";
-import "./dynamic.css";
+import "./components.css";
 import { CartProvider } from "@/components/cart";
 import { Header } from "@/components/header";
 import { getStorefrontTheme } from "@/lib/storefront-theme";

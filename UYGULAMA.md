@@ -1,52 +1,67 @@
-# Ana sayfa — yoğunluk geçişi
+# 1. Aşama — Tasarım sistemi + ana sayfa
+
+**Bu paketi `yeniden-tasarim` dalına uygulayın, `main`'e değil.**
 
 ```powershell
 cd C:\ArvoCulture-site
-git rm src/lib/supabase-public.ts
+git checkout -b yeniden-tasarim     # ilk kez ise
+```
+
+Zip'i klasöre açın, üzerine yazın. Sonra:
+
+```powershell
+git rm src/lib/supabase-public.ts src/app/dynamic.css
 git add -A
-git commit -m "Ana sayfa yogunluk gecisi: urunler yukari, olcek magaza duzeyine"
-git push
+git commit -m "1. asama: tasarim sistemi ve ana sayfa"
+git push -u origin yeniden-tasarim
 ```
 
-## Sorun neydi
+Vercel dal için otomatik önizleme adresi verecek. `arvoculture.com`
+mevcut haliyle yayında kalır.
 
-Sayfa dergi ölçeğinde kurulmuştu. Global `h2` kuralı bölüm başlıklarını
-**72px**'e kadar çıkarıyordu ve her bölümde 70px dolgu vardı. Sonuç:
-ilk ekranda tek bir ürün görünmüyordu, ürüne ulaşmak dört ekran
-kaydırmak gerektiriyordu.
+## Ne yapıldı
 
-## Ne değişti
+**Eski CSS tamamen silindi.** 1442 satırlık minified `dynamic.css` ve
+eski `globals.css` gitti. Yerine üç okunabilir dosya geldi:
 
-**Ölçek mağaza düzeyine indi.** Bölüm başlıkları 72px yerine 22–30px.
-Bölüm dolguları 70px'ten 38px'e indi. Kategori görselleri küçüldü,
-kampanya bandı ve dünya bölümleri kısaldı.
+| Dosya | İçerik |
+| --- | --- |
+| `tokens.css` | Renk, boşluk, tipografi, yarıçap — tek kaynak |
+| `globals.css` | Sıfırlama, temel tipografi, buton/rozet/fiyat |
+| `components.css` | Kart, ızgara, hero, şeritler |
 
-**Arama ve kupon tek satırda birleşti.** İkisi ayrı bölümken toplam
-200px dikey alan kaplıyor ve ürünü ekran dışına itiyorlardı. Artık
-solda arama, sağda kupon, tek şerit.
+`!important` yok, minified kod yok, her blok yorumlu.
 
-**Güven şeridi inceldi.** Dört madde aynı ama satır yüksekliği yarıya
-indi.
+**Ölçek mağaza düzeyinde.** En büyük başlık 46px (hero), bölüm
+başlıkları 20–26px. Öncesinde bölüm başlıkları 72px'e çıkıyordu.
 
-**Geniş ekranda 5'li ürün ızgarası** (1400px üstü). Öncesinde 4'lüydü.
-
-Yeni sıralama:
+**Sıralama önceliğinize göre:** fiyatı birinci sıraya koydunuz, bu
+yüzden indirimli ürünler kategorilerden de önce geliyor.
 
 ```
-Hero → Arama + Kupon → Güven şeridi → ÇOK SATANLAR → Kategoriler
-→ İndirimdekiler → [ARC bölümleri] → Dünyalar → Yardım
+Hero → Güvence → Arama + kupon → İNDİRİMDEKİLER → Kategoriler
+→ Çok satanlar → Kampanya → Öne çıkanlar → Yardım
 ```
 
-Ürünler artık en fazla bir kaydırma uzakta.
+**Ürün kartı yeniden yazıldı.** Kırmızı indirim rozeti, büyük fiyat,
+üstü çizili eski fiyat, tabana yapışık sepet butonu. Kartlar eşit
+yükseklikte. Mobilde iki sütun.
 
-## ARC paneli
+**Izgara:** geniş ekranda 5, 1280px'te 4, 980px'te 3, mobilde 2.
 
-`data-arvo-section` ve `data-arvo-field` bağlantıları korundu. Panelden
-bölüm gizleme, sıralama ve canlı düzenleme çalışmaya devam ediyor.
+## Bu aşamada eksik olanlar
 
-## Yapılması gerekenler
+Ürün sayfası galerisi ve beden seçici geçici olarak sadeleştirildi —
+2. aşamada yeniden yazılacak. Koleksiyon ve arama sayfaları yeni kart
+sistemini kullanıyor ama kendi stilleri henüz yazılmadı.
 
-- ARC'ta ürünleri **"çok satan"** işaretleyin.
-- ARC temasında **"Hızlı ekle"** seçeneğini açın (`show_quick_add`),
-  yoksa sepete ekleme butonu kartlarda görünmez.
-- `/koleksiyon/firsatlar` koleksiyonunu doldurun.
+## Sonraki aşamalar
+
+2. Ürün + koleksiyon sayfaları
+3. Sepet + üyelik
+4. PayTR ödeme + sipariş takibi
+
+## Sizden
+
+- Kargo kuralı: 2.000 TL eşiği doğru mu, altında kaç TL alınacak?
+- PayTR: üyelik aktif mi, test mağazası var mı, merchant bilgileri elde mi?

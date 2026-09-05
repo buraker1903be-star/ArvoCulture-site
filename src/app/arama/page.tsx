@@ -40,7 +40,7 @@ export default async function Search({
       )}
       <div className="product-grid search-grid">
         {results.map((product, index) => (
-          <ProductCard key={product.slug} product={product} index={index} />
+          <ProductCard key={product.slug} product={product} />
         ))}
       </div>
       {query && !results.length && (

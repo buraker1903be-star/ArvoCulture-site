@@ -1,0 +1,48 @@
+/* ==========================================================
+   ArvoCulture — tasarım belirteçleri
+   Tek kaynak. Renk, boşluk, tipografi ve yarıçap yalnızca
+   buradan gelir; bileşen dosyalarında sabit değer yazılmaz.
+   ========================================================== */
+
+:root {
+  /* --- Renk --------------------------------------------- */
+  --ink: #16181a;          /* birincil metin, koyu yüzeyler */
+  --ink-2: #55595e;        /* ikincil metin */
+  --ink-3: #8b9096;        /* üçüncül, ipucu metni */
+  --line: #e4e5e3;         /* ayraç */
+  --line-2: #f0f0ee;       /* çok soluk ayraç */
+  --bg: #ffffff;
+  --bg-2: #f7f7f5;         /* bölüm zemini */
+  --brand: #4a5d3f;        /* zeytin — marka aksanı */
+  --sale: #c1362c;         /* indirim; Türkiye'de kırmızı beklenen renk */
+  --ok: #2f7d4a;
+
+  /* --- Tipografi ---------------------------------------- */
+  --font: var(--font-poppins), system-ui, -apple-system, sans-serif;
+
+  /* Mağaza ölçeği. Dergi ölçeği değil: en büyük başlık 40px. */
+  --t-hero: clamp(30px, 4.4vw, 46px);
+  --t-h2: clamp(20px, 2.1vw, 26px);
+  --t-h3: 16px;
+  --t-body: 14px;
+  --t-sm: 13px;
+  --t-xs: 11px;
+
+  /* --- Boşluk (4px tabanlı) ----------------------------- */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+
+  /* Bölümler arası dikey ritim ve sayfa kenar boşluğu. */
+  --band: clamp(32px, 4vw, 48px);
+  --gut: clamp(16px, 3vw, 40px);
+
+  --radius: 4px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+}

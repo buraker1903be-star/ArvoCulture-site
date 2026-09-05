@@ -96,7 +96,7 @@ export default async function Collection({
         </div>
         <div className="product-grid">
           {visibleProducts.map((product, index) => (
-            <ProductCard key={product.slug} product={product} index={index} />
+            <ProductCard key={product.slug} product={product} />
           ))}
         </div>
         {pageCount > 1 && (

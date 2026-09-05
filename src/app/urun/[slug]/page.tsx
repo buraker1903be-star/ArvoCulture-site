@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { AddButton } from "@/components/cart";
-import { ProductGallery } from "@/components/product-gallery";
-import { SizePicker } from "@/components/size-picker";
+import Image from "next/image";
 import { JsonLd } from "@/components/json-ld";
 import { getStorefrontProduct } from "@/lib/products";
 import { formatPrice } from "@/lib/product-types";
@@ -42,12 +41,17 @@ export default async function ProductPage({ params }: Params) {
 
   return (
     <main className="product-page">
-      <ProductGallery
-        images={product.images}
-        name={product.name}
-        tone={product.tone}
-        category={product.category}
-      />
+      <div className="card-art">
+        {product.image && (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            priority
+            sizes="(max-width:900px) 100vw, 50vw"
+          />
+        )}
+      </div>
       <div className="product-info">
         <nav className="crumbs" aria-label="Konum">
           <Link href="/">Ana sayfa</Link>
@@ -73,7 +77,7 @@ export default async function ProductPage({ params }: Params) {
             Tükendi
           </button>
         ) : product.category === "Giyim" ? (
-          <SizePicker product={product} />
+          <AddButton product={product} />
         ) : (
           <AddButton product={product} />
         )}
