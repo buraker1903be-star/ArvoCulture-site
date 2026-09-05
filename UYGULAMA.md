@@ -1,67 +1,55 @@
-# 1. Aşama — Tasarım sistemi + ana sayfa
-
-**Bu paketi `yeniden-tasarim` dalına uygulayın, `main`'e değil.**
+# Ödeme akışı — vitrin tarafı
 
 ```powershell
 cd C:\ArvoCulture-site
-git checkout -b yeniden-tasarim     # ilk kez ise
-```
-
-Zip'i klasöre açın, üzerine yazın. Sonra:
-
-```powershell
-git rm src/lib/supabase-public.ts src/app/dynamic.css
 git add -A
-git commit -m "1. asama: tasarim sistemi ve ana sayfa"
-git push -u origin yeniden-tasarim
+git commit -m "Odeme akisi: adres formu, onaylar, PayTR yonlendirme"
+git push
 ```
 
-Vercel dal için otomatik önizleme adresi verecek. `arvoculture.com`
-mevcut haliyle yayında kalır.
+Silinecek dosya yok.
 
-## Ne yapıldı
+## Eklenenler
 
-**Eski CSS tamamen silindi.** 1442 satırlık minified `dynamic.css` ve
-eski `globals.css` gitti. Yerine üç okunabilir dosya geldi:
-
-| Dosya | İçerik |
+| Sayfa | İşlev |
 | --- | --- |
-| `tokens.css` | Renk, boşluk, tipografi, yarıçap — tek kaynak |
-| `globals.css` | Sıfırlama, temel tipografi, buton/rozet/fiyat |
-| `components.css` | Kart, ızgara, hero, şeritler |
+| `/odeme` | Adres formu, yasal onaylar, sipariş özeti, PayTR'a yönlendirme |
+| `/siparis/tamam` | Ödeme sonrası dönüş |
+| `/siparis/hata` | Başarısız ödeme |
 
-`!important` yok, minified kod yok, her blok yorumlu.
+## Önemli tasarım kararı
 
-**Ölçek mağaza düzeyinde.** En büyük başlık 46px (hero), bölüm
-başlıkları 20–26px. Öncesinde bölüm başlıkları 72px'e çıkıyordu.
+Ödeme sayfasındaki tutarlar **yalnızca gösterim içindir**. Sunucuya
+gönderilen tek bilgi hangi ürünün kaç adet istendiğidir; fiyat, indirim,
+kargo ve toplam ARC'ta veritabanından hesaplanır ve PayTR'a giden tutar
+odur. Bu olmadan tarayıcı konsolundan fiyat değiştirilebilir.
 
-**Sıralama önceliğinize göre:** fiyatı birinci sıraya koydunuz, bu
-yüzden indirimli ürünler kategorilerden de önce geliyor.
+`/siparis/tamam` sayfası "ödemeniz alındı" demez, "siparişiniz alındı"
+der. Ödemeyi kesinleştiren tek şey PayTR'ın ARC'a gönderdiği sunucudan
+sunucuya bildirimdir; müşterinin tarayıcısının bu sayfaya ulaşması
+ödemenin geçtiğini kanıtlamaz.
 
-```
-Hero → Güvence → Arama + kupon → İNDİRİMDEKİLER → Kategoriler
-→ Çok satanlar → Kampanya → Öne çıkanlar → Yardım
-```
+## Onay kutuları
 
-**Ürün kartı yeniden yazıldı.** Kırmızı indirim rozeti, büyük fiyat,
-üstü çizili eski fiyat, tabana yapışık sepet butonu. Kartlar eşit
-yükseklikte. Mobilde iki sütun.
+Üçü de zorunlu: Ön Bilgilendirme Formu, Mesafeli Satış Sözleşmesi, KVKK
+Aydınlatma Metni. Mesafeli Sözleşmeler Yönetmeliği gereği ön
+bilgilendirme onayı olmadan sipariş alınamaz.
 
-**Izgara:** geniş ekranda 5, 1280px'te 4, 980px'te 3, mobilde 2.
+## Test sırası
 
-## Bu aşamada eksik olanlar
+1. ARC'ta `PAYTR_TEST_MODE=1` olduğundan emin olun
+2. PayTR panelinde bildirim URL'si tanımlı olmalı:
+   `https://arc.arvo-os.com/api/storefront/paytr-bildirim`
+3. Vitrinden sepete ürün ekleyin, `/odeme`'ye gidin, formu doldurun
+4. PayTR test kartıyla ödeyin
+5. ARC panelinde siparişi kontrol edin:
+   - Önce `pending` düşmeli
+   - Ödeme sonrası `paid` + `confirmed` olmalı
+   - Stok düşmeli
 
-Ürün sayfası galerisi ve beden seçici geçici olarak sadeleştirildi —
-2. aşamada yeniden yazılacak. Koleksiyon ve arama sayfaları yeni kart
-sistemini kullanıyor ama kendi stilleri henüz yazılmadı.
+Hepsi doğruysa `PAYTR_TEST_MODE=0` yapıp yeniden dağıtın.
 
-## Sonraki aşamalar
+## Bilinen eksik
 
-2. Ürün + koleksiyon sayfaları
-3. Sepet + üyelik
-4. PayTR ödeme + sipariş takibi
-
-## Sizden
-
-- Kargo kuralı: 2.000 TL eşiği doğru mu, altında kaç TL alınacak?
-- PayTR: üyelik aktif mi, test mağazası var mı, merchant bilgileri elde mi?
+Kupon kodu ödeme sayfasında henüz uygulanmıyor. Altyapısı ARC tarafında
+hazır (`p_coupon_code` parametresi), vitrine alanı eklenecek.
