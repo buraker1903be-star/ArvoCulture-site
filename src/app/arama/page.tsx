@@ -17,7 +17,7 @@ export default async function Search({
       )
     : products.slice(0, 12);
   return (
-    <main className="simple-page">
+    <main className="shell"><div className="panel simple-page">
       <p className="eyebrow">ARAMA</p>
       <h1>Ne arıyorsun?</h1>
       <form className="search-form" action="/arama">
@@ -49,6 +49,6 @@ export default async function Search({
           <p>Farklı bir kelime deneyin veya tüm seçkiyi inceleyin.</p>
         </div>
       )}
-    </main>
+    </div></main>
   );
 }

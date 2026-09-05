@@ -40,7 +40,7 @@ export default async function ProductPage({ params }: Params) {
   if (!product) notFound();
 
   return (
-    <main className="product-page">
+    <main className="shell"><div className="panel product-page">
       <div className="card-art">
         {product.image && (
           <Image
@@ -112,6 +112,6 @@ export default async function ProductPage({ params }: Params) {
           { name: product.name, path: `/urun/${product.slug}` },
         ])}
       />
-    </main>
+    </div></main>
   );
 }

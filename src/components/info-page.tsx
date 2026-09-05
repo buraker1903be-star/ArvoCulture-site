@@ -12,14 +12,14 @@ export function InfoPage({
   children: ReactNode;
 }) {
   return (
-    <main className="info-page">
+    <main className="shell"><div className="panel info-page">
       <header className="info-hero">
         <p className="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         <p>{intro}</p>
       </header>
       <div className="info-content">{children}</div>
-    </main>
+    </div></main>
   );
 }
 
