@@ -3,32 +3,59 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Mega menu yeniden tasarlandi"
+git commit -m "Menu: marka koleksiyonlari ayri sutuna alindi"
 git push
 vercel --prod
 ```
 
-## Mega menü tasarımı
+## Sorun neydi
 
-Eskiden bağlantılar düz bir liste hâlindeydi; müşteri kalabalık
-sütunlarda aradığını gözle taramak zorundaydı. Değişenler:
+ARC'taki `menu_group` alanı iki farklı ekseni tek grupta topluyordu.
+"CİLT BAKIMI" başlığı altında hem markalar (Aloe Via, Zeitgard,
+Microsilver Plus, Beauty Diamonds) hem ürün tipleri (Nemlendiriciler,
+Temizleyiciler, Serumlar) yan yana duruyordu.
 
-**Her bağlantı tıklanabilir bir satır oldu.** Dolgusu var, üzerine
-gelince zemini renkleniyor. Hedef alanı büyüdü — özellikle dokunmatik
-ekranda fark yaratır.
+Müşteri "Zeitgard ürünlerini görmek istiyorum" ile "nemlendirici
+arıyorum" arasında farklı düşünür; ikisini aynı listede aramak
+zorunda kalıyordu.
 
-**Sütun başlıkları ayrıştı.** Zeytin yeşili, büyük harf, geniş harf
-aralığı ve yanında ince bir çizgi. Bağlantılarla karışmıyor.
+## Yeni yapı
 
-**Ürün sayısı rozet oldu.** Sağ tarafta sessiz bir baloncuk.
-Okumayı bölmüyor ama "Aloe Via 50 ürün, Serumlar 6 ürün" bilgisi
-seçim yaparken işe yarıyor.
+**Giyim**
+- MARKA KOLEKSİYONLARI: The Society Collection
+- KESİME GÖRE: Oversize, Basic, Regular Fit
 
-**"Tümünü gör" butona dönüştü.** Sağ üstte, üzerine gelince koyu
-zemine geçiyor. Kategorinin tamamını görmek isteyen kaybolmuyor.
+**Kişisel Bakım**
+- MARKA KOLEKSİYONLARI: Aloe Via, Zeitgard, Microsilver Plus,
+  Beauty Diamonds, Profesyonel Bakım (ZG Pro)
+- ÜRÜN TİPİNE GÖRE: Nemlendiriciler, Temizleyiciler, Serumlar,
+  Vücut Losyonları, Duş Jelleri, Ağız & Diş, Deodorant, Erkek,
+  Bebek & Çocuk
+- İHTİYACA GÖRE: Yaşlanma Karşıtı, Akne, Kuru Cilt, Güneş Koruması,
+  Yağlı Cilt, Saç Dökülmesi
 
-**Tetikleyicideki ok animasyonlu.** Menü açıkken 180 derece dönüyor,
-hangi menünün açık olduğu net.
+**Parfüm**
+- MARKA KOLEKSİYONLARI: Mood Infusion, Iconic Elixirs
+- KİME GÖRE: Kadın, Erkek
 
-Panel açılırken yumuşak bir yükselme hareketi var; anında belirip
-kaybolmuyor.
+**Takviyeler**
+- MARKA KOLEKSİYONLARI: LR LifeTakt
+- İHTİYACA GÖRE: Bağışıklık, Vitamin, Spor
+
+**Kozmetik** — MAKYAJ (Ten, Göz, Dudak). Marka koleksiyonu yok.
+
+## Nasıl çalışıyor
+
+Markalar `header.tsx` içindeki `BRANDS` listesinde slug ile
+tanımlı. Başlık ve ürün sayısı yine ARC'tan geliyor — yani bir
+koleksiyonun adını ARC'ta değiştirirseniz menüde de değişir.
+
+Marka koleksiyonları diğer sütunlardan otomatik çıkarılıyor, iki
+yerde birden görünmüyorlar.
+
+Boş kalan sütun hiç render edilmiyor.
+
+### Yeni marka eklerken
+
+`src/components/header.tsx` içindeki `BRANDS` nesnesine slug'ı
+ekleyin. ARC'ta koleksiyon zaten varsa menüde belirir.

@@ -11,7 +11,14 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
   const [open, setOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const close = () => setOpen(false);
-  const collectionItems = (groups: string[], limit = 8) =>
+  /*
+    Koleksiyonları menu_group'a göre getirir. ARC'taki gruplandırma
+    iki farklı ekseni karıştırıyor: markalar (Aloe Via, Zeitgard)
+    ile ürün tipleri (Serumlar, Nemlendiriciler) aynı grupta.
+    Aşağıdaki BRANDS listesi markaları slug üzerinden ayırıp kendi
+    sütununa taşır; başlık ve ürün sayısı yine ARC'tan gelir.
+  */
+  const byGroup = (groups: string[], limit = 8) =>
     collections
       .filter((collection) => groups.includes(collection.menu_group))
       .sort(
@@ -20,12 +27,48 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
           a.title.localeCompare(b.title, "tr"),
       )
       .slice(0, limit);
+
+  /** Marka koleksiyonları — slug sabittir, başlık ARC'tan gelir. */
+  const BRANDS = {
+    apparel: ["the-society-collection"],
+    care: [
+      "aloe-vera-cilt-bakim-urunleri",
+      "lr-zeitgard",
+      "lr-microsilver-plus-urunleri",
+      "beauty-diamonds-cilt-bakim-serisi",
+      "zg-pro-cilt-bakim-cihazlari-ve-setleri",
+    ],
+    fragrance: [
+      "mood-infusion-parfum-koleksiyonu",
+      "iconic-elixirs-parfum-koleksiyonu",
+    ],
+    supplements: ["lr-lifetakt"],
+  } as const;
+
+  const allBrandSlugs = new Set<string>(Object.values(BRANDS).flat());
+
+  /** Verilen slug sırasına sadık kalarak koleksiyonları getirir. */
+  const bySlug = (slugs: readonly string[]) =>
+    slugs
+      .map((slug) => collections.find((item) => item.slug === slug))
+      .filter((item): item is StorefrontCollection => Boolean(item));
+
+  /** Marka koleksiyonlarını dışarıda bırakır; tekrar görünmesinler. */
+  const withoutBrands = (groups: string[], limit = 8) =>
+    byGroup(groups, 40)
+      .filter((item) => !allBrandSlugs.has(item.slug))
+      .slice(0, limit);
+
   const navigation = [
     {
       title: "Giyim",
       href: "/koleksiyon/giyim",
       sections: [
-        { title: "GİYİM KOLEKSİYONLARI", items: collectionItems(["Giyim"]) },
+        {
+          title: "MARKA KOLEKSİYONLARI",
+          items: bySlug(BRANDS.apparel),
+        },
+        { title: "KESİME GÖRE", items: withoutBrands(["Giyim"], 8) },
       ],
     },
     {
@@ -33,44 +76,56 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
       href: "/koleksiyon/bakim",
       sections: [
         {
-          title: "CİLT BAKIMI",
-          items: collectionItems(["Cilt Bakımı", "Kişisel Bakım"], 7),
+          title: "MARKA KOLEKSİYONLARI",
+          items: bySlug(BRANDS.care),
         },
         {
-          title: "SAÇ & VÜCUT",
-          items: collectionItems(
-            ["Saç Bakımı", "Vücut Bakımı", "Diğer Bakımlar"],
-            7,
+          title: "ÜRÜN TİPİNE GÖRE",
+          items: withoutBrands(
+            ["Cilt Bakımı", "Kişisel Bakım", "Vücut Bakımı", "Diğer Bakımlar"],
+            8,
           ),
         },
         {
           title: "İHTİYACA GÖRE",
-          items: collectionItems(["Sorununa Göre"], 6),
+          items: withoutBrands(["Sorununa Göre", "Saç Bakımı"], 8),
         },
       ],
     },
     {
       title: "Kozmetik",
       href: "/koleksiyon/kozmetik",
-      sections: [
-        { title: "MAKYAJ", items: collectionItems(["Kozmetik"]) },
-      ],
+      sections: [{ title: "MAKYAJ", items: byGroup(["Kozmetik"]) }],
     },
     {
       title: "Parfüm",
       href: "/koleksiyon/parfum",
       sections: [
-        { title: "PARFÜM", items: collectionItems(["Parfüm"]) },
+        {
+          title: "MARKA KOLEKSİYONLARI",
+          items: bySlug(BRANDS.fragrance),
+        },
+        { title: "KİME GÖRE", items: withoutBrands(["Parfüm"], 8) },
       ],
     },
     {
       title: "Takviyeler",
       href: "/koleksiyon/takviyeler",
       sections: [
-        { title: "TAKVİYELER", items: collectionItems(["Takviyeler"]) },
+        {
+          title: "MARKA KOLEKSİYONLARI",
+          items: bySlug(BRANDS.supplements),
+        },
+        { title: "İHTİYACA GÖRE", items: withoutBrands(["Takviyeler"], 8) },
       ],
     },
-  ];
+  ].map((menu) => ({
+    ...menu,
+    // Boş kalan sütun gösterilmez; marka koleksiyonu tanımlı
+    // olmayan kategoride başlık boşuna yer kaplamasın.
+    sections: menu.sections.filter((section) => section.items.length > 0),
+  }));
+
   const bestSeller = collections.find((item) => item.title === "Çok Satanlar");
   const offers = collections.find((item) => item.title === "Haftanın Fırsatları");
   return (
