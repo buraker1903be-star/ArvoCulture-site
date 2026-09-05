@@ -3,33 +3,32 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Beyaz motifli arka plan, mobil menu duzeltmesi, logo boyutu"
+git commit -m "Mega menu yeniden tasarlandi"
 git push
 vercel --prod
 ```
 
-## Bu turda
+## Mega menü tasarımı
 
-**Mobil menü masaüstünde görünüyordu.** Sarmalayıcı `.mobile-menu`
-idi ve hiç stillendirilmemişti. Artık masaüstünde tamamen gizli,
-mobilde yalnızca `.open` sınıfı varken açılıyor.
+Eskiden bağlantılar düz bir liste hâlindeydi; müşteri kalabalık
+sütunlarda aradığını gözle taramak zorundaydı. Değişenler:
 
-**Arka plan beyaz, motifli ve hareketli.** İki katman:
+**Her bağlantı tıklanabilir bir satır oldu.** Dolgusu var, üzerine
+gelince zemini renkleniyor. Hedef alanı büyüdü — özellikle dokunmatik
+ekranda fark yaratır.
 
-1. Seyrek zeytin noktalardan oluşan doku (26px ızgara), 90 saniyede
-   bir kare kayarak sonsuz döner — kesintisiz görünür.
-2. Üstünde iki yumuşak ışık lekesi (zeytin ve altın), 26 saniyede
-   yavaşça nefes alır.
+**Sütun başlıkları ayrıştı.** Zeytin yeşili, büyük harf, geniş harf
+aralığı ve yanında ince bir çizgi. Bağlantılarla karışmıyor.
 
-İkisi de `position: fixed`, yani sayfa kayarken yerinde durur.
-`background-attachment: fixed` kullanılmadı; o özellik mobil
-Safari'de titriyor.
+**Ürün sayısı rozet oldu.** Sağ tarafta sessiz bir baloncuk.
+Okumayı bölmüyor ama "Aloe Via 50 ürün, Serumlar 6 ürün" bilgisi
+seçim yaparken işe yarıyor.
 
-Hareket, işletim sisteminde "hareketi azalt" açıksa duruyor.
+**"Tümünü gör" butona dönüştü.** Sağ üstte, üzerine gelince koyu
+zemine geçiyor. Kategorinin tamamını görmek isteyen kaybolmuyor.
 
-**Logo 30px'ten 22px'e indi.**
+**Tetikleyicideki ok animasyonlu.** Menü açıkken 180 derece dönüyor,
+hangi menünün açık olduğu net.
 
-## Not
-
-Arka plan açık renge döndüğü için `.panel-clear` bölümlerinin metin
-rengi beyazdan koyuya çevrildi; yoksa okunmazdı.
+Panel açılırken yumuşak bir yükselme hareketi var; anında belirip
+kaybolmuyor.
