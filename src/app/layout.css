@@ -158,6 +158,9 @@
   position: absolute;
   left: var(--edge);
   right: var(--edge);
+  /* Panel ekranı kaplamasın; içerik kadar yer tutsun. */
+  max-height: min(72vh, 620px);
+  overflow-y: auto;
   top: calc(100% + 8px);
   z-index: 45;
   padding: var(--s5) var(--pad) var(--pad);
@@ -217,51 +220,42 @@
 /* --- Sütunlar --- */
 
 /*
-  Sütun sayısı içeriğe göre değil, ekrana göre belirlenir; her
-  sütun eşit genişlikte olur ve liste uzunlukları farklı olsa bile
-  hizalı görünür. Sütun başına 200px'lik taban, geniş ekranda
-  dört-beş sütuna çıkmasını sağlar.
+  Sütunlar sabit genişlikte ve sola toplanır. Esnek ızgara
+  kullanıldığında üç sütun 1800px'lik paneli paylaşıp her biri
+  600px oluyordu; bağlantılar boşlukta kayboluyordu. Okuma
+  genişliği 230px civarında en rahat.
 */
 .mega-columns {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--s5) var(--s4);
-  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s5) var(--s7);
+  align-items: flex-start;
 }
 
-/* Uzun listeler sütunu şişirmesin: bir sütunun içeriği kendi
-   içinde ikiye bölünür. */
 .mega-columns > div {
+  flex: 0 0 230px;
   min-width: 0;
 }
 
+/* Sütun başlığı: kısa bir vurgu çizgisi, sütunu boydan boya
+   kesen bir çizgi değil. */
 .mega-columns > div > p:first-child {
-  display: flex;
-  align-items: center;
-  gap: var(--s2);
-  margin-bottom: var(--s3);
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s2);
+  border-bottom: 2px solid var(--brand);
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--brand);
-  white-space: nowrap;
 }
 
-.mega-columns > div > p:first-child::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-
-/* Her bağlantı tıklanabilir bir satır. */
 .mega-columns a {
   display: block;
   padding: 7px 10px;
   margin-inline: -10px;
   border-radius: var(--r-sm);
-  transition: background-color 140ms var(--ease), color 140ms var(--ease);
+  transition: background-color 140ms var(--ease);
 }
 
 .mega-columns a:hover {
@@ -271,7 +265,7 @@
 .mega-columns a b {
   display: block;
   font-size: var(--t-sm);
-  font-weight: 500;
+  font-weight: 400;
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -282,22 +276,9 @@
   color: var(--brand);
 }
 
-/* Marka sütunu görsel olarak öne çıkar: müşterilerin çoğu markayla
-   arar, bu yüzden ilk sütun daha belirgin. */
+/* Marka sütunu öne çıkar: müşterilerin çoğu markayla arar. */
 .mega-columns > div:first-child a b {
   font-weight: 500;
-}
-
-.mega-columns > div:first-child {
-  padding-right: var(--s4);
-  border-right: 1px solid var(--line);
-}
-
-@media (max-width: 900px) {
-  .mega-columns > div:first-child {
-    padding-right: 0;
-    border-right: 0;
-  }
 }
 
 .menu-backdrop {

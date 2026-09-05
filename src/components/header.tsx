@@ -98,7 +98,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
         },
         {
           title: "İHTİYACA GÖRE",
-          items: withoutBrands(["Sorununa Göre", "Saç Bakımı"]),
+          items: withoutBrands(["Sorununa Göre"]),
         },
       ],
     },
