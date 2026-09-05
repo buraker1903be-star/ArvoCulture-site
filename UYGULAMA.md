@@ -3,35 +3,24 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Menu sutun genisligi ve gruplama duzeltmesi"
+git commit -m "Menu: her koleksiyon grubu ayri sutunda"
 git push
 vercel --prod
 ```
 
 ## Bu turda
 
-**Sütunlar daraldı ve sola toplandı.** Esnek ızgara kullanılınca üç
-sütun 1800px'lik paneli paylaşıyor ve her biri 600px oluyordu;
-bağlantılar boşlukta kayboluyordu. Artık her sütun sabit 230px ve
-sola dayalı. Ekran genişledikçe sütunlar yayılmıyor, sadece yeni
-sütun sığıyorsa ekleniyor.
+Kişisel Bakım menüsünde gruplar birleştirilmişti; artık her
+`menu_group` kendi sütununda:
 
-**Başlık çizgisi kısaldı.** Eskiden sütunu boydan boya kesen bir
-çizgi vardı ve boşluğu vurguluyordu. Artık başlığın altında kısa
-bir zeytin vurgu çizgisi var.
+```
+MARKA KOLEKSİYONLARI · CİLT BAKIMI · SAÇ BAKIMI
+VÜCUT BAKIMI · DİĞER BAKIMLAR · İHTİYACA GÖRE
+```
 
-**Saç ürünleri yanlış sütundaydı.** "Saç Kremi" ve "Saç Maskesi"
-ihtiyaç değil ürün tipi; "Ürün Tipine Göre" sütununa taşındı.
-"Saç Dökülmesi" ihtiyaç sütununda kaldı, orası doğru.
+Birleştirilmiş hâlde müşteri "saç ürünü arıyorum" derken cilt ve
+vücut ürünlerinin arasında aramak zorunda kalıyordu.
 
-**Panel yüksekliği sınırlandı.** Uzun listelerde ekranı taşırmıyor,
-kendi içinde kayıyor.
-
-## Marka koleksiyonu eksikse
-
-Şu an görünenler: Aloe Via, Zeitgard, Microsilver Plus, Beauty
-Diamonds, Profesyonel Bakım.
-
-Başka bir marka koleksiyonu ARC'ta varsa ve menüde "Ürün Tipine
-Göre" sütununda çıkıyorsa, slug'ını `src/components/header.tsx`
-içindeki `BRANDS.care` listesine ekleyin.
+Sütunlar 230px sabit genişlikte ve sola dayalı; ekrana sığdığı
+kadarı yan yana, kalanı alt satıra geçiyor. Boş kalan grup hiç
+render edilmiyor.

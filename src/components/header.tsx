@@ -84,22 +84,21 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
     {
       title: "Kişisel Bakım",
       href: "/koleksiyon/bakim",
+      /*
+        Her menu_group kendi sütununda durur. Birleştirilirse
+        müşteri "saç ürünü arıyorum" derken cilt ve vücut
+        ürünlerinin arasında aramak zorunda kalıyor.
+      */
       sections: [
+        { title: "MARKA KOLEKSİYONLARI", items: bySlug(BRANDS.care) },
         {
-          title: "MARKA KOLEKSİYONLARI",
-          items: bySlug(BRANDS.care),
+          title: "CİLT BAKIMI",
+          items: withoutBrands(["Cilt Bakımı", "Kişisel Bakım"]),
         },
-        {
-          title: "ÜRÜN TİPİNE GÖRE",
-          items: withoutBrands(
-            ["Cilt Bakımı", "Kişisel Bakım", "Vücut Bakımı", "Diğer Bakımlar"],
-            8,
-          ),
-        },
-        {
-          title: "İHTİYACA GÖRE",
-          items: withoutBrands(["Sorununa Göre"]),
-        },
+        { title: "SAÇ BAKIMI", items: withoutBrands(["Saç Bakımı"]) },
+        { title: "VÜCUT BAKIMI", items: withoutBrands(["Vücut Bakımı"]) },
+        { title: "DİĞER BAKIMLAR", items: withoutBrands(["Diğer Bakımlar"]) },
+        { title: "İHTİYACA GÖRE", items: withoutBrands(["Sorununa Göre"]) },
       ],
     },
     {
