@@ -1,51 +1,52 @@
-# Ana sayfa — yeniden yazım ve kullanılabilirlik düzeltmeleri
-
-Zip'i `C:\ArvoCulture-site` içine açın, üzerine yazın. Sonra:
+# Ana sayfa — yoğunluk geçişi
 
 ```powershell
 cd C:\ArvoCulture-site
 git rm src/lib/supabase-public.ts
 git add -A
-git commit -m "Ana sayfa yeniden yazildi, calisan hizli ekleme, arama girisi"
+git commit -m "Ana sayfa yogunluk gecisi: urunler yukari, olcek magaza duzeyine"
 git push
 ```
 
-## Düzeltilen gerçek hata
+## Sorun neydi
 
-**"Hızlı ekle +" çalışmıyordu.** Ürün kartındaki o etiket bir `<span>`
-idi ve ürün bağlantısının içinde duruyordu; tıklayınca sepete eklemek
-yerine ürün sayfasına gidiyordu. Artık gerçek bir buton ve gerçekten
-sepete ekliyor.
+Sayfa dergi ölçeğinde kurulmuştu. Global `h2` kuralı bölüm başlıklarını
+**72px**'e kadar çıkarıyordu ve her bölümde 70px dolgu vardı. Sonuç:
+ilk ekranda tek bir ürün görünmüyordu, ürüne ulaşmak dört ekran
+kaydırmak gerektiriyordu.
 
-Giyim ürünlerinde hızlı ekleme yapılmıyor — beden seçimi zorunlu
-olduğu için buton "Beden seç" diyerek ürün sayfasına götürüyor.
-Tükenmiş ürünlerde buton pasif.
+## Ne değişti
 
-## Yeni ana sayfa sıralaması
+**Ölçek mağaza düzeyine indi.** Bölüm başlıkları 72px yerine 22–30px.
+Bölüm dolguları 70px'ten 38px'e indi. Kategori görselleri küçüldü,
+kampanya bandı ve dünya bölümleri kısaldı.
+
+**Arama ve kupon tek satırda birleşti.** İkisi ayrı bölümken toplam
+200px dikey alan kaplıyor ve ürünü ekran dışına itiyorlardı. Artık
+solda arama, sağda kupon, tek şerit.
+
+**Güven şeridi inceldi.** Dört madde aynı ama satır yüksekliği yarıya
+indi.
+
+**Geniş ekranda 5'li ürün ızgarası** (1400px üstü). Öncesinde 4'lüydü.
+
+Yeni sıralama:
 
 ```
-Hero → Güven şeridi → Arama → Kupon → Çok satanlar → Kategoriler
-→ İndirimdekiler → [ARC bölümleri] → Dünyalar → Yardım şeridi
+Hero → Arama + Kupon → Güven şeridi → ÇOK SATANLAR → Kategoriler
+→ İndirimdekiler → [ARC bölümleri] → Dünyalar → Yardım
 ```
 
-Arama girişi eklendi: katalogda 200'den fazla ürün ve 40'tan fazla alt
-koleksiyon var, aradığını bilen ziyaretçi için en kısa yol bu. Altında
-beş popüler koleksiyona kısayol etiketi duruyor.
+Ürünler artık en fazla bir kaydırma uzakta.
 
-## ARC paneli bozulmadı
+## ARC paneli
 
-`data-arvo-section` (5) ve `data-arvo-field` (11) korundu. Panelden
-bölüm gizleme (`show_*`), sıralama (`order_*`) ve canlı metin düzenleme
-aynen çalışıyor.
+`data-arvo-section` ve `data-arvo-field` bağlantıları korundu. Panelden
+bölüm gizleme, sıralama ve canlı düzenleme çalışmaya devam ediyor.
 
-## Doldurulması gerekenler
+## Yapılması gerekenler
 
-- ARC'ta ürünleri **"çok satan"** işaretleyin (4'ten azsa ray katalog
-  sırasıyla doluyor).
+- ARC'ta ürünleri **"çok satan"** işaretleyin.
+- ARC temasında **"Hızlı ekle"** seçeneğini açın (`show_quick_add`),
+  yoksa sepete ekleme butonu kartlarda görünmez.
 - `/koleksiyon/firsatlar` koleksiyonunu doldurun.
-- ARC temasında **"Hızlı ekle" seçeneğini açın** (`show_quick_add`);
-  kapalıysa buton hiç görünmez.
-- `src/components/home-search.tsx` içindeki kısayol etiketlerini kendi
-  popüler koleksiyonlarınıza göre düzenleyin.
-- `src/components/assurance-bar.tsx` içindeki kargo eşiği ve iade
-  süresini duyuru çubuğuyla tutarlı tutun.

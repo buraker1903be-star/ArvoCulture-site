@@ -2089,6 +2089,241 @@ footer {
 }
 
 /* ==========================================================
+   YOĞUNLUK KATMANI
+   Sayfa dergi ölçeğinde kurulmuştu: bölüm başlıkları 72px'e
+   kadar çıkıyor, her bölümde 70px dolgu vardı ve ürüne ulaşmak
+   için dört ekran kaydırmak gerekiyordu. Türkiye'de alışveriş
+   yapan kullanıcı yoğun ve hızlı taranan sayfalara alışkın;
+   bu blok ölçeği mağaza düzeyine indiriyor.
+   ========================================================== */
+
+/* Bölüm başlıkları hero ölçeğinden çıkarılıyor. */
+.rail .section-head h2,
+.category-grid .section-head h2,
+.worlds .world-copy h2,
+.campaign-copy h2 {
+  font-size: clamp(22px, 2.2vw, 30px) !important;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.section-head {
+  margin-bottom: 18px;
+}
+
+.rail,
+.category-grid {
+  padding: 38px 4vw;
+}
+
+.rail-note {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* ---------- İşlev şeridi: arama + kupon tek satırda ---------- */
+
+.utility-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 4vw;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+
+.utility-search {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.utility-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex: 0 1 26rem;
+  padding: 11px 15px;
+  border: 1px solid var(--line);
+  text-decoration: none;
+  transition: border-color 160ms ease;
+}
+
+.utility-field:hover {
+  border-color: var(--ink);
+}
+
+.utility-field span {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.utility-field em {
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.utility-tags {
+  display: flex;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.utility-tags::-webkit-scrollbar {
+  display: none;
+}
+
+.utility-tags a {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.utility-tags a:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.utility-coupon {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.utility-coupon strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.utility-coupon small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.coupon-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background: var(--ink);
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 160ms ease;
+}
+
+.coupon-code:hover {
+  opacity: 0.85;
+}
+
+.coupon-code span {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.coupon-code em {
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ---------- Güven şeridi: ince tek satır ---------- */
+
+.assurance-item {
+  padding: 13px 4vw;
+}
+
+.assurance-item strong {
+  font-size: 12px;
+}
+
+.assurance-item small {
+  font-size: 11px;
+}
+
+/* ---------- Daha yoğun ürün ızgarası ---------- */
+
+@media (min-width: 1400px) {
+  .rail-track {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* ---------- Kategoriler: daha küçük ---------- */
+
+.category-art {
+  aspect-ratio: 1;
+  margin-bottom: 9px;
+}
+
+.category-tile strong {
+  font-size: 14px;
+}
+
+/* ---------- Dünyalar ve kampanya: daha kısa ---------- */
+
+.world {
+  padding: 42px 4vw;
+  gap: 22px;
+}
+
+.campaign-band {
+  min-height: 260px;
+}
+
+.campaign-copy {
+  padding: 42px 4vw;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .utility-bar {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px 5vw;
+  }
+  .utility-search {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .utility-field {
+    flex: 1 1 auto;
+  }
+  .utility-coupon {
+    justify-content: space-between;
+  }
+  .rail,
+  .category-grid {
+    padding: 32px 0 32px 5vw;
+  }
+  .category-grid {
+    padding-right: 5vw;
+  }
+}
+
+/* ==========================================================
    TİPOGRAFİ KİLİDİ
    Bu blok en son yüklenen stil dosyasının sonundadır ve
    bilinçli olarak !important kullanır.

@@ -5,8 +5,7 @@ import { formatPrice, type Product } from "@/lib/product-types";
 import { ProductCard } from "@/components/product-card";
 import { ProductRail } from "@/components/product-rail";
 import { AssuranceBar } from "@/components/assurance-bar";
-import { HomeSearch } from "@/components/home-search";
-import { CouponStrip } from "@/components/coupon-strip";
+import { UtilityBar } from "@/components/utility-bar";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
 import { getStorefrontProducts } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
@@ -208,21 +207,27 @@ export default async function Home() {
 
       <Hero theme={theme} />
 
+      {/*
+        Hero'nun hemen altı: arama + kupon tek satırda, ardından ince
+        güven şeridi. Amaç ziyaretçiyi en fazla bir kaydırmada ürüne
+        ulaştırmak. Önceki düzende ürün görmek için dört ekran
+        kaydırmak gerekiyordu.
+      */}
+      <UtilityBar
+        coupon={
+          coupon?.code
+            ? {
+                code: coupon.code,
+                label:
+                  coupon.discount_type === "percentage"
+                    ? `%${coupon.value} indirim`
+                    : `${formatPrice(coupon.value / 100)} indirim`,
+              }
+            : undefined
+        }
+      />
+
       <AssuranceBar />
-
-      <HomeSearch />
-
-      {coupon?.code && (
-        <CouponStrip
-          code={coupon.code}
-          headline={
-            coupon.discount_type === "percentage"
-              ? `İlk alışverişinde %${coupon.value} indirim`
-              : `İlk alışverişinde ${formatPrice(coupon.value / 100)} indirim`
-          }
-          note="Kodu sepette uygula"
-        />
-      )}
 
       <ProductRail
         eyebrow="EN ÇOK TERCİH EDİLENLER"
