@@ -28,6 +28,9 @@
   padding-inline: var(--s6);
 }
 
+/* Duyuru şeridi kayan bir bant olduğu için hizalanmaz; zemini
+   tam genişlikte kalır. Bilinçli tercih. */
+
 @keyframes marquee {
   to {
     transform: translateX(-50%);
@@ -50,7 +53,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--s5);
-  padding: var(--s3) var(--edge);
+  padding: var(--s3) var(--rail);
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--line);
@@ -156,8 +159,8 @@
 
 .mega-panel {
   position: absolute;
-  left: var(--edge);
-  right: var(--edge);
+  left: var(--rail);
+  right: var(--rail);
   /* Panel ekranı kaplamasın; içerik kadar yer tutsun. */
   max-height: min(72vh, 620px);
   overflow-y: auto;
@@ -397,8 +400,8 @@
   /* Alt gezinme çubuğu: mobilde başparmak erişimindeki bölge. */
   .mobile-dock {
     position: fixed;
-    left: var(--edge);
-    right: var(--edge);
+    left: var(--rail);
+    right: var(--rail);
     bottom: var(--edge);
     z-index: 45;
     display: grid;
@@ -429,6 +432,14 @@
 }
 
 /* ---------- Alt bilgi ------------------------------------- */
+
+/* Footer zemini tam genişlikte, içeriği panellerle hizalı. */
+footer {
+  padding: var(--s7) var(--rail) var(--s6);
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+}
 
 .footer-links {
   display: grid;

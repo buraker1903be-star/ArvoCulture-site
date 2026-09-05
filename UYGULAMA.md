@@ -3,44 +3,36 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Menu: marka listesi genisletildi, sac bakimi bolundu"
+git commit -m "1600px hizalama: header, footer ve mega menu panellerle ayni genislikte"
 git push
 vercel --prod
 ```
 
 ## Bu turda
 
-**Marka eşleşmesi başlık üzerinden yapılıyor.** Slug yerine
-koleksiyon başlığına bakılıyor; ARC'ta slug'lar tutarsız olabiliyor
-ama başlıklar sabit. Eşleşme Türkçe büyük/küçük harfe duyarsız ve
-kısmi — "Zeitgard" yazmanız, "LR ZEITGARD Serisi" başlığını da
-yakalar.
+Site genişliği **1600px** olarak sabitlendi. Header (logo, menü,
+ara/hesap/sepet), footer ve mega menü artık hero ve diğer
+panellerle **aynı hizada** başlayıp bitiyor.
 
-Marka listesi:
+### Nasıl çalışıyor
 
-```
-Aloe Via · Zeitgard · Microsilver · Beauty Diamonds
-Platinum · Racine · Nanogold · L-Recapin · Serox
-Colostrum · Profesyonel Bakım
-```
+`--rail` adında tek bir değişken var:
 
-**Saç Bakımı üçe bölündü:**
-
-- SAÇ BAKIMI — şampuan ve yağ dışındakiler
-- ŞAMPUANLAR — başlığında "şampuan" geçenler
-- YAĞLAR — başlığında "yağ" geçenler
-
-Kişisel Bakım menüsü artık sekiz sütun:
-
-```
-MARKA KOLEKSİYONLARI · CİLT BAKIMI · SAÇ BAKIMI
-ŞAMPUANLAR · YAĞLAR · VÜCUT BAKIMI
-DİĞER BAKIMLAR · İHTİYACA GÖRE
+```css
+--shell-max: 1600px;
+--rail: max(var(--edge), calc((100% - var(--shell-max)) / 2 + var(--edge)));
 ```
 
-Boş kalan sütun render edilmiyor.
+Ekran 1600px'ten genişse fazlalığı kenar dolgusuna çevirir, darsa
+normal kenar boşluğunu kullanır. Header ve footer'ın **zemini tam
+genişlikte kalır** (sticky başlık ve alt bilgi kenardan kenara
+uzanır), yalnızca içerikleri hizalanır.
 
-## Yeni marka eklerken
+İç sarmalayıcı eklemeye gerek kalmadı; `header.tsx` ve
+`layout.tsx` değişmedi.
 
-`src/components/header.tsx` içindeki `BRAND_NAMES.care` listesine
-markanın adını yazın. Slug'a gerek yok, başlıkta geçmesi yeterli.
+Aynı hizalama mega menü paneline ve mobil alt gezinme çubuğuna da
+uygulandı.
+
+Duyuru şeridi bilinçli olarak hizalanmadı — kayan bir bant, kenardan
+kenara akması gerekiyor.

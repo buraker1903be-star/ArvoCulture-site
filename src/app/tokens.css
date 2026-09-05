@@ -43,6 +43,15 @@
   --gap: clamp(12px, 1.4vw, 18px);
   --edge: clamp(10px, 1.6vw, 22px);
 
+  /*
+    Site genişliği. Header, footer ve mega menü tam genişlikte
+    zemin taşır ama içerikleri panellerle aynı hizada durur.
+    --rail bunu sağlar: ekran 1600px'ten genişse fazlalığı kenar
+    dolgusuna çevirir, darsa normal kenar boşluğunu kullanır.
+  */
+  --shell-max: 1600px;
+  --rail: max(var(--edge), calc((100% - var(--shell-max)) / 2 + var(--edge)));
+
   --r: 14px;              /* panel yarıçapı */
   --r-sm: 8px;
 

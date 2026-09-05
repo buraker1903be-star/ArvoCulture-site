@@ -176,7 +176,7 @@ p {
   display: grid;
   gap: var(--gap);
   padding: var(--gap) var(--edge) var(--s7);
-  max-width: 1560px;
+  max-width: var(--shell-max);
   margin-inline: auto;
 }
 
