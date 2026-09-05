@@ -81,12 +81,14 @@ export default async function Home() {
   const inStock = products.filter((product) => product.available !== false);
 
   const flagged = inStock.filter((product) => product.bestSeller);
-  const bestSellers = (flagged.length >= 4 ? flagged : inStock).slice(0, 8);
+  // 10 ürün: 5'li ızgarada iki tam satır, 4'lüde ikinci satır 2 eksik
+  // kalmak yerine kaydırmayla devam eder.
+  const bestSellers = (flagged.length >= 4 ? flagged : inStock).slice(0, 10);
 
   const discounted = inStock
     .filter((product) => discountOf(product) > 0)
     .sort((a, b) => discountOf(b) - discountOf(a))
-    .slice(0, 8);
+    .slice(0, 10);
 
   const featured = inStock.slice(0, Math.max(theme.products_per_row, 4));
 

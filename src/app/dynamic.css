@@ -2324,6 +2324,107 @@ footer {
 }
 
 /* ==========================================================
+   ÜRÜN KARTI DÜZENİ
+   .quick-add orijinalde position:absolute + translateY(150%)
+   ile tanımlıydı: görselin üzerine kayarak çıkan bir katmandı.
+   Buton bağlantının dışına alınınca bu konumlandırma kaldı,
+   akıştan çıkıp alt satırın üzerine bindi. Burada akışa geri
+   alınıyor ve kartlar eşit yükseklikte hizalanıyor.
+   ========================================================== */
+
+.rail-track,
+.grid,
+.product-grid {
+  align-items: stretch;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+.product-card .product-art {
+  flex: 0 0 auto;
+}
+
+.product-card .eyebrow {
+  margin: 14px 0 6px;
+}
+
+/* Başlıklar iki satırda sabitlenir; aksi hâlde kartlar farklı
+   yükseklikte kalıyor ve ızgara satırları bozuluyor. */
+.product-card h3 {
+  font-size: 15px !important;
+  line-height: 1.3;
+  margin: 0 0 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6em;
+}
+
+.product-card .price {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.product-card .price del {
+  margin-left: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* Buton kartın en altına yapışır, böylece tüm kartlarda aynı
+   hizada durur. */
+.product-card .quick-add {
+  position: static !important;
+  transform: none !important;
+  inset: auto !important;
+  z-index: auto !important;
+  margin-top: auto;
+  display: block;
+  width: 100%;
+  padding: 11px 12px;
+  background: transparent;
+  backdrop-filter: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease,
+    border-color 160ms ease;
+}
+
+.product-card .quick-add:hover {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.product-card .quick-add.is-disabled,
+.product-card .quick-add:disabled {
+  opacity: 0.45;
+  cursor: default;
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--line);
+}
+
+/* Ray, ürün sayısı sütun sayısına bölünmediğinde son satırda
+   kartların gerilmesini engeller. */
+.rail-track > * {
+  max-width: 100%;
+}
+
+/* ==========================================================
    TİPOGRAFİ KİLİDİ
    Bu blok en son yüklenen stil dosyasının sonundadır ve
    bilinçli olarak !important kullanır.
