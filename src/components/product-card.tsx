@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { QuickAdd } from "@/components/quick-add";
 import { formatPrice, type Product } from "@/lib/product-types";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 
@@ -60,12 +61,8 @@ export function ProductCard({
         <span className="product-view">
           İncele <i>↗</i>
         </span>
-        {theme?.show_quick_add && (
-          <span className="quick-add">
-            {product.available === false ? "Tükendi" : "Hızlı ekle +"}
-          </span>
-        )}
       </Link>
+      {theme?.show_quick_add && <QuickAdd product={product} />}
       {theme?.show_vendor !== false && (
         <p className="eyebrow">{product.eyebrow}</p>
       )}

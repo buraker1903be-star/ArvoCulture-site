@@ -5,6 +5,7 @@ import { formatPrice, type Product } from "@/lib/product-types";
 import { ProductCard } from "@/components/product-card";
 import { ProductRail } from "@/components/product-rail";
 import { AssuranceBar } from "@/components/assurance-bar";
+import { HomeSearch } from "@/components/home-search";
 import { CouponStrip } from "@/components/coupon-strip";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
 import { getStorefrontProducts } from "@/lib/products";
@@ -208,6 +209,8 @@ export default async function Home() {
       <Hero theme={theme} />
 
       <AssuranceBar />
+
+      <HomeSearch />
 
       {coupon?.code && (
         <CouponStrip
