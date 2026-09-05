@@ -1,0 +1,294 @@
+@import "./tokens.css";
+
+/* ==========================================================
+   Sıfırlama ve sabit arka plan
+   ========================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/*
+  SABİT ARKA PLAN
+  Gövdenin arkasında hiç kaymayan bir katman durur; tüm içerik
+  panelleri bunun üzerinde yüzer. `background-attachment: fixed`
+  mobil Safari'de güvenilir çalışmadığı için sabit konumlu bir
+  sözde eleman kullanılıyor.
+*/
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--backdrop-1);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--t-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(
+      120% 80% at 50% 0%,
+      rgba(255, 255, 255, 0.07) 0%,
+      transparent 60%
+    ),
+    linear-gradient(160deg, var(--backdrop-1) 0%, var(--backdrop-2) 100%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: var(--t-hero);
+}
+h2 {
+  font-size: var(--t-h2);
+}
+h3 {
+  font-size: var(--t-h3);
+}
+
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip:focus {
+  left: var(--edge);
+  top: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: #fff;
+}
+
+/* ==========================================================
+   YÜZEN PANEL — sayfanın temel yapı taşı
+   Her bölüm bir paneldir: arka planın üzerinde durur, kendi
+   zeminini ve gölgesini taşır.
+   ========================================================== */
+
+.shell {
+  display: grid;
+  gap: var(--gap);
+  padding: var(--gap) var(--edge) var(--s7);
+  max-width: 1560px;
+  margin-inline: auto;
+}
+
+.panel {
+  padding: var(--pad);
+  border-radius: var(--r);
+  background: var(--panel);
+  box-shadow: var(--float);
+}
+
+.panel-tight {
+  padding: var(--s3) var(--pad);
+}
+
+.panel-soft {
+  background: var(--panel-2);
+}
+
+/* Arka planın görünmesini isteyen, zeminsiz panel. */
+.panel-clear {
+  padding: var(--s5) var(--s2);
+  background: transparent;
+  box-shadow: none;
+  color: #fff;
+}
+
+/* --- Bölüm başlığı ---------------------------------------- */
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin-bottom: var(--s4);
+}
+
+.head p {
+  margin-top: 2px;
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+
+.head a {
+  flex: none;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+}
+
+.head a:hover {
+  color: var(--ink);
+  border-color: currentColor;
+}
+
+.panel-clear .head p,
+.panel-clear .head a {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* --- Butonlar --------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  padding: 13px 24px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  transition: transform 160ms var(--ease), box-shadow 160ms var(--ease);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--float);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.btn-ghost:hover {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.btn-light {
+  background: #fff;
+  color: var(--ink);
+  border-color: #fff;
+}
+
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+
+/* --- Rozet ------------------------------------------------ */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.tag-sale {
+  background: var(--sale);
+  color: #fff;
+}
+
+.tag-best {
+  background: rgba(20, 22, 26, 0.88);
+  color: #fff;
+}
+
+/* --- Fiyat ------------------------------------------------ */
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  font-variant-numeric: tabular-nums;
+}
+
+.price b {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.price del {
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
