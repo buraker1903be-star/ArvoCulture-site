@@ -18,7 +18,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
     Aşağıdaki BRANDS listesi markaları slug üzerinden ayırıp kendi
     sütununa taşır; başlık ve ürün sayısı yine ARC'tan gelir.
   */
-  const byGroup = (groups: string[], limit = 8) =>
+  const byGroup = (groups: string[], limit = 99) =>
     collections
       .filter((collection) => groups.includes(collection.menu_group))
       .sort(
@@ -31,12 +31,22 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
   /** Marka koleksiyonları — slug sabittir, başlık ARC'tan gelir. */
   const BRANDS = {
     apparel: ["the-society-collection"],
+    /*
+      LR ürün aileleri. Bir marka koleksiyonu ARC'a eklendiğinde
+      slug'ını buraya yazın; aksi hâlde "ürün tipine göre"
+      sütununda görünür.
+    */
     care: [
       "aloe-vera-cilt-bakim-urunleri",
       "lr-zeitgard",
       "lr-microsilver-plus-urunleri",
       "beauty-diamonds-cilt-bakim-serisi",
       "zg-pro-cilt-bakim-cihazlari-ve-setleri",
+      "lr-racine",
+      "lr-serox",
+      "lr-colostrum",
+      "lr-aloe-via-men",
+      "lr-vitalbeauty",
     ],
     fragrance: [
       "mood-infusion-parfum-koleksiyonu",
@@ -54,7 +64,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
       .filter((item): item is StorefrontCollection => Boolean(item));
 
   /** Marka koleksiyonlarını dışarıda bırakır; tekrar görünmesinler. */
-  const withoutBrands = (groups: string[], limit = 8) =>
+  const withoutBrands = (groups: string[], limit = 99) =>
     byGroup(groups, 40)
       .filter((item) => !allBrandSlugs.has(item.slug))
       .slice(0, limit);
@@ -68,7 +78,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
           title: "MARKA KOLEKSİYONLARI",
           items: bySlug(BRANDS.apparel),
         },
-        { title: "KESİME GÖRE", items: withoutBrands(["Giyim"], 8) },
+        { title: "KESİME GÖRE", items: withoutBrands(["Giyim"]) },
       ],
     },
     {
@@ -88,7 +98,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
         },
         {
           title: "İHTİYACA GÖRE",
-          items: withoutBrands(["Sorununa Göre", "Saç Bakımı"], 8),
+          items: withoutBrands(["Sorununa Göre", "Saç Bakımı"]),
         },
       ],
     },
@@ -105,7 +115,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
           title: "MARKA KOLEKSİYONLARI",
           items: bySlug(BRANDS.fragrance),
         },
-        { title: "KİME GÖRE", items: withoutBrands(["Parfüm"], 8) },
+        { title: "KİME GÖRE", items: withoutBrands(["Parfüm"]) },
       ],
     },
     {
@@ -116,7 +126,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
           title: "MARKA KOLEKSİYONLARI",
           items: bySlug(BRANDS.supplements),
         },
-        { title: "İHTİYACA GÖRE", items: withoutBrands(["Takviyeler"], 8) },
+        { title: "İHTİYACA GÖRE", items: withoutBrands(["Takviyeler"]) },
       ],
     },
   ].map((menu) => ({
@@ -184,7 +194,6 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
                       {section.items.map((item) => (
                         <Link href={`/koleksiyon/${item.slug}`} key={item.slug}>
                           <b>{item.title}</b>
-                          <small>{item.product_count} ürün</small>
                         </Link>
                       ))}
                     </div>

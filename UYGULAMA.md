@@ -3,59 +3,52 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Menu: marka koleksiyonlari ayri sutuna alindi"
+git commit -m "Menu: urun sayilari kaldirildi, tum koleksiyonlar gorunur"
 git push
 vercel --prod
 ```
 
-## Sorun neydi
+## Bu turda
 
-ARC'taki `menu_group` alanı iki farklı ekseni tek grupta topluyordu.
-"CİLT BAKIMI" başlığı altında hem markalar (Aloe Via, Zeitgard,
-Microsilver Plus, Beauty Diamonds) hem ürün tipleri (Nemlendiriciler,
-Temizleyiciler, Serumlar) yan yana duruyordu.
+**Ürün sayıları kaldırıldı.**
 
-Müşteri "Zeitgard ürünlerini görmek istiyorum" ile "nemlendirici
-arıyorum" arasında farklı düşünür; ikisini aynı listede aramak
-zorunda kalıyordu.
+**Sınırlar kaldırıldı.** Asıl eksiklik sebebi buydu: her sütunda
+6–8 kayıtlık bir sınır vardı ve üç sütun da tam sınıra dayanmıştı.
+ARC'ta daha fazla koleksiyon vardı ama menü kesiyordu. Artık ARC'ta
+ne varsa hepsi görünüyor.
 
-## Yeni yapı
+**Sütunlar ekrana göre açılıyor.** Sabit sayı yerine 200px tabanlı
+esnek ızgara: geniş ekranda dört-beş sütun, dar ekranda iki.
+Listeler farklı uzunlukta olsa da üstten hizalı duruyor.
 
-**Giyim**
-- MARKA KOLEKSİYONLARI: The Society Collection
-- KESİME GÖRE: Oversize, Basic, Regular Fit
+**Marka sütunu ayrıldı.** İlk sütun sağ kenarında ince bir çizgiyle
+diğerlerinden ayrılıyor — müşterilerin çoğu markayla aradığı için
+görsel olarak öne çıkıyor.
 
-**Kişisel Bakım**
-- MARKA KOLEKSİYONLARI: Aloe Via, Zeitgard, Microsilver Plus,
-  Beauty Diamonds, Profesyonel Bakım (ZG Pro)
-- ÜRÜN TİPİNE GÖRE: Nemlendiriciler, Temizleyiciler, Serumlar,
-  Vücut Losyonları, Duş Jelleri, Ağız & Diş, Deodorant, Erkek,
-  Bebek & Çocuk
-- İHTİYACA GÖRE: Yaşlanma Karşıtı, Akne, Kuru Cilt, Güneş Koruması,
-  Yağlı Cilt, Saç Dökülmesi
+## Eksik marka koleksiyonu varsa
 
-**Parfüm**
-- MARKA KOLEKSİYONLARI: Mood Infusion, Iconic Elixirs
-- KİME GÖRE: Kadın, Erkek
+`src/components/header.tsx` içindeki `BRANDS.care` listesine slug
+ekleyin. Şu an tanımlı olanlar:
 
-**Takviyeler**
-- MARKA KOLEKSİYONLARI: LR LifeTakt
-- İHTİYACA GÖRE: Bağışıklık, Vitamin, Spor
+```
+aloe-vera-cilt-bakim-urunleri
+lr-zeitgard
+lr-microsilver-plus-urunleri
+beauty-diamonds-cilt-bakim-serisi
+zg-pro-cilt-bakim-cihazlari-ve-setleri
+lr-racine
+lr-serox
+lr-colostrum
+lr-aloe-via-men
+lr-vitalbeauty
+```
 
-**Kozmetik** — MAKYAJ (Ten, Göz, Dudak). Marka koleksiyonu yok.
+Son beşini LR ürün ailelerine bakarak ekledim; ARC'ta bu slug'larla
+koleksiyon yoksa menüde görünmezler, hata vermezler.
 
-## Nasıl çalışıyor
+Listede olmayan bir marka koleksiyonu "ürün tipine göre" sütununda
+çıkar. Menüde yanlış yerde duran bir marka görürseniz slug'ını bu
+listeye ekleyin.
 
-Markalar `header.tsx` içindeki `BRANDS` listesinde slug ile
-tanımlı. Başlık ve ürün sayısı yine ARC'tan geliyor — yani bir
-koleksiyonun adını ARC'ta değiştirirseniz menüde de değişir.
-
-Marka koleksiyonları diğer sütunlardan otomatik çıkarılıyor, iki
-yerde birden görünmüyorlar.
-
-Boş kalan sütun hiç render edilmiyor.
-
-### Yeni marka eklerken
-
-`src/components/header.tsx` içindeki `BRANDS` nesnesine slug'ı
-ekleyin. ARC'ta koleksiyon zaten varsa menüde belirir.
+ARC panelinde koleksiyon slug'larını görmek için Koleksiyonlar
+sayfasına bakabilirsiniz.
