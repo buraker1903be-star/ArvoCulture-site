@@ -1,1 +1,0 @@
-import Link from "next/link";export default function NotFound(){return <main className="simple-page"><p className="eyebrow">404</p><h1>Bu sayfa koleksiyonda yok.</h1><Link className="button button-dark" href="/">Ana sayfaya dön</Link></main>}

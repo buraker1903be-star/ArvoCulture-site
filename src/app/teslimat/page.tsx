@@ -1,8 +1,0 @@
-import { InfoPage, InfoSection } from "@/components/info-page";
-export default function DeliveryPolicy(){return <InfoPage eyebrow="MÜŞTERİ HİZMETLERİ" title="Teslimat politikası." intro="Siparişinizin onaydan teslimata kadar hangi aşamalardan geçtiğini açıkça anlatıyoruz.">
-  <InfoSection title="Siparişin hazırlanması"><p>Ödeme onayı ve stok kontrolü tamamlanan sipariş hazırlanır. Tahmini hazırlık ve teslim süresi, sipariş sırasında adres ve ürün özelliklerine göre gösterilir. Kargoya teslim edildiğinde takip bilgisi kayıtlı iletişim kanalınıza gönderilir.</p></InfoSection>
-  <InfoSection title="Teslimat süresi"><p>Sipariş, taahhüt edilen sürede ve her hâlükârda mevzuatta izin verilen azami süre içinde yerine getirilir. Kişiye özel hazırlanan ürünler ve mücbir sebepler bakımından müşteriye ayrıca bilgi verilir.</p></InfoSection>
-  <InfoSection title="Kargo ücreti"><p>Geçerli kargo bedeli veya ücretsiz kargo eşiği ödeme öncesindeki sipariş özetinde açıkça gösterilir. Kampanyalar dönemsel olarak değişebilir.</p></InfoSection>
-  <InfoSection title="Teslimat kontrolü"><p>Pakette görünür hasar varsa teslimat görevlisiyle tutanak düzenleyin. Eksik, yanlış veya hasarlı ürün için paket ve ürün fotoğraflarıyla <a href="mailto:info@arvoculture.com">info@arvoculture.com</a> adresine ulaşın. Tutanak bulunmaması kanuni haklarınızı ortadan kaldırmaz.</p></InfoSection>
-  <InfoSection title="Adres ve teslim alınamama"><p>Siparişten önce adresinizi kontrol edin. Kargo firmasının teslimat denemeleri sonucunda geri dönen gönderiler için müşteri hizmetleri sizinle yeniden teslimat veya iade konusunda iletişim kurar.</p></InfoSection>
-</InfoPage>}
