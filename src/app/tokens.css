@@ -21,7 +21,6 @@
   --backdrop-2: #2b2f28;
 
   /* --- Tipografi ---------------------------------------- */
-  --font: var(--font-poppins), system-ui, -apple-system, sans-serif;
   --t-hero: clamp(32px, 4.6vw, 54px);
   --t-h2: clamp(19px, 2vw, 25px);
   --t-h3: 15px;

@@ -1,36 +1,29 @@
 # HANGİ REPO: C:\ArvoCulture-site
 
-Zip'i açıp içindeki `arvoculture-site` klasörünün **içindekileri**
-`C:\ArvoCulture-site` üzerine kopyalayın. Sonra:
-
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Eksik sayfa stilleri eklendi"
+git commit -m "Font zinciri ve mega menu duzeltmesi"
 git push
 vercel --prod
 ```
 
-`vercel --prod` klasördeki dosyalardan yayınlar, git'i beklemez.
+## Bu turda düzeltilen iki hata
 
-## Bu turda düzeltilen
+**Font serif çıkıyordu.** `--font` değişkeni `:root` üzerinde
+tanımlıydı ve içinde `var(--font-poppins)` vardı. Ama next/font
+`--font-poppins`'i `<body>` üzerinde tanımlıyor. CSS özel
+değişkenleri tanımlandıkları elemanda çözüldüğü için `:root`'ta
+`--font-poppins` bulunamıyordu, zincir kırılıyor ve tarayıcı
+varsayılan serif'e düşüyordu.
 
-Önceki pakette eski `dynamic.css` silinmişti ama içindeki **header,
-mega menü, footer, koleksiyon, ürün, sepet ve bilgi sayfası
-stilleri** yeniden yazılmamıştı. Sadece ana sayfa ve ödeme stilleri
-vardı. Bu yüzden arka plan geliyor ama sayfanın geri kalanı çıplak
-kalıyordu.
+Artık `body` doğrudan `var(--font-poppins)` kullanıyor, ara
+değişken yok.
 
-`src/app/layout.css` eklendi: eksik olan tüm bölümler yeni panel
-diliyle yeniden yazıldı.
+**Mega menüler hep açıktı.** Yapıyı yanlış okumuşum: `.mega-menu`
+sarmalayıcı, açılır kutu ise `.mega-panel`. Ben gizleme kuralını
+sarmalayıcıya yazmıştım, panele değil — bu yüzden hepsi aynı anda
+görünüyordu.
 
-CSS artık 21 KB (öncesi 12 KB).
-
-## Stil dosyaları
-
-| Dosya | İçerik |
-| --- | --- |
-| `tokens.css` | Renk, boşluk, tipografi, gölge |
-| `globals.css` | Sıfırlama, sabit arka plan, panel, buton, fiyat |
-| `components.css` | Hero, ürün kartı, ızgara, ana sayfa, ödeme |
-| `layout.css` | Başlık, mega menü, footer, iç sayfalar |
+Artık `.mega-panel` varsayılan olarak gizli; üzerine gelindiğinde
+veya klavyeyle içine odaklanıldığında açılıyor.

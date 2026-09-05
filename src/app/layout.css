@@ -124,16 +124,37 @@
 
 /* ---------- Mega menü ------------------------------------- */
 
+/*
+  Yapı: .mega-menu sarmalayıcıdır (tetikleyici + panel).
+  .mega-panel açılır kutudur; varsayılan olarak gizli, üzerine
+  gelindiğinde veya içine odaklanıldığında görünür.
+*/
 .mega-menu {
+  position: static;
+}
+
+.mega-panel {
   position: absolute;
   left: var(--edge);
   right: var(--edge);
-  top: 100%;
+  top: calc(100% + 6px);
   z-index: 45;
   padding: var(--pad);
   border-radius: var(--r);
   background: var(--panel);
   box-shadow: var(--float-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 160ms var(--ease), transform 160ms var(--ease),
+    visibility 160ms;
+}
+
+.mega-menu:hover .mega-panel,
+.mega-menu:focus-within .mega-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
 }
 
 .mega-panel-head {
@@ -146,8 +167,9 @@
   border-bottom: 1px solid var(--line);
 }
 
-.mega-panel-head strong {
+.mega-panel-head p {
   font-size: var(--t-h3);
+  font-weight: 600;
 }
 
 .mega-panel-head a {
@@ -162,8 +184,7 @@
 }
 
 .mega-columns h4,
-.mega-columns > div > span {
-  display: block;
+.mega-columns > div > p:first-child {
   margin-bottom: var(--s3);
   font-size: 10px;
   font-weight: 600;
@@ -179,17 +200,17 @@
   gap: var(--s2);
   padding: 6px 0;
   font-size: var(--t-sm);
-  color: var(--ink-2);
+  color: var(--ink);
 }
 
 .mega-columns a:hover {
-  color: var(--ink);
+  color: var(--brand);
 }
 
-.mega-columns a b,
-.mega-columns a strong {
-  font-weight: 500;
-  color: var(--ink);
+.mega-columns a span,
+.mega-columns a small {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
 }
 
 .menu-backdrop {
@@ -200,7 +221,6 @@
   border: 0;
 }
 
-.menu-featured,
 .mobile-featured {
   display: none;
 }
