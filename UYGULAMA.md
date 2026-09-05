@@ -3,24 +3,44 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Menu: her koleksiyon grubu ayri sutunda"
+git commit -m "Menu: marka listesi genisletildi, sac bakimi bolundu"
 git push
 vercel --prod
 ```
 
 ## Bu turda
 
-Kişisel Bakım menüsünde gruplar birleştirilmişti; artık her
-`menu_group` kendi sütununda:
+**Marka eşleşmesi başlık üzerinden yapılıyor.** Slug yerine
+koleksiyon başlığına bakılıyor; ARC'ta slug'lar tutarsız olabiliyor
+ama başlıklar sabit. Eşleşme Türkçe büyük/küçük harfe duyarsız ve
+kısmi — "Zeitgard" yazmanız, "LR ZEITGARD Serisi" başlığını da
+yakalar.
+
+Marka listesi:
+
+```
+Aloe Via · Zeitgard · Microsilver · Beauty Diamonds
+Platinum · Racine · Nanogold · L-Recapin · Serox
+Colostrum · Profesyonel Bakım
+```
+
+**Saç Bakımı üçe bölündü:**
+
+- SAÇ BAKIMI — şampuan ve yağ dışındakiler
+- ŞAMPUANLAR — başlığında "şampuan" geçenler
+- YAĞLAR — başlığında "yağ" geçenler
+
+Kişisel Bakım menüsü artık sekiz sütun:
 
 ```
 MARKA KOLEKSİYONLARI · CİLT BAKIMI · SAÇ BAKIMI
-VÜCUT BAKIMI · DİĞER BAKIMLAR · İHTİYACA GÖRE
+ŞAMPUANLAR · YAĞLAR · VÜCUT BAKIMI
+DİĞER BAKIMLAR · İHTİYACA GÖRE
 ```
 
-Birleştirilmiş hâlde müşteri "saç ürünü arıyorum" derken cilt ve
-vücut ürünlerinin arasında aramak zorunda kalıyordu.
+Boş kalan sütun render edilmiyor.
 
-Sütunlar 230px sabit genişlikte ve sola dayalı; ekrana sığdığı
-kadarı yan yana, kalanı alt satıra geçiyor. Boş kalan grup hiç
-render edilmiyor.
+## Yeni marka eklerken
+
+`src/components/header.tsx` içindeki `BRAND_NAMES.care` listesine
+markanın adını yazın. Slug'a gerek yok, başlıkta geçmesi yeterli.
