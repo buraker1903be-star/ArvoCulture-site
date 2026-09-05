@@ -3,27 +3,33 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Font zinciri ve mega menu duzeltmesi"
+git commit -m "Beyaz motifli arka plan, mobil menu duzeltmesi, logo boyutu"
 git push
 vercel --prod
 ```
 
-## Bu turda düzeltilen iki hata
+## Bu turda
 
-**Font serif çıkıyordu.** `--font` değişkeni `:root` üzerinde
-tanımlıydı ve içinde `var(--font-poppins)` vardı. Ama next/font
-`--font-poppins`'i `<body>` üzerinde tanımlıyor. CSS özel
-değişkenleri tanımlandıkları elemanda çözüldüğü için `:root`'ta
-`--font-poppins` bulunamıyordu, zincir kırılıyor ve tarayıcı
-varsayılan serif'e düşüyordu.
+**Mobil menü masaüstünde görünüyordu.** Sarmalayıcı `.mobile-menu`
+idi ve hiç stillendirilmemişti. Artık masaüstünde tamamen gizli,
+mobilde yalnızca `.open` sınıfı varken açılıyor.
 
-Artık `body` doğrudan `var(--font-poppins)` kullanıyor, ara
-değişken yok.
+**Arka plan beyaz, motifli ve hareketli.** İki katman:
 
-**Mega menüler hep açıktı.** Yapıyı yanlış okumuşum: `.mega-menu`
-sarmalayıcı, açılır kutu ise `.mega-panel`. Ben gizleme kuralını
-sarmalayıcıya yazmıştım, panele değil — bu yüzden hepsi aynı anda
-görünüyordu.
+1. Seyrek zeytin noktalardan oluşan doku (26px ızgara), 90 saniyede
+   bir kare kayarak sonsuz döner — kesintisiz görünür.
+2. Üstünde iki yumuşak ışık lekesi (zeytin ve altın), 26 saniyede
+   yavaşça nefes alır.
 
-Artık `.mega-panel` varsayılan olarak gizli; üzerine gelindiğinde
-veya klavyeyle içine odaklanıldığında açılıyor.
+İkisi de `position: fixed`, yani sayfa kayarken yerinde durur.
+`background-attachment: fixed` kullanılmadı; o özellik mobil
+Safari'de titriyor.
+
+Hareket, işletim sisteminde "hareketi azalt" açıksa duruyor.
+
+**Logo 30px'ten 22px'e indi.**
+
+## Not
+
+Arka plan açık renge döndüğü için `.panel-clear` bölümlerinin metin
+rengi beyazdan koyuya çevrildi; yoksa okunmazdı.

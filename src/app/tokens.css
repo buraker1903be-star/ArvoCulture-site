@@ -17,8 +17,9 @@
   --gold: #b08d3f;
 
   /* Sabit arka plan katmanı. Paneller bunun üzerinde yüzer. */
-  --backdrop-1: #1c1f1b;
-  --backdrop-2: #2b2f28;
+  --backdrop-1: #f4f3ef;
+  --backdrop-2: #eceae4;
+  --motif: rgba(74, 93, 63, 0.09);
 
   /* --- Tipografi ---------------------------------------- */
   --t-hero: clamp(32px, 4.6vw, 54px);

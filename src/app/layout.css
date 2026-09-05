@@ -57,7 +57,7 @@
 }
 
 .logo img {
-  height: 30px;
+  height: 22px;
   width: auto;
 }
 
@@ -227,6 +227,12 @@
 
 /* ---------- Mobil ----------------------------------------- */
 
+/*
+  Mobil menünün sarmalayıcısı .mobile-menu'dür. Masaüstünde tamamen
+  gizlenir; mobilde yalnızca .open sınıfı varken açılır. Bu kural
+  eksik olduğu için menü masaüstünde de görünüyordu.
+*/
+.mobile-menu,
 .menu-toggle,
 .mobile-dock,
 .mobile-submenu {
@@ -251,6 +257,15 @@
     text-transform: uppercase;
   }
 
+  .mobile-menu {
+    display: block;
+  }
+
+  .mobile-menu:not(.open) {
+    display: none;
+  }
+
+  .mobile-menu,
   .mobile-submenu {
     position: fixed;
     inset: 0;

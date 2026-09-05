@@ -42,15 +42,55 @@ body {
 body::before {
   content: "";
   position: fixed;
+  inset: -20%;
+  z-index: -2;
+  background:
+    /* Motif: ince zeytin noktalardan oluşan seyrek doku. */
+    radial-gradient(var(--motif) 1.4px, transparent 1.5px) 0 0 / 26px 26px,
+    radial-gradient(var(--motif) 1.4px, transparent 1.5px) 13px 13px / 26px 26px,
+    linear-gradient(155deg, var(--backdrop-1) 0%, var(--backdrop-2) 100%);
+  animation: drift 90s linear infinite;
+}
+
+/*
+  İkinci katman: yavaşça salınan iki yumuşak ışık lekesi. Motifin
+  üzerinde derinlik hissi bırakır, okunabilirliği bozmaz.
+*/
+body::after {
+  content: "";
+  position: fixed;
   inset: 0;
   z-index: -1;
+  pointer-events: none;
   background:
     radial-gradient(
-      120% 80% at 50% 0%,
-      rgba(255, 255, 255, 0.07) 0%,
-      transparent 60%
+      42% 38% at 18% 22%,
+      rgba(74, 93, 63, 0.13) 0%,
+      transparent 70%
     ),
-    linear-gradient(160deg, var(--backdrop-1) 0%, var(--backdrop-2) 100%);
+    radial-gradient(
+      38% 34% at 82% 72%,
+      rgba(176, 141, 63, 0.12) 0%,
+      transparent 70%
+    );
+  animation: breathe 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  to {
+    transform: translate3d(26px, 26px, 0);
+  }
+}
+
+@keyframes breathe {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(1.12) translate3d(2%, -2%, 0);
+    opacity: 1;
+  }
 }
 
 button,
@@ -160,7 +200,6 @@ p {
   padding: var(--s5) var(--s2);
   background: transparent;
   box-shadow: none;
-  color: #fff;
 }
 
 /* --- Bölüm başlığı ---------------------------------------- */
@@ -195,7 +234,7 @@ p {
 
 .panel-clear .head p,
 .panel-clear .head a {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-2);
 }
 
 /* --- Butonlar --------------------------------------------- */
@@ -292,6 +331,10 @@ p {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none;
+  }
   *,
   *::before,
   *::after {
