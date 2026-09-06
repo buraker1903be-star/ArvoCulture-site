@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AccountPanel } from "@/components/account-panel";
 
 export const metadata: Metadata = {
   title: "Hesabım",
@@ -12,20 +13,12 @@ export const metadata: Metadata = {
 /**
  * Hesap sayfası.
  *
- * Üyelik sistemi henüz kurulmadı. Sahte bir giriş formu koymak
- * yerine bugün gerçekten çalışan yol öne çıkarılıyor: misafir
- * alışveriş ve sipariş numarasıyla takip.
- *
- * Üyelik geldiğinde bu sayfa giriş/kayıt sekmelerine dönüşecek;
- * `SOCIAL` listesi o zaman etkinleşir.
+ * Solda misafir sipariş takibi, sağda hesap paneli. Üyelik
+ * zorunlu değil: misafir alışveriş açık kalır, hesap yalnızca
+ * sipariş geçmişi ve hızlı ödeme için bir kolaylıktır.
  */
 
 const WHATSAPP_LINK = "https://wa.me/905074370507";
-
-const SOCIAL = [
-  { label: "Google ile devam et", key: "google" },
-  { label: "Facebook ile devam et", key: "facebook" },
-];
 
 export default function Account() {
   return (
@@ -83,34 +76,7 @@ export default function Account() {
           </div>
         </section>
 
-        {/* Üyelik: hazırlanıyor. Sahte form yok. */}
-        <section className="panel panel-soft account-soon">
-          <p className="about-eyebrow">Yakında</p>
-          <h2>ArvoCulture hesabı</h2>
-          <p>
-            Sipariş geçmişi, kayıtlı adresler ve hızlı ödeme için üyelik
-            sistemi üzerinde çalışıyoruz.
-          </p>
-
-          <ul className="soon-list">
-            <li>Sipariş geçmişi ve durum takibi</li>
-            <li>Kayıtlı teslimat adresleri</li>
-            <li>Tek tıkla yeniden sipariş</li>
-            <li>Favori ürünler</li>
-          </ul>
-
-          <div className="soon-social" aria-label="Planlanan giriş yöntemleri">
-            {SOCIAL.map((provider) => (
-              <span key={provider.key}>{provider.label}</span>
-            ))}
-            <span>E-posta ve şifre</span>
-          </div>
-
-          <p className="hint">
-            Hazır olduğunda mevcut siparişleriniz e-posta adresinizle
-            hesabınıza bağlanacak.
-          </p>
-        </section>
+        <AccountPanel />
       </div>
 
       <section className="panel panel-tight help">
