@@ -65,69 +65,55 @@ export function Perks() {
 }
 
 /*
-  Kategori ikonları. Ürün fotoğrafı yerine çizim kullanılıyor:
-  fotoğraf tek bir ürünü temsil ediyordu ve kategoriyi yanlış
-  daraltıyordu (örneğin "Kişisel Bakım" bir tüp aloe kremi gibi
-  görünüyordu). Çizgi ikon kategoriyi bütün olarak anlatır ve
-  katalog değişince eskimez.
-*/
-/*
-  Kategori ikonları. Tasarım kuralı: her siluet uzaktan bakıldığında
-  diğerlerinden ayırt edilebilmeli. İlk denemede bakım, kozmetik ve
-  parfüm hepsi dikdörtgen şişeye benziyordu; ayırt edilemiyorlardı.
+  Kategori ikonları — eskiz (sketch) tarzı.
 
-  Çözüm farklı temel biçimler: askı (üçgen), damlalıklı şişe (ince
-  boyun), açılı ruj (eğik uç), geniş omuzlu flakon, eğik kapsül.
+  El çizimi hissi iki şeyden gelir:
+  1. Çizgiler tam düz değil; her kenar hafif bir eğri (C) taşır,
+     tıpkı elle çekilmiş bir çizgi gibi.
+  2. Ana çizginin altında hafifçe kaymış soluk bir kopya var —
+     kalemin ikinci geçişi gibi. Bileşende `sketch-ghost` katmanı
+     bunu yapar.
+
+  Siluetler bilinçli olarak birbirinden farklı: askı, damlalıklı
+  şişe, ruj, flakon, kapsül.
 */
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  // Askı — tişörtten daha zarif ve giyimi bütün olarak anlatır.
   Giyim: (
     <>
-      <path d="M12 4.4a1.7 1.7 0 1 1 1.7 1.7c-.9 0-1.7.8-1.7 1.7v.9" />
-      <path d="M12 8.9 4.2 14.4c-1 .7-.5 2.2.7 2.2h14.2c1.2 0 1.7-1.5.7-2.2L12 8.9Z" />
+      <path d="M12 4.3c1 0 1.8.7 1.7 1.7-.1 1-.9 1.5-1.7 1.6-.1.5 0 .9 0 1.3" />
+      <path d="M12 8.9C9.5 10.6 6.8 12.5 4.4 14.3c-1.1.8-.6 2.4.8 2.4 4.6.1 9.2.1 13.8 0 1.3 0 1.8-1.6.7-2.4C17.2 12.5 14.5 10.6 12 8.9Z" />
     </>
   ),
 
-  // Damlalıklı serum şişesi — ince boyun ve uzun pipet.
   "Kişisel Bakım": (
     <>
-      <path d="M11 2.8h2v4.4h-2z" />
-      <path d="M10.2 7.2h3.6" />
-      <path d="M8.6 10.4a2.4 2.4 0 0 1 1.6-2.3h3.6a2.4 2.4 0 0 1 1.6 2.3v8.4a2.4 2.4 0 0 1-2.4 2.4h-2A2.4 2.4 0 0 1 8.6 18.8Z" />
-      <path d="M9.4 14.2h5.2" />
+      <path d="M11 2.9c.7-.1 1.4-.1 2 0 .1 1.5.1 3 0 4.4-.7.1-1.3.1-2 0-.1-1.4-.1-2.9 0-4.4Z" />
+      <path d="M10.1 7.3c1.3-.2 2.6-.2 3.8 0" />
+      <path d="M8.6 10.5c0-1 .6-1.9 1.6-2.3 1.2-.2 2.4-.2 3.6 0 1 .4 1.6 1.3 1.6 2.3.1 2.8.1 5.6 0 8.4-.1 1.3-1.1 2.4-2.4 2.4-.7.1-1.4.1-2.1 0-1.3-.1-2.3-1.1-2.3-2.4-.1-2.8-.1-5.6 0-8.4Z" />
+      <path d="M9.5 14.2c1.7-.2 3.4-.2 5 0" />
     </>
   ),
 
-  // Ruj — eğik uç, kesinlikle şişeye benzemez.
   Kozmetik: (
     <>
-      <path d="M9.4 12.6h5.2v8.6H9.4z" />
-      <path d="M9.4 12.6V8.4l5.2-2.6v6.8" />
-      <path d="M9.4 16.2h5.2" />
+      <path d="M9.4 12.7c1.7-.2 3.5-.2 5.2 0 .1 2.8.1 5.7 0 8.5-1.7.2-3.5.2-5.2 0-.1-2.8-.1-5.7 0-8.5Z" />
+      <path d="M9.4 12.7c-.1-1.4-.1-2.8 0-4.2 1.7-1 3.5-1.9 5.2-2.7.1 2.3.1 4.6 0 6.9" />
+      <path d="M9.5 16.3c1.7-.2 3.4-.2 5 0" />
     </>
   ),
 
-  // Parfüm flakonu — geniş omuz, kapak ve sprey başlığı.
   Parfüm: (
     <>
-      <path d="M10.4 3h3.2v2.4h-3.2z" />
-      <path d="M16.4 5.4h1.8v2.2" />
-      <path d="M8.2 9.6a4 4 0 0 1 2.2-3.6h3.2a4 4 0 0 1 2.2 3.6v8.6a2.6 2.6 0 0 1-2.6 2.6h-2.4a2.6 2.6 0 0 1-2.6-2.6Z" />
+      <path d="M10.4 3.1c1.1-.1 2.2-.1 3.2 0 .1.8.1 1.6 0 2.4-1.1.1-2.2.1-3.2 0-.1-.8-.1-1.6 0-2.4Z" />
+      <path d="M16.4 5.5c.6-.1 1.2-.1 1.8 0 .1.7.1 1.5 0 2.2" />
+      <path d="M8.3 9.7c.1-1.5.9-2.9 2.1-3.7 1.1-.2 2.2-.2 3.3 0 1.2.8 2 2.2 2.1 3.7.1 2.9.1 5.8 0 8.6-.1 1.4-1.2 2.6-2.6 2.6-.9.1-1.7.1-2.5 0-1.4 0-2.5-1.2-2.5-2.6-.1-2.8-.1-5.7.1-8.6Z" />
     </>
   ),
 
-  // Tek kapsül, eğik. Üst üste binen iki kapsül karışık görünüyordu.
   Takviyeler: (
     <>
-      <rect
-        x="4.6"
-        y="9"
-        width="14.8"
-        height="6.4"
-        rx="3.2"
-        transform="rotate(-45 12 12.2)"
-      />
-      <path d="M9.6 14.6 14.6 9.6" />
+      <path d="M6.6 13.2c1.9-2 3.9-4 5.9-5.9 1.5-1.4 3.9-1.3 5.2.2 1.3 1.5 1.1 3.8-.4 5.1-2 2-4 4-6 5.9-1.5 1.3-3.8 1.1-5.1-.4-1.2-1.5-1.1-3.6.4-4.9Z" />
+      <path d="M9.6 14.7c1.7-1.7 3.4-3.4 5.1-5.1" />
     </>
   ),
 };
@@ -149,7 +135,9 @@ export function CategoryStrip({
           <Link key={item.href} href={item.href}>
             <span>
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                {CATEGORY_ICONS[item.label]}
+                {/* Kalemin ikinci geçişi: hafif kaymış soluk kopya. */}
+                <g className="sketch-ghost">{CATEGORY_ICONS[item.label]}</g>
+                <g>{CATEGORY_ICONS[item.label]}</g>
               </svg>
             </span>
             <strong>{item.label}</strong>
