@@ -150,6 +150,15 @@ export default async function Home() {
               height={600}
             />
           )}
+          {/* Filigran: indirim oranı, panelin sağ tarafındaki boşluğu
+              dolduran dev bir kontur rakam. Dekoratif olduğu için
+              ekran okuyuculardan gizli. */}
+          {coupon?.discount_type === "percentage" && (
+            <span className="promo-watermark" aria-hidden="true">
+              %{coupon.value}
+            </span>
+          )}
+
           <div className="promo-body">
             <p className="promo-eyebrow">Yeni müşterilere özel</p>
             <h2 data-arvo-field="campaign_title">{theme.campaign_title}</h2>

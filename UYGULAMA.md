@@ -3,33 +3,27 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Kampanya paneli yeniden tasarlandi"
+git commit -m "Kampanya paneli: filigran, doku ve buton duzeltmesi"
 git push
 vercel --prod
 ```
 
-## Sorun neydi
+## Bu turda
 
-"İlk seçimine özel" paneli okunmuyordu: metin beyazdı ama zemin
-açık kalıyordu. Panel okunabilirliği kampanya görselinin varlığına
-bağlıydı; görsel tanımlı değilken ya da açık renkliyken yazı
-kayboluyordu.
+**Filigran eklendi.** İndirim oranı (%10) sağ tarafta dev bir
+kontur rakam olarak duruyor. İçi boş bırakıldı — dolu olsaydı
+başlıkla yarışırdı. Sağdaki ölü boşluk artık teklifin kendisini
+tekrar ediyor.
 
-## Ne yapıldı
+Rakam ARC'taki indirim kaydından geliyor; oranı değiştirirseniz
+filigran da değişir. Yalnızca yüzde tipi indirimlerde görünür.
 
-**Panel kendi koyu zeminini taşıyor.** Zeytin-siyah gradyan,
-sol üstten gelen hafif bir aydınlanma. Kampanya görseli varsa
-%28 opaklıkla üzerine biniyor — okunabilirlik artık görsele bağlı
-değil.
+**Zemine doku geldi.** Düz koyu zemin ucuz görünüyordu. 118 derece
+eğik, çok soluk bir tarama deseni derinlik veriyor. Üstüne sağ
+kenardan giren yumuşak yeşil bir ışık lekesi kondu.
 
-**Kupon kodu ayrı bir karta alındı.** Eskiden "ARVO10 koduyla %10
-indirim" cümlesinin içinde geçiyordu ve gözden kaçıyordu. Artık
-kesik çizgili bir kart içinde büyük harflerle, yanında beyaz
-kopyalama butonuyla duruyor.
+**Kopyala butonu düzeltildi.** "ARVO10Kopyala" şeklinde iç içe
+girmişti — kart zaten kodu büyük harflerle gösterdiği için buton
+kodu tekrar etmiyor, yalnızca "Kopyala" yazıyor.
 
-**Üst etiket eklendi:** "YENİ MÜŞTERİLERE ÖZEL". Teklifin kime
-olduğu başlıktan önce anlaşılıyor.
-
-Başlık ve açıklama yine ARC panelinden yönetiliyor
-(`campaign_title`, `campaign_description`); kupon kodu indirim
-kaydından otomatik geliyor.
+**Kupon kartına asgari genişlik verildi**, dar ekranda sıkışmıyor.

@@ -472,6 +472,67 @@
   color: #fff;
 }
 
+/* İnce doku: düz koyu zemin ucuz görünüyordu; eğik çizgilerden
+   oluşan çok soluk bir tarama derinlik veriyor. */
+.promo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.028) 0 1px,
+    transparent 1px 9px
+  );
+}
+
+/* Sağ kenardan giren yumuşak ışık; boşluğu ölü bırakmaz. */
+.promo::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -12%;
+  width: 52%;
+  height: 160%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(122, 148, 106, 0.22) 0%,
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+/*
+  Filigran: indirim oranı kontur rakam olarak sağ tarafta durur.
+  İçi boş bırakıldı — dolu olsaydı metinle yarışırdı.
+*/
+.promo-watermark {
+  position: absolute;
+  z-index: 1;
+  right: clamp(-10px, 1vw, 32px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(120px, 20vw, 260px);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.13);
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  .promo-watermark {
+    top: auto;
+    bottom: -18px;
+    right: -8px;
+    transform: none;
+    font-size: 120px;
+    -webkit-text-stroke-width: 1.2px;
+  }
+}
+
 .promo img {
   position: absolute;
   inset: 0;
@@ -483,7 +544,7 @@
 
 .promo-body {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   gap: var(--s3);
   justify-items: start;
@@ -514,6 +575,7 @@
   display: flex;
   align-items: center;
   gap: var(--s5);
+  min-width: min(100%, 20rem);
   margin-top: var(--s2);
   padding: var(--s3) var(--s3) var(--s3) var(--s5);
   border: 1px dashed rgba(255, 255, 255, 0.34);
@@ -535,14 +597,29 @@
   letter-spacing: 0.1em;
 }
 
+/* Promo içindeki kopyalama butonu: kart zaten kodu gösterdiği
+   için buton yalnızca eylemi taşır, kodu tekrarlamaz. */
 .promo-code .coupon-code {
+  flex: none;
+  gap: 0;
+  padding: 11px 18px;
   background: #fff;
   color: var(--ink);
   box-shadow: none;
+  white-space: nowrap;
+}
+
+.promo-code .coupon-code span {
+  display: none;
 }
 
 .promo-code .coupon-code em {
-  background: rgba(20, 22, 26, 0.09);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  padding: 0;
+  background: transparent;
 }
 
 .promo-code .coupon-code:hover {
