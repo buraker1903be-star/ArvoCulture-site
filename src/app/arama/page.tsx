@@ -1,54 +1,35 @@
-import { ProductCard } from "@/components/product-card";
-import { getStorefrontProducts } from "@/lib/products";
+import type { Metadata } from "next";
+import { LiveSearch } from "@/components/live-search";
+import { getSearchIndex } from "@/lib/search-index";
+
+export const metadata: Metadata = {
+  title: "Arama",
+  description: "ArvoCulture kataloğunda ürün, marka ve kategori araması.",
+  alternates: { canonical: "/arama" },
+  // Arama sonuç sayfalarının dizine girmesi kalitesiz sonuç üretir.
+  robots: { index: false, follow: true },
+};
 
 export default async function Search({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
-  const query = (await searchParams).q?.trim() ?? "";
-  const products = await getStorefrontProducts(200);
-  const normalized = query.toLocaleLowerCase("tr-TR");
-  const results = normalized
-    ? products.filter((product) =>
-        `${product.name} ${product.category} ${product.eyebrow} ${product.subtitle}`
-          .toLocaleLowerCase("tr-TR")
-          .includes(normalized),
-      )
-    : products.slice(0, 12);
+  const [{ q }, items] = await Promise.all([searchParams, getSearchIndex()]);
+
   return (
-    <main className="shell"><div className="panel simple-page">
-      <p className="eyebrow">ARAMA</p>
-      <h1>Ne arıyorsun?</h1>
-      <form className="search-form" action="/arama">
-        <input
-          name="q"
-          defaultValue={query}
-          className="search-input"
-          placeholder="Ürün, kategori veya koleksiyon ara"
-          aria-label="Ürün ara"
-          autoFocus
-        />
-        <button className="button button-dark" type="submit">
-          Ara
-        </button>
-      </form>
-      {query && (
-        <p className="search-count">
-          <b>{results.length}</b> sonuç · “{query}”
+    <main className="shell">
+      <section className="panel about-hero">
+        <p className="about-eyebrow">Arama</p>
+        <h1>Ne aramıştınız?</h1>
+        <p className="about-lede">
+          Yazmaya başlayın; sonuçlar ilk harften itibaren görünür.
         </p>
-      )}
-      <div className="product-grid search-grid">
-        {results.map((product, index) => (
-          <ProductCard key={product.slug} product={product} />
-        ))}
-      </div>
-      {query && !results.length && (
-        <div className="empty-cart">
-          <h2>Sonuç bulunamadı.</h2>
-          <p>Farklı bir kelime deneyin veya tüm seçkiyi inceleyin.</p>
-        </div>
-      )}
-    </div></main>
+      </section>
+
+      <section className="panel">
+        <LiveSearch items={items} initialQuery={q ?? ""} autoFocus limit={48} />
+      </section>
+    </main>
   );
 }

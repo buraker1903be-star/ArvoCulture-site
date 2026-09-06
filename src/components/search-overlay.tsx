@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { LiveSearch } from "@/components/live-search";
+import type { SearchItem } from "@/lib/search-index";
 
 export type SearchTile = {
   label: string;
@@ -14,21 +15,19 @@ export type SearchTile = {
 /**
  * Arama katmanı.
  *
- * Arama kutusuna basıldığında sayfayı terk etmek yerine tam ekran
- * bir katman açılır. Amaç, aramayı bir sayfa geçişi değil bir
- * eylem hâline getirmek: müşteri aradığını bulamazsa Escape'e
- * basıp kaldığı yerden devam eder.
- *
- * Popüler aramalar metin etiketi yerine görselli kutular; kokuyu
- * ya da kremi görmek, "Parfüm" yazısını okumaktan daha hızlı
- * karar verdirir.
+ * Kutuya basıldığında sayfayı terk etmek yerine tam ekran bir
+ * katman açılır. İçindeki arama ilk harften itibaren sonuç
+ * gösterir; müşteri aradığını bulamazsa Escape'e basıp kaldığı
+ * yerden devam eder.
  */
-export function SearchOverlay({ tiles }: { tiles: SearchTile[] }) {
+export function SearchOverlay({
+  tiles,
+  items,
+}: {
+  tiles: SearchTile[];
+  items: SearchItem[];
+}) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-
   const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
@@ -37,7 +36,6 @@ export function SearchOverlay({ tiles }: { tiles: SearchTile[] }) {
     // Katman açıkken arka plan kaymasın ve Escape kapatsın.
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    inputRef.current?.focus();
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
@@ -49,13 +47,6 @@ export function SearchOverlay({ tiles }: { tiles: SearchTile[] }) {
       window.removeEventListener("keydown", onKey);
     };
   }, [open, close]);
-
-  function submit() {
-    const query = value.trim();
-    if (!query) return;
-    close();
-    router.push(`/arama?q=${encodeURIComponent(query)}`);
-  }
 
   return (
     <>
@@ -70,7 +61,12 @@ export function SearchOverlay({ tiles }: { tiles: SearchTile[] }) {
       </button>
 
       {open && (
-        <div className="search-layer" role="dialog" aria-modal="true" aria-label="Arama">
+        <div
+          className="search-layer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Arama"
+        >
           <button
             type="button"
             className="search-veil"
@@ -79,20 +75,8 @@ export function SearchOverlay({ tiles }: { tiles: SearchTile[] }) {
           />
 
           <div className="search-sheet">
-            <div className="search-field">
-              <input
-                ref={inputRef}
-                type="search"
-                value={value}
-                placeholder="Ne aramıştınız?"
-                onChange={(event) => setValue(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") submit();
-                }}
-              />
-              <button type="button" className="btn" onClick={submit}>
-                Ara
-              </button>
+            <div className="search-head">
+              <LiveSearch items={items} autoFocus onNavigate={close} limit={8} />
               <button type="button" className="search-close" onClick={close}>
                 Kapat
               </button>

@@ -3,31 +3,47 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Urun kartinda ikinci gorsel gecisi"
+git commit -m "Canli arama: ilk harften itibaren sonuc"
 git push
 vercel --prod
 ```
 
 ## Bu turda
 
-Ürün kartına gelindiğinde **ikinci görsel** gösteriliyor. Tişörtlerde
-ön ve arka tasarım ayrı fotoğrafta olduğu için müşteri arkayı
-görmek üzere ürün sayfasına girmek zorunda kalmıyor.
+**Canlı arama.** İlk harften itibaren sonuç geliyor; arama
+butonuna basmak gerekmiyor. Hem `/arama` sayfasında hem ana
+sayfadaki açılır katmanda aynı bileşen çalışıyor.
 
-**İkinci görseli olmayan üründe** bu eleman hiç render edilmiyor;
-ilk görsel sabit kalıyor. Boş kutu ya da titreme olmuyor.
+### Nasıl çalışıyor
 
-Geçiş saf CSS ile yapılıyor, JavaScript yok. Yumuşak bir opaklık
-geçişi (260ms).
+Sunucu, katalogdan **hafif bir dizin** üretip istemciye gönderiyor:
+slug, ad, marka, kategori, fiyat, görsel. Tüm ürün nesnesi
+gönderilseydi açıklama metinleriyle yüzlerce kilobayt olurdu.
 
-**Dokunmatik cihazlarda kapalı.** Telefonda hover durumu tıklama
-sonrası takılı kalıyor ve yanlış görsel kalabiliyor; orada ilk
-görsel her zaman görünür.
+Filtreleme tarayıcıda yapılıyor — her tuşta ağ isteği atılmıyor,
+sonuç anında geliyor.
 
-Klavyeyle kart üzerine gelindiğinde de (focus) ikinci görsel
-açılıyor.
+### Türkçe arama
 
-## ARC tarafında
+"parfum" yazınca "parfüm", "sampuan" yazınca "şampuan" bulunuyor.
+Türkçe karakterler ASCII karşılığına indirgeniyor;
+`toLocaleLowerCase` tek başına bunu yapmıyor.
 
-Görsel sırası ARC'taki ürün kaydındaki sıraya göre. Tişörtlerde
-ön yüzün birinci, arka yüzün ikinci sırada olduğundan emin olun.
+Çok kelimeli arama çalışıyor: "zeitgard serum" her iki kelimeyi de
+içeren ürünleri getiriyor.
+
+Sıralama: adında geçenler önce, sonra marka, sonra kategori.
+
+### Sonuç kartları
+
+Her sonuçta küçük görsel, marka, ürün adı ve fiyat var. İndirimli
+ürünlerde üstü çizili eski fiyat da görünüyor. Katmanda 8 sonuç,
+arama sayfasında 48.
+
+### Diğer
+
+- Yazarken sayaç: "12 sonuç" / "Sonuç bulunamadı"
+- Sonuç yoksa tüm ürünlere yönlendirme
+- Temizle butonu
+- Arama sayfası `noindex` — arama sonuçlarının dizine girmesi
+  kalitesiz sonuç üretir

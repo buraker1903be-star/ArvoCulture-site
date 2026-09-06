@@ -13,6 +13,7 @@ import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
 import { formatPrice } from "@/lib/product-types";
 import { getStorefrontProducts } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
+import { getSearchIndex } from "@/lib/search-index";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
@@ -50,10 +51,11 @@ const SEARCH_TILES = [
 ];
 
 export default async function Home() {
-  const [theme, products, discounts] = await Promise.all([
+  const [theme, products, discounts, searchItems] = await Promise.all([
     getStorefrontTheme(),
     getStorefrontProducts(200),
     getStorefrontDiscounts(),
+    getSearchIndex(),
   ]);
 
   const coupon = discounts.find((discount) => discount.code);
@@ -99,7 +101,7 @@ export default async function Home() {
 
       <section className="panel panel-tight utility" aria-label="Arama ve kampanya">
         <div className="utility-search">
-          <SearchOverlay tiles={searchTiles} />
+          <SearchOverlay tiles={searchTiles} items={searchItems} />
         </div>
 
         {coupon?.code && (

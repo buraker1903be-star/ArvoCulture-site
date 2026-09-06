@@ -1530,3 +1530,200 @@ button.search-box {
   border-bottom: 1px solid var(--line);
   padding-bottom: 2px;
 }
+
+/* ==========================================================
+   Canlı arama
+   ========================================================== */
+
+.live-search {
+  display: grid;
+  gap: var(--s4);
+}
+
+.live-field {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: border-color 160ms var(--ease);
+}
+
+.live-field:focus-within {
+  border-color: var(--ink);
+}
+
+.live-field svg {
+  flex: none;
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.live-field input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+}
+
+.live-field input:focus {
+  outline: none;
+}
+
+/* Tarayıcının kendi temizleme çarpısı gizlenir; kendi butonumuz var. */
+.live-field input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.live-field button {
+  flex: none;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--panel-2);
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+}
+
+.live-field button:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+.live-count {
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.live-empty {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.live-empty a {
+  border-bottom: 1px solid var(--line);
+}
+
+/* --- Sonuç listesi --- */
+
+.live-results {
+  display: grid;
+  gap: 2px;
+}
+
+.live-results a {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: var(--s4);
+  align-items: center;
+  padding: var(--s2) var(--s3);
+  border-radius: var(--r-sm);
+  transition: background-color 140ms var(--ease);
+}
+
+.live-results a:hover {
+  background: var(--panel-2);
+}
+
+.live-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  border-radius: var(--r-sm);
+  background: #fff;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.live-thumb img {
+  object-fit: contain;
+  padding: 8%;
+}
+
+.live-text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.live-text small {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.live-text strong {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-price {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.live-price del {
+  font-size: var(--t-xs);
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+/* --- Katman içindeki arama --- */
+
+.search-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s3);
+  padding-bottom: var(--s4);
+  border-bottom: 1px solid var(--line);
+}
+
+.search-head .live-search {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-head .live-field {
+  border-color: transparent;
+  padding-left: 0;
+}
+
+.search-head .live-field input {
+  font-size: clamp(17px, 2vw, 22px);
+  font-weight: 500;
+}
+
+/* Katmandaki sonuç listesi taşarsa kendi içinde kayar. */
+.search-head .live-results {
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .live-results a {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: var(--s3);
+  }
+  .live-price {
+    grid-column: 2;
+    justify-items: start;
+  }
+}
