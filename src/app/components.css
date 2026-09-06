@@ -1737,3 +1737,127 @@ button.search-box {
     justify-items: start;
   }
 }
+
+/* ==========================================================
+   Hesap
+   ========================================================== */
+
+.account-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--gap);
+  align-items: start;
+}
+
+.track-steps {
+  display: grid;
+  gap: var(--s4);
+}
+
+.track-steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--s4);
+  align-items: start;
+}
+
+.track-steps span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.track-steps strong {
+  display: block;
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+
+.track-steps small {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s4);
+  margin-top: var(--s5);
+}
+
+.account-actions a:not(.btn) {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+}
+
+/* --- Yakında --- */
+
+.account-soon {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+}
+
+.account-soon > p:not(.about-eyebrow):not(.hint) {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  max-width: 44ch;
+}
+
+.soon-list {
+  display: grid;
+  gap: var(--s2);
+  margin-top: var(--s2);
+}
+
+.soon-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.soon-list li::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+/*
+  Planlanan giriş yöntemleri. Tıklanabilir değil — çalışmayan bir
+  butona basmak, hiç göstermemekten daha kötü bir deneyim.
+*/
+.soon-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-top: var(--s3);
+}
+
+.soon-social span {
+  padding: 8px 14px;
+  border: 1px dashed var(--line);
+  border-radius: 999px;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+@media (max-width: 900px) {
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
+}
