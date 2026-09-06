@@ -3,39 +3,28 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Sepete ucma animasyonu, urun sayilari ve kupon tasarimi"
+git commit -m "Kategoriler cizim ikonla"
 git push
 vercel --prod
 ```
 
-## 1. Sepete uçma animasyonu
+## Bu turda
 
-Ürün görselinin bir kopyası karttan başlıktaki sepet ikonuna
-uçuyor, varışta ikon kısa bir nabız atıyor. Buton yazısının
-"Sepete eklendi" olması tek başına gözden kaçıyordu.
+Kategori halkalarında ürün fotoğrafı yerine **çizgi ikon**
+kullanılıyor.
 
-"Hareketi azalt" tercihi açık kullanıcılarda animasyon çalışmıyor;
-ekleme yine olur, sadece uçuş yok.
+Fotoğraf tek bir ürünü temsil ediyordu ve kategoriyi yanlış
+daraltıyordu: "Kişisel Bakım" bir tüp aloe kremi gibi görünüyor,
+"Giyim" tek bir beyaz tişörte indirgeniyordu. Çizgi ikon kategoriyi
+bütün olarak anlatır ve katalog değiştiğinde eskimez.
 
-## 2. Kart görselleri beyaz zeminde
+İkonlar marka yeşilinde, üzerine gelince koyulaşıyor. Halkalara
+ince bir çerçeve eklendi; boş görünmesinler diye.
 
-Ürün fotoğrafları beyaz fonlu çekildiği için kırık beyaz zemin
-kenarlarda görünür bir çerçeve bırakıyordu. Tüm sitede beyaz oldu.
+Beş ikon: tişört, bakım tüpü, ruj, parfüm şişesi, kapsül.
 
-## 3. İndirimli ürünler eksikti
+### İkon değiştirmek
 
-Ana sayfa katalogdan yalnızca ilk 120 ürünü çekiyordu; indirimli
-ürünlerin bir kısmı bu sınırın dışında kalıyordu. 200'e çıkarıldı,
-dördü de görünecek.
-
-## 4. Çok satanlar 10 ürün
-
-Önceden ARC'ta işaretli ürün sayısı kadar gösteriyordu. Artık
-işaretliler önce gelir, eksik kalırsa katalogdan 10'a tamamlanır.
-
-## 5. Kupon bölümü yenilendi
-
-Kırmızı dolgulu bir kopyalama butonu, yumuşak gölge, hafif kırmızı
-zeminli hap biçimli kart. "KOPYALA" etiketi butonun içinde ayrı bir
-rozet oldu. Eskiden kesik çizgili ve soluk duruyordu; sayfanın en
-güçlü teklifi olduğu için görsel ağırlığı artırıldı.
+`src/components/home-blocks.tsx` içindeki `CATEGORY_ICONS` nesnesi.
+Her kayıt 24×24 kutuya çizilmiş SVG yolları taşır; kategori adıyla
+eşleşir.

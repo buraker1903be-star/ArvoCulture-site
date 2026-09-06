@@ -411,9 +411,21 @@
   box-shadow: var(--float);
 }
 
-.cats img {
-  object-fit: contain;
-  padding: 18%;
+.cats svg {
+  position: absolute;
+  inset: 26%;
+  width: 48%;
+  height: 48%;
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 200ms var(--ease);
+}
+
+.cats a:hover svg {
+  stroke: var(--ink);
 }
 
 .cats strong {

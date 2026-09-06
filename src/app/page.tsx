@@ -87,10 +87,7 @@ export default async function Home() {
     )?.image,
   }));
 
-  const categories = CATEGORIES.map((category) => ({
-    ...category,
-    image: inStock.find((product) => product.category === category.label)?.image,
-  }));
+  const categories = CATEGORIES;
 
   return (
     <main className="shell">

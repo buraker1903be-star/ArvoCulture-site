@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import type { Product } from "@/lib/product-types";
@@ -65,11 +64,55 @@ export function Perks() {
   );
 }
 
+/*
+  Kategori ikonları. Ürün fotoğrafı yerine çizim kullanılıyor:
+  fotoğraf tek bir ürünü temsil ediyordu ve kategoriyi yanlış
+  daraltıyordu (örneğin "Kişisel Bakım" bir tüp aloe kremi gibi
+  görünüyordu). Çizgi ikon kategoriyi bütün olarak anlatır ve
+  katalog değişince eskimez.
+*/
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  Giyim: (
+    <>
+      <path d="M9 6 5.5 8 4 13l3 1v9h10v-9l3-1-1.5-5L15 6" />
+      <path d="M9 6a3 3 0 0 0 6 0" />
+    </>
+  ),
+  "Kişisel Bakım": (
+    <>
+      <path d="M10 3h4v3h-4z" />
+      <path d="M8.5 6h7l1 4v10a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V10z" />
+      <path d="M9 13h6" />
+    </>
+  ),
+  Kozmetik: (
+    <>
+      <path d="M9 21V11h6v10z" />
+      <path d="M10 11V4.5a2 2 0 0 1 4 0V11" />
+      <path d="M9 15h6" />
+    </>
+  ),
+  Parfüm: (
+    <>
+      <path d="M10 3h4v3h-4z" />
+      <path d="M7.5 9a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z" />
+      <path d="M11 12h2" />
+    </>
+  ),
+  Takviyeler: (
+    <>
+      <path d="M8.5 4.5a4 4 0 0 1 5.7 5.7l-4 4a4 4 0 0 1-5.7-5.7z" transform="translate(2 2)" />
+      <path d="m9 15 6-6" />
+      <circle cx="17" cy="17" r="4" />
+    </>
+  ),
+};
+
 /** Yuvarlak kategori kısayolları — mobilde tanıdık bir kalıp. */
 export function CategoryStrip({
   items,
 }: {
-  items: Array<{ label: string; href: string; image?: string }>;
+  items: Array<{ label: string; href: string }>;
 }) {
   return (
     <section className="panel">
@@ -81,9 +124,9 @@ export function CategoryStrip({
         {items.map((item) => (
           <Link key={item.href} href={item.href}>
             <span>
-              {item.image && (
-                <Image src={item.image} alt="" fill sizes="140px" />
-              )}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                {CATEGORY_ICONS[item.label]}
+              </svg>
             </span>
             <strong>{item.label}</strong>
           </Link>
