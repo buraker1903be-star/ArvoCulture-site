@@ -19,7 +19,12 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="card">
-      <Link href={href} className="card-art" aria-label={product.name}>
+      <Link
+        href={href}
+        className="card-art"
+        aria-label={product.name}
+        data-multi={second ? "true" : undefined}
+      >
         <span className="card-flags">
           {off > 0 && <b className="tag tag-sale">%{off} indirim</b>}
           {product.bestSeller && <b className="tag tag-best">Çok satan</b>}

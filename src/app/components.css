@@ -346,23 +346,28 @@
   opacity: 0;
 }
 
-.card:hover .card-img-alt,
-.card:focus-within .card-img-alt {
+.card:hover .card-art[data-multi="true"] .card-img-alt,
+.card:focus-within .card-art[data-multi="true"] .card-img-alt {
   opacity: 1;
 }
 
-.card:hover .card-img,
-.card:focus-within .card-img {
+/*
+  Birinci görsel YALNIZCA ikinci görsel varsa gizlenir. Bu koşul
+  olmadan tek görselli ürünlerde kart hover'da bomboş kalıyordu.
+*/
+.card:hover .card-art[data-multi="true"] .card-img,
+.card:focus-within .card-art[data-multi="true"] .card-img {
   opacity: 0;
 }
 
 /* Dokunmatik cihazlarda hover kalıcı takılabiliyor; orada geçiş
    kapalı, ilk görsel her zaman görünür. */
+/* Dokunmatik cihazlarda hover takılı kalabiliyor; geçiş kapalı. */
 @media (hover: none) {
   .card-img-alt {
     display: none;
   }
-  .card:hover .card-img {
+  .card:hover .card-art .card-img {
     opacity: 1;
   }
 }
