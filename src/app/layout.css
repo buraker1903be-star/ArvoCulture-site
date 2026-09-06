@@ -228,16 +228,34 @@
   600px oluyordu; bağlantılar boşlukta kayboluyordu. Okuma
   genişliği 230px civarında en rahat.
 */
+/*
+  Sütunlar tek satırda kalır ve mevcut genişliği eşit paylaşır.
+  Sabit 230px genişlikte sekiz sütun 1600px'e sığmıyor, sonuncusu
+  alta düşüyordu. `flex: 1 1 0` ile sütun sayısı arttıkça hepsi
+  birlikte daralır; `max-width` ise az sütunlu menülerde
+  gereğinden fazla yayılmalarını engeller.
+*/
 .mega-columns {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--s5) var(--s7);
+  flex-wrap: nowrap;
+  gap: var(--s5);
   align-items: flex-start;
 }
 
 .mega-columns > div {
-  flex: 0 0 230px;
+  flex: 1 1 0;
   min-width: 0;
+  max-width: 240px;
+}
+
+/* Dar ekranda tek satır zorlaması anlamsız; alt alta geçsin. */
+@media (max-width: 900px) {
+  .mega-columns {
+    flex-wrap: wrap;
+  }
+  .mega-columns > div {
+    flex: 1 1 150px;
+  }
 }
 
 /* Sütun başlığı: kısa bir vurgu çizgisi, sütunu boydan boya

@@ -3,36 +3,26 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "1600px hizalama: header, footer ve mega menu panellerle ayni genislikte"
+git commit -m "Mega menu sutunlari tek satirda"
 git push
 vercel --prod
 ```
 
 ## Bu turda
 
-Site genişliği **1600px** olarak sabitlendi. Header (logo, menü,
-ara/hesap/sepet), footer ve mega menü artık hero ve diğer
-panellerle **aynı hizada** başlayıp bitiyor.
+Sütunlar sabit 230px genişlikteydi. Kişisel Bakım'da sekiz sütun
+var; 8 × 230px + boşluklar 1600px'e sığmıyor ve "İhtiyaca Göre"
+alt satıra düşüyordu.
 
-### Nasıl çalışıyor
+Artık sütunlar mevcut genişliği **eşit paylaşıyor** ve tek satırda
+kalıyor. Sütun sayısı arttıkça hepsi birlikte daralır.
 
-`--rail` adında tek bir değişken var:
+240px'lik bir üst sınır var — bu, az sütunlu menülerde (Kozmetik
+tek sütun) sütunun sayfa boyunca yayılmasını engelliyor. Daha önce
+bu yüzden bağlantılar boşlukta kalıyordu.
 
-```css
---shell-max: 1600px;
---rail: max(var(--edge), calc((100% - var(--shell-max)) / 2 + var(--edge)));
-```
+900px altında tek satır zorlaması kalkıyor, sütunlar alt alta
+geçiyor.
 
-Ekran 1600px'ten genişse fazlalığı kenar dolgusuna çevirir, darsa
-normal kenar boşluğunu kullanır. Header ve footer'ın **zemini tam
-genişlikte kalır** (sticky başlık ve alt bilgi kenardan kenara
-uzanır), yalnızca içerikleri hizalanır.
-
-İç sarmalayıcı eklemeye gerek kalmadı; `header.tsx` ve
-`layout.tsx` değişmedi.
-
-Aynı hizalama mega menü paneline ve mobil alt gezinme çubuğuna da
-uygulandı.
-
-Duyuru şeridi bilinçli olarak hizalanmadı — kayan bir bant, kenardan
-kenara akması gerekiyor.
+Uzun koleksiyon adları sütuna sığmazsa üç nokta ile kesiliyor;
+üzerine gelince tam adı görünür.
