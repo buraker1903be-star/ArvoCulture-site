@@ -3,22 +3,34 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Duyuru seridi sabit ve ortalanmis"
+git commit -m "Arama katmani: acilir pencere ve gorselli populer aramalar"
 git push
 vercel --prod
 ```
 
 ## Bu turda
 
-Duyuru şeridi artık **sabit ve ortalanmış**. Kayan bant, okumaya
-çalışan kullanıcıyı metnin geçmesini beklemeye zorluyordu; kargo
-eşiği ve kupon kodu gibi bilgilerin sabit durması gerekir.
+**Arama artık açılır katman.** Kutuya basınca sayfa değişmiyor;
+üstten inen bir panel açılıyor. Müşteri aradığını bulamazsa
+Escape'e basıp kaldığı yerden devam ediyor — sayfa geçişi
+yapıldığında sepet akışı bölünüyordu.
 
-İşaretlemede aynı grup iki kez vardı (kayan bandın kesintisiz
-görünmesi için). İkincisi zaten `aria-hidden` idi, sabit düzende
-CSS ile gizlendi — `header.tsx` değişmedi.
+Katman açıkken arka plan kaymıyor, imleç otomatik giriş alanına
+gidiyor, Escape ve dışarı tıklama kapatıyor.
 
-Maddeler arasına ince bir nokta ayracı kondu. Dar ekranda satır
-kaydırıyor, kesilmiyor.
+**Popüler aramalar görselli kutu oldu.** Metin etiketi yerine
+kare görselli kutular: kremi ya da parfümü görmek, adını okumaktan
+daha hızlı karar verdiriyor.
 
-Şerit de 1600px hizasına alındı.
+Görseller sabit dosya değil — her kutu, katalogda adı eşleşen ilk
+ürünün görselini kullanıyor. Katalog değişince kutular da
+kendiliğinden güncelleniyor.
+
+Altı kutu: Serum, Parfüm, Oversize tişört, Güneş koruma,
+Nemlendirici, Vitamin. Mobilde üçlü ızgaraya düşüyor.
+
+### Kutuları değiştirmek
+
+`src/app/page.tsx` içindeki `SEARCH_TILES` dizisi. Her kayıt üç
+alan taşır: `label` (görünen ad), `href` (gidilecek koleksiyon),
+`match` (görseli seçmek için ürün adında aranacak kelime).

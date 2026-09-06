@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CouponCopy } from "@/components/coupon-strip";
+import { SearchOverlay } from "@/components/search-overlay";
 import {
   ProductBlock,
   Perks,
@@ -37,11 +38,15 @@ const CATEGORIES = [
   { label: "Takviyeler", href: "/koleksiyon/takviyeler" },
 ];
 
-const CHIPS = [
-  { label: "Serum", href: "/koleksiyon/cilt-bakim-serumlari" },
-  { label: "Oversize tişört", href: "/koleksiyon/oversize-tisortler" },
-  { label: "Parfüm", href: "/koleksiyon/parfum" },
-  { label: "Güneş koruma", href: "/koleksiyon/gunes-koruyuculari" },
+/* Arama katmanındaki popüler aramalar. Görselleri katalogdan
+   eşleşen ilk üründen alınır; sabit görsel dosyası tutulmaz. */
+const SEARCH_TILES = [
+  { label: "Serum", href: "/koleksiyon/cilt-bakim-serumlari", match: "serum" },
+  { label: "Parfüm", href: "/koleksiyon/parfum", match: "parfüm" },
+  { label: "Oversize tişört", href: "/koleksiyon/oversize-tisortler", match: "tişört" },
+  { label: "Güneş koruma", href: "/koleksiyon/gunes-koruyuculari", match: "güneş" },
+  { label: "Nemlendirici", href: "/koleksiyon/nemlendiriciler", match: "nemlendir" },
+  { label: "Vitamin", href: "/koleksiyon/vitamin-takviyeleri", match: "vitamin" },
 ];
 
 export default async function Home() {
@@ -67,6 +72,16 @@ export default async function Home() {
 
   const fresh = inStock.slice(0, 5);
 
+  const searchTiles = SEARCH_TILES.map((tile) => ({
+    label: tile.label,
+    href: tile.href,
+    image: inStock.find((product) =>
+      `${product.name} ${product.category}`
+        .toLocaleLowerCase("tr-TR")
+        .includes(tile.match),
+    )?.image,
+  }));
+
   const categories = CATEGORIES.map((category) => ({
     ...category,
     image: inStock.find((product) => product.category === category.label)?.image,
@@ -82,17 +97,7 @@ export default async function Home() {
 
       <section className="panel panel-tight utility" aria-label="Arama ve kampanya">
         <div className="utility-search">
-          <Link href="/arama" className="search-box">
-            <span>Ürün, marka veya kategori ara</span>
-            <em>Ara</em>
-          </Link>
-          <ul className="chips">
-            {CHIPS.map((chip) => (
-              <li key={chip.href}>
-                <Link href={chip.href}>{chip.label}</Link>
-              </li>
-            ))}
-          </ul>
+          <SearchOverlay tiles={searchTiles} />
         </div>
 
         {coupon?.code && (
