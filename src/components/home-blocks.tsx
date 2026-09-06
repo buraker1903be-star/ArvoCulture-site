@@ -71,39 +71,63 @@ export function Perks() {
   görünüyordu). Çizgi ikon kategoriyi bütün olarak anlatır ve
   katalog değişince eskimez.
 */
+/*
+  Kategori ikonları. Tasarım kuralı: her siluet uzaktan bakıldığında
+  diğerlerinden ayırt edilebilmeli. İlk denemede bakım, kozmetik ve
+  parfüm hepsi dikdörtgen şişeye benziyordu; ayırt edilemiyorlardı.
+
+  Çözüm farklı temel biçimler: askı (üçgen), damlalıklı şişe (ince
+  boyun), açılı ruj (eğik uç), geniş omuzlu flakon, eğik kapsül.
+*/
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  // Askı — tişörtten daha zarif ve giyimi bütün olarak anlatır.
   Giyim: (
     <>
-      <path d="M9 6 5.5 8 4 13l3 1v9h10v-9l3-1-1.5-5L15 6" />
-      <path d="M9 6a3 3 0 0 0 6 0" />
+      <path d="M12 4.4a1.7 1.7 0 1 1 1.7 1.7c-.9 0-1.7.8-1.7 1.7v.9" />
+      <path d="M12 8.9 4.2 14.4c-1 .7-.5 2.2.7 2.2h14.2c1.2 0 1.7-1.5.7-2.2L12 8.9Z" />
     </>
   ),
+
+  // Damlalıklı serum şişesi — ince boyun ve uzun pipet.
   "Kişisel Bakım": (
     <>
-      <path d="M10 3h4v3h-4z" />
-      <path d="M8.5 6h7l1 4v10a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V10z" />
-      <path d="M9 13h6" />
+      <path d="M11 2.8h2v4.4h-2z" />
+      <path d="M10.2 7.2h3.6" />
+      <path d="M8.6 10.4a2.4 2.4 0 0 1 1.6-2.3h3.6a2.4 2.4 0 0 1 1.6 2.3v8.4a2.4 2.4 0 0 1-2.4 2.4h-2A2.4 2.4 0 0 1 8.6 18.8Z" />
+      <path d="M9.4 14.2h5.2" />
     </>
   ),
+
+  // Ruj — eğik uç, kesinlikle şişeye benzemez.
   Kozmetik: (
     <>
-      <path d="M9 21V11h6v10z" />
-      <path d="M10 11V4.5a2 2 0 0 1 4 0V11" />
-      <path d="M9 15h6" />
+      <path d="M9.4 12.6h5.2v8.6H9.4z" />
+      <path d="M9.4 12.6V8.4l5.2-2.6v6.8" />
+      <path d="M9.4 16.2h5.2" />
     </>
   ),
+
+  // Parfüm flakonu — geniş omuz, kapak ve sprey başlığı.
   Parfüm: (
     <>
-      <path d="M10 3h4v3h-4z" />
-      <path d="M7.5 9a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z" />
-      <path d="M11 12h2" />
+      <path d="M10.4 3h3.2v2.4h-3.2z" />
+      <path d="M16.4 5.4h1.8v2.2" />
+      <path d="M8.2 9.6a4 4 0 0 1 2.2-3.6h3.2a4 4 0 0 1 2.2 3.6v8.6a2.6 2.6 0 0 1-2.6 2.6h-2.4a2.6 2.6 0 0 1-2.6-2.6Z" />
     </>
   ),
+
+  // Tek kapsül, eğik. Üst üste binen iki kapsül karışık görünüyordu.
   Takviyeler: (
     <>
-      <path d="M8.5 4.5a4 4 0 0 1 5.7 5.7l-4 4a4 4 0 0 1-5.7-5.7z" transform="translate(2 2)" />
-      <path d="m9 15 6-6" />
-      <circle cx="17" cy="17" r="4" />
+      <rect
+        x="4.6"
+        y="9"
+        width="14.8"
+        height="6.4"
+        rx="3.2"
+        transform="rotate(-45 12 12.2)"
+      />
+      <path d="M9.6 14.6 14.6 9.6" />
     </>
   ),
 };

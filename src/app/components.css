@@ -408,25 +408,32 @@
 
 .cats a:hover span {
   transform: translateY(-3px);
+  background: #fff;
   box-shadow: var(--float);
 }
 
+/* İnce çizgi ve yumuşak birleşimler: kalın kontur ikonları
+   oyuncak gibi gösteriyordu. */
 .cats svg {
   position: absolute;
-  inset: 26%;
-  width: 48%;
-  height: 48%;
+  inset: 28%;
+  width: 44%;
+  height: 44%;
   fill: none;
-  stroke: var(--brand);
-  stroke-width: 1.3;
+  stroke: var(--ink);
+  stroke-width: 1.05;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: stroke 200ms var(--ease);
+  opacity: 0.78;
+  transition: stroke 220ms var(--ease), opacity 220ms var(--ease);
 }
 
 .cats a:hover svg {
-  stroke: var(--ink);
+  stroke: var(--brand);
+  opacity: 1;
 }
+
+
 
 .cats strong {
   font-size: var(--t-sm);
