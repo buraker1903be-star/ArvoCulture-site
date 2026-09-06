@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { getAuthClient } from "@/lib/auth-client";
+import { getAuthClient, isAuthConfigured } from "@/lib/auth-client";
 import { formatPrice } from "@/lib/product-types";
 
 type Mode = "login" | "register" | "reset";
@@ -49,8 +49,20 @@ export function AccountPanel() {
     text: string;
   } | null>(null);
 
+  const configured = isAuthConfigured();
+
   /* --- Oturum takibi --- */
   useEffect(() => {
+    /*
+      Yapılandırma eksikse istemci kurulmaz. Öncesinde burada
+      istisna fırlıyor ve tüm sayfa çöküyordu; artık sayfa
+      açılıyor, yalnızca bu panel uyarı gösteriyor.
+    */
+    if (!isAuthConfigured()) {
+      setReady(true);
+      return;
+    }
+
     const supabase = getAuthClient();
 
     let active = true;
@@ -158,6 +170,19 @@ export function AccountPanel() {
     setOrders(null);
     setEmail("");
     setPassword("");
+  }
+
+  if (!configured) {
+    return (
+      <section className="panel">
+        <h2>Hesap sistemi hazırlanıyor</h2>
+        <p className="hint" style={{ marginTop: "var(--s2)" }}>
+          Üyelik özelliği kısa süre içinde açılacak. Bu sırada misafir
+          olarak alışveriş yapabilir, siparişinizi numarasıyla takip
+          edebilirsiniz.
+        </p>
+      </section>
+    );
   }
 
   if (!ready) {
