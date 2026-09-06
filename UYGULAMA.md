@@ -3,34 +3,31 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Koleksiyon ve arama sayfalari panel duzenine alindi"
+git commit -m "Urun kartinda ikinci gorsel gecisi"
 git push
 vercel --prod
 ```
 
-## Sorun neydi
+## Bu turda
 
-Koleksiyon sayfası panel sistemine hiç alınmamıştı. `<main>`
-etiketinde `shell` sınıfı yoktu, bölümler `panel` değildi. Bu
-yüzden başlık ekranın soluna yapışıyor, ürün ızgarası kenardan
-kenara uzuyor ve sayfa 1600px hizasının dışında kalıyordu.
+Ürün kartına gelindiğinde **ikinci görsel** gösteriliyor. Tişörtlerde
+ön ve arka tasarım ayrı fotoğrafta olduğu için müşteri arkayı
+görmek üzere ürün sayfasına girmek zorunda kalmıyor.
 
-Ana sayfayı panel diline çevirirken bu sayfayı atlamışım.
+**İkinci görseli olmayan üründe** bu eleman hiç render edilmiyor;
+ilk görsel sabit kalıyor. Boş kutu ya da titreme olmuyor.
 
-## Ne değişti
+Geçiş saf CSS ile yapılıyor, JavaScript yok. Yumuşak bir opaklık
+geçişi (260ms).
 
-**Sayfa panel düzenine alındı.** Başlık kendi panelinde, ürün
-ızgarası kendi panelinde. Ana sayfayla aynı hizada, aynı
-gölgelerde.
+**Dokunmatik cihazlarda kapalı.** Telefonda hover durumu tıklama
+sonrası takılı kalıyor ve yanlış görsel kalabiliyor; orada ilk
+görsel her zaman görünür.
 
-**Başlık bölümü düzenlendi.** Ölçek 26–42px arası, açıklama metni
-soluk ve 62 karakter genişliğinde sınırlı.
+Klavyeyle kart üzerine gelindiğinde de (focus) ikinci görsel
+açılıyor.
 
-**Filtre satırı ayrıldı.** Ürün sayısı solda, sıralama sağda,
-altında ince bir çizgi. Öncesinde ikisi yan yana sıkışıktı.
+## ARC tarafında
 
-**Sayfalama butonlaştı.** "Önceki" ve "Sonraki" artık hap biçimli
-butonlar; üzerine gelince koyu zemine geçiyor. Üstünde ayraç
-çizgisi var.
-
-**Arama sayfası** da aynı panel düzenine alındı.
+Görsel sırası ARC'taki ürün kaydındaki sıraya göre. Tişörtlerde
+ön yüzün birinci, arka yüzün ikinci sırada olduğundan emin olun.

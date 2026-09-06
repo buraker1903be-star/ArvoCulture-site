@@ -331,6 +331,42 @@
   padding: 9%;
 }
 
+/*
+  İkinci görselle geçiş. Tişörtlerde ön/arka tasarım ayrı
+  fotoğrafta olduğu için karta gelindiğinde arka yüz gösterilir.
+  Saf CSS ile yapılır; ikinci görsel yoksa eleman hiç basılmadığı
+  için ilk görsel sabit kalır.
+*/
+.card-img,
+.card-img-alt {
+  transition: opacity 260ms var(--ease);
+}
+
+.card-img-alt {
+  opacity: 0;
+}
+
+.card:hover .card-img-alt,
+.card:focus-within .card-img-alt {
+  opacity: 1;
+}
+
+.card:hover .card-img,
+.card:focus-within .card-img {
+  opacity: 0;
+}
+
+/* Dokunmatik cihazlarda hover kalıcı takılabiliyor; orada geçiş
+   kapalı, ilk görsel her zaman görünür. */
+@media (hover: none) {
+  .card-img-alt {
+    display: none;
+  }
+  .card:hover .card-img {
+    opacity: 1;
+  }
+}
+
 .card-flags {
   position: absolute;
   z-index: 2;

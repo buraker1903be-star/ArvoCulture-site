@@ -15,6 +15,7 @@ export function discountOf(product: Product) {
 export function ProductCard({ product }: { product: Product }) {
   const off = discountOf(product);
   const href = `/urun/${product.slug}`;
+  const second = product.images?.[1];
 
   return (
     <article className="card">
@@ -25,9 +26,27 @@ export function ProductCard({ product }: { product: Product }) {
         </span>
         {product.image && (
           <Image
+            className="card-img"
             src={product.image}
             alt={product.name}
             fill
+            sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
+          />
+        )}
+
+        {/*
+          İkinci görsel. Tişörtlerde ön ve arka tasarım ayrı
+          fotoğraflarda olduğu için karta gelindiğinde arka yüz
+          gösteriliyor. İkinci görseli olmayan üründe bu eleman
+          hiç render edilmez; ilk görsel sabit kalır.
+        */}
+        {second && (
+          <Image
+            className="card-img-alt"
+            src={second}
+            alt=""
+            fill
+            aria-hidden="true"
             sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
           />
         )}
