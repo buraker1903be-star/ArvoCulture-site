@@ -80,8 +80,8 @@ export default async function Collection({
   );
 
   return (
-    <main>
-      <section className="collection-hero">
+    <main className="shell">
+      <section className="panel collection-hero">
         <p className="eyebrow">ARVOCULTURE SEÇKİSİ</p>
         <h1>{label}</h1>
         <p>
@@ -89,13 +89,13 @@ export default async function Collection({
             "Kendine ait olanı keşfet. Her ürün; tasarım, nitelik ve kullanım deneyimi gözetilerek seçildi."}
         </p>
       </section>
-      <section className="featured">
+      <section className="panel">
         <div className="filterbar">
           <span>{list.length} ürün</span>
           <span>Önerilen sıralama ↓</span>
         </div>
         <div className="product-grid">
-          {visibleProducts.map((product, index) => (
+          {visibleProducts.map((product) => (
             <ProductCard key={product.slug} product={product} />
           ))}
         </div>

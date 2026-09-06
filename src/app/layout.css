@@ -701,23 +701,34 @@ footer {
 
 /* ---------- Koleksiyon ve arama --------------------------- */
 
+/* Koleksiyon başlığı kendi panelinde durur. */
 .collection-hero {
   display: grid;
   gap: var(--s2);
-  margin-bottom: var(--s4);
+  justify-items: start;
+  padding-block: clamp(28px, 3.4vw, 44px);
 }
 
-.collection-hero p {
+.collection-hero h1 {
+  font-size: clamp(26px, 3.4vw, 42px);
+}
+
+.collection-hero > p:last-child {
   color: var(--ink-2);
   max-width: 62ch;
+  font-size: var(--t-sm);
 }
 
+/* Ürün sayısı ve sıralama satırı. */
 .filterbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: var(--s3);
-  margin-bottom: var(--s4);
+  padding-bottom: var(--s4);
+  margin-bottom: var(--s5);
+  border-bottom: 1px solid var(--line);
   font-size: var(--t-sm);
   color: var(--ink-2);
 }
@@ -749,9 +760,29 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--s3);
-  margin-top: var(--s5);
+  gap: var(--s4);
+  margin-top: var(--s6);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--line);
   font-size: var(--t-sm);
+}
+
+.collection-pagination a {
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.collection-pagination a:hover {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.collection-pagination span {
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Ürün sayfası ---------------------------------- */

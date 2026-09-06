@@ -3,38 +3,34 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "SSS sayfasi yeniden tasarlandi"
+git commit -m "Koleksiyon ve arama sayfalari panel duzenine alindi"
 git push
 vercel --prod
 ```
 
-## Bu turda
+## Sorun neydi
 
-**5 soru → 15 soru, dört başlık altında.** Sipariş ve kargo, İade
-ve değişim, Ödeme, Ürünler. Tek uzun liste aradığını bulmayı
-zorlaştırıyordu.
+Koleksiyon sayfası panel sistemine hiç alınmamıştı. `<main>`
+etiketinde `shell` sınıfı yoktu, bölümler `panel` değildi. Bu
+yüzden başlık ekranın soluna yapışıyor, ürün ızgarası kenardan
+kenara uzuyor ve sayfa 1600px hizasının dışında kalıyordu.
 
-Eklenen konular: kargo ücreti (120 TL), sipariş takibi, yurt dışı
-gönderim, iade edilemeyen ürünler, beden değişimi, kabul edilen
-kartlar, kart güvenliği, indirim kodu kullanımı, fatura, stok
-bildirimi, ürün seçimi.
+Ana sayfayı panel diline çevirirken bu sayfayı atlamışım.
 
-**Akordeon yenilendi.** Sağda artı işareti, açılınca eksiye
-dönüyor. Üzerine gelince başlık yeşile çalıyor. Hangi sorunun
-açık olduğu net.
+## Ne değişti
 
-**FAQPage şeması eklendi.** Bu, sayfayı Google sonuçlarında
-açılır soru olarak gösterilebilir kılıyor ve ChatGPT, Perplexity
-gibi yapay zekâ arama motorlarının yanıtları doğru alıntılamasını
-sağlıyor. GEO tarafında en yüksek getirili tek işlem budur —
-15 sorunun tamamı şemaya dahil.
+**Sayfa panel düzenine alındı.** Başlık kendi panelinde, ürün
+ızgarası kendi panelinde. Ana sayfayla aynı hizada, aynı
+gölgelerde.
 
-**Alt çağrı eklendi.** "Cevabını bulamadınız mı?" — WhatsApp
-butonu ve iletişim sayfası bağlantısı.
+**Başlık bölümü düzenlendi.** Ölçek 26–42px arası, açıklama metni
+soluk ve 62 karakter genişliğinde sınırlı.
 
-## Kontrol
+**Filtre satırı ayrıldı.** Ürün sayısı solda, sıralama sağda,
+altında ince bir çizgi. Öncesinde ikisi yan yana sıkışıktı.
 
-Kargo ücretini 120 TL olarak yazdım (100 TL + %20 KDV). Müşteriye
-gösterilen tutar bu olmalı; farklıysa `src/app/sss/page.tsx`
-içinde düzeltin. Aynı rakam ödeme sayfasında ve ARC'taki sipariş
-fonksiyonunda da geçiyor, üçü tutarlı olmalı.
+**Sayfalama butonlaştı.** "Önceki" ve "Sonraki" artık hap biçimli
+butonlar; üzerine gelince koyu zemine geçiyor. Üstünde ayraç
+çizgisi var.
+
+**Arama sayfası** da aynı panel düzenine alındı.
