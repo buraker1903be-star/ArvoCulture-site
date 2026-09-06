@@ -76,42 +76,98 @@ export default async function RootLayout({
           <Header theme={theme} collections={collections} />
           {children}
           <footer>
-            <div className="logo light">
-              <Image
-                src="/arvoculture-logo-transparent.png"
-                alt={theme.store_name ?? "ArvoCulture"}
-                width={320}
-                height={39}
-              />
+            <div className="footer-top">
+              <div className="footer-brand">
+                <Image
+                  className="footer-logo"
+                  src="/arvoculture-logo-transparent.png"
+                  alt={theme.store_name ?? "ArvoCulture"}
+                  width={320}
+                  height={39}
+                />
+                <p>{theme.footer_tagline}</p>
+
+                {/*
+                  Güven rozetleri. Logo dosyaları public/ altına
+                  eklenmelidir; yoksa yalnızca metin görünür ve
+                  sayfa bozulmaz.
+                */}
+                <div className="footer-badges">
+                  <span className="badge-card">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/rozet/etbis.png" alt="" width={34} height={34} />
+                    <small>
+                      ETBİS&apos;e kayıtlıdır
+                      <br />
+                      Elektronik Ticaret Bilgi Sistemi
+                    </small>
+                  </span>
+                  <span className="badge-card">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/rozet/lr.png" alt="" width={34} height={34} />
+                    <small>
+                      LR Health &amp; Beauty
+                      <br />
+                      bağımsız iş ortağıdır
+                    </small>
+                  </span>
+                </div>
+              </div>
+
+              <div className="footer-links">
+                <div className="footer-link-group">
+                  <strong>ArvoCulture</strong>
+                  <Link href="/hakkimizda">Hakkımızda</Link>
+                  <Link href="/iletisim">İletişim</Link>
+                  <Link href="/sss">Sık Sorulan Sorular</Link>
+                  {theme.instagram_url && (
+                    <a href={theme.instagram_url}>Instagram</a>
+                  )}
+                </div>
+                <div className="footer-link-group">
+                  <strong>Müşteri Hizmetleri</strong>
+                  <Link href="/teslimat">Teslimat Politikası</Link>
+                  <Link href="/iptal-iade">İptal ve İade</Link>
+                  <Link href="/on-bilgilendirme-formu">
+                    Ön Bilgilendirme Formu
+                  </Link>
+                  <Link href="/mesafeli-satis-sozlesmesi">
+                    Mesafeli Satış Sözleşmesi
+                  </Link>
+                </div>
+                <div className="footer-link-group">
+                  <strong>Yasal</strong>
+                  <Link href="/kvkk-aydinlatma-metni">KVKK Aydınlatma Metni</Link>
+                  <Link href="/gizlilik">Gizlilik ve Çerez Politikası</Link>
+                  <Link href="/kullanim-kosullari">Kullanım Koşulları</Link>
+                  <Link href="/yasal-bildirim">Yasal Bildirim</Link>
+                  <Link href="/ticari-elektronik-ileti">
+                    Ticari Elektronik İleti
+                  </Link>
+                </div>
+              </div>
             </div>
-            <p>{theme.footer_tagline}</p>
-            <div className="footer-links">
-              <div className="footer-link-group">
-                <strong>ArvoCulture</strong>
-                <Link href="/hakkimizda">Hakkımızda</Link>
-                <Link href="/iletisim">İletişim</Link>
-                <Link href="/sss">Sık Sorulan Sorular</Link>
-                {theme.instagram_url && <a href={theme.instagram_url}>Instagram</a>}
-              </div>
-              <div className="footer-link-group">
-                <strong>Müşteri Hizmetleri</strong>
-                <Link href="/teslimat">Teslimat Politikası</Link>
-                <Link href="/iptal-iade">İptal ve İade</Link>
-                <Link href="/on-bilgilendirme-formu">Ön Bilgilendirme Formu</Link>
-                <Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link>
-              </div>
-              <div className="footer-link-group">
-                <strong>Yasal</strong>
-                <Link href="/kvkk-aydinlatma-metni">KVKK Aydınlatma Metni</Link>
-                <Link href="/gizlilik">Gizlilik ve Çerez Politikası</Link>
-                <Link href="/kullanim-kosullari">Kullanım Koşulları</Link>
-                <Link href="/yasal-bildirim">Yasal Bildirim</Link>
-                <Link href="/ticari-elektronik-ileti">Ticari Elektronik İleti</Link>
-              </div>
+
+            <div className="footer-pay">
+              <small>Güvenli ödeme</small>
+              <ul className="pay-marks" aria-label="Kabul edilen kartlar">
+                <li className="pay-visa">VISA</li>
+                <li className="pay-mc" aria-label="Mastercard">
+                  <i />
+                  <i />
+                </li>
+                <li className="pay-troy">troy</li>
+                <li className="pay-amex">AMEX</li>
+                <li className="pay-paytr">PayTR</li>
+              </ul>
             </div>
+
             <div className="footer-legal">
-              <small>© 2026 {theme.store_name ?? "ArvoCulture"}. Tüm hakları saklıdır.</small>
-              <small>ARVOCULTURE GROUP TEKNOLOJİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ</small>
+              <small>
+                © 2026 {theme.store_name ?? "ArvoCulture"}. Tüm hakları
+                saklıdır.
+              </small>
+              <small>Bir ArvoCulture Group markasıdır.</small>
             </div>
           </footer>
           <JsonLd data={storeSchema()} />
