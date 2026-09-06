@@ -3,27 +3,39 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Baslik eylemleri ikona cevrildi"
+git commit -m "Sepete ucma animasyonu, urun sayilari ve kupon tasarimi"
 git push
 vercel --prod
 ```
 
-## Bu turda
+## 1. Sepete uçma animasyonu
 
-**Ara / Hesap / Sepet artık yalnızca ikon.** Üçü de 40px'lik
-yuvarlak dokunma alanına oturdu; üzerine gelince zemini
-renkleniyor.
+Ürün görselinin bir kopyası karttan başlıktaki sepet ikonuna
+uçuyor, varışta ikon kısa bir nabız atıyor. Buton yazısının
+"Sepete eklendi" olması tek başına gözden kaçıyordu.
 
-Sepete kendi ikonu (alışveriş çantası) eklendi; öncesinde düz
-"Sepet" yazısıydı.
+"Hareketi azalt" tercihi açık kullanıcılarda animasyon çalışmıyor;
+ekleme yine olur, sadece uçuş yok.
 
-**Sayaç rozet oldu.** Ürün sayısı ikonun sağ üst köşesinde küçük
-kırmızı bir baloncukta. Sıfırken de görünüyor — Türkiye'de
-alışıldık davranış bu.
+## 2. Kart görselleri beyaz zeminde
 
-**Metin etiketleri gizlendi, silinmedi.** Ekran okuyucular için
-`aria-label` zaten vardı; metinler de DOM'da duruyor ve ekran
-okuyucuya görünür. Yalnızca gözle görünmüyorlar.
+Ürün fotoğrafları beyaz fonlu çekildiği için kırık beyaz zemin
+kenarlarda görünür bir çerçeve bırakıyordu. Tüm sitede beyaz oldu.
 
-Dokunma hedefi 40×40px — mobilde parmakla isabet için gereken
-asgari ölçü.
+## 3. İndirimli ürünler eksikti
+
+Ana sayfa katalogdan yalnızca ilk 120 ürünü çekiyordu; indirimli
+ürünlerin bir kısmı bu sınırın dışında kalıyordu. 200'e çıkarıldı,
+dördü de görünecek.
+
+## 4. Çok satanlar 10 ürün
+
+Önceden ARC'ta işaretli ürün sayısı kadar gösteriyordu. Artık
+işaretliler önce gelir, eksik kalırsa katalogdan 10'a tamamlanır.
+
+## 5. Kupon bölümü yenilendi
+
+Kırmızı dolgulu bir kopyalama butonu, yumuşak gölge, hafif kırmızı
+zeminli hap biçimli kart. "KOPYALA" etiketi butonun içinde ayrı bir
+rozet oldu. Eskiden kesik çizgili ve soluk duruyordu; sayfanın en
+güçlü teklifi olduğu için görsel ağırlığı artırıldı.

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { CartContext } from "@/components/cart";
+import { flyToCart } from "@/lib/fly-to-cart";
 import type { Product } from "@/lib/product-types";
 
 /**
@@ -13,6 +14,7 @@ import type { Product } from "@/lib/product-types";
 export function QuickAdd({ product }: { product: Product }) {
   const { add } = useContext(CartContext);
   const [done, setDone] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   if (product.available === false) {
     return (
@@ -35,7 +37,11 @@ export function QuickAdd({ product }: { product: Product }) {
       type="button"
       className="btn btn-ghost btn-block"
       disabled={done}
+      ref={buttonRef}
       onClick={() => {
+        // Görsel, karttan sepet ikonuna uçar: eklemenin gerçekten
+        // olduğunu ve nereye gittiğini gösterir.
+        flyToCart(buttonRef.current, product.image);
         add(product);
         setDone(true);
         setTimeout(() => setDone(false), 1600);

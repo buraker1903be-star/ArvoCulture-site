@@ -191,15 +191,25 @@
   color: var(--ink);
 }
 
+/* --- İlk alışveriş kuponu --- */
+
 .coupon {
   display: flex;
   align-items: center;
-  gap: var(--s3);
+  gap: var(--s4);
+  padding: var(--s3) var(--s3) var(--s3) var(--s5);
+  border-radius: 999px;
+  background: linear-gradient(
+    100deg,
+    rgba(198, 45, 36, 0.07) 0%,
+    rgba(198, 45, 36, 0.02) 100%
+  );
+  border: 1px solid rgba(198, 45, 36, 0.18);
 }
 
 .coupon strong {
-  display: block;
-  font-size: var(--t-sm);
+  font-size: var(--t-body);
+  font-weight: 600;
 }
 
 .coupon small {
@@ -210,13 +220,19 @@
 .coupon button {
   display: inline-flex;
   align-items: center;
-  gap: var(--s2);
-  padding: 10px 16px;
-  border: 1px dashed var(--sale);
+  gap: var(--s3);
+  padding: 11px 18px;
+  border: 0;
   border-radius: 999px;
-  background: transparent;
-  color: var(--sale);
-  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+  background: var(--sale);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(198, 45, 36, 0.24);
+  transition: transform 160ms var(--ease), box-shadow 160ms var(--ease);
+}
+
+.coupon button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(198, 45, 36, 0.3);
 }
 
 .coupon button span {
@@ -228,14 +244,14 @@
 .coupon button em {
   font-style: normal;
   font-size: 10px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.75;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
 }
 
-.coupon button:hover {
-  background: var(--sale);
-  color: #fff;
-}
+
 
 @media (max-width: 900px) {
   .utility {
@@ -298,12 +314,15 @@
   box-shadow: var(--float);
 }
 
+/* Ürün görselinin zemini her yerde beyaz: ürün fotoğrafları
+   beyaz fonlu çekildiği için kırık beyaz zemin kenarlarda
+   görünür bir çerçeve bırakıyordu. */
 .card-art {
   position: relative;
   display: block;
   aspect-ratio: 1;
   border-radius: var(--r-sm);
-  background: var(--panel-2);
+  background: #fff;
   overflow: hidden;
 }
 
@@ -847,5 +866,36 @@ button.search-box {
   .search-layer,
   .search-sheet {
     animation: none;
+  }
+}
+
+/* ---------- Sepete uçma efekti ---------------------------- */
+
+.fly-ghost {
+  position: fixed;
+  z-index: 90;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  padding: 6px;
+  border-radius: var(--r-sm);
+  background: #fff;
+  box-shadow: var(--float);
+  pointer-events: none;
+}
+
+.cart-pulse {
+  animation: cart-pulse 420ms var(--ease);
+}
+
+@keyframes cart-pulse {
+  35% {
+    transform: scale(1.22);
+  }
+  70% {
+    transform: scale(0.94);
+  }
+  100% {
+    transform: scale(1);
   }
 }

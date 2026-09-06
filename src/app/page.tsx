@@ -52,7 +52,7 @@ const SEARCH_TILES = [
 export default async function Home() {
   const [theme, products, discounts] = await Promise.all([
     getStorefrontTheme(),
-    getStorefrontProducts(120),
+    getStorefrontProducts(200),
     getStorefrontDiscounts(),
   ]);
 
@@ -67,8 +67,13 @@ export default async function Home() {
     .sort((a, b) => discountOf(b) - discountOf(a))
     .slice(0, 10);
 
+  /* Çok satanlar her zaman 10'a tamamlanır: işaretli ürünler
+     önce gelir, eksik kalırsa katalogdan doldurulur. */
   const flagged = inStock.filter((product) => product.bestSeller);
-  const best = (flagged.length >= 5 ? flagged : inStock).slice(0, 10);
+  const best = [
+    ...flagged,
+    ...inStock.filter((product) => !product.bestSeller),
+  ].slice(0, 10);
 
   const fresh = inStock.slice(0, 5);
 
