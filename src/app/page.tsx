@@ -151,11 +151,25 @@ export default async function Home() {
             />
           )}
           <div className="promo-body">
+            <p className="promo-eyebrow">Yeni müşterilere özel</p>
             <h2 data-arvo-field="campaign_title">{theme.campaign_title}</h2>
             <p data-arvo-field="campaign_description">
               {theme.campaign_description}
             </p>
-            <Link className="btn" href="/koleksiyon/tumu">
+
+            {/* Kupon kodu, açıklama metninin içinde kaybolmasın diye
+                ayrı bir kart olarak gösteriliyor. */}
+            {coupon?.code && (
+              <div className="promo-code">
+                <div>
+                  <small>İndirim kodu</small>
+                  <strong>{coupon.code}</strong>
+                </div>
+                <CouponCopy code={coupon.code} />
+              </div>
+            )}
+
+            <Link className="btn btn-light" href="/koleksiyon/tumu">
               Alışverişe başla
             </Link>
           </div>

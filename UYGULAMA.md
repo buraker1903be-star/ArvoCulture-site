@@ -3,34 +3,33 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Kategori ikonlari eskiz tarzinda"
+git commit -m "Kampanya paneli yeniden tasarlandi"
 git push
 vercel --prod
 ```
 
-## Bu turda
+## Sorun neydi
 
-Kategori ikonları **eskiz (sketch) tarzına** çevrildi. El çizimi
-hissi iki şeyden geliyor:
+"İlk seçimine özel" paneli okunmuyordu: metin beyazdı ama zemin
+açık kalıyordu. Panel okunabilirliği kampanya görselinin varlığına
+bağlıydı; görsel tanımlı değilken ya da açık renkliyken yazı
+kayboluyordu.
 
-**1. Çizgiler tam düz değil.** Her kenar hafif bir eğri taşıyor.
-Bir askının omzu, bir şişenin gövdesi elle çekilmiş gibi minik
-sapmalar içeriyor. Düz `L` komutları yerine `C` eğrileri
-kullanıldı.
+## Ne yapıldı
 
-**2. Kalemin ikinci geçişi.** Ana çizginin altında hafifçe kaymış
-(0.55px sağa, 0.7px aşağı, 0.4 derece dönük) soluk bir kopya var.
-Kurşun kalemle iki kez geçilmiş bir çizimin izlenimi bu şekilde
-oluşuyor.
+**Panel kendi koyu zeminini taşıyor.** Zeytin-siyah gradyan,
+sol üstten gelen hafif bir aydınlanma. Kampanya görseli varsa
+%28 opaklıkla üzerine biniyor — okunabilirlik artık görsele bağlı
+değil.
 
-Çizgi kalınlığı 1px, uçlar yuvarlak. Üzerine gelince yeşile
-dönüyor ve tam opaklığa çıkıyor.
+**Kupon kodu ayrı bir karta alındı.** Eskiden "ARVO10 koduyla %10
+indirim" cümlesinin içinde geçiyordu ve gözden kaçıyordu. Artık
+kesik çizgili bir kart içinde büyük harflerle, yanında beyaz
+kopyalama butonuyla duruyor.
 
-Siluetler önceki turdaki gibi ayrı kalıyor: askı, damlalıklı şişe,
-ruj, flakon, kapsül.
+**Üst etiket eklendi:** "YENİ MÜŞTERİLERE ÖZEL". Teklifin kime
+olduğu başlıktan önce anlaşılıyor.
 
-### İkon değiştirmek
-
-`src/components/home-blocks.tsx` içindeki `CATEGORY_ICONS`.
-Eskiz hissini korumak için düz çizgi (`L`) yerine hafif eğri (`C`)
-kullanın; hayalet katman bileşende otomatik ekleniyor.
+Başlık ve açıklama yine ARC panelinden yönetiliyor
+(`campaign_title`, `campaign_description`); kupon kodu indirim
+kaydından otomatik geliyor.
