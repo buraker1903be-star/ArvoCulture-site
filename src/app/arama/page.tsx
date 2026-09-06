@@ -28,7 +28,13 @@ export default async function Search({
       </section>
 
       <section className="panel">
-        <LiveSearch items={items} initialQuery={q ?? ""} autoFocus limit={48} />
+        <LiveSearch
+          items={items}
+          initialQuery={q ?? ""}
+          autoFocus
+          limit={48}
+          variant="grid"
+        />
       </section>
     </main>
   );

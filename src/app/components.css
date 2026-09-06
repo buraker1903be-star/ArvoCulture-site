@@ -1545,6 +1545,11 @@ button.search-box {
   gap: var(--s4);
 }
 
+/* Kart düzeninde ızgara başlıktan biraz daha uzakta dursun. */
+.live-search > .grid {
+  margin-top: var(--s2);
+}
+
 .live-field {
   display: flex;
   align-items: center;

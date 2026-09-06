@@ -23,12 +23,18 @@ export function LiveSearch({
   initialQuery = "",
   autoFocus = false,
   limit = 24,
+  variant = "list",
   onNavigate,
 }: {
   items: SearchItem[];
   initialQuery?: string;
   autoFocus?: boolean;
   limit?: number;
+  /**
+   * "grid": arama sayfası — görseller büyük, kart düzeni.
+   * "list": açılır katman — dar alanda çok sonuç sığsın diye satır.
+   */
+  variant?: "grid" | "list";
   onNavigate?: () => void;
 }) {
   const [query, setQuery] = useState(initialQuery);
@@ -82,7 +88,7 @@ export function LiveSearch({
         </p>
       )}
 
-      {results.length > 0 && (
+      {results.length > 0 && variant === "list" && (
         <ul className="live-results">
           {results.map((item) => (
             <li key={item.slug}>
@@ -106,6 +112,56 @@ export function LiveSearch({
             </li>
           ))}
         </ul>
+      )}
+
+      {results.length > 0 && variant === "grid" && (
+        <div className="grid">
+          {results.map((item) => {
+            const off =
+              item.oldPrice && item.oldPrice > item.price
+                ? Math.round((1 - item.price / item.oldPrice) * 100)
+                : 0;
+
+            return (
+              <article className="card" key={item.slug}>
+                <Link
+                  href={`/urun/${item.slug}`}
+                  className="card-art"
+                  aria-label={item.name}
+                  onClick={onNavigate}
+                >
+                  {off > 0 && (
+                    <span className="card-flags">
+                      <b className="tag tag-sale">%{off} indirim</b>
+                    </span>
+                  )}
+                  {item.image && (
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
+                    />
+                  )}
+                </Link>
+
+                <p className="card-brand">{item.brand}</p>
+                <h3>
+                  <Link href={`/urun/${item.slug}`} onClick={onNavigate}>
+                    {item.name}
+                  </Link>
+                </h3>
+
+                <div className="price">
+                  <b>{formatPrice(item.price)}</b>
+                  {item.oldPrice && item.oldPrice > item.price && (
+                    <del>{formatPrice(item.oldPrice)}</del>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
       )}
     </div>
   );
