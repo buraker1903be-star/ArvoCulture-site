@@ -148,18 +148,33 @@ export default async function RootLayout({
               </div>
             </div>
 
+            {/*
+              Ödeme altyapısı PayTR. Kart markalarının logoları
+              tescilli olduğu için elle çizilmiyor; PayTR panelinden
+              indirilen resmi logo bandı kullanılıyor.
+              Dosya yoksa yalnızca metin görünür, sayfa bozulmaz.
+            */}
             <div className="footer-pay">
-              <small>Güvenli ödeme</small>
-              <ul className="pay-marks" aria-label="Kabul edilen kartlar">
-                <li className="pay-visa">VISA</li>
-                <li className="pay-mc" aria-label="Mastercard">
-                  <i />
-                  <i />
-                </li>
-                <li className="pay-troy">troy</li>
-                <li className="pay-amex">AMEX</li>
-                <li className="pay-paytr">PayTR</li>
-              </ul>
+              <div className="pay-provider">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/rozet/paytr.png"
+                  alt="PayTR"
+                  width={84}
+                  height={26}
+                />
+                <small>
+                  Ödemeler PayTR altyapısı üzerinden 3D Secure ile
+                  alınır. Kart bilgileriniz mağazamıza iletilmez.
+                </small>
+              </div>
+
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="pay-band"
+                src="/rozet/paytr-kartlar.png"
+                alt="Visa, Mastercard, Troy ve American Express ile ödeme"
+              />
             </div>
 
             <div className="footer-legal">

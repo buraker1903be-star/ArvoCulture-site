@@ -601,85 +601,54 @@ footer {
   color: var(--ink);
 }
 
-/* --- Ödeme işaretleri --- */
+/* --- Ödeme --- */
 
 .footer-pay {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--s3) var(--s4);
+  justify-content: space-between;
+  gap: var(--s4) var(--s6);
   margin-top: var(--s6);
   padding-top: var(--s4);
   border-top: 1px solid var(--line);
 }
 
-.footer-pay > small {
-  font-size: var(--t-xs);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.pay-marks {
+.pay-provider {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--s2);
+  align-items: center;
+  gap: var(--s4);
+  max-width: 34rem;
 }
 
-.pay-marks li {
-  display: grid;
-  place-items: center;
-  min-width: 46px;
-  height: 28px;
-  padding-inline: 9px;
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  background: var(--panel);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+.pay-provider img {
+  flex: none;
+  width: auto;
+  height: 26px;
+  object-fit: contain;
+}
+
+.pay-provider small {
+  font-size: var(--t-xs);
+  line-height: 1.5;
   color: var(--ink-2);
 }
 
-.pay-visa {
-  font-style: italic;
-  color: #1a1f71;
+/* PayTR'nin resmi kart bandı. Yükseklik sabit, genişlik oranla. */
+.pay-band {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
 }
 
-.pay-troy {
-  text-transform: lowercase;
-  font-size: 12px;
-  color: #00a0df;
-}
-
-.pay-amex {
-  color: #006fcf;
-}
-
-.pay-paytr {
-  color: var(--brand);
-}
-
-/* Mastercard: iki iç içe daire. */
-.pay-mc {
-  gap: 0;
-  grid-auto-flow: column;
-}
-
-.pay-mc i {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-}
-
-.pay-mc i:first-child {
-  background: #eb001b;
-}
-
-.pay-mc i:last-child {
-  margin-left: -6px;
-  background: #f79e1b;
-  mix-blend-mode: multiply;
+@media (max-width: 700px) {
+  .footer-pay {
+    justify-content: flex-start;
+  }
+  .pay-provider {
+    flex-wrap: wrap;
+    gap: var(--s3);
+  }
 }
 
 /* --- Yasal satır --- */
