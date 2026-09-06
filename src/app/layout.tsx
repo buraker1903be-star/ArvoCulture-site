@@ -169,12 +169,20 @@ export default async function RootLayout({
                 </small>
               </div>
 
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className="pay-band"
-                src="/rozet/paytr-kartlar.png"
-                alt="Visa, Mastercard, Troy ve American Express ile ödeme"
-              />
+              <ul className="pay-cards" aria-label="Kabul edilen kartlar">
+                {[
+                  { file: "visa", label: "Visa" },
+                  { file: "mastercard", label: "Mastercard" },
+                  { file: "troy", label: "Troy" },
+                  { file: "maestro", label: "Maestro" },
+                  { file: "americanexpress", label: "American Express" },
+                ].map((card) => (
+                  <li key={card.file}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`/rozet/${card.file}.png`} alt={card.label} />
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="footer-legal">

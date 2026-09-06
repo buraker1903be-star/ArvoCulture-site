@@ -634,10 +634,33 @@ footer {
   color: var(--ink-2);
 }
 
-/* PayTR'nin resmi kart bandı. Yükseklik sabit, genişlik oranla. */
-.pay-band {
-  height: 26px;
+/*
+  Kart logoları. Her logo kendi beyaz kutusunda durur; farklı
+  oranlardaki görseller (Visa yatay, Mastercard kare) böylece
+  aynı hizada ve eşit ağırlıkta görünür.
+*/
+.pay-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.pay-cards li {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 30px;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #fff;
+}
+
+.pay-cards img {
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
+  height: auto;
   object-fit: contain;
 }
 
