@@ -3,34 +3,27 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Arama katmani: acilir pencere ve gorselli populer aramalar"
+git commit -m "Baslik eylemleri ikona cevrildi"
 git push
 vercel --prod
 ```
 
 ## Bu turda
 
-**Arama artık açılır katman.** Kutuya basınca sayfa değişmiyor;
-üstten inen bir panel açılıyor. Müşteri aradığını bulamazsa
-Escape'e basıp kaldığı yerden devam ediyor — sayfa geçişi
-yapıldığında sepet akışı bölünüyordu.
+**Ara / Hesap / Sepet artık yalnızca ikon.** Üçü de 40px'lik
+yuvarlak dokunma alanına oturdu; üzerine gelince zemini
+renkleniyor.
 
-Katman açıkken arka plan kaymıyor, imleç otomatik giriş alanına
-gidiyor, Escape ve dışarı tıklama kapatıyor.
+Sepete kendi ikonu (alışveriş çantası) eklendi; öncesinde düz
+"Sepet" yazısıydı.
 
-**Popüler aramalar görselli kutu oldu.** Metin etiketi yerine
-kare görselli kutular: kremi ya da parfümü görmek, adını okumaktan
-daha hızlı karar verdiriyor.
+**Sayaç rozet oldu.** Ürün sayısı ikonun sağ üst köşesinde küçük
+kırmızı bir baloncukta. Sıfırken de görünüyor — Türkiye'de
+alışıldık davranış bu.
 
-Görseller sabit dosya değil — her kutu, katalogda adı eşleşen ilk
-ürünün görselini kullanıyor. Katalog değişince kutular da
-kendiliğinden güncelleniyor.
+**Metin etiketleri gizlendi, silinmedi.** Ekran okuyucular için
+`aria-label` zaten vardı; metinler de DOM'da duruyor ve ekran
+okuyucuya görünür. Yalnızca gözle görünmüyorlar.
 
-Altı kutu: Serum, Parfüm, Oversize tişört, Güneş koruma,
-Nemlendirici, Vitamin. Mobilde üçlü ızgaraya düşüyor.
-
-### Kutuları değiştirmek
-
-`src/app/page.tsx` içindeki `SEARCH_TILES` dizisi. Her kayıt üç
-alan taşır: `label` (görünen ad), `href` (gidilecek koleksiyon),
-`match` (görseli seçmek için ürün adında aranacak kelime).
+Dokunma hedefi 40×40px — mobilde parmakla isabet için gereken
+asgari ölçü.

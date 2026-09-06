@@ -134,7 +134,11 @@ export function CartLink() {
       href="/sepet"
       aria-label={`Sepet, ${count} ürün`}
     >
-      Sepet <span>{count}</span>
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M6 8h12l-1 11.5a1.5 1.5 0 0 1-1.5 1.4h-9A1.5 1.5 0 0 1 5 19.5Z" />
+        <path d="M9 8V6.5a3 3 0 0 1 6 0V8" />
+      </svg>
+      <span className="cart-count">{count}</span>
     </Link>
   );
 }
