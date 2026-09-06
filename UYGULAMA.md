@@ -3,38 +3,28 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Iletisim sayfasi yeniden tasarlandi"
+git commit -m "Iletisim: WhatsApp hatti ve adres bilgisi"
 git push
 vercel --prod
 ```
 
-## Doldurulması gerekenler
-
-`src/app/iletisim/page.tsx` içinde iki `TODO` var:
-
-1. **MERSİS, vergi dairesi ve vergi numarası** — şu an "—"
-   görünüyor. Mesafeli satış mevzuatı bu bilgilerin tüketici
-   tarafından erişilebilir olmasını arıyor.
-2. **Telefon / WhatsApp** — eklemek isterseniz `CHANNELS` dizisine
-   kart ekleyin. Erişilemeyen bir numara koymayın; cevapsız telefon
-   güveni düşürür.
-
 ## Bu turda
 
-Sayfa düz metin bloklarıydı. Dört bölüme ayrıldı:
+**WhatsApp kanalı eklendi.** +90 507 437 05 07, "Kurumsal hat — en
+hızlı yanıt" notuyla. Buton `wa.me` bağlantısına gidiyor; masaüstünde
+WhatsApp Web, telefonda uygulama açılıyor. Kanal kartları üçlü
+ızgaraya geçti.
 
-**1. Giriş** — tek cümlelik yönlendirme. "Sipariş numaranızı
-eklerseniz daha hızlı dönüş yaparız" cümlesi başa alındı; en çok
-zaman kaybettiren şey eksik bilgiyle gelen mesajlar.
+**Adres satıcı bilgilerine eklendi.** PayTR üye iş yeri kuralları
+adresin iletişim sayfasında yayımlanmasını istiyor.
 
-**2. İletişim kanalları** — iki kart: doğrudan e-posta ve sipariş
-takibi. Takip kartındaki bağlantı konu satırını önceden
-dolduruyor.
+**Vergi, MERSİS ve ticaret sicil bilgileri kaldırıldı.** Bu
+sayfada dört bilgi kaldı: ticaret unvanı, adres, e-posta, WhatsApp.
 
-**3. Belki cevabı burada** — dört tıklanabilir kart: kargo, iade,
-SSS, mesafeli satış sözleşmesi. Destek yükünün büyük kısmı bu dört
-sorudan geliyor; müşteri yazmadan önce cevabı bulabiliyor.
+## Bir kontrol
 
-**4. Satıcı bilgileri** — ticaret unvanı, adres, e-posta, MERSİS
-ve vergi bilgileri. Footer'dan ticaret unvanını kaldırdığımız için
-bu bilgi burada bulunmak zorunda.
+Vergi dairesi, vergi numarası, MERSİS ve ticaret sicil numarası
+mesafeli satış mevzuatı gereği bir yerde bulunmalı. İletişim
+sayfasından kaldırdığımıza göre bunların
+`/mesafeli-satis-sozlesmesi` sayfasında yer aldığını doğrulayın.
+Orada da yoksa eklememiz gerekir.

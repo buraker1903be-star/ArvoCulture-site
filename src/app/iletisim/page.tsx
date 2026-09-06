@@ -17,9 +17,18 @@ export const metadata: Metadata = {
  * bulunmak zorunda.
  */
 
-/* TODO: Telefon ve WhatsApp numarası doğrulanmalı; yoksa ilgili
-   kart kaldırılmalı. Erişilemeyen bir numara güveni düşürür. */
+const WHATSAPP = "+90 507 437 05 07";
+/* wa.me biçimi: yalnızca rakamlar, ülke kodu dahil, artı yok. */
+const WHATSAPP_LINK = "https://wa.me/905074370507";
+
 const CHANNELS = [
+  {
+    title: "WhatsApp",
+    value: WHATSAPP,
+    href: WHATSAPP_LINK,
+    note: "Kurumsal hat — en hızlı yanıt",
+    action: "WhatsApp'tan yaz",
+  },
   {
     title: "E-posta",
     value: "info@arvoculture.com",
@@ -111,9 +120,10 @@ export default function Contact() {
       </section>
 
       {/*
-        Satıcı bilgileri. Mesafeli Sözleşmeler Yönetmeliği satıcının
-        tam unvanı, adresi ve iletişim bilgilerinin tüketici
-        tarafından kolayca erişilebilir olmasını arar.
+        Satıcı bilgileri. PayTR üye iş yeri kuralları adresin
+        iletişim sayfasında yayımlanmasını istiyor. Vergi, MERSİS
+        ve ticaret sicil bilgileri burada değil; mesafeli satış
+        sözleşmesinde yer alıyor.
       */}
       <section className="panel panel-soft seller-info">
         <div className="head">
@@ -132,8 +142,9 @@ export default function Contact() {
           <div>
             <dt>Adres</dt>
             <dd>
-              Yakuplu Mah. Hürriyet Bulvarı, Skyport Residence No:1 D:113,
-              34524 Beylikdüzü / İstanbul
+              Yakuplu Mah. Hürriyet Bulvarı, Skyport Residence No:1 D:113
+              <br />
+              34524 Beylikdüzü / İstanbul, Türkiye
             </dd>
           </div>
           <div>
@@ -142,14 +153,13 @@ export default function Contact() {
               <a href="mailto:info@arvoculture.com">info@arvoculture.com</a>
             </dd>
           </div>
-          {/* TODO: MERSİS, vergi dairesi ve vergi numarası eklenmeli. */}
           <div>
-            <dt>MERSİS</dt>
-            <dd>—</dd>
-          </div>
-          <div>
-            <dt>Vergi dairesi / numarası</dt>
-            <dd>—</dd>
+            <dt>WhatsApp</dt>
+            <dd>
+              <a href={WHATSAPP_LINK} rel="noopener">
+                {WHATSAPP}
+              </a>
+            </dd>
           </div>
         </dl>
       </section>
