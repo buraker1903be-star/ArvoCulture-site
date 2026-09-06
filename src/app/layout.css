@@ -6,40 +6,56 @@
 
 /* ---------- Duyuru şeridi --------------------------------- */
 
+/*
+  Şerit sabit ve ortalanmış. Kayan bant, okumaya çalışan kullanıcıyı
+  metnin geçmesini beklemeye zorluyordu; kargo eşiği ve kupon kodu
+  gibi bilgilerin sabit durması gerekir.
+
+  İşaretlemede aynı grup iki kez var (kayan bant kesintisiz görünsün
+  diye). İkincisi zaten aria-hidden; sabit düzende gizleniyor.
+*/
 .announcement {
-  overflow: hidden;
-  padding: 7px 0;
-  background: rgba(0, 0, 0, 0.28);
-  color: rgba(255, 255, 255, 0.9);
+  padding: 8px var(--rail);
+  background: rgba(20, 22, 26, 0.9);
+  color: rgba(255, 255, 255, 0.92);
   font-size: var(--t-xs);
   letter-spacing: 0.04em;
-  white-space: nowrap;
 }
 
 .announcement-track {
   display: flex;
-  width: max-content;
-  animation: marquee 38s linear infinite;
+  justify-content: center;
 }
 
 .announcement-group {
   display: flex;
-  gap: var(--s6);
-  padding-inline: var(--s6);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px var(--s5);
+  text-align: center;
 }
 
-/* Duyuru şeridi kayan bir bant olduğu için hizalanmaz; zemini
-   tam genişlikte kalır. Bilinçli tercih. */
-
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
+.announcement-group + .announcement-group {
+  display: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .announcement-track {
-    animation: none;
+/* Maddeleri ayıran ince nokta. */
+.announcement-group span + span::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin-right: var(--s3);
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.45;
+  vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+  .announcement-group {
+    gap: 4px var(--s4);
   }
 }
 

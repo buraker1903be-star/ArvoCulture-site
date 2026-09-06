@@ -3,26 +3,22 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Mega menu sutunlari tek satirda"
+git commit -m "Duyuru seridi sabit ve ortalanmis"
 git push
 vercel --prod
 ```
 
 ## Bu turda
 
-Sütunlar sabit 230px genişlikteydi. Kişisel Bakım'da sekiz sütun
-var; 8 × 230px + boşluklar 1600px'e sığmıyor ve "İhtiyaca Göre"
-alt satıra düşüyordu.
+Duyuru şeridi artık **sabit ve ortalanmış**. Kayan bant, okumaya
+çalışan kullanıcıyı metnin geçmesini beklemeye zorluyordu; kargo
+eşiği ve kupon kodu gibi bilgilerin sabit durması gerekir.
 
-Artık sütunlar mevcut genişliği **eşit paylaşıyor** ve tek satırda
-kalıyor. Sütun sayısı arttıkça hepsi birlikte daralır.
+İşaretlemede aynı grup iki kez vardı (kayan bandın kesintisiz
+görünmesi için). İkincisi zaten `aria-hidden` idi, sabit düzende
+CSS ile gizlendi — `header.tsx` değişmedi.
 
-240px'lik bir üst sınır var — bu, az sütunlu menülerde (Kozmetik
-tek sütun) sütunun sayfa boyunca yayılmasını engelliyor. Daha önce
-bu yüzden bağlantılar boşlukta kalıyordu.
+Maddeler arasına ince bir nokta ayracı kondu. Dar ekranda satır
+kaydırıyor, kesilmiyor.
 
-900px altında tek satır zorlaması kalkıyor, sütunlar alt alta
-geçiyor.
-
-Uzun koleksiyon adları sütuna sığmazsa üç nokta ile kesiliyor;
-üzerine gelince tam adı görünür.
+Şerit de 1600px hizasına alındı.
