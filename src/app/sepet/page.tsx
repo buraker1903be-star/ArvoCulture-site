@@ -1,10 +1,15 @@
-import { CartView } from "@/components/cart";
+import type { Metadata } from "next";
+import { CartPageView } from "@/components/cart-page";
+
+export const metadata: Metadata = {
+  title: "Sepetim",
+  robots: { index: false, follow: true },
+};
+
 export default function CartPage() {
   return (
-    <main className="shell"><div className="panel simple-page">
-      <p className="eyebrow">SEPETİN</p>
-      <h1>Seçimlerini tamamla.</h1>
-      <CartView />
-    </div></main>
+    <main className="shell">
+      <CartPageView />
+    </main>
   );
 }

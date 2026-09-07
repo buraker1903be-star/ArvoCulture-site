@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { formatPrice } from "@/lib/product-types";
+import { readCoupon, readNote } from "@/lib/cart-extras";
 
 /**
  * Ödeme sayfası.
@@ -38,6 +39,21 @@ export default function CheckoutPage() {
     privacy: false,
   });
   const [state, setState] = useState<"idle" | "sending" | "error">("idle");
+  // Sepette girilen kupon ve not ödeme isteğine taşınır.
+  const [coupon, setCoupon] = useState("");
+  const [note, setNote] = useState("");
+
+  useEffect(() => {
+    /*
+      localStorage sunucuda okunamaz; değerler ilk render'dan
+      sonra yüklenir. Tek seferlik başlangıç değeri olduğu için
+      zincirleme render riski yok.
+    */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCoupon(readCoupon());
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNote(readNote());
+  }, []);
   const [message, setMessage] = useState("");
 
   const shipping = total >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FEE;
@@ -91,6 +107,8 @@ export default function CheckoutPage() {
             quantity: item.quantity,
             name: item.name,
           })),
+          couponCode: coupon || null,
+          note: note || null,
         }),
       });
 

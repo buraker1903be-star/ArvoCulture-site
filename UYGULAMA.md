@@ -3,37 +3,37 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Gorseli olmayan kalemler icin yer tutucu"
+git commit -m "Sepet cekmecesi ve yeni sepet sayfasi"
 git push
 vercel --prod
 ```
 
-## Durum
+ARC tarafında yeni migration yok. Not alanı ödeme isteğine
+gönderiliyor ama ARC henüz kaydetmiyor — istersen sipariş
+fonksiyonuna ekleyebiliriz.
 
-Veri tarafı çalışıyor. `SPR#1015` siparişinde görsel yolu dolu
-geliyor; o siparişte görseller görünmeli.
+## Sepet çekmecesi
 
-`SPR#1017` ve `SPR#1018` siparişlerindeki SKU'lar (27517, 20643,
-20422, 20600) güncel katalogda hiç yok — o ürünler ARC'ta kayıtlı
-değil. Hiçbir eşleştirme yöntemi olmayan ürünün görselini bulamaz.
+Başlıktaki sepet ikonuna basınca sağdan açılıyor. Müşteri sayfayı
+terk etmiyor, alışverişe kaldığı yerden devam edebiliyor.
 
-## Bu turda
+İçinde: ücretsiz kargoya kalan tutar uyarısı, ürünler adet
+değiştiriciyle, ara toplam, "Ödemeye geç" ve "Sepet detayına git".
 
-Görseli bulunamayan kalemler için **baş harf yer tutucusu**
-eklendi. Boş kare "yükleniyor" izlenimi veriyordu; harf kasıtlı
-görünüyor.
+Escape ve dışarı tıklama kapatıyor, açıkken arka plan kaymıyor.
+Kapanışta animasyon tamamlanıyor.
 
-"LR" öneki atlanıyor, sonraki iki kelimenin baş harfi alınıyor —
-"LR ALOE VIA Güneş Spreyi" için "AV" gibi.
+## Sepet sayfası
 
-## Eşleşmeyen ürünleri düzeltmek isterseniz
+**İndirim kodu** girilebiliyor. Kod saklanıyor ve ödeme adımında
+ARC'a gönderiliyor. İndirim tutarı burada hesaplanmıyor — sunucu
+hesaplıyor. İstemcide hesaplasaydık gerçek tutarla çelişebilirdi.
 
-Eski SKU'ların güncel karşılığı varsa `arc_order_items` tablosunda
-güncelleyebilirsiniz:
+**Sipariş notu** 500 karaktere kadar. "Kapıcıya teslim edilebilir",
+"hediye paketi yapılsın" gibi.
 
-```sql
-update arc_order_items set sku = 'YENİ-SKU' where sku = '27517';
-```
+Ürünler büyük görselleriyle, adet değiştirici ve birim fiyatla
+listeleniyor. Sağda yapışkan özet paneli: ara toplam, kargo,
+toplam ve ücretsiz kargoya kalan tutar.
 
-Ürünler gerçekten katalogdan çıktıysa buna gerek yok; yer tutucu
-yeterli.
+Sepet boşken ayrı bir görünüm çıkıyor, koleksiyonlara yönlendiriyor.
