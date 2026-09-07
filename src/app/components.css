@@ -2213,3 +2213,137 @@ button.search-box {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Sipariş kartları ------------------------------ */
+
+.order-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--s4);
+}
+
+.order-card {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+  padding: var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease),
+    border-color 200ms var(--ease);
+}
+
+.order-card:hover {
+  transform: translateY(-3px);
+  border-color: transparent;
+  box-shadow: var(--float);
+}
+
+.order-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+
+.order-card-head strong {
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ürün görselleri küçük bir şerit: müşteri siparişi içeriğini
+   okumadan görselden tanır. */
+.order-card-thumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.order-card-thumbs > span {
+  position: relative;
+  display: block;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fff;
+  overflow: hidden;
+}
+
+.order-card-thumbs img {
+  object-fit: contain;
+  padding: 8%;
+}
+
+.order-card-thumbs em {
+  font-style: normal;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.order-card-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--line);
+}
+
+.order-card-foot time {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.order-card-foot b {
+  font-size: var(--t-body);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Sipariş detay sayfası ------------------------- */
+
+.detail-hero {
+  gap: var(--s3);
+  padding-block: clamp(28px, 3.4vw, 44px);
+}
+
+.detail-hero h1 {
+  font-size: clamp(24px, 3vw, 36px);
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.detail-meta time {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  gap: var(--gap);
+  align-items: start;
+}
+
+.detail-side {
+  position: sticky;
+  top: var(--gap);
+  display: grid;
+  gap: var(--s4);
+}
+
+@media (max-width: 900px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .detail-side {
+    position: static;
+  }
+}

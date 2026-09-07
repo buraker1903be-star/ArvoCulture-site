@@ -1,51 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getAuthClient } from "@/lib/auth-client";
 import { AddressBook } from "@/components/address-book";
+import { OrderCard } from "@/components/order-card";
+import type { Order } from "@/lib/order-types";
 import { formatPrice } from "@/lib/product-types";
 
 type Mode = "login" | "register" | "reset";
 
-type Order = {
-  order_number: string;
-  status: string;
-  payment_status: string;
-  subtotal: number;
-  discount: number;
-  shipping: number;
-  total: number;
-  currency: string;
-  coupon_code: string | null;
-  address: {
-    line?: string;
-    district?: string;
-    city?: string;
-    postal?: string;
-  };
-  created_at: string;
-  items: Array<{
-    name: string;
-    sku: string;
-    quantity: number;
-    unit_price: number;
-    total: number;
-    slug: string | null;
-    image: string | null;
-  }>;
-};
 
-const STATUS_LABEL: Record<string, string> = {
-  pending: "Ödeme bekleniyor",
-  confirmed: "Hazırlanıyor",
-  processing: "Hazırlanıyor",
-  fulfilled: "Teslim edildi",
-  delivered: "Teslim edildi",
-  cancelled: "İptal edildi",
-  refunded: "İade edildi",
-};
 
 
 
@@ -330,101 +295,15 @@ export function AccountPanel({
           )}
 
           {orders && orders.length > 0 && (
-            <ul className="order-list">
+            <div className="order-cards">
               {orders.map((order) => (
-                <li key={order.order_number}>
-                  <div className="order-head">
-                    <strong>{order.order_number}</strong>
-                    <span className="tag tag-soft">
-                      {STATUS_LABEL[order.status] ?? order.status}
-                    </span>
-                    <time dateTime={order.created_at}>
-                      {new Intl.DateTimeFormat("tr-TR", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      }).format(new Date(order.created_at))}
-                    </time>
-                    <b>{formatPrice(order.total / 100)}</b>
-                  </div>
-
-                  {/* Kalemler görselleriyle. */}
-                  <ul className="order-items">
-                    {order.items.map((item, index) => (
-                      <li key={`${order.order_number}-${index}`}>
-                        <span className="order-thumb">
-                          {item.image && (
-                            <Image
-                              src={`${supabaseUrl}/storage/v1/object/public/arc-product-images/${item.image}`}
-                              alt=""
-                              fill
-                              sizes="56px"
-                            />
-                          )}
-                        </span>
-                        <span className="order-item-text">
-                          {item.slug ? (
-                            <a href={`/urun/${item.slug}`}>{item.name}</a>
-                          ) : (
-                            <span>{item.name}</span>
-                          )}
-                          <small>
-                            {item.quantity} adet ×{" "}
-                            {formatPrice(item.unit_price / 100)}
-                          </small>
-                        </span>
-                        <b>{formatPrice(item.total / 100)}</b>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Tutar dökümü ve teslimat adresi. */}
-                  <div className="order-foot">
-                    <dl className="order-totals">
-                      <div>
-                        <dt>Ara toplam</dt>
-                        <dd>{formatPrice(order.subtotal / 100)}</dd>
-                      </div>
-                      {order.discount > 0 && (
-                        <div className="is-discount">
-                          <dt>
-                            İndirim
-                            {order.coupon_code ? ` (${order.coupon_code})` : ""}
-                          </dt>
-                          <dd>−{formatPrice(order.discount / 100)}</dd>
-                        </div>
-                      )}
-                      <div>
-                        <dt>Kargo</dt>
-                        <dd>
-                          {order.shipping > 0
-                            ? formatPrice(order.shipping / 100)
-                            : "Ücretsiz"}
-                        </dd>
-                      </div>
-                      <div className="is-total">
-                        <dt>Toplam</dt>
-                        <dd>{formatPrice(order.total / 100)}</dd>
-                      </div>
-                    </dl>
-
-                    {order.address?.line && (
-                      <div className="order-address">
-                        <small>Teslimat adresi</small>
-                        <p>
-                          {order.address.line}
-                          <br />
-                          {order.address.district} / {order.address.city}
-                          {order.address.postal
-                            ? ` · ${order.address.postal}`
-                            : ""}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </li>
+                <OrderCard
+                  key={order.order_number}
+                  order={order}
+                  supabaseUrl={supabaseUrl}
+                />
               ))}
-            </ul>
+            </div>
           )}
         </section>
       </div>

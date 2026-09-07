@@ -1,44 +1,36 @@
-# İKİ REPO — sırayla
-
-## 1) C:\ArvoARC  (önce bu)
-
-`arc-siparis-detay.zip` içindeki migration'ı Supabase SQL
-Editor'de çalıştırın. Bu olmadan sipariş detayları gelmez.
-
-## 2) C:\ArvoCulture-site
+# HANGİ REPO: C:\ArvoCulture-site
 
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Hesap tek sayfa, siparis detaylari genisletildi"
+git commit -m "Siparisler kart halinde, detay sayfasi eklendi"
 git push
 vercel --prod
 ```
 
-## Ne değişti
+ARC tarafında yeni migration yok.
 
-**Sekmeler kalktı.** Hesap bilgileri ve adres defteri üstte yan
-yana, siparişler altta tam genişlikte. Müşteri hepsini tek ekranda
-görüyor, sekme değiştirmiyor.
+## Bu turda
 
-**Sipariş kalemlerinde ürün görseli var.** Ürün adı tıklanabilir,
-ürün sayfasına gidiyor. Yanında adet ve birim fiyat.
+**Siparişler kart ızgarasında.** Her sipariş kendi kutusunda:
+numara, durum etiketi, ürün görsellerinden oluşan küçük şerit,
+tarih ve tutar. Üzerine gelince kart yükseliyor.
 
-**Tam tutar dökümü:** ara toplam, indirim (kupon kodu da yazıyor),
-kargo, toplam. İndirim kırmızı gösteriliyor.
+Görsel şeridi dört ürün gösteriyor, fazlası "+3" olarak
+belirtiliyor. Müşteri hangi siparişin ne olduğunu içeriğini
+okumadan görselden tanıyor.
 
-**Teslimat adresi** her siparişin altında.
+**Detay sayfası eklendi:** `/hesap/siparis/{numara}`
 
-## Sipariş detayları için ARC notu
+İçinde: ekmek kırıntısı, sipariş numarası, durum ve tarih; solda
+ürünler görselleri ve birim fiyatlarıyla, sağda yapışkan özet
+paneli (ara toplam, indirim, kargo, toplam) ve teslimat adresi.
 
-Tutar dökümü `arc_orders` tablosundaki `subtotal`, `shipping` ve
-`metadata.discount` alanlarından okunuyor. Adres
-`metadata.address` içinden.
+## Güvenlik
 
-Eski siparişleri ARC'a elle girdiyseniz bu alanlar boş olabilir —
-o durumda ara toplam ve kargo sıfır görünür, adres bölümü hiç
-çıkmaz. Sipariş ve kalemler yine listelenir.
+Detay sayfası siparişi `get_arvoculture_my_orders` üzerinden
+çekiyor; o fonksiyon `auth.uid()` ile çalıştığı için başkasının
+sipariş numarasını adres çubuğuna yazmak işe yaramıyor —
+"Sipariş bulunamadı" görünür.
 
-Görseller kalemin bağlı olduğu varyant üzerinden ürüne gidilerek
-bulunuyor. Elle girilen siparişlerde `variant_id` boşsa görsel
-gelmez, yer tutucu görünür.
+Giriş yapılmamışsa sayfa hesaba yönlendiriyor.
