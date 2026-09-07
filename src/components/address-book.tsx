@@ -55,6 +55,13 @@ export function AddressBook({ supabase }: { supabase: SupabaseClient }) {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    /*
+      Geçmiş siparişlerden aktarılan adresler burada belirir.
+      Sahiplenme fonksiyonu mükerrer kayıt oluşturmaz, o yüzden
+      her yüklemede güvenle çağrılabilir.
+    */
+    await supabase.rpc("claim_arvoculture_orders");
+
     const { data, error: loadError } = await supabase
       .from("arc_customer_addresses")
       .select("*")
