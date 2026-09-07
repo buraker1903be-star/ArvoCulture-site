@@ -1978,3 +1978,125 @@ button.search-box {
 .order-items small {
   color: var(--ink-3);
 }
+
+/* ---------- Hesap: sekmeler ve adres defteri -------------- */
+
+.account-shell {
+  display: grid;
+  gap: var(--gap);
+}
+
+.account-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s4) var(--pad);
+  border-radius: var(--r);
+  background: var(--panel);
+  box-shadow: var(--float);
+}
+
+.account-bar strong {
+  display: block;
+  font-size: var(--t-sm);
+}
+
+.account-bar small {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.account-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--panel);
+  box-shadow: var(--float);
+}
+
+.account-tabs button {
+  flex: 1;
+  min-width: 130px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink-2);
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.account-tabs button[aria-selected="true"] {
+  background: var(--ink);
+  color: #fff;
+}
+
+/* --- Adres kartları --- */
+
+.address-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s4);
+}
+
+.address-list > li {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+  padding: var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.address-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.address-head strong {
+  font-size: var(--t-body);
+  margin-right: var(--s1);
+}
+
+.address-body {
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.address-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s4);
+}
+
+.linklike.danger {
+  color: var(--sale);
+}
+
+.linklike.danger:hover {
+  color: var(--sale);
+}
+
+.address-form {
+  display: grid;
+  gap: var(--s4);
+}
+
+.address-form .fields {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .address-list {
+    grid-template-columns: 1fr;
+  }
+}

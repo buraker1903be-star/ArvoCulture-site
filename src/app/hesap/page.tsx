@@ -26,64 +26,19 @@ export default function Account() {
     <main className="shell">
       <section className="panel about-hero">
         <p className="about-eyebrow">Hesabım</p>
-        <h1>Siparişinizi takip edin.</h1>
+        <h1>Hesabım</h1>
         <p className="about-lede">
-          ArvoCulture&apos;da üye olmadan alışveriş yapabilirsiniz. Siparişiniz
-          e-posta adresinize gönderilen numarayla takip edilir.
+          Siparişleriniz, adres defteriniz ve hesap bilgileriniz tek yerde.
+          Üyelik zorunlu değil; misafir olarak da alışveriş yapabilirsiniz.
         </p>
       </section>
 
-      <div className="account-grid">
-        {/* Bugün çalışan yol: sipariş numarasıyla takip. */}
-        <section className="panel account-track">
-          <div className="head">
-            <div>
-              <h2>Sipariş takibi</h2>
-              <p>Sipariş numaranız e-posta ile gönderildi.</p>
-            </div>
-          </div>
-
-          <ol className="track-steps">
-            <li>
-              <span>1</span>
-              <div>
-                <strong>Sipariş numaranızı bulun</strong>
-                <small>Onay e-postanızda AC ile başlayan numara</small>
-              </div>
-            </li>
-            <li>
-              <span>2</span>
-              <div>
-                <strong>Bize yazın</strong>
-                <small>WhatsApp ya da e-posta, ikisi de olur</small>
-              </div>
-            </li>
-            <li>
-              <span>3</span>
-              <div>
-                <strong>Durumunu öğrenin</strong>
-                <small>Hazırlık, kargo ve teslimat bilgisi</small>
-              </div>
-            </li>
-          </ol>
-
-          <div className="account-actions">
-            <a className="btn" href={WHATSAPP_LINK} rel="noopener">
-              WhatsApp&apos;tan sor
-            </a>
-            <a href="mailto:info@arvoculture.com?subject=Sipari%C5%9F%20takibi">
-              E-posta gönder
-            </a>
-          </div>
-        </section>
-
-        {/* Bağlantı bilgileri sunucudan aktarılır; NEXT_PUBLIC_
-            değişkenine bağımlılık yok. */}
-        <AccountPanel
-          supabaseUrl={env.supabaseUrl}
-          supabaseKey={env.supabaseKey}
-        />
-      </div>
+      {/* Bağlantı bilgileri sunucudan aktarılır; NEXT_PUBLIC_
+          değişkenine bağımlılık yok. */}
+      <AccountPanel
+        supabaseUrl={env.supabaseUrl}
+        supabaseKey={env.supabaseKey}
+      />
 
       <section className="panel panel-tight help">
         <strong>Başka bir konuda yardım mı lazım?</strong>
