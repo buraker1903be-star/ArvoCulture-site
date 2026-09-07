@@ -181,6 +181,10 @@ export function AddressBook({ supabase }: { supabase: SupabaseClient }) {
   async function remove(id: string) {
     if (!window.confirm("Bu adresi silmek istediğinize emin misiniz?")) return;
 
+    // Kaydı önce ekrandan kaldırıyoruz; sunucu hatasında geri
+    // yükleniyor. Beklemeden geri bildirim veriyor.
+    setItems((current) => (current ?? []).filter((item) => item.id !== id));
+
     const { error: deleteError } = await supabase
       .from("arc_customer_addresses")
       .delete()
@@ -188,9 +192,9 @@ export function AddressBook({ supabase }: { supabase: SupabaseClient }) {
 
     if (deleteError) {
       console.error(deleteError);
-      return;
+      setError("Adres silinemedi. Lütfen tekrar deneyin.");
+      await load();
     }
-    await load();
   }
 
   function field(key: keyof typeof form) {
