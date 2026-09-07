@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AccountPanel } from "@/components/account-panel";
+import { env } from "@/lib/env";
 
 export const metadata: Metadata = {
   title: "Hesabım",
@@ -76,7 +77,12 @@ export default function Account() {
           </div>
         </section>
 
-        <AccountPanel />
+        {/* Bağlantı bilgileri sunucudan aktarılır; NEXT_PUBLIC_
+            değişkenine bağımlılık yok. */}
+        <AccountPanel
+          supabaseUrl={env.supabaseUrl}
+          supabaseKey={env.supabaseKey}
+        />
       </div>
 
       <section className="panel panel-tight help">

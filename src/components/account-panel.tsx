@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { getAuthClient, isAuthConfigured } from "@/lib/auth-client";
+import { getAuthClient } from "@/lib/auth-client";
 import { formatPrice } from "@/lib/product-types";
 
 type Mode = "login" | "register" | "reset";
@@ -35,7 +35,13 @@ const STATUS_LABEL: Record<string, string> = {
  * numarası tahmin ederek başkasının siparişine erişmek mümkün
  * değildir.
  */
-export function AccountPanel() {
+export function AccountPanel({
+  supabaseUrl,
+  supabaseKey,
+}: {
+  supabaseUrl: string;
+  supabaseKey: string;
+}) {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [orders, setOrders] = useState<Order[] | null>(null);
@@ -49,21 +55,15 @@ export function AccountPanel() {
     text: string;
   } | null>(null);
 
-  const configured = isAuthConfigured();
+  const configured = Boolean(supabaseUrl && supabaseKey);
 
   /* --- Oturum takibi --- */
   useEffect(() => {
-    /*
-      Yapılandırma eksikse istemci kurulmaz. Öncesinde burada
-      istisna fırlıyor ve tüm sayfa çöküyordu; artık sayfa
-      açılıyor, yalnızca bu panel uyarı gösteriyor.
-    */
-    if (!isAuthConfigured()) {
-      setReady(true);
-      return;
-    }
+    // Yapılandırma eksikse istemci hiç kurulmaz; panel uyarı
+    // gösterir ve sayfa çökmez.
+    if (!supabaseUrl || !supabaseKey) return;
 
-    const supabase = getAuthClient();
+    const supabase = getAuthClient(supabaseUrl, supabaseKey);
 
     let active = true;
 
@@ -81,11 +81,11 @@ export function AccountPanel() {
       active = false;
       listener.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabaseUrl, supabaseKey]);
 
   /* --- Siparişleri getir --- */
   const loadOrders = useCallback(async () => {
-    const supabase = getAuthClient();
+    const supabase = getAuthClient(supabaseUrl, supabaseKey);
 
     // Kayıt öncesi misafir siparişleri varsa hesaba bağlanır.
     await supabase.rpc("claim_arvoculture_orders");
@@ -97,7 +97,7 @@ export function AccountPanel() {
       return;
     }
     setOrders((data as Order[]) ?? []);
-  }, []);
+  }, [supabaseUrl, supabaseKey]);
 
   useEffect(() => {
     if (!session) return;
@@ -114,7 +114,7 @@ export function AccountPanel() {
   async function submit() {
     setBusy(true);
     setMessage(null);
-    const supabase = getAuthClient();
+    const supabase = getAuthClient(supabaseUrl, supabaseKey);
 
     try {
       if (mode === "reset") {
@@ -166,7 +166,7 @@ export function AccountPanel() {
   }
 
   async function signOut() {
-    await getAuthClient().auth.signOut();
+    await getAuthClient(supabaseUrl, supabaseKey).auth.signOut();
     setOrders(null);
     setEmail("");
     setPassword("");
