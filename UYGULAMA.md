@@ -1,44 +1,55 @@
 # İKİ REPO — sırayla
 
-## 1) C:\ArvoARC  (asıl düzeltme burada)
+## 1) C:\ArvoARC  (önce bu)
 
-`arc-adres-silme.zip` içindeki migration'ı Supabase SQL Editor'de
-çalıştırın.
+`arc-adres-normal.zip` içindeki migration'ı Supabase SQL
+Editor'de çalıştırın.
 
 ## 2) C:\ArvoCulture-site
 
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Adres silme duzeltmesi"
+git commit -m "Siparis detayinda teslimat ve fatura adresi"
 git push
 vercel --prod
 ```
 
 ## Sorun neydi
 
-Adres defteri her açıldığında `claim_arvoculture_orders`
-çağrılıyordu ve o fonksiyon siparişlerden adresleri **yeniden
-oluşturuyordu**. Siliyordunuz, sayfa yenilenince geri geliyordu.
+RPC adresi bulduğu yapıda döndürüyordu. Shopify aktarımında alan
+adı `address1`, vitrin siparişinde `line`. Arayüz `line` beklediği
+için Shopify yapısındaki adres boş görünüyordu.
 
-Fonksiyonu her açılışta çağırmak, aktarımın gecikmeli çalışan
-hesaplarda da tamamlanması içindi — ama silmeyi imkânsız hale
-getirmiş.
+Fatura adresi ise hiç döndürülmüyordu.
 
 ## Çözüm
 
-Aktarım tamamlandığında kullanıcının profiline
-`addresses_imported` işareti yazılıyor. Fonksiyon o işareti
-görünce adres aktarımını atlıyor.
+**Adresler tek şemaya normalleştiriliyor.** Kaynak ne olursa olsun
+RPC şu yapıyı döndürüyor:
 
-Sipariş sahiplenmesi ve ad/telefon aktarımı çalışmaya devam
-ediyor — onlar zaten mükerrer kayıt oluşturmuyordu.
+```
+{ line, district, city, postal, name, phone,
+  company, tax_office, tax_number }
+```
 
-Ayrıca silme artık anında görünüyor: kayıt önce ekrandan
-kaldırılıyor, sunucu hatasında geri yükleniyor.
+Arayüz tek bir yapı okuyor, kaynağın ne olduğuyla ilgilenmiyor.
+`address1` ve `address2` birleştiriliyor, posta kodundaki Excel
+artığı kesme işareti temizleniyor.
 
-## Not
+**Sipariş detayında artık:**
 
-Migration'dan sonra ilk açılışta aktarım bir kez daha çalışıp
-işareti koyacak. O turda silinmiş adresler bir defa daha
-gelebilir; tekrar silin, bir daha dönmeyecek.
+- Teslimat adresi — ad, telefon, açık adres, ilçe/il, posta kodu
+- Fatura adresi — teslimatla aynıysa "Fatura adresi teslimat
+  adresiyle aynı" yazıyor, tekrar göstermiyor
+- Kurumsal fatura bilgileri (firma unvanı, vergi dairesi, vergi
+  no) varsa adresin altında
+- Sipariş notu
+
+## Not alanı hakkında
+
+Vitrin notu ödeme isteğine gönderiyor ama ARC'ın sipariş
+fonksiyonu `note` parametresi almıyor; şu an kaydedilmiyor.
+Sipariş detayında not alanı hazır, veri gelince görünecek.
+
+İsterseniz sipariş fonksiyonuna not parametresini ekleyeyim.

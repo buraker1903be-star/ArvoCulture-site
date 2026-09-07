@@ -8,6 +8,19 @@ export type OrderItem = {
   image: string | null;
 };
 
+/** RPC tarafından tek şemaya normalleştirilmiş adres. */
+export type OrderAddress = {
+  line?: string;
+  district?: string;
+  city?: string;
+  postal?: string;
+  name?: string;
+  phone?: string;
+  company?: string;
+  tax_office?: string;
+  tax_number?: string;
+};
+
 export type Order = {
   order_number: string;
   status: string;
@@ -18,12 +31,9 @@ export type Order = {
   total: number;
   currency: string;
   coupon_code: string | null;
-  address: {
-    line?: string;
-    district?: string;
-    city?: string;
-    postal?: string;
-  };
+  address: OrderAddress | null;
+  billing_address: OrderAddress | null;
+  note: string | null;
   created_at: string;
   items: OrderItem[];
 };

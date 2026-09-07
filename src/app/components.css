@@ -2845,3 +2845,14 @@ button.search-box {
   font-weight: 400;
   color: var(--ink-3);
 }
+
+/* Sipariş detayında adres blokları alt alta. */
+.detail-side .order-address + .order-address {
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line);
+}
+
+.order-address b {
+  font-weight: 600;
+  color: var(--ink);
+}

@@ -11,6 +11,7 @@ import {
   STATUS_LABEL,
   initials,
   type Order,
+  type OrderAddress,
 } from "@/lib/order-types";
 
 type State = "loading" | "ready" | "missing" | "signed-out";
@@ -186,15 +187,26 @@ export function OrderDetail({
             </div>
           </dl>
 
-          {order.address?.line && (
+          <AddressBlock label="Teslimat adresi" address={order.address} />
+
+          {/* Fatura adresi teslimatla aynıysa tekrar gösterilmez. */}
+          {order.billing_address &&
+            order.billing_address.line !== order.address?.line && (
+              <AddressBlock
+                label="Fatura adresi"
+                address={order.billing_address}
+              />
+            )}
+
+          {order.billing_address &&
+            order.billing_address.line === order.address?.line && (
+              <p className="hint">Fatura adresi teslimat adresiyle aynı.</p>
+            )}
+
+          {order.note && (
             <div className="order-address">
-              <small>Teslimat adresi</small>
-              <p>
-                {order.address.line}
-                <br />
-                {order.address.district} / {order.address.city}
-                {order.address.postal ? ` · ${order.address.postal}` : ""}
-              </p>
+              <small>Sipariş notu</small>
+              <p>{order.note}</p>
             </div>
           )}
 
@@ -204,5 +216,46 @@ export function OrderDetail({
         </aside>
       </div>
     </>
+  );
+}
+
+/** Adres bloğu. Kurumsal fatura alanları varsa onları da yazar. */
+function AddressBlock({
+  label,
+  address,
+}: {
+  label: string;
+  address: OrderAddress | null;
+}) {
+  if (!address?.line) return null;
+
+  return (
+    <div className="order-address">
+      <small>{label}</small>
+      <p>
+        {address.name && (
+          <>
+            <b>{address.name}</b>
+            {address.phone ? ` · ${address.phone}` : ""}
+            <br />
+          </>
+        )}
+        {address.line}
+        <br />
+        {address.district && address.district !== "-"
+          ? `${address.district} / `
+          : ""}
+        {address.city}
+        {address.postal ? ` · ${address.postal}` : ""}
+        {address.company && (
+          <>
+            <br />
+            {address.company}
+            {address.tax_office ? ` · ${address.tax_office}` : ""}
+            {address.tax_number ? ` · ${address.tax_number}` : ""}
+          </>
+        )}
+      </p>
+    </div>
   );
 }
