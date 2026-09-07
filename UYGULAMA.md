@@ -3,34 +3,37 @@
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Siparisler kart halinde, detay sayfasi eklendi"
+git commit -m "Gorseli olmayan kalemler icin yer tutucu"
 git push
 vercel --prod
 ```
 
-ARC tarafında yeni migration yok.
+## Durum
+
+Veri tarafı çalışıyor. `SPR#1015` siparişinde görsel yolu dolu
+geliyor; o siparişte görseller görünmeli.
+
+`SPR#1017` ve `SPR#1018` siparişlerindeki SKU'lar (27517, 20643,
+20422, 20600) güncel katalogda hiç yok — o ürünler ARC'ta kayıtlı
+değil. Hiçbir eşleştirme yöntemi olmayan ürünün görselini bulamaz.
 
 ## Bu turda
 
-**Siparişler kart ızgarasında.** Her sipariş kendi kutusunda:
-numara, durum etiketi, ürün görsellerinden oluşan küçük şerit,
-tarih ve tutar. Üzerine gelince kart yükseliyor.
+Görseli bulunamayan kalemler için **baş harf yer tutucusu**
+eklendi. Boş kare "yükleniyor" izlenimi veriyordu; harf kasıtlı
+görünüyor.
 
-Görsel şeridi dört ürün gösteriyor, fazlası "+3" olarak
-belirtiliyor. Müşteri hangi siparişin ne olduğunu içeriğini
-okumadan görselden tanıyor.
+"LR" öneki atlanıyor, sonraki iki kelimenin baş harfi alınıyor —
+"LR ALOE VIA Güneş Spreyi" için "AV" gibi.
 
-**Detay sayfası eklendi:** `/hesap/siparis/{numara}`
+## Eşleşmeyen ürünleri düzeltmek isterseniz
 
-İçinde: ekmek kırıntısı, sipariş numarası, durum ve tarih; solda
-ürünler görselleri ve birim fiyatlarıyla, sağda yapışkan özet
-paneli (ara toplam, indirim, kargo, toplam) ve teslimat adresi.
+Eski SKU'ların güncel karşılığı varsa `arc_order_items` tablosunda
+güncelleyebilirsiniz:
 
-## Güvenlik
+```sql
+update arc_order_items set sku = 'YENİ-SKU' where sku = '27517';
+```
 
-Detay sayfası siparişi `get_arvoculture_my_orders` üzerinden
-çekiyor; o fonksiyon `auth.uid()` ile çalıştığı için başkasının
-sipariş numarasını adres çubuğuna yazmak işe yaramıyor —
-"Sipariş bulunamadı" görünür.
-
-Giriş yapılmamışsa sayfa hesaba yönlendiriyor.
+Ürünler gerçekten katalogdan çıktıysa buna gerek yok; yer tutucu
+yeterli.

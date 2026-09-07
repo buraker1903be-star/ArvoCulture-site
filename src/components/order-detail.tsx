@@ -9,6 +9,7 @@ import {
   formatOrderDate,
   productImageUrl,
   STATUS_LABEL,
+  initials,
   type Order,
 } from "@/lib/order-types";
 
@@ -130,7 +131,11 @@ export function OrderDetail({
               return (
                 <li key={`${order.order_number}-${index}`}>
                   <span className="order-thumb">
-                    {url && <Image src={url} alt="" fill sizes="56px" />}
+                    {url ? (
+                      <Image src={url} alt="" fill sizes="56px" />
+                    ) : (
+                      <i aria-hidden="true">{initials(item.name)}</i>
+                    )}
                   </span>
                   <span className="order-item-text">
                     {item.slug ? (

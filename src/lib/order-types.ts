@@ -51,3 +51,17 @@ export function formatOrderDate(value: string) {
     year: "numeric",
   }).format(new Date(value));
 }
+
+/**
+ * Görseli olmayan kalemler için baş harf yer tutucusu.
+ * Boş bir kare "yükleniyor" izlenimi veriyor; harf kasıtlı görünür.
+ */
+export function initials(name: string) {
+  return name
+    .replace(/^LR\s+/i, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toLocaleUpperCase("tr-TR") ?? "")
+    .join("");
+}

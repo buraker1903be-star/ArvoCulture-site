@@ -7,6 +7,7 @@ import {
   formatOrderDate,
   productImageUrl,
   STATUS_LABEL,
+  initials,
   type Order,
 } from "@/lib/order-types";
 
@@ -45,7 +46,11 @@ export function OrderCard({
           const url = productImageUrl(supabaseUrl, item.image);
           return (
             <span key={`${order.order_number}-${index}`}>
-              {url && <Image src={url} alt="" fill sizes="52px" />}
+              {url ? (
+                <Image src={url} alt="" fill sizes="52px" />
+              ) : (
+                <i aria-hidden="true">{initials(item.name)}</i>
+              )}
             </span>
           );
         })}
