@@ -1967,16 +1967,136 @@ button.search-box {
   font-variant-numeric: tabular-nums;
 }
 
+/* --- Sipariş kalemleri (görselli) --- */
+
 .order-items {
   display: grid;
-  gap: 4px;
-  margin-top: var(--s3);
+  gap: var(--s3);
+  margin-top: var(--s4);
+}
+
+.order-items > li {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: var(--s4);
+  align-items: center;
+}
+
+.order-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fff;
+  overflow: hidden;
+}
+
+.order-thumb img {
+  object-fit: contain;
+  padding: 8%;
+}
+
+.order-item-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.order-item-text a,
+.order-item-text > span {
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+
+.order-item-text a:hover {
+  color: var(--brand);
+}
+
+.order-item-text small {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.order-items b {
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* --- Tutar dökümü ve adres --- */
+
+.order-foot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s5);
+  margin-top: var(--s4);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line);
+}
+
+.order-totals {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.order-totals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
   font-size: var(--t-sm);
   color: var(--ink-2);
 }
 
-.order-items small {
+.order-totals dt,
+.order-totals dd {
+  margin: 0;
+}
+
+.order-totals dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.order-totals .is-discount {
+  color: var(--sale);
+}
+
+.order-totals .is-total {
+  margin-top: 4px;
+  padding-top: var(--s2);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-body);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.order-address small {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--ink-3);
+}
+
+.order-address p {
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+@media (max-width: 640px) {
+  .order-foot {
+    grid-template-columns: 1fr;
+    gap: var(--s4);
+  }
+  .order-items > li {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  .order-items b {
+    grid-column: 2;
+  }
 }
 
 /* ---------- Hesap: sekmeler ve adres defteri -------------- */
@@ -2008,32 +2128,25 @@ button.search-box {
   color: var(--ink-3);
 }
 
-.account-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s1);
-  padding: 5px;
-  border-radius: 999px;
-  background: var(--panel);
-  box-shadow: var(--float);
+/* Hesap bilgileri ve adres defteri yan yana; siparişler altta
+   tam genişlikte. Sekme yok — müşteri hepsini tek ekranda görür. */
+.account-top {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: var(--gap);
+  align-items: start;
 }
 
-.account-tabs button {
-  flex: 1;
-  min-width: 130px;
-  padding: 11px 16px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  font-size: var(--t-sm);
-  font-weight: 500;
-  color: var(--ink-2);
-  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+.account-top .panel {
+  display: grid;
+  gap: var(--s4);
+  align-content: start;
 }
 
-.account-tabs button[aria-selected="true"] {
-  background: var(--ink);
-  color: #fff;
+@media (max-width: 1000px) {
+  .account-top {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* --- Adres kartları --- */

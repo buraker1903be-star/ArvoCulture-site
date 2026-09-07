@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getAuthClient } from "@/lib/auth-client";
@@ -12,10 +13,28 @@ type Order = {
   order_number: string;
   status: string;
   payment_status: string;
+  subtotal: number;
+  discount: number;
+  shipping: number;
   total: number;
   currency: string;
+  coupon_code: string | null;
+  address: {
+    line?: string;
+    district?: string;
+    city?: string;
+    postal?: string;
+  };
   created_at: string;
-  items: Array<{ name: string; quantity: number; total: number }>;
+  items: Array<{
+    name: string;
+    sku: string;
+    quantity: number;
+    unit_price: number;
+    total: number;
+    slug: string | null;
+    image: string | null;
+  }>;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -28,13 +47,7 @@ const STATUS_LABEL: Record<string, string> = {
   refunded: "İade edildi",
 };
 
-type Tab = "orders" | "addresses" | "profile";
 
-const TABS: Array<{ key: Tab; label: string }> = [
-  { key: "orders", label: "Siparişlerim" },
-  { key: "addresses", label: "Adreslerim" },
-  { key: "profile", label: "Hesap bilgilerim" },
-];
 
 /**
  * Müşteri hesap paneli.
@@ -56,7 +69,6 @@ export function AccountPanel({
   const [ready, setReady] = useState(false);
   const [orders, setOrders] = useState<Order[] | null>(null);
 
-  const [tab, setTab] = useState<Tab>("orders");
   const [profileName, setProfileName] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
   const [profileSaved, setProfileSaved] = useState(false);
@@ -243,74 +255,12 @@ export function AccountPanel({
           </button>
         </div>
 
-        <nav className="account-tabs" role="tablist">
-          {TABS.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              role="tab"
-              aria-selected={tab === item.key}
-              onClick={() => setTab(item.key)}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        {tab === "orders" && (
-          <section className="panel">
-            <div className="head">
-              <div>
-                <h2>Siparişlerim</h2>
-                <p>Geçmiş siparişleriniz ve içerikleri.</p>
-              </div>
-            </div>
-
-            {orders === null && <p className="hint">Siparişler yükleniyor…</p>}
-
-            {orders?.length === 0 && (
-              <p className="hint">
-                Henüz siparişiniz görünmüyor. Misafir olarak sipariş
-                verdiyseniz, aynı e-posta adresini doğruladığınızda
-                siparişleriniz burada listelenir.
-              </p>
-            )}
-
-            {orders && orders.length > 0 && (
-              <ul className="order-list">
-                {orders.map((order) => (
-                  <li key={order.order_number}>
-                    <div className="order-head">
-                      <strong>{order.order_number}</strong>
-                      <span className="tag tag-soft">
-                        {STATUS_LABEL[order.status] ?? order.status}
-                      </span>
-                      <time dateTime={order.created_at}>
-                        {new Intl.DateTimeFormat("tr-TR", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        }).format(new Date(order.created_at))}
-                      </time>
-                      <b>{formatPrice(order.total / 100)}</b>
-                    </div>
-                    <ul className="order-items">
-                      {order.items.map((item, index) => (
-                        <li key={`${order.order_number}-${index}`}>
-                          {item.name} <small>× {item.quantity}</small>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        )}
-
-        {tab === "addresses" && <AddressBook supabase={supabase} />}
-
-        {tab === "profile" && (
+        {/*
+          Sekme yerine tek sayfa: hesap bilgileri ve adresler üstte
+          yan yana, siparişler altta tam genişlikte. Müşteri
+          aradığını sekme değiştirmeden görüyor.
+        */}
+        <div className="account-top">
           <section className="panel">
             <div className="head">
               <div>
@@ -320,7 +270,7 @@ export function AccountPanel({
             </div>
 
             <div className="fields">
-              <label>
+              <label className="wide">
                 Ad soyad
                 <input
                   type="text"
@@ -329,7 +279,7 @@ export function AccountPanel({
                   onChange={(event) => setProfileName(event.target.value)}
                 />
               </label>
-              <label>
+              <label className="wide">
                 Telefon
                 <input
                   type="tel"
@@ -344,11 +294,6 @@ export function AccountPanel({
               </label>
             </div>
 
-            <p className="hint">
-              E-posta adresiniz hesabınızın kimliğidir; değiştirmek için
-              bizimle iletişime geçin.
-            </p>
-
             {profileSaved && (
               <p className="form-note">Bilgileriniz kaydedildi.</p>
             )}
@@ -356,13 +301,132 @@ export function AccountPanel({
             <button
               type="button"
               className="btn"
-              style={{ justifySelf: "start", marginTop: "var(--s4)" }}
+              style={{ justifySelf: "start" }}
               onClick={saveProfile}
             >
               Kaydet
             </button>
           </section>
-        )}
+
+          <AddressBook supabase={supabase} />
+        </div>
+
+        <section className="panel">
+          <div className="head">
+            <div>
+              <h2>Siparişlerim</h2>
+              <p>Geçmiş siparişleriniz ve tüm detayları.</p>
+            </div>
+          </div>
+
+          {orders === null && <p className="hint">Siparişler yükleniyor…</p>}
+
+          {orders?.length === 0 && (
+            <p className="hint">
+              Henüz siparişiniz görünmüyor. Misafir olarak sipariş
+              verdiyseniz, aynı e-posta adresini doğruladığınızda
+              siparişleriniz burada listelenir.
+            </p>
+          )}
+
+          {orders && orders.length > 0 && (
+            <ul className="order-list">
+              {orders.map((order) => (
+                <li key={order.order_number}>
+                  <div className="order-head">
+                    <strong>{order.order_number}</strong>
+                    <span className="tag tag-soft">
+                      {STATUS_LABEL[order.status] ?? order.status}
+                    </span>
+                    <time dateTime={order.created_at}>
+                      {new Intl.DateTimeFormat("tr-TR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      }).format(new Date(order.created_at))}
+                    </time>
+                    <b>{formatPrice(order.total / 100)}</b>
+                  </div>
+
+                  {/* Kalemler görselleriyle. */}
+                  <ul className="order-items">
+                    {order.items.map((item, index) => (
+                      <li key={`${order.order_number}-${index}`}>
+                        <span className="order-thumb">
+                          {item.image && (
+                            <Image
+                              src={`${supabaseUrl}/storage/v1/object/public/arc-product-images/${item.image}`}
+                              alt=""
+                              fill
+                              sizes="56px"
+                            />
+                          )}
+                        </span>
+                        <span className="order-item-text">
+                          {item.slug ? (
+                            <a href={`/urun/${item.slug}`}>{item.name}</a>
+                          ) : (
+                            <span>{item.name}</span>
+                          )}
+                          <small>
+                            {item.quantity} adet ×{" "}
+                            {formatPrice(item.unit_price / 100)}
+                          </small>
+                        </span>
+                        <b>{formatPrice(item.total / 100)}</b>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Tutar dökümü ve teslimat adresi. */}
+                  <div className="order-foot">
+                    <dl className="order-totals">
+                      <div>
+                        <dt>Ara toplam</dt>
+                        <dd>{formatPrice(order.subtotal / 100)}</dd>
+                      </div>
+                      {order.discount > 0 && (
+                        <div className="is-discount">
+                          <dt>
+                            İndirim
+                            {order.coupon_code ? ` (${order.coupon_code})` : ""}
+                          </dt>
+                          <dd>−{formatPrice(order.discount / 100)}</dd>
+                        </div>
+                      )}
+                      <div>
+                        <dt>Kargo</dt>
+                        <dd>
+                          {order.shipping > 0
+                            ? formatPrice(order.shipping / 100)
+                            : "Ücretsiz"}
+                        </dd>
+                      </div>
+                      <div className="is-total">
+                        <dt>Toplam</dt>
+                        <dd>{formatPrice(order.total / 100)}</dd>
+                      </div>
+                    </dl>
+
+                    {order.address?.line && (
+                      <div className="order-address">
+                        <small>Teslimat adresi</small>
+                        <p>
+                          {order.address.line}
+                          <br />
+                          {order.address.district} / {order.address.city}
+                          {order.address.postal
+                            ? ` · ${order.address.postal}`
+                            : ""}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     );
   }
