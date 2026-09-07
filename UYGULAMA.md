@@ -1,55 +1,46 @@
-# İKİ REPO — sırayla
-
-## 1) C:\ArvoARC  (önce bu)
-
-`arc-adres-normal.zip` içindeki migration'ı Supabase SQL
-Editor'de çalıştırın.
-
-## 2) C:\ArvoCulture-site
+# HANGİ REPO: C:\ArvoCulture-site
 
 ```powershell
 cd C:\ArvoCulture-site
 git add -A
-git commit -m "Siparis detayinda teslimat ve fatura adresi"
+git commit -m "Urun detay sayfasi yeniden tasarlandi"
 git push
 vercel --prod
 ```
 
-## Sorun neydi
+ARC tarafında migration yok.
 
-RPC adresi bulduğu yapıda döndürüyordu. Shopify aktarımında alan
-adı `address1`, vitrin siparişinde `line`. Arayüz `line` beklediği
-için Shopify yapısındaki adres boş görünüyordu.
+## Bu turda
 
-Fatura adresi ise hiç döndürülmüyordu.
+**Galeri geri geldi.** ARC her üründe birden çok görsel tutuyor
+ama sayfa yalnızca ilkini gösteriyordu. Artık büyük görselin
+altında küçük şerit var; tişörtlerde arka yüz, bakım ürünlerinde
+içerik etiketi görülebiliyor. Galeri kaydırırken yerinde kalıyor
+(sticky).
 
-## Çözüm
+**Beden seçimi çalışıyor.** Seçili beden görünür durumda, seçim
+sepete taşınıyor, seçmeden eklemeye çalışınca uyarı çıkıyor.
 
-**Adresler tek şemaya normalleştiriliyor.** Kaynak ne olursa olsun
-RPC şu yapıyı döndürüyor:
+**Adet seçici eklendi.** Müşteri sepete gidip tek tek artırmıyor.
 
-```
-{ line, district, city, postal, name, phone,
-  company, tax_office, tax_number }
-```
+**Fiyat bloğu güçlendi.** İndirimli üründe üstü çizili eski fiyat
+ve "şu kadar tasarruf" rozeti var.
 
-Arayüz tek bir yapı okuyor, kaynağın ne olduğuyla ilgilenmiyor.
-`address1` ve `address2` birleştiriliyor, posta kodundaki Excel
-artığı kesme işareti temizleniyor.
+**Güvenceler butonun hemen altında** — kargo, iade, güvenli ödeme.
+Üçü de tıklanabilir, ilgili sayfaya gidiyor. Satın alma kaygısı
+en çok butona basmadan hemen önce yükseliyor; cevabı orada olmalı.
 
-**Sipariş detayında artık:**
+**Ayrıntılar akordeon oldu:** ürün açıklaması, teslimat, iade
+koşulları. Açıklama varsayılan olarak açık.
 
-- Teslimat adresi — ad, telefon, açık adres, ilçe/il, posta kodu
-- Fatura adresi — teslimatla aynıysa "Fatura adresi teslimat
-  adresiyle aynı" yazıyor, tekrar göstermiyor
-- Kurumsal fatura bilgileri (firma unvanı, vergi dairesi, vergi
-  no) varsa adresin altında
-- Sipariş notu
+**Benzer ürünler bölümü eklendi.** Aynı kategoriden, stokta olan
+beş ürün. Aradığını bulamayan müşteri boş dönmüyor.
 
-## Not alanı hakkında
+**İndirim ve çok satan rozetleri** galerinin sol üstünde.
 
-Vitrin notu ödeme isteğine gönderiyor ama ARC'ın sipariş
-fonksiyonu `note` parametresi almıyor; şu an kaydedilmiyor.
-Sipariş detayında not alanı hazır, veri gelince görünecek.
+## Bedenli ürünler için hatırlatma
 
-İsterseniz sipariş fonksiyonuna not parametresini ekleyeyim.
+Beden artık sepete doğru taşınıyor ama ARC tarafında hâlâ doğru
+varyanta bağlanmıyor — sipariş fonksiyonu slug üzerinden stokta
+olan en ucuz varyantı seçiyor. Giyim satışına başlamadan önce
+bunu halletmemiz gerekiyor.

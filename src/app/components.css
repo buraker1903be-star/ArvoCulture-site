@@ -2856,3 +2856,284 @@ button.search-box {
   font-weight: 600;
   color: var(--ink);
 }
+
+/* ==========================================================
+   Ürün detay sayfası
+   ========================================================== */
+
+.pdp {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 48px);
+  align-items: start;
+}
+
+/* --- Galeri --- */
+
+.pdp-media {
+  display: grid;
+  gap: var(--s3);
+  position: sticky;
+  top: var(--gap);
+}
+
+.pdp-stage {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--r);
+  background: #fff;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.pdp-stage img {
+  object-fit: contain;
+  padding: 6%;
+}
+
+.pdp-empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 40px;
+  font-weight: 600;
+  color: var(--line);
+}
+
+.pdp-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.pdp-thumbs button {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fff;
+  overflow: hidden;
+  opacity: 0.62;
+  transition: opacity 160ms var(--ease), border-color 160ms var(--ease);
+}
+
+.pdp-thumbs button:hover {
+  opacity: 1;
+}
+
+.pdp-thumbs button[aria-current="true"] {
+  opacity: 1;
+  border-color: var(--ink);
+}
+
+.pdp-thumbs img {
+  object-fit: contain;
+  padding: 8%;
+}
+
+/* --- Bilgi sütunu --- */
+
+.pdp-info {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+}
+
+.pdp-info h1 {
+  font-size: clamp(22px, 2.6vw, 32px);
+  line-height: 1.2;
+}
+
+.pdp-info .lead {
+  color: var(--ink-2);
+  max-width: 52ch;
+}
+
+.pdp-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s3);
+  margin-top: var(--s2);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdp-price b {
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 600;
+}
+
+.pdp-price del {
+  font-size: 16px;
+  color: var(--ink-3);
+}
+
+.pdp-save {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(198, 45, 36, 0.1);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--sale);
+}
+
+/* --- Satın alma --- */
+
+.pdp-buy {
+  display: grid;
+  gap: var(--s3);
+  margin-top: var(--s3);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line);
+}
+
+.option-label {
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+
+.sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.sizes button {
+  min-width: 52px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  transition: border-color 160ms var(--ease), background-color 160ms var(--ease);
+}
+
+.sizes button:hover {
+  border-color: var(--ink-3);
+}
+
+.sizes button[data-selected="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.pdp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.pdp-actions .btn {
+  flex: 1;
+  min-width: 12rem;
+}
+
+/* --- Güvenceler --- */
+
+.pdp-assurances {
+  display: grid;
+  gap: var(--s2);
+  margin-top: var(--s2);
+}
+
+.pdp-assurances li {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.pdp-assurances li::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.pdp-assurances a:hover {
+  color: var(--ink);
+}
+
+/* --- Ayrıntı akordeonu --- */
+
+.pdp-details {
+  margin-top: var(--s4);
+}
+
+.pdp-details details {
+  border-top: 1px solid var(--line);
+}
+
+.pdp-details details:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.pdp-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s4) 0;
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--t-body);
+  font-weight: 500;
+}
+
+.pdp-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.pdp-details summary i {
+  position: relative;
+  flex: none;
+  width: 15px;
+  height: 15px;
+}
+
+.pdp-details summary i::before,
+.pdp-details summary i::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 220ms var(--ease);
+}
+
+.pdp-details summary i::after {
+  transform: rotate(90deg);
+}
+
+.pdp-details details[open] summary i::after {
+  transform: rotate(0deg);
+}
+
+.pdp-details details p {
+  padding: 0 var(--s5) var(--s4) 0;
+  font-size: var(--t-sm);
+  line-height: 1.68;
+  color: var(--ink-2);
+}
+
+@media (max-width: 900px) {
+  .pdp {
+    grid-template-columns: 1fr;
+  }
+  .pdp-media {
+    position: static;
+  }
+  .pdp-actions .btn {
+    min-width: 0;
+  }
+}
