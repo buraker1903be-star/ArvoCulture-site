@@ -1,0 +1,1116 @@
+/* ==========================================================
+   Sayfa iskeleti — başlık, alt bilgi ve iç sayfalar
+   Eski minified stil dosyası kaldırıldığı için bu bölümler
+   yeniden yazıldı. Aynı panel diliyle çalışırlar.
+   ========================================================== */
+
+/* ---------- Duyuru şeridi --------------------------------- */
+
+/*
+  Şerit sabit ve ortalanmış. Kayan bant, okumaya çalışan kullanıcıyı
+  metnin geçmesini beklemeye zorluyordu; kargo eşiği ve kupon kodu
+  gibi bilgilerin sabit durması gerekir.
+
+  İşaretlemede aynı grup iki kez var (kayan bant kesintisiz görünsün
+  diye). İkincisi zaten aria-hidden; sabit düzende gizleniyor.
+*/
+.announcement {
+  padding: 8px var(--rail);
+  background: rgba(20, 22, 26, 0.9);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: var(--t-xs);
+  letter-spacing: 0.04em;
+}
+
+.announcement-track {
+  display: flex;
+  justify-content: center;
+}
+
+.announcement-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px var(--s5);
+  text-align: center;
+}
+
+.announcement-group + .announcement-group {
+  display: none;
+}
+
+/* Maddeleri ayıran ince nokta. */
+.announcement-group span + span::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin-right: var(--s3);
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.45;
+  vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+  .announcement-group {
+    gap: 4px var(--s4);
+  }
+}
+
+/* ---------- Başlık ---------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s5);
+  padding: var(--s3) var(--rail);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.logo img {
+  height: 22px;
+  width: auto;
+}
+
+.logo.light img {
+  filter: brightness(0) invert(1);
+}
+
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--s5);
+}
+
+.mega-trigger,
+.desktop-nav > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.desktop-nav > a:hover,
+.mega-trigger:hover {
+  color: var(--brand);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+}
+
+/*
+  Başlıktaki eylemler yalnızca ikon. Metin etiketleri gizlendi ama
+  DOM'dan kaldırılmadı; ekran okuyucular için aria-label zaten var,
+  metin de dar ekranlarda geri açılabilir durumda.
+*/
+.header-action-link,
+.cart-link {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+
+/*
+  Başlık eylemlerinde daire zemin kaldırıldı; ikonun etrafında
+  halka görünümü yaratıyordu. Vurgu yalnızca ikon renginden
+  geliyor.
+*/
+.header-action-link:hover svg,
+.cart-link:hover svg {
+  stroke: var(--brand);
+}
+
+.cart-link:focus:not(:focus-visible),
+.header-action-link:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.header-action-link svg,
+.cart-link svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.header-action-link > span:not(.cart-count),
+.cart-link > span:not(.cart-count) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Sepet sayacı ikonun köşesinde küçük bir rozet. */
+.cart-count {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding-inline: 4px;
+  border: 2px solid var(--panel);
+  border-radius: 999px;
+  background: var(--sale);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  gap: var(--s1);
+}
+
+/* ---------- Mega menü ------------------------------------- */
+
+/*
+  Yapı: .mega-menu sarmalayıcı (tetikleyici + panel),
+  .mega-panel açılır kutu. Panel varsayılan olarak gizli;
+  üzerine gelindiğinde veya klavyeyle içine odaklanıldığında açılır.
+
+  Tasarım kararı: bağlantılar sütun sütun düz liste yerine
+  tıklanabilir satırlara dönüştürüldü. Müşteri kalabalık bir
+  listede aradığını gözle taramak zorunda kalmasın diye her
+  satırın kendi vurgusu ve ürün sayısı var.
+*/
+
+.mega-menu {
+  position: static;
+}
+
+.mega-trigger[aria-expanded="true"],
+.mega-menu:hover .mega-trigger {
+  color: var(--brand);
+}
+
+.mega-menu:hover .mega-trigger span,
+.mega-menu:focus-within .mega-trigger span {
+  transform: rotate(180deg);
+}
+
+.mega-trigger span {
+  display: inline-block;
+  transition: transform 200ms var(--ease);
+}
+
+.mega-panel {
+  position: absolute;
+  left: var(--rail);
+  right: var(--rail);
+  /* Panel ekranı kaplamasın; içerik kadar yer tutsun. */
+  max-height: min(72vh, 620px);
+  overflow-y: auto;
+  top: calc(100% + 8px);
+  z-index: 45;
+  padding: var(--s5) var(--pad) var(--pad);
+  border-radius: var(--r);
+  background: var(--panel);
+  box-shadow: var(--float-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 180ms var(--ease), transform 180ms var(--ease),
+    visibility 180ms;
+}
+
+.mega-menu:hover .mega-panel,
+.mega-menu:focus-within .mega-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+/* --- Panel başlığı --- */
+
+.mega-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding-bottom: var(--s4);
+  margin-bottom: var(--s5);
+  border-bottom: 1px solid var(--line);
+}
+
+.mega-panel-head p {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.mega-panel-head a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink);
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.mega-panel-head a:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+/* --- Sütunlar --- */
+
+/*
+  Sütunlar sabit genişlikte ve sola toplanır. Esnek ızgara
+  kullanıldığında üç sütun 1800px'lik paneli paylaşıp her biri
+  600px oluyordu; bağlantılar boşlukta kayboluyordu. Okuma
+  genişliği 230px civarında en rahat.
+*/
+/*
+  Sütunlar tek satırda kalır ve mevcut genişliği eşit paylaşır.
+  Sabit 230px genişlikte sekiz sütun 1600px'e sığmıyor, sonuncusu
+  alta düşüyordu. `flex: 1 1 0` ile sütun sayısı arttıkça hepsi
+  birlikte daralır; `max-width` ise az sütunlu menülerde
+  gereğinden fazla yayılmalarını engeller.
+*/
+.mega-columns {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--s5);
+  align-items: flex-start;
+}
+
+.mega-columns > div {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 240px;
+}
+
+/* Dar ekranda tek satır zorlaması anlamsız; alt alta geçsin. */
+@media (max-width: 900px) {
+  .mega-columns {
+    flex-wrap: wrap;
+  }
+  .mega-columns > div {
+    flex: 1 1 150px;
+  }
+}
+
+/* Sütun başlığı: kısa bir vurgu çizgisi, sütunu boydan boya
+   kesen bir çizgi değil. */
+.mega-columns > div > p:first-child {
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s2);
+  border-bottom: 2px solid var(--brand);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.mega-columns a {
+  display: block;
+  padding: 7px 10px;
+  margin-inline: -10px;
+  border-radius: var(--r-sm);
+  transition: background-color 140ms var(--ease);
+}
+
+.mega-columns a:hover {
+  background: var(--panel-2);
+}
+
+.mega-columns a b {
+  display: block;
+  font-size: var(--t-sm);
+  font-weight: 400;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mega-columns a:hover b {
+  color: var(--brand);
+}
+
+/* Marka sütunu öne çıkar: müşterilerin çoğu markayla arar. */
+.mega-columns > div:first-child a b {
+  font-weight: 500;
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  background: rgba(10, 12, 10, 0.28);
+  border: 0;
+}
+
+.mobile-featured {
+  display: none;
+}
+
+/* ---------- Mobil ----------------------------------------- */
+
+/*
+  Mobil menünün sarmalayıcısı .mobile-menu'dür. Masaüstünde tamamen
+  gizlenir; mobilde yalnızca .open sınıfı varken açılır. Bu kural
+  eksik olduğu için menü masaüstünde de görünüyordu.
+*/
+.mobile-menu,
+.menu-toggle,
+.mobile-dock,
+.mobile-submenu {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .desktop-nav {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: none;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  .mobile-menu:not(.open) {
+    display: none;
+  }
+
+  .mobile-menu,
+  .mobile-submenu {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    align-content: start;
+    gap: var(--s4);
+    padding: var(--s5) var(--edge);
+    background: var(--panel);
+    overflow-y: auto;
+  }
+
+  .mobile-menu-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--s4);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-menu-head button {
+    border: 0;
+    background: none;
+    font-size: 20px;
+  }
+
+  .mobile-collection-group {
+    display: grid;
+    gap: var(--s2);
+    padding-block: var(--s3);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-collection-group > button,
+  .mobile-collection-group > strong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border: 0;
+    background: none;
+    font-size: var(--t-body);
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .mobile-collection-group a {
+    padding: 6px 0 6px var(--s3);
+    font-size: var(--t-sm);
+    color: var(--ink-2);
+  }
+
+  .mobile-story {
+    display: grid;
+    gap: var(--s3);
+    padding-top: var(--s3);
+    font-size: var(--t-sm);
+    color: var(--ink-2);
+  }
+
+  /* Alt gezinme çubuğu: mobilde başparmak erişimindeki bölge. */
+  .mobile-dock {
+    position: fixed;
+    left: var(--rail);
+    right: var(--rail);
+    bottom: var(--edge);
+    z-index: 45;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    padding: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--float-lg);
+  }
+
+  .mobile-dock > * {
+    display: grid;
+    place-items: center;
+    padding: 10px 4px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    font-size: var(--t-xs);
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+
+  .shell {
+    padding-bottom: 96px;
+  }
+}
+
+/* ---------- Alt bilgi ------------------------------------- */
+
+footer {
+  padding: var(--s7) var(--rail) var(--s5);
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+/* Marka solda, bağlantılar sağda toplanır. Öncesinde bağlantılar
+   sayfa boyunca yayılıyor ve aralarında ölü boşluk kalıyordu. */
+.footer-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s7);
+  align-items: start;
+}
+
+.footer-brand {
+  display: grid;
+  gap: var(--s4);
+  max-width: 26rem;
+}
+
+/* Logo koyu zemin için beyaza çevriliyordu; footer açık renkte
+   olduğu için filtre kaldırıldı ve ölçü küçültüldü. */
+.footer-logo {
+  width: auto;
+  height: 22px;
+}
+
+.footer-brand > p {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+/* --- Güven rozetleri --- */
+
+.footer-badges {
+  display: grid;
+  gap: var(--s2);
+}
+
+.badge-card {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+}
+
+.badge-card img {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.badge-card small {
+  font-size: var(--t-xs);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* --- Bağlantılar --- */
+
+.footer-links {
+  display: flex;
+  gap: var(--s7);
+  justify-content: flex-end;
+}
+
+.footer-link-group {
+  display: grid;
+  gap: 7px;
+  align-content: start;
+  min-width: 0;
+}
+
+.footer-link-group strong {
+  margin-bottom: var(--s1);
+  font-size: var(--t-sm);
+}
+
+.footer-link-group a {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.footer-link-group a:hover {
+  color: var(--ink);
+}
+
+/* --- Ödeme --- */
+
+.footer-pay {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4) var(--s6);
+  margin-top: var(--s6);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line);
+}
+
+.pay-provider {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  max-width: 34rem;
+}
+
+.pay-provider img {
+  flex: none;
+  width: auto;
+  height: 26px;
+  object-fit: contain;
+}
+
+.pay-provider small {
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/*
+  Kart logoları. Her logo kendi beyaz kutusunda durur; farklı
+  oranlardaki görseller (Visa yatay, Mastercard kare) böylece
+  aynı hizada ve eşit ağırlıkta görünür.
+*/
+.pay-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.pay-cards li {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 30px;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #fff;
+}
+
+.pay-cards img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 700px) {
+  .footer-pay {
+    justify-content: flex-start;
+  }
+  .pay-provider {
+    flex-wrap: wrap;
+    gap: var(--s3);
+  }
+}
+
+/* --- Yasal satır --- */
+
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s5);
+  margin-top: var(--s4);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+@media (max-width: 1000px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: var(--s6);
+  }
+  .footer-links {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: var(--s5) var(--s6);
+  }
+}
+
+/* ---------- Koleksiyon ve arama --------------------------- */
+
+/* Koleksiyon başlığı kendi panelinde durur. */
+.collection-hero {
+  display: grid;
+  gap: var(--s2);
+  justify-items: start;
+  padding-block: clamp(28px, 3.4vw, 44px);
+}
+
+.collection-hero h1 {
+  font-size: clamp(26px, 3.4vw, 42px);
+}
+
+.collection-hero > p:last-child {
+  color: var(--ink-2);
+  max-width: 62ch;
+  font-size: var(--t-sm);
+}
+
+/* Ürün sayısı ve sıralama satırı. */
+.filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding-bottom: var(--s4);
+  margin-bottom: var(--s5);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--gap);
+  align-items: stretch;
+}
+
+@media (max-width: 1280px) {
+  .product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 980px) {
+  .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.collection-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s4);
+  margin-top: var(--s6);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-sm);
+}
+
+.collection-pagination a {
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.collection-pagination a:hover {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.collection-pagination span {
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Ürün sayfası ---------------------------------- */
+
+.product-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--pad);
+  align-items: start;
+}
+
+.product-page > .card-art {
+  aspect-ratio: 1;
+  border-radius: var(--r);
+  background: var(--panel-2);
+}
+
+.product-page > .card-art img {
+  object-fit: contain;
+  padding: 7%;
+}
+
+.product-info {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+}
+
+.product-info h1 {
+  font-size: clamp(22px, 2.6vw, 32px);
+}
+
+.eyebrow {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.lead {
+  color: var(--ink-2);
+  max-width: 52ch;
+}
+
+.detail-price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-price del {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tags span {
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+}
+
+.add-button,
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 26px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+
+.add-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.button-dark {
+  background: var(--ink);
+  color: #fff;
+}
+
+.full {
+  width: 100%;
+}
+
+.stock-line {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.stock-line::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+
+.stock-line[data-in-stock="true"]::before {
+  background: var(--ok);
+}
+
+.assurances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+  padding-block: var(--s3);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.product-info details {
+  padding-block: var(--s3);
+  border-top: 1px solid var(--line);
+}
+
+.product-info summary {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.product-info details p {
+  margin-top: var(--s3);
+  color: var(--ink-2);
+}
+
+@media (max-width: 900px) {
+  .product-page {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Sepet ----------------------------------------- */
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  gap: var(--gap);
+  align-items: start;
+}
+
+.cart-items {
+  display: grid;
+  gap: var(--s4);
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  gap: var(--s4);
+  align-items: center;
+  padding-bottom: var(--s4);
+  border-bottom: 1px solid var(--line);
+}
+
+.cart-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--r-sm);
+  background: var(--panel-2);
+  overflow: hidden;
+}
+
+.cart-thumb img {
+  object-fit: contain;
+  padding: 8%;
+}
+
+.quantity {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.quantity button {
+  border: 0;
+  background: none;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.remove-item {
+  border: 0;
+  background: none;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  text-decoration: underline;
+}
+
+.cart-summary {
+  position: sticky;
+  top: var(--gap);
+  display: grid;
+  gap: var(--s4);
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-saving {
+  font-size: var(--t-sm);
+  color: var(--ok);
+}
+
+.coupon-form {
+  display: flex;
+  gap: var(--s2);
+}
+
+.coupon-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.empty-cart {
+  display: grid;
+  gap: var(--s4);
+  justify-items: start;
+}
+
+@media (max-width: 900px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+  .cart-summary {
+    position: static;
+  }
+}
+
+/* ---------- Bilgi sayfaları ------------------------------- */
+
+.info-page,
+.simple-page {
+  display: grid;
+  gap: var(--s4);
+}
+
+.info-hero {
+  display: grid;
+  gap: var(--s2);
+  padding-bottom: var(--s4);
+  border-bottom: 1px solid var(--line);
+}
+
+.info-content {
+  display: grid;
+  gap: var(--s4);
+  max-width: 68ch;
+  color: var(--ink-2);
+}
+
+.info-content h2,
+.info-content h3 {
+  color: var(--ink);
+  margin-top: var(--s3);
+}
+
+.info-content ul {
+  display: grid;
+  gap: var(--s2);
+  padding-left: 1.1rem;
+  list-style: disc;
+}
+
+.info-content a {
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+
+.featured {
+  display: grid;
+  gap: var(--s4);
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.crumbs [aria-current="page"] {
+  max-width: 24ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
