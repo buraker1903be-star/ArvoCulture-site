@@ -2742,3 +2742,68 @@ button.search-box {
     text-align: left;
   }
 }
+
+/* Geçersiz kupon uyarısı. */
+.coupon-warn {
+  font-size: var(--t-sm);
+  color: var(--sale);
+}
+
+.drawer-foot .summary-totals {
+  gap: 5px;
+}
+
+/* ---------- Ödeme: kayıtlı adres seçici ------------------- */
+
+/*
+  Kayıtlı adresler kart olarak sunulur. Müşteri her siparişte
+  adresini yeniden yazmıyor; seçiyor. "Yeni adres" seçeneği
+  formu boşaltıp elle girişe açıyor.
+*/
+.address-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--s3);
+  margin-bottom: var(--s5);
+}
+
+.address-picker button {
+  display: grid;
+  gap: 3px;
+  text-align: left;
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+  transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease);
+}
+
+.address-picker button:hover {
+  border-color: var(--ink-3);
+}
+
+.address-picker button[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.address-picker strong {
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.address-picker small {
+  font-size: var(--t-xs);
+  line-height: 1.45;
+  color: var(--ink-3);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Alan altı uyarısı. */
+.field-warn {
+  font-size: var(--t-xs);
+  color: var(--sale);
+}

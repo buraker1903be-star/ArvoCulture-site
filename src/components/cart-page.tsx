@@ -149,7 +149,7 @@ export function CartPageView() {
               className="cart-note"
               rows={3}
               maxLength={500}
-              placeholder="Örneğin: Kapıcıya teslim edilebilir, hediye paketi yapılsın…"
+              placeholder="Örneğin: Kapıcıya teslim edilebilir, öğleden sonra evdeyim…"
               value={note}
               onChange={(event) => {
                 setNote(event.target.value);

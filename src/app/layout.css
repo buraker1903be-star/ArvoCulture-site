@@ -126,21 +126,21 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 999px;
+  border: 0;
+  background: transparent;
   color: var(--ink);
-  transition: background-color 160ms var(--ease);
-}
-
-.header-action-link:hover,
-.cart-link:hover {
-  background: var(--panel-2);
 }
 
 /*
-  Sepet düğmesi tıklandıktan sonra odakta kalıyor ve çevresinde
-  kalıcı bir halka bırakıyordu. Klavye kullanıcısı için odak
-  göstergesi korunur, fareyle tıklamada gösterilmez.
+  Başlık eylemlerinde daire zemin kaldırıldı; ikonun etrafında
+  halka görünümü yaratıyordu. Vurgu yalnızca ikon renginden
+  geliyor.
 */
+.header-action-link:hover svg,
+.cart-link:hover svg {
+  stroke: var(--brand);
+}
+
 .cart-link:focus:not(:focus-visible),
 .header-action-link:focus:not(:focus-visible) {
   outline: none;

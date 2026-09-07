@@ -6,6 +6,8 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { CartContext } from "@/components/cart";
 import { formatPrice } from "@/lib/product-types";
+import { evaluateCoupon } from "@/lib/coupon";
+import { readCoupon, writeCoupon, clearCoupon } from "@/lib/cart-extras";
 
 const SHIPPING_FEE = 120;
 const FREE_OVER = 2000;
@@ -25,15 +27,19 @@ export function CartDrawer({
   open: boolean;
   onClose: () => void;
 }) {
-  const { items, total, remove, setQuantity } = useContext(CartContext);
+  const { items, total, remove, setQuantity, discounts } =
+    useContext(CartContext);
+  const [code, setCode] = useState("");
   const [closing, setClosing] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Portal yalnızca tarayıcıda kurulabilir; ilk render'dan sonra
-  // bir kez işaretlenir.
+  // bir kez işaretlenir. Kayıtlı kupon da burada okunur.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCode(readCoupon());
   }, []);
 
   const close = useCallback(() => {
@@ -64,8 +70,18 @@ export function CartDrawer({
 
   if (!open || !mounted) return null;
 
-  const shipping = total >= FREE_OVER ? 0 : SHIPPING_FEE;
-  const remaining = Math.max(FREE_OVER - total, 0);
+  /*
+    Kupon her tuşta yeniden değerlendirilir; müşteri kodu yazar
+    yazmaz indirimi görüyor. Değerlendirme yalnızca gösterim
+    içindir — gerçek tutarı ARC hesaplar.
+  */
+  const coupon = code.trim() ? evaluateCoupon(discounts, code, total) : null;
+  const discount = coupon?.ok ? coupon.amount : 0;
+  const afterDiscount = Math.max(total - discount, 0);
+  const freeShipping = coupon?.ok ? coupon.freeShipping : false;
+  const shipping =
+    freeShipping || afterDiscount >= FREE_OVER ? 0 : SHIPPING_FEE;
+  const remaining = Math.max(FREE_OVER - afterDiscount, 0);
 
   /*
     Çekmece doğrudan <body> altına basılır. Başlık `position:
@@ -168,15 +184,62 @@ export function CartDrawer({
             </ul>
 
             <footer className="drawer-foot">
-              <div className="drawer-total">
-                <span>Ara toplam</span>
-                <b>{formatPrice(total)}</b>
+              {/* İndirim kodu: yazıldığı anda uygulanır. */}
+              <div className="coupon-form">
+                <input
+                  type="text"
+                  placeholder="İndirim kodu"
+                  value={code}
+                  onChange={(event) => {
+                    const next = event.target.value.toUpperCase();
+                    setCode(next);
+                    if (next.trim()) writeCoupon(next);
+                    else clearCoupon();
+                  }}
+                />
+                {code.trim() && (
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={() => {
+                      setCode("");
+                      clearCoupon();
+                    }}
+                  >
+                    Sil
+                  </button>
+                )}
               </div>
-              <p className="hint">
-                {shipping === 0
-                  ? "Kargo ücretsiz."
-                  : `Kargo ${formatPrice(shipping)} · vergiler dahildir.`}
-              </p>
+
+              {coupon && !coupon.ok && (
+                <p className="coupon-warn">{coupon.reason}</p>
+              )}
+              {coupon?.ok && (
+                <p className="cart-saving">{coupon.label} uygulandı.</p>
+              )}
+
+              <dl className="summary-totals">
+                <div>
+                  <dt>Ara toplam</dt>
+                  <dd>{formatPrice(total)}</dd>
+                </div>
+                {discount > 0 && (
+                  <div className="is-discount">
+                    <dt>İndirim</dt>
+                    <dd>−{formatPrice(discount)}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt>Kargo</dt>
+                  <dd>
+                    {shipping === 0 ? "Ücretsiz" : formatPrice(shipping)}
+                  </dd>
+                </div>
+                <div className="grand">
+                  <dt>Toplam</dt>
+                  <dd>{formatPrice(afterDiscount + shipping)}</dd>
+                </div>
+              </dl>
               <Link className="btn btn-block" href="/odeme" onClick={close}>
                 Ödemeye geç
               </Link>
