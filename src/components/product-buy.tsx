@@ -83,8 +83,14 @@ export function ProductBuy({ product }: { product: Product }) {
         </>
       )}
 
+      {/* Adet seçimi butonun yanında; müşteri sepete gidip tek tek
+          artırmak zorunda kalmıyor. */}
+      <label className="option-label" id="adet-etiketi">
+        Adet
+      </label>
+
       <div className="pdp-actions">
-        <span className="quantity">
+        <span className="quantity" aria-labelledby="adet-etiketi">
           <button
             type="button"
             aria-label="Azalt"
@@ -113,7 +119,7 @@ export function ProductBuy({ product }: { product: Product }) {
       </div>
 
       <p className="stock-line" data-in-stock="true">
-        Stokta — bugün kargoya hazırlanır
+        Stokta
       </p>
     </div>
   );
