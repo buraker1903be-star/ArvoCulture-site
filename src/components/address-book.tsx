@@ -20,6 +20,23 @@ export type Address = {
   is_default: boolean;
 };
 
+/*
+  Hazır etiketler. Müşterilerin ezici çoğunluğu bu ikisini
+  kullanıyor; yazmak yerine seçmek hem hızlı hem de adres
+  listesinde tutarlı görünüyor. Serbest yazım da açık kalıyor.
+*/
+const TITLE_PRESETS = ["Ev", "İş"];
+
+/** Kurumsal fatura, vergi numarasının varlığından anlaşılır. */
+function isCorporate(address: {
+  tax_number: string | null;
+  company_name: string | null;
+}) {
+  return Boolean(
+    (address.tax_number ?? "").trim() || (address.company_name ?? "").trim(),
+  );
+}
+
 const EMPTY = {
   title: "",
   full_name: "",
@@ -221,7 +238,12 @@ export function AddressBook({ supabase }: { supabase: SupabaseClient }) {
           {items.map((address) => (
             <li key={address.id}>
               <div className="address-head">
-                <strong>{address.title}</strong>
+                <strong>
+                  {address.title}
+                  {isCorporate(address) && (
+                    <em> / Kurumsal fatura</em>
+                  )}
+                </strong>
                 {address.is_default && (
                   <span className="tag tag-soft">Varsayılan</span>
                 )}
@@ -274,9 +296,25 @@ export function AddressBook({ supabase }: { supabase: SupabaseClient }) {
       {editing !== null && (
         <div className="address-form">
           <div className="fields">
-            <label>
+            <label className="wide">
               Adres başlığı
-              <input type="text" placeholder="Ev, İş…" {...field("title")} />
+              <input
+                type="text"
+                placeholder="Ev, İş, Yazlık…"
+                {...field("title")}
+              />
+              <span className="title-presets">
+                {TITLE_PRESETS.map((preset) => (
+                  <button
+                    type="button"
+                    key={preset}
+                    aria-pressed={form.title === preset}
+                    onClick={() => setForm({ ...form, title: preset })}
+                  >
+                    {preset}
+                  </button>
+                ))}
+              </span>
             </label>
             <label>
               Ad soyad

@@ -2807,3 +2807,41 @@ button.search-box {
   font-size: var(--t-xs);
   color: var(--sale);
 }
+
+/* ---------- Adres etiketleri ------------------------------ */
+
+/* Hazır başlık seçenekleri: yazmak yerine seçmek hem hızlı hem
+   de listede tutarlı görünüm sağlıyor. */
+.title-presets {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.title-presets button {
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+  transition: border-color 160ms var(--ease), background-color 160ms var(--ease);
+}
+
+.title-presets button:hover {
+  border-color: var(--ink-3);
+}
+
+.title-presets button[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+/* "Ev / Kurumsal fatura" — ikinci kısım daha sessiz. */
+.address-head strong em,
+.address-picker strong em {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--ink-3);
+}

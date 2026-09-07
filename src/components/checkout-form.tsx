@@ -240,7 +240,12 @@ export function CheckoutForm({
                     setSelected(address.id);
                   }}
                 >
-                  <strong>{address.title}</strong>
+                  <strong>
+                    {address.title}
+                    {(address.tax_number ?? address.company_name) && (
+                      <em> / Kurumsal fatura</em>
+                    )}
+                  </strong>
                   <small>
                     {address.line} · {address.district} / {address.city}
                   </small>
