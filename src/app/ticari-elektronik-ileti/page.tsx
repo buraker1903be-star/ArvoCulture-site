@@ -1,7 +1,0 @@
-import { InfoPage, InfoSection } from "@/components/info-page";
-export default function CommercialMessages(){return <InfoPage eyebrow="İLETİŞİM TERCİHLERİ" title="Ticari elektronik ileti." intro="Kampanya ve marka iletişimleri yalnızca tercihiniz doğrultusunda gönderilir; alışveriş için pazarlama izni vermeniz gerekmez.">
-  <InfoSection title="İznin kapsamı"><p>Açık onay vermeniz hâlinde yeni ürünler, kampanyalar, indirimler ve marka içerikleri e-posta, SMS veya belirttiğiniz diğer kanallardan gönderilebilir. İzin, hizmetin sunulmasının veya sipariş vermenin koşulu değildir.</p></InfoSection>
-  <InfoSection title="Hizmet mesajları"><p>Sipariş onayı, ödeme durumu, kargo takibi, güvenlik uyarısı ve destek yanıtları pazarlama iletisi değildir; satışın ve talebinizin yürütülmesi için gönderilebilir.</p></InfoSection>
-  <InfoSection title="İzni geri çekme"><p>Her pazarlama iletisindeki ret bağlantısını kullanabilir, İleti Yönetim Sistemi üzerinden tercihlerinizi yönetebilir veya info@arvoculture.com adresine yazabilirsiniz. Ret talebiniz mevzuattaki süre içinde uygulanır.</p></InfoSection>
-  <InfoSection title="Kayıt ve kişisel veriler"><p>İletişim izni, kanal, tarih ve ret kayıtları hukuki yükümlülüklerin ispatı amacıyla saklanabilir. Kişisel verilerin işlenmesi hakkında <a href="/kvkk-aydinlatma-metni">KVKK Aydınlatma Metni</a>ni inceleyebilirsiniz. Son güncelleme: 30 Ağustos 2026.</p></InfoSection>
-</InfoPage>}
