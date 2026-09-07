@@ -136,6 +136,16 @@
   background: var(--panel-2);
 }
 
+/*
+  Sepet düğmesi tıklandıktan sonra odakta kalıyor ve çevresinde
+  kalıcı bir halka bırakıyordu. Klavye kullanıcısı için odak
+  göstergesi korunur, fareyle tıklamada gösterilmez.
+*/
+.cart-link:focus:not(:focus-visible),
+.header-action-link:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .header-action-link svg,
 .cart-link svg {
   width: 21px;

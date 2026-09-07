@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { CartContext } from "@/components/cart";
 import { formatPrice } from "@/lib/product-types";
 
@@ -26,6 +27,14 @@ export function CartDrawer({
 }) {
   const { items, total, remove, setQuantity } = useContext(CartContext);
   const [closing, setClosing] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Portal yalnızca tarayıcıda kurulabilir; ilk render'dan sonra
+  // bir kez işaretlenir.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   const close = useCallback(() => {
     // Kapanış animasyonu bitmeden bileşen kaldırılmasın.
@@ -53,12 +62,18 @@ export function CartDrawer({
     };
   }, [open, close]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   const shipping = total >= FREE_OVER ? 0 : SHIPPING_FEE;
   const remaining = Math.max(FREE_OVER - total, 0);
 
-  return (
+  /*
+    Çekmece doğrudan <body> altına basılır. Başlık `position:
+    sticky` ve `z-index: 40` ile kendi yığın bağlamını oluşturuyor;
+    çekmece onun içinde kalsaydı z-index değeri ne olursa olsun
+    sayfa içeriğinin arkasında görünürdü.
+  */
+  return createPortal(
     <div
       className={`drawer-layer${closing ? " is-closing" : ""}`}
       role="dialog"
@@ -172,6 +187,7 @@ export function CartDrawer({
           </>
         )}
       </aside>
-    </div>
+    </div>,
+    document.body,
   );
 }
