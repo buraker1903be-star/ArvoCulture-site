@@ -3315,7 +3315,13 @@ button.search-box {
   gap: var(--s4);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding-bottom: var(--s3);
+  /*
+    Üstte ve altta boşluk: raf kendi içinde kaydığı için taşan
+    her şeyi kırpıyor. Kart üzerine gelince yükseliyor ve
+    gölgesi bu boşluk olmadan kesiliyordu.
+  */
+  padding: 10px 2px var(--s4);
+  margin: -10px -2px 0;
   max-width: 100%;
   /*
     Kaydırma çubuğu gizli: ok düğmeleri hem daha temiz hem de
@@ -3333,7 +3339,9 @@ button.search-box {
 
 .rail-arrow {
   position: absolute;
-  top: 40%;
+  /* Kartın görsel alanının ortası; başlık ve fiyat hizasına
+     denk gelmesin. */
+  top: 38%;
   z-index: 2;
   display: grid;
   place-items: center;
