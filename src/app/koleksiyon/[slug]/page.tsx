@@ -1,4 +1,5 @@
-import { ProductCard } from "@/components/product-card";
+import { ProductCard, discountOf } from "@/components/product-card";
+import { CollectionFilters } from "@/components/collection-filters";
 import { getStorefrontCollections } from "@/lib/collections";
 import {
   getStorefrontCollectionProducts,
@@ -53,10 +54,20 @@ export default async function Collection({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ sayfa?: string }>;
+  searchParams: Promise<{
+    sayfa?: string;
+    sirala?: string;
+    beden?: string;
+    marka?: string;
+    ust?: string;
+    indirimli?: string;
+    stokta?: string;
+  }>;
 }) {
   const { slug } = await params;
-  const requestedPage = Number((await searchParams).sayfa ?? "1");
+  // `params` yol parametresi; filtreler ayrı bir nesnede.
+  const query = await searchParams;
+  const requestedPage = Number(query.sayfa ?? "1");
   const page =
     Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const collections = await getStorefrontCollections();
@@ -71,10 +82,75 @@ export default async function Collection({
           collectionSlug: exactCollection?.slug,
           menuGroups: exactCollection ? undefined : menuGroups[slug],
         });
+  /*
+    Filtreleme ve sıralama sunucuda yapılıyor. Seçimler adres
+    çubuğundan okunuyor: müşteri filtreli sayfayı paylaşabiliyor,
+    geri tuşu çalışıyor ve arama motorları da sayfayı görebiliyor.
+  */
+  const beden = (query.beden ?? "").toString();
+  const marka = (query.marka ?? "").toString();
+  const ust = Number(query.ust ?? 0);
+  const indirimli = query.indirimli === "1";
+  const stokta = query.stokta === "1";
+  const sirala = (query.sirala ?? "onerilen").toString();
+
+  /* Filtre seçenekleri katalogdan türetilir; sabit liste
+     tutulmuyor çünkü katalog sürekli değişiyor. */
+  const sizes = [
+    ...new Set(
+      list.flatMap((product) =>
+        product.tags.filter((tag) => /^(XS|S|M|L|XL|2XL|3XL)$/i.test(tag)),
+      ),
+    ),
+  ];
+
+  const brands = [...new Set(list.map((product) => product.eyebrow))]
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, "tr"))
+    .slice(0, 12);
+
+  const maxPrice = list.reduce(
+    (top, product) => Math.max(top, product.price),
+    0,
+  );
+
+  let filtered = list.filter((product) => {
+    if (marka && product.eyebrow !== marka) return false;
+    if (ust > 0 && product.price > ust) return false;
+    if (indirimli && discountOf(product) <= 0) return false;
+    if (stokta && product.available === false) return false;
+    if (
+      beden &&
+      !product.tags.some((tag) => tag.toUpperCase() === beden.toUpperCase())
+    )
+      return false;
+    return true;
+  });
+
+  filtered = [...filtered].sort((a, b) => {
+    switch (sirala) {
+      case "ucuz":
+        return a.price - b.price;
+      case "pahali":
+        return b.price - a.price;
+      case "indirim":
+        return discountOf(b) - discountOf(a);
+      case "yeni":
+        // Katalog zaten son güncellenene göre sıralı geliyor.
+        return 0;
+      default:
+        // Önerilen: stokta olanlar önce, sonra indirimliler.
+        if ((a.available === false) !== (b.available === false)) {
+          return a.available === false ? 1 : -1;
+        }
+        return discountOf(b) - discountOf(a);
+    }
+  });
+
   const pageSize = 24;
-  const pageCount = Math.max(1, Math.ceil(list.length / pageSize));
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, pageCount);
-  const visibleProducts = list.slice(
+  const visibleProducts = filtered.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
   );
@@ -90,10 +166,13 @@ export default async function Collection({
         </p>
       </section>
       <section className="panel">
-        <div className="filterbar">
-          <span>{list.length} ürün</span>
-          <span>Önerilen sıralama ↓</span>
-        </div>
+        <CollectionFilters
+          total={list.length}
+          shown={filtered.length}
+          sizes={sizes}
+          brands={brands}
+          maxPrice={maxPrice}
+        />
         <div className="product-grid">
           {visibleProducts.map((product) => (
             <ProductCard key={product.slug} product={product} />
@@ -107,7 +186,7 @@ export default async function Collection({
             {currentPage > 1 && (
               <Link
                 prefetch={false}
-                href={`/koleksiyon/${slug}?sayfa=${currentPage - 1}`}
+                href={pageHref(slug, query, currentPage - 1)}
               >
                 ← Önceki
               </Link>
@@ -118,7 +197,7 @@ export default async function Collection({
             {currentPage < pageCount && (
               <Link
                 prefetch={false}
-                href={`/koleksiyon/${slug}?sayfa=${currentPage + 1}`}
+                href={pageHref(slug, query, currentPage + 1)}
               >
                 Sonraki →
               </Link>
@@ -128,4 +207,21 @@ export default async function Collection({
       </section>
     </main>
   );
+}
+
+/**
+ * Sayfalama bağlantısı. Mevcut filtreler korunur; aksi hâlde
+ * ikinci sayfaya geçen müşterinin seçimleri sıfırlanıyordu.
+ */
+function pageHref(
+  slug: string,
+  params: Record<string, string | undefined>,
+  page: number,
+) {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value && key !== "sayfa") query.set(key, value);
+  }
+  query.set("sayfa", String(page));
+  return `/koleksiyon/${slug}?${query.toString()}`;
 }
