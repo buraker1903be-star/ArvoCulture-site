@@ -3865,3 +3865,57 @@ button.search-box {
     min-height: 44px;
   }
 }
+
+/* ---------- Galeri: kaydırma göstergesi ------------------ */
+
+/*
+  Noktalar yalnızca mobilde. Masaüstünde küçük görseller zaten
+  hangi karede olunduğunu gösteriyor.
+*/
+.pdp-dots {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .pdp-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: var(--s2);
+  }
+
+  .pdp-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background-color 200ms var(--ease), width 200ms var(--ease);
+  }
+
+  .pdp-dots span[data-active="true"] {
+    width: 18px;
+    border-radius: 999px;
+    background: var(--ink);
+  }
+
+  /* Kaydırma sırasında görsel seçilmesin. */
+  .pdp-stage {
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  /* Küçük görseller mobilde yatay kayar; alt alta yığılmasın. */
+  .pdp-thumbs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .pdp-thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pdp-thumbs button {
+    flex: none;
+  }
+}

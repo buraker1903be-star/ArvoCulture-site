@@ -94,9 +94,16 @@ export function CheckoutForm({
       const list = (data as Address[]) ?? [];
       setSaved(list);
 
+      /*
+        E-posta her koşulda doldurulur. Öncesinde yalnızca kayıtlı
+        adresi olmayan müşteride yazılıyordu; adresi olanlar
+        e-postasını elle girmek zorunda kalıyordu.
+      */
+      const email = sessionData.session.user.email ?? "";
+
       const preferred = list[0];
       if (preferred) {
-        applyAddress(preferred);
+        applyAddress(preferred, email);
         setSelected(preferred.id);
       } else {
         setForm((current) => ({
@@ -115,16 +122,18 @@ export function CheckoutForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabaseUrl, supabaseKey]);
 
-  function applyAddress(address: Address) {
-    setForm({
+  function applyAddress(address: Address, email?: string) {
+    setForm((current) => ({
+      ...current,
       name: address.full_name,
-      email: form.email,
+      // Hesap e-postası varsa onu kullan; yoksa yazılanı koru.
+      email: email || current.email,
       phone: formatPhone(address.phone),
       city: address.city,
       district: address.district,
       line: address.line,
       postal: address.postal_code ?? "",
-    });
+    }));
   }
   const [message, setMessage] = useState("");
 

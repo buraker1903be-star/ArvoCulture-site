@@ -48,9 +48,16 @@ export const STATUS_LABEL: Record<string, string> = {
   refunded: "İade edildi",
 };
 
-/** ARC görsel yolunu tam adrese çevirir. */
+/**
+ * ARC görsel yolunu tam adrese çevirir.
+ *
+ * Tedarikçi ürünlerinin görselleri zaten tam adres olarak
+ * saklanıyor; önüne Supabase adresi eklenince bozuk bağlantı
+ * oluşuyor ve sipariş kartlarında kırık görsel çıkıyordu.
+ */
 export function productImageUrl(supabaseUrl: string, path: string | null) {
   if (!path) return null;
+  if (path.startsWith("http")) return path;
   return `${supabaseUrl}/storage/v1/object/public/arc-product-images/${path}`;
 }
 
