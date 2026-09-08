@@ -3578,3 +3578,110 @@ button.search-box {
     transform: none;
   }
 }
+
+/* ==========================================================
+   Kategori kartları
+   ========================================================== */
+
+.cat-cards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--s4);
+}
+
+.cat-card {
+  position: relative;
+  display: block;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--panel-2);
+  transition: transform 300ms var(--ease), box-shadow 300ms var(--ease);
+}
+
+.cat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--float-lg);
+}
+
+.cat-card-art {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+}
+
+.cat-card-art img {
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 640ms var(--ease);
+}
+
+.cat-card:hover .cat-card-art img {
+  transform: scale(1.06);
+}
+
+/*
+  Alt karartma. Metin fotoğrafın açık ya da koyu olmasından
+  bağımsız okunur kalmalı.
+*/
+.cat-card-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(16, 18, 15, 0.82) 0%,
+    rgba(16, 18, 15, 0.32) 34%,
+    transparent 62%
+  );
+}
+
+.cat-card-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  gap: 2px;
+  padding: var(--s4);
+  color: #fff;
+}
+
+.cat-card-body strong {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cat-card-body em {
+  font-style: normal;
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+  transition: opacity 240ms var(--ease);
+}
+
+.cat-card:hover .cat-card-body em {
+  opacity: 1;
+}
+
+@media (max-width: 980px) {
+  .cat-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .cat-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-card,
+  .cat-card:hover,
+  .cat-card:hover .cat-card-art img {
+    transform: none;
+    transition: none;
+  }
+}
