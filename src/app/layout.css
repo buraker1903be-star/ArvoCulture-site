@@ -205,7 +205,9 @@
 */
 
 .mega-menu {
-  position: static;
+  /* Köprü öğesinin konumlanabilmesi için relative; panel yine
+     başlığa göre değil, sayfa genişliğine göre yerleşiyor. */
+  position: relative;
 }
 
 .mega-trigger[aria-expanded="true"],
@@ -223,7 +225,37 @@
   transition: transform 200ms var(--ease);
 }
 
+/*
+  Tetikleyici ile panel arasında görünmez bir köprü.
+
+  Panel tetikleyicinin 8px altında duruyor. Fare o boşluktan
+  geçerken hiçbir öğenin üzerinde olmadığı için hover kayboluyor
+  ve menü seçim yapılamadan kapanıyordu. Bu blok boşluğu
+  doldurup imleci menünün "içinde" tutuyor.
+*/
+.mega-menu::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 12px;
+  /* Yalnızca menü açıkken devrede; kapalıyken altındaki
+     bağlantıları engellemesin. */
+  pointer-events: none;
+}
+
+.mega-menu:hover::after,
+.mega-menu:focus-within::after {
+  pointer-events: auto;
+}
+
 .mega-panel {
+  /* Kapanış gecikmeli: fare tetikleyiciden panele geçerken
+     menü hemen kaybolmasın. Açılış anında olur. */
+  transition:
+    opacity 160ms var(--ease),
+    visibility 0s linear 220ms;
   position: absolute;
   left: var(--rail);
   right: var(--rail);
@@ -239,12 +271,22 @@
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
-  transition: opacity 180ms var(--ease), transform 180ms var(--ease),
-    visibility 180ms;
+  /*
+    Kapanışta 220ms gecikme: fare tetikleyiciden panele geçerken
+    menü hemen kaybolmasın. Açılış anında olur (aşağıda
+    transition-delay sıfırlanıyor).
+  */
+  transition:
+    opacity 180ms var(--ease) 220ms,
+    transform 180ms var(--ease) 220ms,
+    visibility 0s linear 400ms;
 }
 
 .mega-menu:hover .mega-panel,
 .mega-menu:focus-within .mega-panel {
+  transition:
+    opacity 180ms var(--ease),
+    transform 180ms var(--ease);
   opacity: 1;
   visibility: visible;
   transform: none;
