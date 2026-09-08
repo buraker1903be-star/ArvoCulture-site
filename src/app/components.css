@@ -317,10 +317,24 @@
 /* Ürün görselinin zemini her yerde beyaz: ürün fotoğrafları
    beyaz fonlu çekildiği için kırık beyaz zemin kenarlarda
    görünür bir çerçeve bırakıyordu. */
+/*
+  Görsel çerçevesi.
+
+  Katalogda iki tür fotoğraf var ve aynı şekilde gösterilemezler:
+
+  - "packshot": beyaz zeminde ürün çekimi (LR şişeleri).
+    Nefes alması gerekir; `contain` ve iç boşlukla.
+  - "lifestyle": manken fotoğrafı (tedarikçi ürünleri).
+    Çerçeveyi doldurmalı; kenarlarda beyaz şerit kalırsa
+    ızgara dağınık görünür.
+
+  Oran 4:5 dikey. Giyim katalogun ezici çoğunluğu ve dikey
+  çerçeve hem mankeni hem şişeyi kareden daha iyi taşıyor.
+*/
 .card-art {
   position: relative;
   display: block;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
   border-radius: var(--r-sm);
   background: #fff;
   overflow: hidden;
@@ -329,6 +343,32 @@
 .card-art img {
   object-fit: contain;
   padding: 9%;
+  /* Yükleme sırasında zıplama olmasın. */
+  transition: transform 420ms var(--ease);
+}
+
+/* Manken fotoğrafı çerçeveyi doldurur. */
+.card-art[data-art="lifestyle"] img {
+  object-fit: cover;
+  object-position: center top;
+  padding: 0;
+}
+
+/*
+  Üzerine gelince hafif yakınlaşma. Yalnızca manken
+  fotoğraflarında; paket çekiminde büyütmek ürünü kesiyor.
+*/
+.card:hover .card-art[data-art="lifestyle"] img {
+  transform: scale(1.035);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-art img {
+    transition: none;
+  }
+  .card:hover .card-art[data-art="lifestyle"] img {
+    transform: none;
+  }
 }
 
 /*
@@ -394,7 +434,13 @@
 
 /* Başlık iki satırda sabit: kart yükseklikleri eşitlenmezse
    ızgara satırları kayıyor. */
+/* Başlık iki satıra sabitlenir; kartlar aynı hizada biter. */
 .card h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.7em;
   font-size: var(--t-h3);
   font-weight: 500;
   line-height: 1.35;
@@ -416,7 +462,13 @@
 }
 
 @media (max-width: 640px) {
-  .card h3 {
+  /* Başlık iki satıra sabitlenir; kartlar aynı hizada biter. */
+.card h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.7em;
     font-size: var(--t-sm);
   }
 }
@@ -2879,7 +2931,7 @@ button.search-box {
 
 .pdp-stage {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
   border-radius: var(--r);
   background: #fff;
   border: 1px solid var(--line);
@@ -2889,6 +2941,13 @@ button.search-box {
 .pdp-stage img {
   object-fit: contain;
   padding: 6%;
+}
+
+/* Manken fotoğrafı detay sayfasında da çerçeveyi doldurur. */
+.pdp-media[data-art="lifestyle"] .pdp-stage img {
+  object-fit: cover;
+  object-position: center top;
+  padding: 0;
 }
 
 .pdp-empty {

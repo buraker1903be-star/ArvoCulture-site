@@ -25,7 +25,10 @@ export function ProductGallery({
   const current = images[active];
 
   return (
-    <div className="pdp-media">
+    <div
+      className="pdp-media"
+      data-art={current?.startsWith("http") ? "lifestyle" : "packshot"}
+    >
       <div className="pdp-stage">
         <span className="card-flags">
           {discount > 0 && <b className="tag tag-sale">%{discount} indirim</b>}
