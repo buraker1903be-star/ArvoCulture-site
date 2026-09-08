@@ -18,6 +18,9 @@ export type Product = {
   image?: string;
   /** Galeri için tüm görseller. image, bunun ilk elemanıdır. */
   images: string[];
+  /** Tedarikçi ürünlerinde tablo hâlindeki özellikler. */
+  specs: Array<{ label: string; value: string }>;
+  sizeGuide: Array<{ label: string; value: string }>;
   available?: boolean;
   badge?: string;
   badgeTone?: "green" | "navy" | "gold" | "red";

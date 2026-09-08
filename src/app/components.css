@@ -3137,3 +3137,38 @@ button.search-box {
     min-width: 0;
   }
 }
+
+/* Ürün özellikleri ve beden tablosu — etiket/değer listesi. */
+.spec-list {
+  display: grid;
+  gap: 1px;
+  margin: 0 0 var(--s4);
+  background: var(--line);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.spec-list > div {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: var(--s4);
+  padding: var(--s3) var(--s4);
+  background: var(--panel);
+  font-size: var(--t-sm);
+}
+
+.spec-list dt {
+  color: var(--ink-3);
+}
+
+.spec-list dd {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+@media (max-width: 640px) {
+  .spec-list > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

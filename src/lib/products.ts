@@ -17,6 +17,9 @@ type StorefrontRow = {
   compare_at_price: number | null;
   available: boolean;
   image_paths: unknown;
+  /* Tedarikçi ürünlerinde tablo hâlindeki özellikler. */
+  specs?: unknown;
+  size_guide?: unknown;
 };
 
 type ProductBadgeRow = {
@@ -111,6 +114,13 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     tags: row.product_type ? [row.product_type] : [],
     image: images[0],
     images,
+    // İçe aktarılan ürünlerde tablo hâlinde saklanan özellikler.
+    specs: Array.isArray(row.specs)
+      ? (row.specs as Array<{ label: string; value: string }>)
+      : [],
+    sizeGuide: Array.isArray(row.size_guide)
+      ? (row.size_guide as Array<{ label: string; value: string }>)
+      : [],
     available: row.available,
   };
 };

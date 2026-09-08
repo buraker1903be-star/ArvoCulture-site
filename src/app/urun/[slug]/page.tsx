@@ -125,6 +125,40 @@ export default async function ProductPage({ params }: Params) {
               <p>{product.description || product.subtitle}</p>
             </details>
 
+            {product.specs.length > 0 && (
+              <details>
+                <summary>
+                  <span>Ürün özellikleri</span>
+                  <i aria-hidden="true" />
+                </summary>
+                <dl className="spec-list">
+                  {product.specs.map((spec) => (
+                    <div key={spec.label}>
+                      <dt>{spec.label}</dt>
+                      <dd>{spec.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </details>
+            )}
+
+            {product.sizeGuide.length > 0 && (
+              <details>
+                <summary>
+                  <span>Beden tablosu</span>
+                  <i aria-hidden="true" />
+                </summary>
+                <dl className="spec-list">
+                  {product.sizeGuide.map((row) => (
+                    <div key={row.label}>
+                      <dt>{row.label}</dt>
+                      <dd>{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </details>
+            )}
+
             <details>
               <summary>
                 <span>Teslimat</span>
