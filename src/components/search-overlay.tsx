@@ -1,16 +1,12 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
+
 import { useCallback, useEffect, useState } from "react";
 import { LiveSearch } from "@/components/live-search";
 import type { SearchItem } from "@/lib/search-index";
 
-export type SearchTile = {
-  label: string;
-  href: string;
-  image?: string;
-  note?: string;
-};
+
 
 /**
  * Arama katmanı.
@@ -21,10 +17,11 @@ export type SearchTile = {
  * yerden devam eder.
  */
 export function SearchOverlay({
-  tiles,
+  terms,
   items,
 }: {
-  tiles: SearchTile[];
+  /** Popüler arama terimleri. */
+  terms: string[];
   items: SearchItem[];
 }) {
   const [open, setOpen] = useState(false);
@@ -82,22 +79,22 @@ export function SearchOverlay({
               </button>
             </div>
 
-            <p className="search-heading">En çok arananlar</p>
+            <p className="search-heading">Sık aranan aramalar</p>
 
-            <div className="search-tiles">
-              {tiles.map((tile) => (
-                <a key={tile.href} href={tile.href} className="search-tile">
-                  <span className="search-tile-art">
-                    {tile.image ? (
-                      <Image src={tile.image} alt="" fill sizes="180px" />
-                    ) : (
-                      /* Görsel bulunamazsa boş kare yerine baş harf. */
-                      <i aria-hidden="true">{tile.label.charAt(0)}</i>
-                    )}
-                  </span>
-                  <strong>{tile.label}</strong>
-                  {tile.note && <small>{tile.note}</small>}
-                </a>
+            {/*
+              Metin etiketleri. Görsel kutular katalog
+              değiştikçe boşalıyordu; etiket her zaman çalışıyor
+              ve aynı alana çok daha fazla terim sığıyor.
+            */}
+            <div className="search-terms">
+              {terms.map((term) => (
+                <Link
+                  key={term}
+                  href={`/arama?q=${encodeURIComponent(term)}`}
+                  onClick={close}
+                >
+                  {term}
+                </Link>
               ))}
             </div>
           </div>

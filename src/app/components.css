@@ -4045,3 +4045,46 @@ button.search-box {
   color: var(--line);
   background: var(--panel-2);
 }
+
+
+/* ---------- Arama katmanı: sık aranan terimler ----------- */
+
+/*
+  Metin etiketleri. Görsel kutular katalog değiştikçe
+  boşalıyordu ve tek satıra ancak altı tane sığıyordu; etiketle
+  aynı alana on beş terim rahatça giriyor.
+*/
+.search-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-top: var(--s3);
+}
+
+.search-terms a {
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  transition:
+    border-color 160ms var(--ease),
+    background-color 160ms var(--ease),
+    color 160ms var(--ease);
+}
+
+.search-terms a:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .search-terms a {
+    /* Dokunma hedefi. */
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+  }
+}

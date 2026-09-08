@@ -49,30 +49,30 @@ const CATEGORIES = [
 /*
   Arama katmanındaki popüler aramalar.
 
-  `match` görseli seçmek için kullanılıyor; `avoid` yanlış
-  eşleşmeleri eliyor. "Güneş" araması "güneş gözlüğü" ile
-  eşleşip koruyucu yerine aksesuar görseli getiriyordu.
+  Görsel kutular yerine metin etiketleri: görsel eşleştirmesi
+  katalog değiştikçe boşalıyordu ve tek satıra ancak altı kutu
+  sığıyordu. Etiketle çok daha fazla terim gösterilebiliyor ve
+  hiçbir zaman boş kalmıyor.
+
+  Bağlantılar aramaya gidiyor, koleksiyon slug'ına değil:
+  koleksiyon adı değişse bile kırılmaz.
 */
-const SEARCH_TILES = [
-  { label: "Serum", href: "/koleksiyon/cilt-bakim-serumlari", match: "serum" },
-  { label: "Parfüm", href: "/koleksiyon/parfum", match: "parfüm" },
-  {
-    label: "Oversize tişört",
-    href: "/koleksiyon/erkek-t-shirt",
-    match: "oversize",
-  },
-  {
-    label: "Güneş koruma",
-    href: "/koleksiyon/gunes-koruyuculari",
-    match: "güneş koruyucu",
-    avoid: "gözlük",
-  },
-  {
-    label: "Nemlendirici",
-    href: "/koleksiyon/nemlendiriciler",
-    match: "nemlendir",
-  },
-  { label: "Vitamin", href: "/koleksiyon/vitamin-takviyeleri", match: "vitamin" },
+const SEARCH_TERMS = [
+  "Güneş kremi",
+  "El kremi",
+  "Yüz serumu",
+  "Nemlendirici",
+  "Şampuan",
+  "Oversize tişört",
+  "Sweatshirt",
+  "Eşofman",
+  "Parfüm",
+  "Ruj",
+  "Vitamin",
+  "Kolajen",
+  "Aloe vera",
+  "Kapüşonlu",
+  "Ceket",
 ];
 
 export default async function Home() {
@@ -121,18 +121,16 @@ export default async function Home() {
   const fresh = inStock.slice(0, 5);
 
   /*
-    Görsel arama dizininden seçiliyor: ana sayfanın 200 ürünlük
-    listesi artık tedarikçi ürünleriyle dolu ve serum,
-    nemlendirici gibi terimler orada bulunamıyordu.
+    Sonuç vermeyen terimler gösterilmiyor: müşteri tıklayıp boş
+    sayfayla karşılaşmasın.
   */
-  const searchTiles = SEARCH_TILES.map((tile) => {
-    const found = searchItems.find((item) => {
-      const text = `${item.name} ${item.category}`.toLocaleLowerCase("tr-TR");
-      if (tile.avoid && text.includes(tile.avoid)) return false;
-      return text.includes(tile.match);
-    });
-
-    return { label: tile.label, href: tile.href, image: found?.image };
+  const searchTerms = SEARCH_TERMS.filter((term) => {
+    const needle = term.toLocaleLowerCase("tr-TR");
+    return searchItems.some((item) =>
+      `${item.name} ${item.category}`
+        .toLocaleLowerCase("tr-TR")
+        .includes(needle),
+    );
   });
 
   const categories = CATEGORIES;
@@ -147,7 +145,7 @@ export default async function Home() {
 
       <section className="panel panel-tight utility" aria-label="Arama ve kampanya">
         <div className="utility-search">
-          <SearchOverlay tiles={searchTiles} items={searchItems} />
+          <SearchOverlay terms={searchTerms} items={searchItems} />
         </div>
 
         {coupon?.code && (
