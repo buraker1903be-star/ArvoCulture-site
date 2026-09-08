@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { QuickAdd } from "@/components/quick-add";
 import { formatPrice, type Product } from "@/lib/product-types";
+import { FavouriteButton } from "@/components/favourite-button";
 
 /** İndirim yüzdesi: rozet ve sıralama için tek kaynak. */
 export function discountOf(product: Product) {
@@ -51,6 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
           gösteriliyor. İkinci görseli olmayan üründe bu eleman
           hiç render edilmez; ilk görsel sabit kalır.
         */}
+        {/* Favori düğmesi görselin üstünde, sağ üstte. */}
         {second && (
           <Image
             className="card-img-alt"
@@ -62,6 +64,8 @@ export function ProductCard({ product }: { product: Product }) {
           />
         )}
       </Link>
+
+      <FavouriteButton slug={product.slug} label={product.name} />
 
       <p className="card-brand">{product.eyebrow}</p>
       <h3>

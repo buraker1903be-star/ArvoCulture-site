@@ -247,6 +247,18 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
             </Link>
           )}
           {theme.show_account && (
+            <Link
+              href="/favoriler"
+              aria-label="Favorilerim"
+              className="header-action-link"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 20.4 4.6 13a4.6 4.6 0 0 1 6.5-6.5l.9.9.9-.9A4.6 4.6 0 0 1 19.4 13z" />
+              </svg>
+              <span>Favoriler</span>
+            </Link>
+          )}
+          {theme.show_account && (
             <Link href="/hesap" aria-label="Hesabım" className="header-action-link">
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="3.5" />

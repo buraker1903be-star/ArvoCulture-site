@@ -4229,3 +4229,66 @@ button.search-box {
     min-height: 42px;
   }
 }
+
+/* ---------- Favori düğmesi ------------------------------- */
+
+/*
+  Görselin sağ üstünde. Kart bağlantısının içinde durduğu için
+  tıklama olayı durduruluyor; aksi hâlde favoriye eklerken ürün
+  sayfasına gidiyordu.
+*/
+.card {
+  position: relative;
+}
+
+.fav-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  transition:
+    background-color 180ms var(--ease),
+    transform 180ms var(--ease);
+}
+
+.fav-button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  transition: fill 200ms var(--ease), stroke 200ms var(--ease);
+}
+
+.fav-button:hover {
+  background: #fff;
+  transform: scale(1.08);
+}
+
+.fav-button[aria-pressed="true"] svg {
+  fill: var(--sale);
+  stroke: var(--sale);
+}
+
+@media (max-width: 640px) {
+  /* Dokunma hedefi. */
+  .fav-button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fav-button:hover {
+    transform: none;
+  }
+}
