@@ -20,6 +20,7 @@ type StorefrontRow = {
   /* Tedarikçi ürünlerinde tablo hâlindeki özellikler. */
   specs?: unknown;
   size_guide?: unknown;
+  sizes?: unknown;
 };
 
 type ProductBadgeRow = {
@@ -135,6 +136,7 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     sizeGuide: Array.isArray(row.size_guide)
       ? (row.size_guide as Array<{ label: string; value: string }>)
       : [],
+    sizes: Array.isArray(row.sizes) ? (row.sizes as string[]) : [],
     available: row.available,
   };
 };

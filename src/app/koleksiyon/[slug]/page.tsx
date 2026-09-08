@@ -96,13 +96,17 @@ export default async function Collection({
 
   /* Filtre seçenekleri katalogdan türetilir; sabit liste
      tutulmuyor çünkü katalog sürekli değişiyor. */
-  const sizes = [
-    ...new Set(
-      list.flatMap((product) =>
-        product.tags.filter((tag) => /^(XS|S|M|L|XL|2XL|3XL)$/i.test(tag)),
-      ),
-    ),
-  ];
+  /* Bedenler varyantlardan gelir; ürün etiketlerinde yok. */
+  const SIZE_ORDER = ["XXS", "XS", "S", "M", "L", "XL", "2XL", "XXL", "3XL", "4XL"];
+
+  const sizes = [...new Set(list.flatMap((product) => product.sizes))].sort(
+    (a, b) => {
+      const ia = SIZE_ORDER.indexOf(a);
+      const ib = SIZE_ORDER.indexOf(b);
+      // Listede olmayan bedenler (tek beden, numara) sona.
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    },
+  );
 
   const brands = [...new Set(list.map((product) => product.eyebrow))]
     .filter(Boolean)
@@ -119,11 +123,7 @@ export default async function Collection({
     if (ust > 0 && product.price > ust) return false;
     if (indirimli && discountOf(product) <= 0) return false;
     if (stokta && product.available === false) return false;
-    if (
-      beden &&
-      !product.tags.some((tag) => tag.toUpperCase() === beden.toUpperCase())
-    )
-      return false;
+    if (beden && !product.sizes.includes(beden.toUpperCase())) return false;
     return true;
   });
 

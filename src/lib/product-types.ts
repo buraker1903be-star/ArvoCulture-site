@@ -27,6 +27,8 @@ export type Product = {
   /** Tedarikçi ürünlerinde tablo hâlindeki özellikler. */
   specs: Array<{ label: string; value: string }>;
   sizeGuide: Array<{ label: string; value: string }>;
+  /** Stokta olan bedenler. Koleksiyon filtresi bunu kullanır. */
+  sizes: string[];
   available?: boolean;
   badge?: string;
   badgeTone?: "green" | "navy" | "gold" | "red";
