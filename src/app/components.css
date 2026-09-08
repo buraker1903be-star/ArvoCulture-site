@@ -1925,10 +1925,24 @@ button.search-box {
 
 /* ---------- Hesap: giriş ve sipariş listesi --------------- */
 
+/*
+  Giriş formu.
+
+  Panel tam genişlikte açılıyordu; geniş ekranlarda alanlar
+  ekranı boydan boya geçiyor ve okuma hattı kopuyordu. Form
+  odaklanma isteyen bir yer, dar olmalı.
+*/
 .auth-panel {
   display: grid;
   gap: var(--s4);
   align-content: start;
+  justify-items: stretch;
+}
+
+.auth-panel > * {
+  width: 100%;
+  max-width: 26rem;
+  margin-inline: auto;
 }
 
 .auth-tabs {
@@ -3917,5 +3931,20 @@ button.search-box {
 
   .pdp-thumbs button {
     flex: none;
+  }
+}
+
+/*
+  Giriş yapılmamışken hesap sayfası tek sütun; panel ortalanır
+  ve dar kalır.
+*/
+.auth-panel {
+  max-width: 32rem;
+  margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+  .auth-panel > * {
+    max-width: none;
   }
 }
