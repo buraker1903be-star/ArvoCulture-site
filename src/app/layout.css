@@ -1269,3 +1269,30 @@ footer {
     gap: 0;
   }
 }
+
+@media (max-width: 1024px) {
+  /*
+    Menü düğmesi de gizlenir: alt çubuktaki "Menü" sekmesi aynı
+    işi yapıyor. Başlıkta yalnızca logo kalıyor ve ortalanıyor.
+  */
+  .menu-toggle {
+    display: none;
+  }
+
+  /*
+    Logo ortalanır. Başlık ızgarası masaüstünde üç sütunlu
+    (logo · menü · eylemler); mobilde diğer ikisi gizlendiği
+    için tek sütuna indirilip ortalanıyor.
+  */
+  .site-header {
+    justify-content: center;
+  }
+
+  .actions {
+    display: none;
+  }
+
+  .site-header .logo {
+    justify-self: center;
+  }
+}

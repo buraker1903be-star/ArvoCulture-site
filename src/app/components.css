@@ -3736,13 +3736,27 @@ button.search-box {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  .bottom-nav a {
+  /*
+    Sekmeler: dördü bağlantı, "Menü" düğme. İkisi de aynı
+    görünmeli — düğme varsayılan tarayıcı stilini alıyor ve
+    gri bir kutu olarak beliriyordu.
+  */
+  .bottom-nav a,
+  .bottom-nav button {
     display: grid;
     justify-items: center;
     gap: 3px;
     padding: 9px 4px 7px;
+    border: 0;
+    background: none;
+    font: inherit;
     color: var(--ink-3);
     transition: color 160ms var(--ease);
+  }
+
+  .bottom-nav button:active,
+  .bottom-nav a:active {
+    color: var(--ink);
   }
 
   .bottom-nav a[aria-current="page"] {
