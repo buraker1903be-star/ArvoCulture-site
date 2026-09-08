@@ -62,12 +62,13 @@ export default async function Home() {
     getSearchIndex(),
     /*
       Çok satanlar ARC'taki "Çok Satanlar" koleksiyonundan gelir.
+      Slug eski adından kalma; başlık panelden değiştirilmiş.
       Böylece hangi ürünlerin öne çıkacağına panelden siz karar
       verirsiniz. Öncesinde katalog sırasına düşüyordu ve
       tedarikçiden yeni gelen, hiç satılmamış ürünler "çok satan"
       olarak gösteriliyordu.
     */
-    getStorefrontCollectionProducts({ collectionSlug: "cok-satanlar" }),
+    getStorefrontCollectionProducts({ collectionSlug: "cok-satan-cilt-bakim-urunleri" }),
   ]);
 
   const coupon = discounts.find((discount) => discount.code);
@@ -149,7 +150,7 @@ export default async function Home() {
       <ProductBlock
         title="Çok satanlar"
         note="Müşterilerimizin en sık tercih ettiği ürünler."
-        href="/koleksiyon/cok-satanlar"
+        href="/koleksiyon/cok-satan-cilt-bakim-urunleri"
         hrefLabel="Tümünü gör"
         products={best}
         alt
