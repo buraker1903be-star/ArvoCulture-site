@@ -1,11 +1,11 @@
 import { getStorefrontProducts } from "@/lib/products";
 
 /**
- * Ä°stemciye gÃ¶nderilen hafif arama dizini.
+ * İstemciye gönderilen hafif arama dizini.
  *
- * TÃ¼m Ã¼rÃ¼n nesnesi gÃ¶nderilseydi aÃ§Ä±klama metinleriyle birlikte
- * yÃ¼zlerce kilobayt olurdu. Buradan yalnÄ±zca arama ve sonuÃ§
- * kartÄ± iÃ§in gereken alanlar geÃ§er.
+ * Tüm ürün nesnesi gönderilseydi açıklama metinleriyle birlikte
+ * yüzlerce kilobayt olurdu. Buradan yalnızca arama ve sonuç
+ * kartı için gereken alanlar geçer.
  */
 export type SearchItem = {
   slug: string;
@@ -18,6 +18,10 @@ export type SearchItem = {
 };
 
 export async function getSearchIndex(): Promise<SearchItem[]> {
+  /*
+    Arama tüm katalogu görmeli. 200 sınırı, tedarikçiden gelen
+    3.000+ ürünü aramanın tamamen dışında bırakıyordu.
+  */
   const products = await getStorefrontProducts(3000);
 
   return products

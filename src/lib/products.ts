@@ -50,7 +50,16 @@ const plainText = (value: string | null | undefined) =>
 
 const inferCategory = (row: StorefrontRow) => {
   const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase("tr-TR");
-  if (/tişört|tisort|sweat|hoodie|giyim|oversize|regular fit/.test(text))
+  /*
+    Giyim anahtar kelimeleri. Tedarikçi kataloğu geldiğinden beri
+    liste genişletildi: eşofman, ceket, hırka, pantolon gibi
+    ürünler "Kişisel Bakım" olarak sınıflanıyordu.
+  */
+  if (
+    /tişört|tisort|t-shirt|sweat|hoodie|kapüşon|kapuson|giyim|oversize|regular fit|eşofman|esofman|jogger|pantolon|şort|sort|ceket|mont|hırka|hirka|yelek|gömlek|gomlek|elbise|etek|tayt|body|atlet|takım|takim|rüzgarlık|ruzgarlik|kaban|blazer|tulum|bluz|kazak|triko/.test(
+      text,
+    )
+  )
     return "Giyim";
   if (/parfüm|parfum|eau de parfum|eau de toilette| edp| edt/.test(text))
     return "Parfüm";
