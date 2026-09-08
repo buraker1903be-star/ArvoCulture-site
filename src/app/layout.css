@@ -205,9 +205,12 @@
 */
 
 .mega-menu {
-  /* Köprü öğesinin konumlanabilmesi için relative; panel yine
-     başlığa göre değil, sayfa genişliğine göre yerleşiyor. */
-  position: relative;
+  /*
+    `static` kalmalı. `relative` yapıldığında panel (position:
+    absolute) sayfa yerine bu küçük başlığa göre konumlanıyor ve
+    dar bir şeride sıkışıyor.
+  */
+  position: static;
 }
 
 .mega-trigger[aria-expanded="true"],
@@ -226,27 +229,32 @@
 }
 
 /*
-  Tetikleyici ile panel arasında görünmez bir köprü.
+  Tetikleyici ile panel arasında görünmez köprü.
 
-  Panel tetikleyicinin 8px altında duruyor. Fare o boşluktan
-  geçerken hiçbir öğenin üzerinde olmadığı için hover kayboluyor
-  ve menü seçim yapılamadan kapanıyordu. Bu blok boşluğu
-  doldurup imleci menünün "içinde" tutuyor.
+  Panel tetikleyicinin 8px altında duruyor; fare o boşluktan
+  geçerken hover kayboluyor ve menü seçim yapılamadan
+  kapanıyordu.
+
+  Köprü, `.mega-menu` yerine tetikleyici düğmenin kendisine
+  bağlanıyor: `.mega-menu` static kalmalı, aksi hâlde panel
+  sayfa genişliği yerine başlığa göre konumlanıp sıkışıyor.
 */
-.mega-menu::after {
+.mega-trigger {
+  position: relative;
+}
+
+.mega-trigger::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  left: -12px;
+  right: -12px;
   top: 100%;
-  height: 12px;
-  /* Yalnızca menü açıkken devrede; kapalıyken altındaki
-     bağlantıları engellemesin. */
+  height: 14px;
   pointer-events: none;
 }
 
-.mega-menu:hover::after,
-.mega-menu:focus-within::after {
+.mega-menu:hover .mega-trigger::after,
+.mega-menu:focus-within .mega-trigger::after {
   pointer-events: auto;
 }
 
