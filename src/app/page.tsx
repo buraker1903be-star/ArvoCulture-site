@@ -254,6 +254,13 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
           priority
         />
       )}
+      {/*
+        Karartma katmanı. Metnin okunabilirliği görsele bağlı
+        kalmasın; panelden farklı bir fotoğraf yüklendiğinde de
+        başlık okunur olsun.
+      */}
+      <span className="hero-veil" aria-hidden="true" />
+
       <div className="hero-body">
         <p data-arvo-field="hero_eyebrow">{theme.hero_eyebrow}</p>
         <h1 data-arvo-field="hero_title">
@@ -278,6 +285,21 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
             {theme.secondary_cta_label}
           </Link>
         </div>
+
+        {/*
+          Kategori kısayolları. Hero'nun altında, kaydırmadan
+          erişilebilir. Müşteri "nereden başlayacağım" sorusuna
+          ilk ekranda yanıt buluyor.
+        */}
+        {categories.length > 0 && (
+          <nav className="hero-jump" aria-label="Kategoriler">
+            {categories.slice(0, 5).map((category) => (
+              <Link key={category.slug} href={`/koleksiyon/${category.slug}`}>
+                {category.title}
+              </Link>
+            ))}
+          </nav>
+        )}
       </div>
     </section>
   );

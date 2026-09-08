@@ -3427,3 +3427,154 @@ button.search-box {
     transition: none;
   }
 }
+
+/* ==========================================================
+   Hero — hareket ve derinlik
+   ========================================================== */
+
+/*
+  Görselde çok yavaş bir yakınlaşma. Sayfa açıldığında
+  fotoğraf donuk durmuyor; hareket fark edilmeyecek kadar
+  yavaş, 20 saniyede yüzde dört.
+*/
+.hero img {
+  animation: hero-drift 24s var(--ease) forwards;
+}
+
+@keyframes hero-drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+/*
+  Karartma katmanı. Metin okunabilirliği yüklenen fotoğrafa
+  bağlı kalmasın: panelden açık renkli bir görsel konsa bile
+  başlık okunur olur.
+*/
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(16, 18, 15, 0.72) 0%,
+    rgba(16, 18, 15, 0.46) 38%,
+    rgba(16, 18, 15, 0.06) 68%,
+    transparent 100%
+  );
+}
+
+/* Metin katmanı karartmanın üstünde kalmalı. */
+.hero-body {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Kademeli giriş --- */
+
+/*
+  Hero öğeleri sırayla beliriyor: üst etiket, başlık, açıklama,
+  düğmeler, kısayollar. Hepsi aynı anda düşmek yerine okuma
+  sırasına uyuyor.
+*/
+.hero-body > * {
+  animation: hero-in 720ms var(--ease) backwards;
+}
+
+.hero-body > *:nth-child(1) { animation-delay: 120ms; }
+.hero-body > *:nth-child(2) { animation-delay: 220ms; }
+.hero-body > *:nth-child(3) { animation-delay: 320ms; }
+.hero-body > *:nth-child(4) { animation-delay: 420ms; }
+.hero-body > *:nth-child(5) { animation-delay: 520ms; }
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* --- Kategori kısayolları --- */
+
+.hero-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-top: var(--s5);
+  padding-top: var(--s4);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.hero-jump a {
+  padding: 8px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+  font-size: var(--t-xs);
+  letter-spacing: 0.02em;
+  color: #fff;
+  transition:
+    background-color 180ms var(--ease),
+    border-color 180ms var(--ease),
+    transform 180ms var(--ease);
+}
+
+.hero-jump a:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* --- Aşağı işareti --- */
+
+/*
+  Hero'nun altında ince bir kaydırma işareti. Sayfanın devam
+  ettiğini söylüyor; tam ekran hero'larda kullanıcı bazen
+  altında içerik olduğunu fark etmiyor.
+*/
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  width: 1px;
+  height: 28px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: hero-hint 2.4s ease-in-out infinite;
+}
+
+@keyframes hero-hint {
+  0%, 100% {
+    opacity: 0.2;
+    transform: translateY(-6px);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero::after {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero img,
+  .hero-body > *,
+  .hero::after {
+    animation: none;
+  }
+  .hero-jump a:hover {
+    transform: none;
+  }
+}
