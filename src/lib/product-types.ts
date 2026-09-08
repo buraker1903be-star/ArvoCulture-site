@@ -18,6 +18,12 @@ export type Product = {
   image?: string;
   /** Galeri için tüm görseller. image, bunun ilk elemanıdır. */
   images: string[];
+  /**
+   * Görselin türü. Kart ve galeri çerçevesi buna göre değişir:
+   * paket çekimi nefes almalı, manken fotoğrafı çerçeveyi
+   * doldurmalı.
+   */
+  artStyle: "packshot" | "lifestyle";
   /** Tedarikçi ürünlerinde tablo hâlindeki özellikler. */
   specs: Array<{ label: string; value: string }>;
   sizeGuide: Array<{ label: string; value: string }>;

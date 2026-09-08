@@ -65,6 +65,7 @@ export default async function ProductPage({ params }: Params) {
           name={product.name}
           discount={off}
           bestSeller={Boolean(product.bestSeller)}
+          artStyle={product.artStyle}
         />
 
         <div className="pdp-info">

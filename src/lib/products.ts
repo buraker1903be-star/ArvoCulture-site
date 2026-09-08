@@ -98,6 +98,19 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
       ? path
       : `${env.supabaseUrl}/storage/v1/object/public/arc-product-images/${path}`,
   );
+
+  /*
+    Görsel türü HAM yoldan belirlenir, dönüştürülmüş adresten
+    değil. Kendi ürünlerimizin görselleri de tam adrese
+    çevriliyor; adrese bakmak her ürünü tedarikçi ürünü
+    sanmaya ve paket çekimlerinin kırpılmasına yol açıyordu.
+
+    Ham yol "http" ile başlıyorsa tedarikçi CDN'inden gelen
+    manken fotoğrafıdır. Göreli yol ise kendi deposundaki
+    paket çekimidir.
+  */
+  const artStyle: "packshot" | "lifestyle" =
+    paths[0]?.startsWith("http") ? "lifestyle" : "packshot";
   return {
     slug: row.slug,
     name: row.name,
@@ -114,6 +127,7 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     tags: row.product_type ? [row.product_type] : [],
     image: images[0],
     images,
+    artStyle,
     // İçe aktarılan ürünlerde tablo hâlinde saklanan özellikler.
     specs: Array.isArray(row.specs)
       ? (row.specs as Array<{ label: string; value: string }>)

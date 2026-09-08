@@ -15,20 +15,19 @@ export function ProductGallery({
   name,
   discount,
   bestSeller,
+  artStyle,
 }: {
   images: string[];
   name: string;
   discount: number;
   bestSeller: boolean;
+  artStyle: "packshot" | "lifestyle";
 }) {
   const [active, setActive] = useState(0);
   const current = images[active];
 
   return (
-    <div
-      className="pdp-media"
-      data-art={current?.startsWith("http") ? "lifestyle" : "packshot"}
-    >
+    <div className="pdp-media" data-art={artStyle}>
       <div className="pdp-stage">
         <span className="card-flags">
           {discount > 0 && <b className="tag tag-sale">%{discount} indirim</b>}

@@ -25,12 +25,11 @@ export function ProductCard({ product }: { product: Product }) {
         aria-label={product.name}
         data-multi={second ? "true" : undefined}
         /*
-          Görsel türü. Tedarikçi ürünleri manken fotoğrafı
-          (uzak CDN), kendi ürünlerimiz beyaz zeminde paket
-          çekimi. İkisi aynı şekilde gösterilemez: manken
-          fotoğrafı çerçeveyi doldurmalı, şişe nefes almalı.
+          Görsel türü. Manken fotoğrafı çerçeveyi doldurur,
+          paket çekimi nefes alır. Ayrım katalog katmanında
+          yapılıyor (bkz. products.ts).
         */
-        data-art={product.image?.startsWith("http") ? "lifestyle" : "packshot"}
+        data-art={product.artStyle}
       >
         <span className="card-flags">
           {off > 0 && <b className="tag tag-sale">%{off} indirim</b>}
