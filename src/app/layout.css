@@ -439,7 +439,6 @@
 */
 .mobile-menu,
 .menu-toggle,
-.mobile-dock,
 .mobile-submenu {
   display: none;
 }
@@ -449,17 +448,41 @@
     display: none;
   }
 
+  /*
+    Menü düğmesi üç çizgi içeriyor. Öncesinde çizgilere hiç stil
+    verilmemişti; düğme boş bir hap olarak görünüyordu.
+  */
   .menu-toggle {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 14px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
+    display: inline-grid;
+    gap: 4px;
+    place-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
     background: none;
-    font-size: var(--t-xs);
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  }
+
+  .menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 1.6px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition: transform 240ms var(--ease), opacity 200ms var(--ease);
+  }
+
+  /* Açıkken çarpıya döner. */
+  .menu-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(5.6px) rotate(45deg);
+  }
+
+  .menu-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-5.6px) rotate(-45deg);
   }
 
   .mobile-menu {
@@ -532,33 +555,7 @@
   }
 
   /* Alt gezinme çubuğu: mobilde başparmak erişimindeki bölge. */
-  .mobile-dock {
-    position: fixed;
-    left: var(--rail);
-    right: var(--rail);
-    bottom: var(--edge);
-    z-index: 45;
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
-    padding: 6px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(14px);
-    box-shadow: var(--float-lg);
-  }
 
-  .mobile-dock > * {
-    display: grid;
-    place-items: center;
-    padding: 10px 4px;
-    border: 0;
-    border-radius: 999px;
-    background: none;
-    font-size: var(--t-xs);
-    font-weight: 500;
-    color: var(--ink-2);
-  }
 
   .shell {
     padding-bottom: 96px;
