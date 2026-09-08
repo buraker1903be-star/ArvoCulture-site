@@ -3280,14 +3280,20 @@ button.search-box {
 .rail {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(220px, 20%);
+  /* Sabit genişlik: yüzde kullanmak taşmaya yol açıyordu. */
+  grid-auto-columns: 220px;
   gap: var(--s4);
   overflow-x: auto;
   scroll-snap-type: x proximity;
-  /* Kartların gölgesi kırpılmasın. */
-  padding: 4px 4px var(--s4);
-  margin: 0 -4px;
+  /*
+    Negatif kenar boşluğu kullanılmıyor: panel genişliğini
+    aşıp tüm sayfayı yatayda itiyordu. Gölge için alt boşluk
+    yeterli.
+  */
+  padding-bottom: var(--s4);
   scrollbar-width: thin;
+  /* Raf kendi içinde kayar; sayfayı genişletmez. */
+  max-width: 100%;
 }
 
 .rail > * {
@@ -3309,7 +3315,7 @@ button.search-box {
 
 @media (max-width: 640px) {
   .rail {
-    grid-auto-columns: minmax(160px, 46%);
+    grid-auto-columns: 160px;
   }
 }
 
