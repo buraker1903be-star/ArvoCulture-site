@@ -288,22 +288,35 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
                 </button>
                 {expanded && (
                   <div className="mobile-submenu">
-                    <Link href={menu.href} onClick={close}>
-                      <b>Tüm {menu.title} ürünleri</b>
-                      <small>Seçkiyi gör</small>
+                    <Link
+                      href={menu.href}
+                      className="mobile-submenu-all"
+                      onClick={close}
+                    >
+                      Tüm {menu.title} ürünleri
                     </Link>
-                    {menu.sections.flatMap((section) =>
-                      section.items.map((item) => (
-                        <Link
-                          href={`/koleksiyon/${item.slug}`}
-                          key={item.slug}
-                          onClick={close}
-                        >
-                          <b>{item.title}</b>
-                          <small>{item.product_count}</small>
-                        </Link>
-                      )),
-                    )}
+
+                    {/*
+                      Grup başlıkları korunuyor: "Üst Giyim",
+                      "Alt Giyim". Düz bir liste hâlinde vermek
+                      otuz bağlantıyı ayırt edilemez kılıyordu.
+                    */}
+                    {menu.sections.map((section) => (
+                      <div className="mobile-group" key={section.title}>
+                        <small>{section.title}</small>
+                        <div className="mobile-chips">
+                          {section.items.map((item) => (
+                            <Link
+                              href={`/koleksiyon/${item.slug}`}
+                              key={item.slug}
+                              onClick={close}
+                            >
+                              {item.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -313,46 +326,23 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
             Hikâyemiz <span>↗</span>
           </Link>
         </nav>
-        <div>
+
+        {/* Menü altı yardımcı bağlantılar. */}
+        <div className="mobile-menu-foot">
           <Link href="/arama" onClick={close}>
             Arama
           </Link>
           <Link href="/hesap" onClick={close}>
-            Hesap
+            Hesabım
           </Link>
           <Link href="/iletisim" onClick={close}>
             İletişim
           </Link>
+          <Link href="/sss" onClick={close}>
+            Sıkça sorulanlar
+          </Link>
         </div>
       </div>
-      <nav className="mobile-dock" aria-label="Hızlı erişim">
-        <Link href="/" aria-label="Ana sayfa" onClick={close}>
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M3.5 11.5 12 4l8.5 7.5" />
-            <path d="M6.5 10v10h11V10" />
-          </svg>
-          <span>Ana sayfa</span>
-        </Link>
-        <Link href="/arama" aria-label="Ara" onClick={close}>
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="m16 16 4 4" />
-          </svg>
-          <span>Ara</span>
-        </Link>
-        <button
-          type="button"
-          aria-label="Koleksiyon menüsünü aç"
-          aria-expanded={open}
-          onClick={() => setOpen((value) => !value)}
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M4 7h16M4 12h16M4 17h16" />
-          </svg>
-          <span>Keşfet</span>
-        </button>
-        <CartLink />
-      </nav>
       {open && (
         <button
           type="button"
