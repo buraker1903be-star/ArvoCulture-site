@@ -11,7 +11,10 @@ import {
 import { discountOf } from "@/components/product-card";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
 import { formatPrice } from "@/lib/product-types";
-import { getStorefrontProducts } from "@/lib/products";
+import {
+  getStorefrontProducts,
+  getStorefrontCollectionProducts,
+} from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getSearchIndex } from "@/lib/search-index";
 import {
@@ -51,11 +54,20 @@ const SEARCH_TILES = [
 ];
 
 export default async function Home() {
-  const [theme, products, discounts, searchItems] = await Promise.all([
+  const [theme, products, discounts, searchItems, curatedBest] =
+    await Promise.all([
     getStorefrontTheme(),
     getStorefrontProducts(200),
     getStorefrontDiscounts(),
     getSearchIndex(),
+    /*
+      Çok satanlar ARC'taki "Çok Satanlar" koleksiyonundan gelir.
+      Böylece hangi ürünlerin öne çıkacağına panelden siz karar
+      verirsiniz. Öncesinde katalog sırasına düşüyordu ve
+      tedarikçiden yeni gelen, hiç satılmamış ürünler "çok satan"
+      olarak gösteriliyordu.
+    */
+    getStorefrontCollectionProducts({ collectionSlug: "cok-satanlar" }),
   ]);
 
   const coupon = discounts.find((discount) => discount.code);
@@ -69,13 +81,13 @@ export default async function Home() {
     .sort((a, b) => discountOf(b) - discountOf(a))
     .slice(0, 10);
 
-  /* Çok satanlar her zaman 10'a tamamlanır: işaretli ürünler
-     önce gelir, eksik kalırsa katalogdan doldurulur. */
+  /*
+    Koleksiyon boşsa ARC'ta işaretlenmiş ürünlere düşülür.
+    Katalog sırasına asla düşülmez.
+  */
+  const curated = curatedBest.filter((product) => product.available !== false);
   const flagged = inStock.filter((product) => product.bestSeller);
-  const best = [
-    ...flagged,
-    ...inStock.filter((product) => !product.bestSeller),
-  ].slice(0, 10);
+  const best = (curated.length > 0 ? curated : flagged).slice(0, 10);
 
   const fresh = inStock.slice(0, 5);
 
@@ -132,10 +144,12 @@ export default async function Home() {
 
       <CategoryStrip items={categories} />
 
+      {/* Satış verisi yoksa bölüm hiç görünmez. Hiç satılmamış
+          ürünü "çok satan" diye göstermek güveni zedeler. */}
       <ProductBlock
         title="Çok satanlar"
         note="Müşterilerimizin en sık tercih ettiği ürünler."
-        href="/koleksiyon/cok-satan-cilt-bakim-urunleri"
+        href="/koleksiyon/cok-satanlar"
         hrefLabel="Tümünü gör"
         products={best}
         alt
