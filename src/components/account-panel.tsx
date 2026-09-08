@@ -119,14 +119,18 @@ export function AccountPanel({
     const supabase = getAuthClient(supabaseUrl, supabaseKey);
 
     try {
+      /*
+        Kayıt ve şifre sıfırlama e-postaları ARC üzerinden
+        gönderiliyor. Supabase'in kendi gönderimi proje geneli
+        SMTP ayarını kullanıyor ve o ayar ArvoARC panelinden
+        giden personel e-postalarını da etkiliyor; müşteriye
+        giden e-postalar ArvoCulture kimliğinde olmalı.
+      */
       if (mode === "reset") {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/hesap`,
-        });
-        if (error) throw error;
+        await requestAuthEmail({ islem: "sifirla", email });
         setMessage({
           kind: "info",
-          text: "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
+          text: "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Gelen kutunuzu ve spam klasörünü kontrol edin.",
         });
         return;
       }
@@ -139,12 +143,8 @@ export function AccountPanel({
           });
           return;
         }
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/hesap` },
-        });
-        if (error) throw error;
+
+        await requestAuthEmail({ islem: "kayit", email, sifre: password });
         setMessage({
           kind: "info",
           text: "Doğrulama bağlantısı e-posta adresinize gönderildi. Bağlantıya tıkladıktan sonra giriş yapabilirsiniz.",
@@ -419,10 +419,41 @@ function translateAuthError(message: string) {
     [/password should be at least/i, "Şifreniz en az 8 karakter olmalı."],
     [/rate limit|too many/i, "Çok fazla deneme yapıldı. Biraz sonra tekrar deneyin."],
     [/invalid email/i, "Geçerli bir e-posta adresi girin."],
+    [/gecersiz_eposta/, "Geçerli bir e-posta adresi girin."],
+    [/kisa_sifre/, "Şifreniz en az 8 karakter olmalı."],
+    [/islem_basarisiz/, "E-posta gönderilemedi. Lütfen tekrar deneyin."],
   ];
 
   for (const [pattern, text] of map) {
     if (pattern.test(message)) return text;
   }
   return "Bir sorun oluştu. Lütfen tekrar deneyin.";
+}
+
+/**
+ * Kayıt ve şifre sıfırlama e-postası isteği.
+ *
+ * ARC'a gidiyor: bağlantıyı üretmek `service_role` yetkisi
+ * gerektiriyor ve o anahtar tarayıcıya konulamaz.
+ */
+async function requestAuthEmail(payload: {
+  islem: "kayit" | "sifirla";
+  email: string;
+  sifre?: string;
+}) {
+  const response = await fetch(
+    "https://arc.arvo-os.com/api/storefront/kimlik",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  if (!response.ok) {
+    const data = (await response.json().catch(() => ({}))) as {
+      error?: string;
+    };
+    throw new Error(data.error ?? "islem_basarisiz");
+  }
 }
