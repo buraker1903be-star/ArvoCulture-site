@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
 import { ProductGallery } from "@/components/product-gallery";
 import { ProductBuy } from "@/components/product-buy";
+import { RecentProducts } from "@/components/recent-products";
 import { ProductCard, discountOf } from "@/components/product-card";
 import { getStorefrontProduct, getStorefrontProducts } from "@/lib/products";
 import { getProductVariants } from "@/lib/variants";
@@ -207,6 +208,9 @@ export default async function ProductPage({ params }: Params) {
           </div>
         </section>
       )}
+
+      {/* Son gezilenler: bu ürünü listeye ekler, diğerlerini gösterir. */}
+      <RecentProducts products={catalogue} currentSlug={product.slug} />
 
       <JsonLd data={productSchema(product)} />
       <JsonLd

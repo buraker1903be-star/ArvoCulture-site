@@ -19,6 +19,7 @@ import {
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getSearchIndex } from "@/lib/search-index";
 import { Reveal } from "@/components/reveal";
+import { RecentProducts } from "@/components/recent-products";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
@@ -256,6 +257,11 @@ export default async function Home() {
           </div>
         </Reveal>
       )}
+
+      {/* Daha önce gelen ziyaretçi kaldığı yerden devam etsin. */}
+      <Reveal>
+        <RecentProducts products={products} />
+      </Reveal>
 
       <Reveal>
         <HelpStrip />
