@@ -14,6 +14,7 @@ import { formatPrice } from "@/lib/product-types";
 import {
   getStorefrontProducts,
   getStorefrontCollectionProducts,
+  getStorefrontDeals,
 } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getSearchIndex } from "@/lib/search-index";
@@ -54,7 +55,7 @@ const SEARCH_TILES = [
 ];
 
 export default async function Home() {
-  const [theme, products, discounts, searchItems, curatedBest] =
+  const [theme, products, discounts, searchItems, curatedBest, dealItems] =
     await Promise.all([
     getStorefrontTheme(),
     getStorefrontProducts(200),
@@ -68,7 +69,16 @@ export default async function Home() {
       tedarikçiden yeni gelen, hiç satılmamış ürünler "çok satan"
       olarak gösteriliyordu.
     */
-    getStorefrontCollectionProducts({ collectionSlug: "cok-satan-cilt-bakim-urunleri" }),
+    getStorefrontCollectionProducts({
+      collectionSlug: "cok-satan-cilt-bakim-urunleri",
+    }),
+    /*
+      İndirimliler ayrı uç noktadan gelir. Katalogdan süzmek,
+      katalog 3.000 ürünü aştıktan sonra işe yaramıyordu:
+      ana sayfa ilk 200 ürünü çekiyor ve indirimliler o listeye
+      hiç giremiyordu.
+    */
+    getStorefrontDeals(10),
   ]);
 
   const coupon = discounts.find((discount) => discount.code);
@@ -77,10 +87,7 @@ export default async function Home() {
   // alamayacağı bir sayfaya götürmek en pahalı terk noktasıdır.
   const inStock = products.filter((product) => product.available !== false);
 
-  const deals = inStock
-    .filter((product) => discountOf(product) > 0)
-    .sort((a, b) => discountOf(b) - discountOf(a))
-    .slice(0, 10);
+  const deals = dealItems.filter((product) => product.available !== false);
 
   /*
     Koleksiyon boşsa ARC'ta işaretlenmiş ürünlere düşülür.

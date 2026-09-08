@@ -152,7 +152,13 @@ export const getStorefrontProducts = cache(
     const [rows, badges] = await Promise.all([
       rpcOrEmpty<StorefrontRow>(
         "get_arvoculture_storefront_products",
-        { p_limit: Math.min(200, Math.max(1, limit)) },
+        /*
+          Üst sınır 200'dü; katalog 3.000 ürünü aştıktan sonra
+          arama ve koleksiyon sayfaları katalogun küçük bir
+          kısmını görüyordu. Veritabanı tarafındaki sınır da
+          5.000'e çıkarıldı.
+        */
+        { p_limit: Math.min(5000, Math.max(1, limit)) },
         { revalidate: 60, tags: ["storefront-products"] },
       ),
       getProductBadges(),
@@ -162,6 +168,23 @@ export const getStorefrontProducts = cache(
     );
   },
 );
+
+/**
+ * İndirimli ürünler.
+ *
+ * Katalogdan süzmek yerine ayrı bir uç nokta kullanılıyor:
+ * katalog son güncellenene göre sıralı olduğu için tedarikçi
+ * ürünleri ilk 200'ü dolduruyor ve indirimliler listeye hiç
+ * giremiyordu.
+ */
+export const getStorefrontDeals = cache(async (limit = 12) => {
+  const rows = await rpcOrEmpty<StorefrontRow>(
+    "get_arvoculture_storefront_deals",
+    { p_limit: limit },
+    { revalidate: 60, tags: ["storefront-deals"] },
+  );
+  return rows.map((row, index) => mapProduct(row, index));
+});
 
 export const getStorefrontCollectionProducts = cache(
   async ({
