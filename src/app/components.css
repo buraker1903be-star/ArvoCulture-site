@@ -3237,11 +3237,18 @@ button.search-box {
    ========================================================== */
 
 /*
-  Kaydırmayla beliren bölümler. Görünürlük `data-shown`
-  özniteliğiyle açılıyor; JavaScript yalnızca o özniteliği
-  yazıyor, animasyonu CSS yürütüyor.
+  Kaydırmayla beliren bölümler.
+
+  ÖNEMLİ: içerik varsayılan olarak GÖRÜNÜR. Gizleme yalnızca
+  `data-motion="on"` yazıldığında devreye girer; o özniteliği
+  de JavaScript ekler. Böylece betik çalışmazsa, hidrasyon
+  gecikirse ya da bir hata olursa bölümler kaybolmaz.
+
+  Tersi kurulum (varsayılan gizli) sayfayı JavaScript'e
+  bağımlı kılıyordu ve tek bir hatada tüm içerik görünmez
+  oluyordu.
 */
-.reveal {
+.reveal[data-motion="on"] {
   opacity: 0;
   transform: translateY(22px);
   transition:
@@ -3250,13 +3257,13 @@ button.search-box {
   will-change: opacity, transform;
 }
 
-.reveal[data-shown="true"] {
+.reveal[data-motion="on"][data-shown="true"] {
   opacity: 1;
   transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
+  .reveal[data-motion="on"] {
     opacity: 1;
     transform: none;
     transition: none;
@@ -3313,21 +3320,21 @@ button.search-box {
   artıyor; hepsi aynı anda düşmek yerine dalga hâlinde
   geliyor.
 */
-.reveal[data-shown="true"] .grid > *,
-.reveal[data-shown="true"] .rail > * {
+.reveal[data-motion="on"][data-shown="true"] .grid > *,
+.reveal[data-motion="on"][data-shown="true"] .rail > * {
   animation: card-in 520ms var(--ease) backwards;
 }
 
-.reveal[data-shown="true"] .grid > *:nth-child(1),
-.reveal[data-shown="true"] .rail > *:nth-child(1) { animation-delay: 40ms; }
-.reveal[data-shown="true"] .grid > *:nth-child(2),
-.reveal[data-shown="true"] .rail > *:nth-child(2) { animation-delay: 90ms; }
-.reveal[data-shown="true"] .grid > *:nth-child(3),
-.reveal[data-shown="true"] .rail > *:nth-child(3) { animation-delay: 140ms; }
-.reveal[data-shown="true"] .grid > *:nth-child(4),
-.reveal[data-shown="true"] .rail > *:nth-child(4) { animation-delay: 190ms; }
-.reveal[data-shown="true"] .grid > *:nth-child(5),
-.reveal[data-shown="true"] .rail > *:nth-child(5) { animation-delay: 240ms; }
+.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(1),
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(1) { animation-delay: 40ms; }
+.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(2),
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(2) { animation-delay: 90ms; }
+.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(3),
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(3) { animation-delay: 140ms; }
+.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(4),
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(4) { animation-delay: 190ms; }
+.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(5),
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(5) { animation-delay: 240ms; }
 
 @keyframes card-in {
   from {
@@ -3337,8 +3344,8 @@ button.search-box {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal[data-shown="true"] .grid > *,
-  .reveal[data-shown="true"] .rail > * {
+  .reveal[data-motion="on"][data-shown="true"] .grid > *,
+  .reveal[data-motion="on"][data-shown="true"] .rail > * {
     animation: none;
   }
 }
@@ -3381,17 +3388,22 @@ button.search-box {
   left: 0;
   bottom: -6px;
   height: 2px;
-  width: 0;
+  /* Varsayılan görünür; animasyon açıkken sıfırdan çizilir. */
+  width: 34px;
   background: var(--brand);
+}
+
+.reveal[data-motion="on"] .head h2::after {
+  width: 0;
   transition: width 700ms var(--ease) 200ms;
 }
 
-.reveal[data-shown="true"] .head h2::after {
+.reveal[data-motion="on"][data-shown="true"] .head h2::after {
   width: 34px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal .head h2::after {
+  .reveal[data-motion="on"] .head h2::after {
     width: 34px;
     transition: none;
   }

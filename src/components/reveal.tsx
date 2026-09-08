@@ -31,9 +31,15 @@ export function Reveal({
     if (!node) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      node.dataset.shown = "true";
       return;
     }
+
+    /*
+      Animasyon ancak buraya gelindiğinde açılır. İçerik
+      varsayılan olarak görünür durumda; JavaScript çalışmazsa
+      ya da hidrasyon gecikirse bölüm gizli kalmaz.
+    */
+    node.dataset.motion = "on";
 
     const observer = new IntersectionObserver(
       (entries) => {
