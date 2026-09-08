@@ -192,6 +192,24 @@ p {
   margin-inline: auto;
 }
 
+/*
+  Izgara öğeleri varsayılan olarak `min-width: auto` alır: içeriği
+  geniş olan bir öğe kapsayıcısını esnetip dışarı taşırabilir.
+  Kabuk 1600px'e sınırlı olsa bile hero paneli bu yolla 2400px'e
+  çıkıp tüm sayfayı yatayda kaydırıyordu.
+
+  `min-width: 0` bu davranışı kapatır; öğe kapsayıcısına uyar,
+  taşan içerik kendi içinde kırpılır ya da kayar.
+*/
+.shell > * {
+  min-width: 0;
+}
+
+/* Panel içindeki ızgara öğeleri de kapsayıcıyı esnetmesin. */
+.panel > * {
+  min-width: 0;
+}
+
 .panel {
   padding: var(--pad);
   border-radius: var(--r);
