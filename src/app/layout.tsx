@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import "./components.css";
 import "./layout.css";
 import { CartProvider } from "@/components/cart";
 import { Header } from "@/components/header";
+import { BottomNav } from "@/components/bottom-nav";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getStorefrontCollections } from "@/lib/collections";
@@ -24,6 +25,23 @@ const poppins = Poppins({
   // sayfanın zıplamasını (layout shift) engeller.
   adjustFontFallback: true,
 });
+/**
+ * Görüntü alanı ve tarayıcı rengi.
+ *
+ * `themeColor` telefonda durum çubuğunu markanın rengine boyar;
+ * uygulama olarak kurulduğunda fark belirgindir.
+ *
+ * `viewportFit: "cover"` çentikli ekranlarda tam alanı kullanır;
+ * güvenli alan boşlukları CSS'te `env(safe-area-inset-*)` ile
+ * verilir.
+ */
+export const viewport: Viewport = {
+  themeColor: "#10120f",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const theme = await getStorefrontTheme();
   const name = theme.store_name ?? "ArvoCulture";
@@ -193,6 +211,9 @@ export default async function RootLayout({
               <small>Bir ArvoCulture Group markasıdır.</small>
             </div>
           </footer>
+          {/* Mobil alt gezinme; masaüstünde CSS ile gizlenir. */}
+          <BottomNav />
+
           <JsonLd data={storeSchema()} />
         </CartProvider>
       </body>

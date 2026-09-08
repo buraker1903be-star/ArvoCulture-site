@@ -3704,3 +3704,150 @@ button.search-box {
 .sizes button:disabled:hover {
   border-color: var(--line);
 }
+
+/* ==========================================================
+   Mobil alt gezinme
+   ========================================================== */
+
+/*
+  Telefonda üst menüye uzanmak zor; başparmak ekranın altında
+  duruyor. Uygulama hissi veren en belirleyici öğe bu çubuk:
+  ana işlevler her ekranda, parmağın altında.
+
+  Masaüstünde gizli.
+*/
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--line);
+    /* Çentikli telefonlarda ana ekran çubuğunun üstünde kalsın. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .bottom-nav a {
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    padding: 9px 4px 7px;
+    color: var(--ink-3);
+    transition: color 160ms var(--ease);
+  }
+
+  .bottom-nav a[aria-current="page"] {
+    color: var(--ink);
+  }
+
+  .bottom-nav-icon {
+    position: relative;
+    display: block;
+  }
+
+  .bottom-nav svg {
+    width: 23px;
+    height: 23px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Etkin sekmede ikon dolu görünür. */
+  .bottom-nav a[aria-current="page"] svg {
+    stroke-width: 2;
+  }
+
+  .bottom-nav small {
+    font-size: 10px;
+    letter-spacing: 0.01em;
+  }
+
+  /* Sepet sayacı. */
+  .bottom-nav-icon em {
+    position: absolute;
+    top: -4px;
+    right: -7px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--sale);
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  /*
+    Sayfa altına boşluk: çubuk içeriğin üstüne binmesin.
+    Footer'ın son satırı gizli kalırdı.
+  */
+  body {
+    padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Sepet çekmecesi ve arama katmanı çubuğun üstünde açılmalı. */
+  .drawer-layer,
+  .search-layer {
+    z-index: 70;
+  }
+}
+
+/* ==========================================================
+   Dokunmatik iyileştirmeleri
+   ========================================================== */
+
+@media (hover: none) {
+  /*
+    Dokunmatikte hover yok. Üzerine gelme efektleri parmağı
+    kaldırdıktan sonra takılı kalıyor ve kart "seçili" gibi
+    duruyor; kapatılıyor.
+  */
+  .card:hover,
+  .cat-card:hover,
+  .order-card:hover {
+    transform: none;
+    box-shadow: var(--float);
+  }
+
+  .cat-card:hover .cat-card-art img {
+    transform: none;
+  }
+
+  /* Dokunma geri bildirimi: basılı tutarken hafif küçülme. */
+  .card:active,
+  .cat-card:active,
+  .btn:active {
+    transform: scale(0.985);
+  }
+}
+
+@media (max-width: 640px) {
+  /*
+    Dokunma hedefleri en az 44px olmalı; küçük butonlar
+    parmakla ıskalanıyor.
+  */
+  .quantity button,
+  .sizes button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .card-add {
+    min-height: 44px;
+  }
+}
