@@ -1244,12 +1244,6 @@ footer {
   }
 
 
-  /* "Hikâyemiz" bağlantısındaki ok alt satıra düşmesin. */
-  .mobile-story {
-    display: flex;
-    align-items: center;
-    gap: var(--s2);
-  }
 }
 
 @media (max-width: 1024px) {

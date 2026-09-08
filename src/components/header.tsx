@@ -334,9 +334,6 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
               </div>
             );
           })}
-          <Link href="/hakkimizda" className="mobile-story" onClick={close}>
-            Hikâyemiz <span>↗</span>
-          </Link>
         </nav>
 
       </div>
