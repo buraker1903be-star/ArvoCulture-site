@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
+import { Rail } from "@/components/rail";
 import type { Product } from "@/lib/product-types";
 
 /** Ürün ızgarası. Ana sayfada birden çok yerde kullanılır. */
@@ -37,11 +38,19 @@ export function ProductBlock({
         </div>
         <Link href={href}>{hrefLabel}</Link>
       </div>
-      <div className={rail ? "rail" : "grid"}>
-        {products.map((product) => (
-          <ProductCard key={product.slug} product={product} />
-        ))}
-      </div>
+      {rail ? (
+        <Rail>
+          {products.map((product) => (
+            <ProductCard key={product.slug} product={product} />
+          ))}
+        </Rail>
+      ) : (
+        <div className="grid">
+          {products.map((product) => (
+            <ProductCard key={product.slug} product={product} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

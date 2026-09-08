@@ -3304,23 +3304,89 @@ button.search-box {
   katıyor: göz aynı düzenin sekiz kez tekrarından kurtuluyor
   ve kaydırma hareketi keşfi davet ediyor.
 */
+.rail-wrap {
+  position: relative;
+}
+
 .rail {
   display: grid;
   grid-auto-flow: column;
-  /* Sabit genişlik: yüzde kullanmak taşmaya yol açıyordu. */
   grid-auto-columns: 220px;
   gap: var(--s4);
   overflow-x: auto;
-  scroll-snap-type: x proximity;
-  /*
-    Negatif kenar boşluğu kullanılmıyor: panel genişliğini
-    aşıp tüm sayfayı yatayda itiyordu. Gölge için alt boşluk
-    yeterli.
-  */
-  padding-bottom: var(--s4);
-  scrollbar-width: thin;
-  /* Raf kendi içinde kayar; sayfayı genişletmez. */
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--s3);
   max-width: 100%;
+  /*
+    Kaydırma çubuğu gizli: ok düğmeleri hem daha temiz hem de
+    kaydırılabilir olduğunu daha iyi anlatıyor. Dokunmatikte
+    parmakla kaydırma zaten çalışıyor.
+  */
+  scrollbar-width: none;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Ok düğmeleri --- */
+
+.rail-arrow {
+  position: absolute;
+  top: 40%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--float);
+  transition:
+    opacity 200ms var(--ease),
+    transform 200ms var(--ease),
+    background-color 200ms var(--ease);
+}
+
+.rail-arrow svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rail-arrow.is-prev {
+  left: -14px;
+}
+
+.rail-arrow.is-next {
+  right: -14px;
+}
+
+.rail-arrow:hover:not(:disabled) {
+  background: #fff;
+  transform: scale(1.06);
+}
+
+/* Sona gelindiğinde ok kaybolur; tıklanacak bir şey kalmadı. */
+.rail-arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*
+  Dokunmatikte oklar gizli: orada parmakla kaydırmak beklenen
+  davranış ve oklar kartların üstünü kapatıyor.
+*/
+@media (hover: none) {
+  .rail-arrow {
+    display: none;
+  }
 }
 
 .rail > * {
@@ -3343,6 +3409,16 @@ button.search-box {
 @media (max-width: 640px) {
   .rail {
     grid-auto-columns: 160px;
+  }
+}
+
+/* Dar ekranda oklar panelin dışına taşmasın. */
+@media (max-width: 1100px) {
+  .rail-arrow.is-prev {
+    left: 2px;
+  }
+  .rail-arrow.is-next {
+    right: 2px;
   }
 }
 
