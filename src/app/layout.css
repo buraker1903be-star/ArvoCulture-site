@@ -1251,3 +1251,21 @@ footer {
     gap: var(--s2);
   }
 }
+
+@media (max-width: 1024px) {
+  /*
+    Mobilde başlıktaki arama, hesap ve sepet ikonları gizlenir.
+    Üçü de alt çubukta var; aynı işlevi iki yerde göstermek
+    başlığı kalabalıklaştırıyor ve logoya yer bırakmıyordu.
+
+    Başlıkta yalnızca logo ve menü düğmesi kalıyor.
+  */
+  .header-action-link,
+  .cart-link {
+    display: none;
+  }
+
+  .actions {
+    gap: 0;
+  }
+}

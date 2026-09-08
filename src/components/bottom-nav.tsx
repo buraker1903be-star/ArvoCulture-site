@@ -17,7 +17,8 @@ import { CartContext } from "@/components/cart";
 const TABS = [
   { href: "/", label: "Ana sayfa", icon: "home" },
   { href: "/arama", label: "Ara", icon: "search" },
-  { href: "/koleksiyon/tumu", label: "Katalog", icon: "grid" },
+  /* "Menü" gezinmez, kategori menüsünü açar. */
+  { href: null, label: "Menü", icon: "menu" },
   { href: "/sepet", label: "Sepet", icon: "bag" },
   { href: "/hesap", label: "Hesabım", icon: "user" },
 ] as const;
@@ -30,12 +31,11 @@ const ICONS: Record<string, React.ReactNode> = {
       <path d="m16 16 4.5 4.5" />
     </>
   ),
-  grid: (
+  menu: (
     <>
-      <rect x="4" y="4" width="7" height="7" rx="1.5" />
-      <rect x="13" y="4" width="7" height="7" rx="1.5" />
-      <rect x="4" y="13" width="7" height="7" rx="1.5" />
-      <rect x="13" y="13" width="7" height="7" rx="1.5" />
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
     </>
   ),
   bag: (
@@ -59,6 +59,29 @@ export function BottomNav() {
   return (
     <nav className="bottom-nav" aria-label="Ana gezinme">
       {TABS.map((tab) => {
+        /*
+          "Menü" sekmesi bir sayfaya gitmez; başlıktaki kategori
+          menüsünü açar. İletişim özel bir olayla kuruluyor:
+          başlık ve alt çubuk ayrı bileşenler ve aralarında
+          ortak bir sarmalayıcı yok.
+        */
+        if (!tab.href) {
+          return (
+            <button
+              key={tab.label}
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("arvo:menu"))}
+            >
+              <span className="bottom-nav-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  {ICONS[tab.icon]}
+                </svg>
+              </span>
+              <small>{tab.label}</small>
+            </button>
+          );
+        }
+
         // Ana sayfa yalnızca tam eşleşmede etkin sayılır.
         const active =
           tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);

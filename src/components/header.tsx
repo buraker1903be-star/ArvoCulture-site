@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CartLink } from "./cart";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
@@ -11,6 +11,17 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
   const [open, setOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const close = () => setOpen(false);
+
+  /*
+    Alt çubuktaki "Menü" sekmesi bu olayı gönderiyor. Başlık ve
+    alt çubuk ayrı bileşenler; ortak bir durum sarmalayıcısı
+    kurmak yerine tek yönlü bir olayla bağlanıyorlar.
+  */
+  useEffect(() => {
+    const toggle = () => setOpen((value) => !value);
+    window.addEventListener("arvo:menu", toggle);
+    return () => window.removeEventListener("arvo:menu", toggle);
+  }, []);
   /*
     Koleksiyonları menu_group'a göre getirir. ARC'taki gruplandırma
     iki farklı ekseni karıştırıyor: markalar (Aloe Via, Zeitgard)
@@ -252,6 +263,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
           >
+            <span />
             <span />
             <span />
           </button>
