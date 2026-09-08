@@ -66,7 +66,7 @@ export default async function Collection({
   const label = exactCollection?.title ?? labels[slug] ?? "Tüm Ürünler";
   const list =
     slug === "tumu"
-      ? await getStorefrontProducts(200)
+      ? await getStorefrontProducts(3000)
       : await getStorefrontCollectionProducts({
           collectionSlug: exactCollection?.slug,
           menuGroups: exactCollection ? undefined : menuGroups[slug],

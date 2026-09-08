@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
         hostname: supabaseHostname,
         pathname: "/storage/v1/object/public/arc-product-images/**",
       },
+      // Tarzyeri ürün görselleri. Görseller kopyalanmıyor,
+      // tedarikçinin CDN'inden sunuluyor.
+      {
+        protocol: "https",
+        hostname: "percdn.com",
+      },
     ],
   },
   async headers() {

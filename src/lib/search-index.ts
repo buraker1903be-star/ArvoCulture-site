@@ -1,11 +1,11 @@
 import { getStorefrontProducts } from "@/lib/products";
 
 /**
- * İstemciye gönderilen hafif arama dizini.
+ * Ä°stemciye gÃ¶nderilen hafif arama dizini.
  *
- * Tüm ürün nesnesi gönderilseydi açıklama metinleriyle birlikte
- * yüzlerce kilobayt olurdu. Buradan yalnızca arama ve sonuç
- * kartı için gereken alanlar geçer.
+ * TÃ¼m Ã¼rÃ¼n nesnesi gÃ¶nderilseydi aÃ§Ä±klama metinleriyle birlikte
+ * yÃ¼zlerce kilobayt olurdu. Buradan yalnÄ±zca arama ve sonuÃ§
+ * kartÄ± iÃ§in gereken alanlar geÃ§er.
  */
 export type SearchItem = {
   slug: string;
@@ -18,7 +18,7 @@ export type SearchItem = {
 };
 
 export async function getSearchIndex(): Promise<SearchItem[]> {
-  const products = await getStorefrontProducts(200);
+  const products = await getStorefrontProducts(3000);
 
   return products
     .filter((product) => product.available !== false)

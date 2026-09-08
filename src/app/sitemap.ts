@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const [products, collections] = await Promise.all([
-    getStorefrontProducts(200),
+    getStorefrontProducts(3000),
     getStorefrontCollections(),
   ]);
 

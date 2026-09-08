@@ -76,9 +76,15 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     ? row.image_paths.filter((x): x is string => typeof x === "string")
     : [];
   const description = plainText(row.description);
-  const images = paths.map(
-    (path) =>
-      `${env.supabaseUrl}/storage/v1/object/public/arc-product-images/${path}`,
+  /*
+    Görsel yolu iki biçimde gelebilir: ARC deposundaki göreli yol
+    ya da tedarikçi CDN'inin tam adresi. Tedarikçi ürünlerinde
+    görselleri kopyalamak yerine kaynağı kullanıyoruz.
+  */
+  const images = paths.map((path) =>
+    path.startsWith("http")
+      ? path
+      : `${env.supabaseUrl}/storage/v1/object/public/arc-product-images/${path}`,
   );
   return {
     slug: row.slug,
