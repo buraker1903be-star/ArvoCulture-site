@@ -288,22 +288,35 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
                 </button>
                 {expanded && (
                   <div className="mobile-submenu">
-                    <Link href={menu.href} onClick={close}>
-                      <b>Tüm {menu.title} ürünleri</b>
-                      <small>Seçkiyi gör</small>
+                    <Link
+                      href={menu.href}
+                      className="mobile-submenu-all"
+                      onClick={close}
+                    >
+                      Tüm {menu.title} ürünleri
                     </Link>
-                    {menu.sections.flatMap((section) =>
-                      section.items.map((item) => (
-                        <Link
-                          href={`/koleksiyon/${item.slug}`}
-                          key={item.slug}
-                          onClick={close}
-                        >
-                          <b>{item.title}</b>
-                          <small>{item.product_count}</small>
-                        </Link>
-                      )),
-                    )}
+
+                    {/*
+                      Grup başlıkları korunuyor: "Üst Giyim",
+                      "Alt Giyim". Düz bir liste hâlinde vermek
+                      otuz bağlantıyı ayırt edilemez kılıyordu.
+                    */}
+                    {menu.sections.map((section) => (
+                      <div className="mobile-group" key={section.title}>
+                        <small>{section.title}</small>
+                        <div className="mobile-chips">
+                          {section.items.map((item) => (
+                            <Link
+                              href={`/koleksiyon/${item.slug}`}
+                              key={item.slug}
+                              onClick={close}
+                            >
+                              {item.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
