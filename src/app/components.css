@@ -4032,3 +4032,16 @@ button.search-box {
     max-width: none;
   }
 }
+
+/* Arama kutusunda görsel bulunamazsa baş harf gösterilir. */
+.search-tile-art i {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-style: normal;
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--line);
+  background: var(--panel-2);
+}

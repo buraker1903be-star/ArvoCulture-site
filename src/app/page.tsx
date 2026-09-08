@@ -46,12 +46,32 @@ const CATEGORIES = [
 
 /* Arama katmanındaki popüler aramalar. Görselleri katalogdan
    eşleşen ilk üründen alınır; sabit görsel dosyası tutulmaz. */
+/*
+  Arama katmanındaki popüler aramalar.
+
+  `match` görseli seçmek için kullanılıyor; `avoid` yanlış
+  eşleşmeleri eliyor. "Güneş" araması "güneş gözlüğü" ile
+  eşleşip koruyucu yerine aksesuar görseli getiriyordu.
+*/
 const SEARCH_TILES = [
   { label: "Serum", href: "/koleksiyon/cilt-bakim-serumlari", match: "serum" },
   { label: "Parfüm", href: "/koleksiyon/parfum", match: "parfüm" },
-  { label: "Oversize tişört", href: "/koleksiyon/oversize-tisortler", match: "tişört" },
-  { label: "Güneş koruma", href: "/koleksiyon/gunes-koruyuculari", match: "güneş" },
-  { label: "Nemlendirici", href: "/koleksiyon/nemlendiriciler", match: "nemlendir" },
+  {
+    label: "Oversize tişört",
+    href: "/koleksiyon/erkek-t-shirt",
+    match: "oversize",
+  },
+  {
+    label: "Güneş koruma",
+    href: "/koleksiyon/gunes-koruyuculari",
+    match: "güneş koruyucu",
+    avoid: "gözlük",
+  },
+  {
+    label: "Nemlendirici",
+    href: "/koleksiyon/nemlendiriciler",
+    match: "nemlendir",
+  },
   { label: "Vitamin", href: "/koleksiyon/vitamin-takviyeleri", match: "vitamin" },
 ];
 
@@ -100,15 +120,20 @@ export default async function Home() {
 
   const fresh = inStock.slice(0, 5);
 
-  const searchTiles = SEARCH_TILES.map((tile) => ({
-    label: tile.label,
-    href: tile.href,
-    image: inStock.find((product) =>
-      `${product.name} ${product.category}`
-        .toLocaleLowerCase("tr-TR")
-        .includes(tile.match),
-    )?.image,
-  }));
+  /*
+    Görsel arama dizininden seçiliyor: ana sayfanın 200 ürünlük
+    listesi artık tedarikçi ürünleriyle dolu ve serum,
+    nemlendirici gibi terimler orada bulunamıyordu.
+  */
+  const searchTiles = SEARCH_TILES.map((tile) => {
+    const found = searchItems.find((item) => {
+      const text = `${item.name} ${item.category}`.toLocaleLowerCase("tr-TR");
+      if (tile.avoid && text.includes(tile.avoid)) return false;
+      return text.includes(tile.match);
+    });
+
+    return { label: tile.label, href: tile.href, image: found?.image };
+  });
 
   const categories = CATEGORIES;
 

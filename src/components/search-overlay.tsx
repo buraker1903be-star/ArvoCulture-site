@@ -88,8 +88,11 @@ export function SearchOverlay({
               {tiles.map((tile) => (
                 <a key={tile.href} href={tile.href} className="search-tile">
                   <span className="search-tile-art">
-                    {tile.image && (
+                    {tile.image ? (
                       <Image src={tile.image} alt="" fill sizes="180px" />
+                    ) : (
+                      /* Görsel bulunamazsa boş kare yerine baş harf. */
+                      <i aria-hidden="true">{tile.label.charAt(0)}</i>
                     )}
                   </span>
                   <strong>{tile.label}</strong>
