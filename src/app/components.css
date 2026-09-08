@@ -328,13 +328,17 @@
     Çerçeveyi doldurmalı; kenarlarda beyaz şerit kalırsa
     ızgara dağınık görünür.
 
-  Oran 4:5 dikey. Giyim katalogun ezici çoğunluğu ve dikey
-  çerçeve hem mankeni hem şişeyi kareden daha iyi taşıyor.
+  Oran türe göre değişir:
+  - packshot 1:1 kare — şişe ve kutu yatayda sıkışmasın
+  - lifestyle 4:5 dikey — manken fotoğrafı boy gösterebilsin
+
+  Tek bir oran ikisine birden uymuyordu: dikey çerçevede
+  şişeler küçük kalıyor, karede manken kesiliyordu.
 */
 .card-art {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
   border-radius: var(--r-sm);
   background: #fff;
   overflow: hidden;
@@ -347,7 +351,11 @@
   transition: transform 420ms var(--ease);
 }
 
-/* Manken fotoğrafı çerçeveyi doldurur. */
+/* Manken fotoğrafı dikey çerçevede ve kırpılarak doldurur. */
+.card-art[data-art="lifestyle"] {
+  aspect-ratio: 4 / 5;
+}
+
 .card-art[data-art="lifestyle"] img {
   object-fit: cover;
   object-position: center top;
@@ -1597,6 +1605,7 @@ button.search-box {
   gap: var(--s4);
 }
 
+/* Kart düzeninde ızgara başlıktan biraz daha uzakta dursun. */
 /* Kart düzeninde ızgara başlıktan biraz daha uzakta dursun. */
 .live-search > .grid {
   margin-top: var(--s2);
@@ -2931,7 +2940,7 @@ button.search-box {
 
 .pdp-stage {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
   border-radius: var(--r);
   background: #fff;
   border: 1px solid var(--line);
@@ -2943,7 +2952,11 @@ button.search-box {
   padding: 6%;
 }
 
-/* Manken fotoğrafı detay sayfasında da çerçeveyi doldurur. */
+/* Manken fotoğrafı detay sayfasında dikey ve dolu. */
+.pdp-media[data-art="lifestyle"] .pdp-stage {
+  aspect-ratio: 4 / 5;
+}
+
 .pdp-media[data-art="lifestyle"] .pdp-stage img {
   object-fit: cover;
   object-position: center top;
