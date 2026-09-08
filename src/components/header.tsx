@@ -327,21 +327,6 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
           </Link>
         </nav>
 
-        {/* Menü altı yardımcı bağlantılar. */}
-        <div className="mobile-menu-foot">
-          <Link href="/arama" onClick={close}>
-            Arama
-          </Link>
-          <Link href="/hesap" onClick={close}>
-            Hesabım
-          </Link>
-          <Link href="/iletisim" onClick={close}>
-            İletişim
-          </Link>
-          <Link href="/sss" onClick={close}>
-            Sıkça sorulanlar
-          </Link>
-        </div>
       </div>
       {open && (
         <button
