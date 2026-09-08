@@ -38,6 +38,18 @@ export function AccountPanel({
   const [profilePhone, setProfilePhone] = useState("");
   const [profileSaved, setProfileSaved] = useState(false);
 
+  /*
+    Şifre sıfırlama akışı. Supabase'in kurtarma bağlantısı
+    kullanıcıyı geçici olarak oturum açtırıyor; yeni şifre
+    belirlenmezse müşteri eski şifresiyle kalıyor ve bir daha
+    giremiyor.
+
+    Bağlantıdan gelindiği `PASSWORD_RECOVERY` olayıyla anlaşılır.
+  */
+  const [recovering, setRecovering] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [newPasswordDone, setNewPasswordDone] = useState(false);
+
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,8 +78,18 @@ export function AccountPanel({
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, next) => setSession(next),
+      (event, next) => {
+        setSession(next);
+        if (event === "PASSWORD_RECOVERY") setRecovering(true);
+      },
     );
+
+    /*
+      Olay hidrasyondan önce tetiklenmiş olabilir. Adres
+      çubuğundaki bağlantı türü de kontrol edilir.
+    */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (window.location.hash.includes("type=recovery")) setRecovering(true);
 
     return () => {
       active = false;
@@ -208,8 +230,84 @@ export function AccountPanel({
       if (!error) setProfileSaved(true);
     }
 
+    async function savePassword() {
+      if (newPassword.length < 8) {
+        setMessage({
+          kind: "error",
+          text: "Şifreniz en az 8 karakter olmalı.",
+        });
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        setMessage({
+          kind: "error",
+          text: "Şifre güncellenemedi. Bağlantının süresi dolmuş olabilir.",
+        });
+        return;
+      }
+
+      setNewPassword("");
+      setNewPasswordDone(true);
+      setRecovering(false);
+      setMessage(null);
+    }
+
     return (
       <div className="account-shell">
+        {/* Sıfırlama bağlantısından gelindiyse yeni şifre istenir. */}
+        {recovering && (
+          <section className="panel">
+            <div className="head">
+              <div>
+                <h2>Yeni şifrenizi belirleyin</h2>
+                <p>En az 8 karakter olmalı.</p>
+              </div>
+            </div>
+
+            <div className="fields">
+              <label className="wide">
+                Yeni şifre
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={newPassword}
+                  onChange={(event) => setNewPassword(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") void savePassword();
+                  }}
+                />
+              </label>
+            </div>
+
+            {message?.kind === "error" && (
+              <p className="form-error" role="alert">
+                {message.text}
+              </p>
+            )}
+
+            <button
+              type="button"
+              className="btn"
+              style={{ justifySelf: "start" }}
+              onClick={savePassword}
+            >
+              Şifremi güncelle
+            </button>
+          </section>
+        )}
+
+        {newPasswordDone && (
+          <p className="form-note">
+            Şifreniz güncellendi. Bundan sonra yeni şifrenizle giriş
+            yapabilirsiniz.
+          </p>
+        )}
+
         <div className="account-bar">
           <div>
             <strong>{session.user.email}</strong>
