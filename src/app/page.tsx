@@ -291,15 +291,14 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
           erişilebilir. Müşteri "nereden başlayacağım" sorusuna
           ilk ekranda yanıt buluyor.
         */}
-        {categories.length > 0 && (
-          <nav className="hero-jump" aria-label="Kategoriler">
-            {categories.slice(0, 5).map((category) => (
-              <Link key={category.slug} href={`/koleksiyon/${category.slug}`}>
-                {category.title}
-              </Link>
-            ))}
-          </nav>
-        )}
+        {/* Hero ayrı bir bileşen; sabit listeyi doğrudan okur. */}
+        <nav className="hero-jump" aria-label="Kategoriler">
+          {CATEGORIES.map((category) => (
+            <Link key={category.href} href={category.href}>
+              {category.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </section>
   );
