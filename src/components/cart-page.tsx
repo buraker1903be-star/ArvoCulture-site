@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
-import { CartContext } from "@/components/cart";
+import { CartContext, cartKey } from "@/components/cart";
 import { formatPrice } from "@/lib/product-types";
 import {
   readCoupon,
@@ -92,7 +92,7 @@ export function CartPageView() {
 
             <ul className="cart-items">
               {items.map((item) => (
-                <li key={item.slug} className="cart-item">
+                <li key={cartKey(item)} className="cart-item">
                   <Link href={`/urun/${item.slug}`} className="cart-thumb">
                     {item.image && (
                       <Image src={item.image} alt="" fill sizes="88px" />
@@ -102,11 +102,14 @@ export function CartPageView() {
                   <div className="cart-item-text">
                     <small>{item.eyebrow}</small>
                     <Link href={`/urun/${item.slug}`}>{item.name}</Link>
+                    {item.variantLabel && (
+                      <small className="cart-variant">{item.variantLabel}</small>
+                    )}
                     <span className="quantity">
                       <button
                         type="button"
                         aria-label="Azalt"
-                        onClick={() => setQuantity(item.slug, item.quantity - 1)}
+                        onClick={() => setQuantity(cartKey(item), item.quantity - 1)}
                       >
                         −
                       </button>
@@ -114,7 +117,7 @@ export function CartPageView() {
                       <button
                         type="button"
                         aria-label="Artır"
-                        onClick={() => setQuantity(item.slug, item.quantity + 1)}
+                        onClick={() => setQuantity(cartKey(item), item.quantity + 1)}
                       >
                         +
                       </button>
@@ -127,7 +130,7 @@ export function CartPageView() {
                     <button
                       type="button"
                       className="remove-item"
-                      onClick={() => remove(item.slug)}
+                      onClick={() => remove(cartKey(item))}
                     >
                       Kaldır
                     </button>

@@ -6,6 +6,7 @@ import { ProductGallery } from "@/components/product-gallery";
 import { ProductBuy } from "@/components/product-buy";
 import { ProductCard, discountOf } from "@/components/product-card";
 import { getStorefrontProduct, getStorefrontProducts } from "@/lib/products";
+import { getProductVariants } from "@/lib/variants";
 import { formatPrice } from "@/lib/product-types";
 import { breadcrumbSchema, productSchema } from "@/lib/seo";
 
@@ -38,9 +39,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
 
-  const [product, catalogue] = await Promise.all([
+  const [product, catalogue, variants] = await Promise.all([
     getStorefrontProduct(slug),
     getStorefrontProducts(120),
+    // Gerçek bedenler; sepete doğru SKU yazılabilsin.
+    getProductVariants(slug),
   ]);
 
   if (!product) notFound();
@@ -93,7 +96,7 @@ export default async function ProductPage({ params }: Params) {
             )}
           </div>
 
-          <ProductBuy product={product} />
+          <ProductBuy product={product} variants={variants} />
 
           {/* Satın alma kaygısını azaltan üç madde, butonun hemen
               altında; aşağı kaydırmaya gerek kalmıyor. */}

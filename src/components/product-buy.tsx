@@ -1,40 +1,74 @@
 "use client";
 
-import { useContext, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { flyToCart } from "@/lib/fly-to-cart";
 import type { Product } from "@/lib/product-types";
-
-const SIZES = ["XS", "S", "M", "L", "XL"];
+import type { Variant } from "@/lib/variants";
 
 /**
- * Satın alma bloğu: adet, beden ve sepete ekleme.
+ * Satın alma bloğu: beden, adet, sepete ekleme.
  *
- * Giyimde beden seçimi zorunlu. Eskiden butonlar durum tutmuyordu
- * ve seçim sepete taşınmıyordu; müşteri bedenini seçtiğini sanıp
- * bedensiz sipariş verebiliyordu.
+ * Bedenler artık sabit bir listeden değil, ürünün gerçek
+ * varyantlarından geliyor. Seçilen varyantın SKU'su sepete
+ * yazılıyor; sipariş bu SKU üzerinden kuruluyor.
+ *
+ * Öncesinde sepet yalnızca ürün slug'ı taşıyordu: müşteri "L"
+ * seçse bile ARC stokta olan herhangi bir varyantı alıyor ve
+ * yanlış beden gönderiliyordu.
  */
-export function ProductBuy({ product }: { product: Product }) {
+export function ProductBuy({
+  product,
+  variants,
+}: {
+  product: Product;
+  variants: Variant[];
+}) {
   const { add } = useContext(CartContext);
-  const [size, setSize] = useState<string | null>(null);
+  const [sku, setSku] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [warn, setWarn] = useState(false);
   const [done, setDone] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const needsSize = product.category === "Giyim";
-  const soldOut = product.available === false;
+  /*
+    Beden seçimi yalnızca gerçekten birden çok beden varsa
+    gösterilir. Kozmetik ve parfümde tek varyant olur; orada
+    seçim istemek gereksiz sürtünme yaratır.
+  */
+  const sizes = useMemo(
+    () => variants.filter((variant) => variant.size),
+    [variants],
+  );
+  const needsSize = sizes.length > 1;
+
+  const selected = useMemo(() => {
+    if (sku) return variants.find((variant) => variant.sku === sku) ?? null;
+    // Tek varyantlı üründe seçim gerekmez.
+    return variants.length === 1 ? variants[0]! : null;
+  }, [sku, variants]);
+
+  const soldOut =
+    product.available === false ||
+    (variants.length > 0 && variants.every((variant) => !variant.available));
 
   function handleAdd() {
-    if (needsSize && !size) {
+    if (needsSize && !selected) {
       setWarn(true);
       return;
     }
 
     flyToCart(buttonRef.current, product.image);
 
-    const item = size ? { ...product, name: `${product.name} (${size})` } : product;
-    for (let i = 0; i < quantity; i += 1) add(item);
+    const variant = selected
+      ? {
+          sku: selected.sku,
+          label: selected.size ?? selected.title,
+          price: selected.price,
+        }
+      : undefined;
+
+    for (let i = 0; i < quantity; i += 1) add(product, variant);
 
     setDone(true);
     setTimeout(() => setDone(false), 1800);
@@ -58,20 +92,28 @@ export function ProductBuy({ product }: { product: Product }) {
           <label className="option-label" id="beden-etiketi">
             Beden
           </label>
-          <div className="sizes" role="radiogroup" aria-labelledby="beden-etiketi">
-            {SIZES.map((option) => (
+          <div
+            className="sizes"
+            role="radiogroup"
+            aria-labelledby="beden-etiketi"
+          >
+            {sizes.map((variant) => (
               <button
                 type="button"
-                key={option}
+                key={variant.sku}
                 role="radio"
-                aria-checked={size === option}
-                data-selected={size === option}
+                aria-checked={selected?.sku === variant.sku}
+                data-selected={selected?.sku === variant.sku}
+                /* Stokta olmayan beden seçilemez ama gizlenmez:
+                   müşteri hangi bedenin tükendiğini görmeli. */
+                disabled={!variant.available}
+                title={variant.available ? undefined : "Bu beden tükendi"}
                 onClick={() => {
-                  setSize(option);
+                  setSku(variant.sku);
                   setWarn(false);
                 }}
               >
-                {option}
+                {variant.size}
               </button>
             ))}
           </div>
@@ -83,8 +125,6 @@ export function ProductBuy({ product }: { product: Product }) {
         </>
       )}
 
-      {/* Adet seçimi butonun yanında; müşteri sepete gidip tek tek
-          artırmak zorunda kalmıyor. */}
       <label className="option-label" id="adet-etiketi">
         Adet
       </label>
@@ -119,7 +159,9 @@ export function ProductBuy({ product }: { product: Product }) {
       </div>
 
       <p className="stock-line" data-in-stock="true">
-        Stokta
+        {selected && selected.stock > 0 && selected.stock <= 5
+          ? `Son ${selected.stock} adet`
+          : "Stokta"}
       </p>
     </div>
   );

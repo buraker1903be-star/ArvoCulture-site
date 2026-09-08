@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { CartContext } from "@/components/cart";
+import { CartContext, cartKey } from "@/components/cart";
 import { formatPrice } from "@/lib/product-types";
 import { evaluateCoupon } from "@/lib/coupon";
 import { readCoupon, writeCoupon, clearCoupon } from "@/lib/cart-extras";
@@ -131,7 +131,7 @@ export function CartDrawer({
 
             <ul className="drawer-items">
               {items.map((item) => (
-                <li key={item.slug}>
+                <li key={cartKey(item)}>
                   <Link
                     href={`/urun/${item.slug}`}
                     className="drawer-thumb"
@@ -146,12 +146,14 @@ export function CartDrawer({
                     <Link href={`/urun/${item.slug}`} onClick={close}>
                       {item.name}
                     </Link>
+                    {/* Beden bilgisi satırda görünsün. */}
+                    {item.variantLabel && <small>{item.variantLabel}</small>}
                     <span className="quantity">
                       <button
                         type="button"
                         aria-label="Azalt"
                         onClick={() =>
-                          setQuantity(item.slug, item.quantity - 1)
+                          setQuantity(cartKey(item), item.quantity - 1)
                         }
                       >
                         −
@@ -161,7 +163,7 @@ export function CartDrawer({
                         type="button"
                         aria-label="Artır"
                         onClick={() =>
-                          setQuantity(item.slug, item.quantity + 1)
+                          setQuantity(cartKey(item), item.quantity + 1)
                         }
                       >
                         +
@@ -174,7 +176,7 @@ export function CartDrawer({
                     <button
                       type="button"
                       className="remove-item"
-                      onClick={() => remove(item.slug)}
+                      onClick={() => remove(cartKey(item))}
                     >
                       Kaldır
                     </button>

@@ -14,17 +14,43 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { formatPrice, type Product } from "@/lib/product-types";
 import type { StorefrontDiscount } from "@/lib/discounts";
 
+/*
+  Sepet kalemi.
+
+  `sku` varyantı tanımlar; sipariş bunun üzerinden kurulur.
+  Önceden yalnızca ürün slug'ı taşınıyordu ve müşteri "L" seçse
+  bile sipariş herhangi bir varyanta bağlanıyor, yanlış beden
+  gönderiliyordu.
+
+  `key` sepetteki satırın kimliğidir: aynı ürünün iki farklı
+  bedeni sepette ayrı satır olmalı.
+*/
 type CartItem = Pick<
   Product,
   "slug" | "name" | "price" | "image" | "eyebrow"
-> & { quantity: number };
+> & {
+  quantity: number;
+  sku?: string;
+  variantLabel?: string;
+};
+
+/** Sepet satırının kimliği: varyant varsa SKU, yoksa slug. */
+export const cartKey = (item: { slug: string; sku?: string }) =>
+  item.sku ?? item.slug;
+/** Sepete eklenirken seçilen varyant. */
+export type CartVariant = {
+  sku: string;
+  label: string;
+  price?: number;
+};
+
 type CartValue = {
   items: CartItem[];
   count: number;
   total: number;
-  add: (product: Product) => void;
-  remove: (slug: string) => void;
-  setQuantity: (slug: string, quantity: number) => void;
+  add: (product: Product, variant?: CartVariant) => void;
+  remove: (key: string) => void;
+  setQuantity: (key: string, quantity: number) => void;
   discounts: StorefrontDiscount[];
 };
 
@@ -70,14 +96,18 @@ export function CartProvider({
       return [];
     }
   }, [snapshot]);
-  const add = useCallback((product: Product) => {
+  const add = useCallback((product: Product, variant?: CartVariant) => {
     const current = JSON.parse(getSnapshot()) as CartItem[];
-    const existing = current.find((item) => item.slug === product.slug);
+
+    // Aynı ürünün farklı bedeni ayrı satırdır.
+    const key = variant?.sku ?? product.slug;
+    const existing = current.find((item) => cartKey(item) === key);
+
     write(
       existing
         ? current.map((item) =>
-            item.slug === product.slug
-              ? { ...item, quantity: item.quantity + 1 }
+            cartKey(item) === key
+              ? { ...item, quantity: Math.min(20, item.quantity + 1) }
               : item,
           )
         : [
@@ -85,28 +115,31 @@ export function CartProvider({
             {
               slug: product.slug,
               name: product.name,
-              price: product.price,
+              // Varyant fiyatı ürün fiyatından farklı olabilir.
+              price: variant?.price ?? product.price,
               image: product.image,
               eyebrow: product.eyebrow,
               quantity: 1,
+              sku: variant?.sku,
+              variantLabel: variant?.label,
             },
           ],
     );
   }, []);
   const remove = useCallback(
-    (slug: string) =>
+    (key: string) =>
       write(
         (JSON.parse(getSnapshot()) as CartItem[]).filter(
-          (item) => item.slug !== slug,
+          (item) => cartKey(item) !== key,
         ),
       ),
     [],
   );
   const setQuantity = useCallback(
-    (slug: string, quantity: number) =>
+    (key: string, quantity: number) =>
       write(
         (JSON.parse(getSnapshot()) as CartItem[]).map((item) =>
-          item.slug === slug
+          cartKey(item) === key
             ? { ...item, quantity: Math.max(1, Math.min(20, quantity)) }
             : item,
         ),
@@ -219,7 +252,7 @@ export function CartView() {
     <div className="cart-layout">
       <section className="cart-items">
         {items.map((item) => (
-          <article className="cart-item" key={item.slug}>
+          <article className="cart-item" key={cartKey(item)}>
             <Link className="cart-thumb" href={`/urun/${item.slug}`}>
               {item.image ? (
                 <Image src={item.image} alt={item.name} fill sizes="140px" />
@@ -236,7 +269,7 @@ export function CartView() {
               <div className="quantity">
                 <button
                   type="button"
-                  onClick={() => setQuantity(item.slug, item.quantity - 1)}
+                  onClick={() => setQuantity(cartKey(item), item.quantity - 1)}
                   aria-label="Adedi azalt"
                 >
                   −
@@ -244,7 +277,7 @@ export function CartView() {
                 <span>{item.quantity}</span>
                 <button
                   type="button"
-                  onClick={() => setQuantity(item.slug, item.quantity + 1)}
+                  onClick={() => setQuantity(cartKey(item), item.quantity + 1)}
                   aria-label="Adedi artır"
                 >
                   +
@@ -254,7 +287,7 @@ export function CartView() {
             <button
               type="button"
               className="remove-item"
-              onClick={() => remove(item.slug)}
+              onClick={() => remove(cartKey(item))}
             >
               Kaldır
             </button>

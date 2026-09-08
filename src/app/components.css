@@ -3685,3 +3685,22 @@ button.search-box {
     transition: none;
   }
 }
+
+/* Sepette beden etiketi. */
+.cart-variant,
+.drawer-text small {
+  display: block;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+/* Tükenen beden seçilemez. */
+.sizes button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.sizes button:disabled:hover {
+  border-color: var(--line);
+}

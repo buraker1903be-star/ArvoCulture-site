@@ -175,9 +175,16 @@ export function CheckoutForm({
             country: "TR",
           },
           items: items.map((item) => ({
-            sku: item.slug,
+            /*
+              Varyant SKU'su varsa o gönderilir; ARC siparişi
+              doğru bedene bağlar. Yoksa ürün slug'ı yedek
+              olarak kullanılır (tek varyantlı ürünler).
+            */
+            sku: item.sku ?? item.slug,
             quantity: item.quantity,
-            name: item.name,
+            name: item.variantLabel
+              ? `${item.name} (${item.variantLabel})`
+              : item.name,
           })),
           couponCode: coupon || null,
           note: note || null,
