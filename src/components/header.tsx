@@ -18,35 +18,69 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
     Aşağıdaki BRANDS listesi markaları slug üzerinden ayırıp kendi
     sütununa taşır; başlık ve ürün sayısı yine ARC'tan gelir.
   */
-  const byGroup = (groups: string[], limit = 99) =>
+  /*
+    Menü, ARC koleksiyonlarından kuruluyor. Tedarikçi kategori
+    ağacı (Erkek > Üst Giyim > T-Shirt) koleksiyon üstverisine
+    yazıldığı için burada elle liste tutmaya gerek yok: yeni bir
+    tür geldiğinde menüde kendiliğinden beliriyor.
+  */
+  const GENDERS = ["Erkek", "Kadın", "Çocuk", "Aksesuar"];
+
+  /* Sütun sırası. Listede olmayan gruplar sona eklenir. */
+  const GROUP_ORDER = [
+    "Üst Giyim",
+    "Alt Giyim",
+    "Dış Giyim",
+    "Alt Üst Takım",
+    "İç Giyim",
+    "Aksesuar",
+    "Çocuk",
+  ];
+
+  /** Bir ana kategorinin sütunlarını üretir. */
+  const genderSections = (gender: string) => {
+    const own = collections.filter(
+      (collection) => collection.parent === gender,
+    );
+
+    const groups = new Map<string, StorefrontCollection[]>();
+    for (const collection of own) {
+      const key = collection.menu_group || "Diğer";
+      const list = groups.get(key) ?? [];
+      list.push(collection);
+      groups.set(key, list);
+    }
+
+    return [...groups.entries()]
+      .sort(([a], [b]) => {
+        const ia = GROUP_ORDER.indexOf(a);
+        const ib = GROUP_ORDER.indexOf(b);
+        return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      })
+      .map(([title, items]) => ({
+        title: title.toLocaleUpperCase("tr-TR"),
+        items: items
+          .sort((a, b) => b.product_count - a.product_count)
+          .map((item) => ({
+            ...item,
+            /* Sütun başlığı zaten cinsiyeti söylüyor; başlıktaki
+               tekrarı atıyoruz: "Erkek T-Shirt" → "T-Shirt". */
+            title: item.title.replace(new RegExp(`^${gender}\\s+`), ""),
+          })),
+      }))
+      .filter((section) => section.items.length > 0);
+  };
+
+  const byGroup = (groups: string[]) =>
     collections
       .filter((collection) => groups.includes(collection.menu_group))
-      .sort(
-        (a, b) =>
-          b.product_count - a.product_count ||
-          a.title.localeCompare(b.title, "tr"),
-      )
-      .slice(0, limit);
+      .sort((a, b) => b.product_count - a.product_count);
 
-  /*
-    Marka koleksiyonları. Slug yerine başlık üzerinden eşleşir;
-    ARC'ta slug'lar tutarsız olabiliyor ama başlıklar sabit.
-    Eşleşme Türkçe büyük/küçük harfe duyarsızdır.
-  */
   const BRAND_NAMES = {
-    apparel: ["The Society Collection"],
     care: [
-      "Aloe Via",
-      "Zeitgard",
-      "Microsilver",
-      "Beauty Diamonds",
-      "Platinum",
-      "Racine",
-      "Nanogold",
-      "L-Recapin",
-      "Serox",
-      "Colostrum",
-      "Profesyonel Bakım",
+      "Aloe Via", "Zeitgard", "Microsilver", "Beauty Diamonds",
+      "Platinum", "Racine", "Nanogold", "L-Recapin", "Serox",
+      "Colostrum", "Profesyonel Bakım",
     ],
     fragrance: ["Mood Infusion", "Iconic Elixirs"],
     supplements: ["LifeTakt"],
@@ -54,12 +88,6 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
 
   const norm = (value: string) => value.toLocaleLowerCase("tr-TR");
 
-  const matches = (collection: StorefrontCollection, names: readonly string[]) =>
-    names.some((name) => norm(collection.title).includes(norm(name)));
-
-  const allBrandNames = Object.values(BRAND_NAMES).flat();
-
-  /** Marka koleksiyonlarını verilen sırayla getirir. */
   const brandItems = (names: readonly string[]) =>
     names
       .map((name) =>
@@ -67,57 +95,32 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
       )
       .filter((item): item is StorefrontCollection => Boolean(item));
 
-  /** Bir gruptan markaları ve verilen anahtarları çıkarır. */
-  const withoutBrands = (groups: string[], exclude: readonly string[] = []) =>
+  const allBrandNames = Object.values(BRAND_NAMES).flat();
+
+  const withoutBrands = (groups: string[]) =>
     byGroup(groups).filter(
       (item) =>
-        !matches(item, allBrandNames) && !matches(item, exclude),
+        !allBrandNames.some((name) => norm(item.title).includes(norm(name))),
     );
-
-  /** Grup içinden yalnızca anahtar kelimeye uyanları getirir. */
-  const onlyMatching = (groups: string[], keywords: readonly string[]) =>
-    byGroup(groups).filter(
-      (item) => !matches(item, allBrandNames) && matches(item, keywords),
-    );
-
-  const HAIR_OIL = ["yağ"];
-  const HAIR_SHAMPOO = ["şampuan"];
 
   const navigation = [
-    {
-      title: "Giyim",
-      href: "/koleksiyon/giyim",
-      sections: [
-        {
-          title: "MARKA KOLEKSİYONLARI",
-          items: brandItems(BRAND_NAMES.apparel),
-        },
-        { title: "KESİME GÖRE", items: withoutBrands(["Giyim"]) },
-      ],
-    },
+    /* Giyim: cinsiyet başına bir sekme. */
+    ...GENDERS.map((gender) => ({
+      title: gender,
+      href: `/koleksiyon/${gender === "Kadın" ? "kadin" : gender.toLocaleLowerCase("tr-TR")}`,
+      sections: genderSections(gender),
+    })).filter((menu) => menu.sections.length > 0),
+
     {
       title: "Kişisel Bakım",
       href: "/koleksiyon/bakim",
-      /*
-        Her menu_group kendi sütununda durur. Birleştirilirse
-        müşteri "saç ürünü arıyorum" derken cilt ve vücut
-        ürünlerinin arasında aramak zorunda kalıyor.
-      */
       sections: [
         { title: "MARKA KOLEKSİYONLARI", items: brandItems(BRAND_NAMES.care) },
         {
           title: "CİLT BAKIMI",
           items: withoutBrands(["Cilt Bakımı", "Kişisel Bakım"]),
         },
-        {
-          title: "SAÇ BAKIMI",
-          items: withoutBrands(["Saç Bakımı"], [...HAIR_OIL, ...HAIR_SHAMPOO]),
-        },
-        {
-          title: "ŞAMPUANLAR",
-          items: onlyMatching(["Saç Bakımı"], HAIR_SHAMPOO),
-        },
-        { title: "YAĞLAR", items: onlyMatching(["Saç Bakımı"], HAIR_OIL) },
+        { title: "SAÇ BAKIMI", items: withoutBrands(["Saç Bakımı"]) },
         { title: "VÜCUT BAKIMI", items: withoutBrands(["Vücut Bakımı"]) },
         { title: "DİĞER BAKIMLAR", items: withoutBrands(["Diğer Bakımlar"]) },
         { title: "İHTİYACA GÖRE", items: withoutBrands(["Sorununa Göre"]) },
@@ -152,8 +155,6 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
     },
   ].map((menu) => ({
     ...menu,
-    // Boş kalan sütun gösterilmez; marka koleksiyonu tanımlı
-    // olmayan kategoride başlık boşuna yer kaplamasın.
     sections: menu.sections.filter((section) => section.items.length > 0),
   }));
 

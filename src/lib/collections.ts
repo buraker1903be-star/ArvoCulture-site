@@ -6,6 +6,8 @@ export type StorefrontCollection = {
   slug: string;
   description: string;
   menu_group: string;
+  /** Ana kategori: Erkek, Kadın, Çocuk, Aksesuar. */
+  parent: string;
   product_count: number;
 };
 
