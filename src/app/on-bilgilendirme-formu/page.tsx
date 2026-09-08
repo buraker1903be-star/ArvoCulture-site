@@ -1,9 +1,125 @@
+import type { Metadata } from "next";
+import Link from "next/link";
 import { InfoPage, InfoSection } from "@/components/info-page";
-export default function PreInfo(){return <InfoPage eyebrow="SİPARİŞ ÖNCESİ" title="Ön bilgilendirme formu." intro="Siparişinizi onaylamadan önce satıcıyı, ürünü, toplam bedeli, teslimatı ve cayma koşullarını kontrol etmenizi sağlayan bilgilendirme metni.">
-  <InfoSection title="Satıcı"><div className="legal-card"><p><b>ARVOCULTURE GROUP TEKNOLOJİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ</b></p><p>Yakuplu Mah. Hürriyet Bulvarı Skyport Residence No:1 D:113 Beylikdüzü / İstanbul</p><p>info@arvoculture.com · +90 507 437 05 07</p><p>VKN 0861785335 · Ticaret Sicil No 1149259</p></div></InfoSection>
-  <InfoSection title="Sipariş özeti"><p>Ürünün temel nitelikleri, rengi/bedeni veya varyantı, adedi, birim fiyatı, indirimler, vergiler, kargo bedeli ve ödenecek toplam tutar ödeme öncesi sipariş özetinde gösterilir. Alıcı bu bilgileri kontrol ederek siparişi onaylar.</p></InfoSection>
-  <InfoSection title="Ödeme"><p>Kullanılabilir ödeme yöntemleri ödeme ekranında gösterilir. Ödeme yöntemi kaynaklı ücret veya taksit farkı varsa onaydan önce toplam bedele dâhil edilir. Kart verileri yetkili ödeme kuruluşu tarafından işlenir.</p></InfoSection>
-  <InfoSection title="Teslimat"><p>Teslimat adresi, kargo yöntemi ve tahmini süre sipariş özetinde yer alır. Sipariş, taahhüt edilen sürede ve her hâlükârda yasal azami süre içinde teslim edilir. Teslimat kısıtı bulunan bölgeler onaydan önce belirtilir.</p></InfoSection>
-  <InfoSection title="Cayma ve iade"><p>Mal tesliminden itibaren 14 gün içinde info@arvoculture.com adresine açık bildirim göndererek cayabilirsiniz. İade yöntemi ve kargo sorumluluğu bildirim sonrasında iletilir. Kişiye özel ürünler ve ambalajı açılmış hijyen ürünleri gibi yasal istisnalar ürün özelinde ayrıca belirtilir.</p></InfoSection>
-  <InfoSection title="Şikâyet ve başvuru"><p>Sipariş ve ürün talepleri için info@arvoculture.com veya +90 507 437 05 07 üzerinden ulaşabilirsiniz. Uyuşmazlıklarda parasal sınıra göre tüketici hakem heyetleri ve tüketici mahkemeleri yetkilidir.</p><p className="legal-note">Sipariş sırasında gösterilen ürün, fiyat, teslimat ve alıcı bilgileri bu formun ayrılmaz parçasıdır. Form, sipariş verilmeden önce elektronik ortamda onaylanır ve erişilebilir biçimde saklanır.</p></InfoSection>
-</InfoPage>}
+import { SELLER } from "@/lib/seller";
+
+export const metadata: Metadata = {
+  title: "Ön Bilgilendirme Formu",
+  description:
+    "Mesafeli Sözleşmeler Yönetmeliği uyarınca sipariş öncesi bilgilendirme.",
+  alternates: { canonical: "/on-bilgilendirme-formu" },
+};
+
+/**
+ * Ön Bilgilendirme Formu.
+ *
+ * Yönetmelik, sözleşme kurulmadan ÖNCE tüketiciye belirli
+ * bilgilerin verilmesini zorunlu kılar. Bu sayfa o bilgileri
+ * içerir ve ödeme adımında onaylanır.
+ */
+export default function PreInfoPage() {
+  return (
+    <InfoPage
+      eyebrow="Yasal"
+      title="Ön Bilgilendirme Formu"
+      intro="Mesafeli Sözleşmeler Yönetmeliği uyarınca, siparişinizi tamamlamadan önce bilmeniz gerekenler."
+    >
+      <InfoSection title="Satıcı Bilgileri">
+        <p>
+          Unvan: {SELLER.legalName}
+          <br />
+          Adres: {SELLER.address}
+          <br />
+          MERSİS No: {SELLER.mersis}
+          <br />
+          Ticaret Sicil No: {SELLER.tradeRegistry}
+          <br />
+          Vergi Dairesi / No: {SELLER.taxOffice} / {SELLER.taxNumber}
+          <br />
+          E-posta: {SELLER.email}
+          <br />
+          Telefon: {SELLER.phone}
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Ürün ve Fiyat Bilgileri">
+        <p>
+          Sipariş ettiğiniz ürünün temel nitelikleri, adedi, birim ve
+          toplam fiyatı sipariş özeti ekranında gösterilir. Tüm fiyatlar
+          Türk Lirası cinsinden ve KDV dâhildir.
+        </p>
+        <p>
+          Kargo ücreti {SELLER.shippingFee}&apos;dir.{" "}
+          {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo
+          ücretsizdir. Toplam tutar, ödeme adımında kargo ücreti ve varsa
+          indirim düşülerek gösterilir.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Ödeme">
+        <p>
+          Ödemeler PayTR altyapısı üzerinden 3D Secure ile alınır. Kredi
+          kartı, banka kartı ve ilgili kartların desteklediği taksit
+          seçenekleri kullanılabilir.
+        </p>
+        <p>
+          Kart bilgileriniz Satıcı&apos;ya iletilmez ve Satıcı
+          sunucularında saklanmaz.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Teslimat">
+        <p>
+          Siparişiniz, ödemenizin onaylanmasının ardından hazırlanır ve
+          anlaşmalı kargo firmasıyla bildirdiğiniz adrese gönderilir.
+          Teslimat süresi yasal azami {SELLER.deliveryDaysMax} günü
+          geçmez.
+        </p>
+        <p>
+          Teslimat masrafı, aksi belirtilmedikçe Alıcı&apos;ya aittir.
+          Kargo teslim alınırken paketin hasarlı olup olmadığı kontrol
+          edilmeli, hasar varsa tutanak tutturulmalıdır.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Cayma Hakkı">
+        <p>
+          Teslim tarihinden itibaren {SELLER.withdrawalDays} gün içinde
+          gerekçe göstermeksizin cayma hakkınız vardır. Cayma bildirimini{" "}
+          {SELLER.email} adresine iletebilirsiniz.
+        </p>
+        <p>
+          Ambalajı açılmış kozmetik, kişisel bakım ve gıda takviyesi
+          ürünleri hijyen gerekçesiyle cayma hakkı kapsamı dışındadır.
+          Ayrıntılar için{" "}
+          <Link href="/iptal-iade">İptal ve İade</Link> sayfasına bakınız.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Şikâyet ve İtiraz">
+        <p>
+          Uyuşmazlık hâlinde, parasal sınırlar dâhilinde yerleşim
+          yerinizdeki Tüketici Hakem Heyetine veya Tüketici Mahkemesine
+          başvurabilirsiniz.
+        </p>
+        <p>
+          Ticaret Bakanlığı&apos;nın{" "}
+          <a href="https://tuketicisikayeti.ticaret.gov.tr" rel="noopener">
+            Tüketici Bilgi Sistemi
+          </a>{" "}
+          üzerinden de başvuru yapabilirsiniz.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Onay">
+        <p>
+          Siparişinizi tamamladığınızda bu formu ve{" "}
+          <Link href="/mesafeli-satis-sozlesmesi">
+            Mesafeli Satış Sözleşmesi
+          </Link>
+          &apos;ni okuduğunuzu ve kabul ettiğinizi beyan etmiş olursunuz.
+        </p>
+      </InfoSection>
+    </InfoPage>
+  );
+}
