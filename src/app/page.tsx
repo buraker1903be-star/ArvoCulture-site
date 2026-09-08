@@ -18,6 +18,7 @@ import {
 } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getSearchIndex } from "@/lib/search-index";
+import { Reveal } from "@/components/reveal";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
@@ -142,28 +143,37 @@ export default async function Home() {
       </section>
 
       {/* Fiyat birinci öncelik: indirimler en üstte. */}
-      <ProductBlock
-        title="İndirimdeki ürünler"
-        note="Sınırlı stokla sunulan güncel fırsatlar."
-        href="/koleksiyon/firsatlar"
-        hrefLabel="Tüm fırsatlar"
-        products={deals}
-      />
+      <Reveal>
+        <ProductBlock
+          title="İndirimdeki ürünler"
+          note="Sınırlı stokla sunulan güncel fırsatlar."
+          href="/koleksiyon/firsatlar"
+          hrefLabel="Tüm fırsatlar"
+          products={deals}
+        />
+      </Reveal>
 
-      <CategoryStrip items={categories} />
+      <Reveal>
+        <CategoryStrip items={categories} />
+      </Reveal>
 
       {/* Satış verisi yoksa bölüm hiç görünmez. Hiç satılmamış
           ürünü "çok satan" diye göstermek güveni zedeler. */}
-      <ProductBlock
-        title="Çok satanlar"
-        note="Müşterilerimizin en sık tercih ettiği ürünler."
-        href="/koleksiyon/cok-satan-cilt-bakim-urunleri"
-        hrefLabel="Tümünü gör"
-        products={best}
-        alt
-      />
+      {/* Bu bölüm yatay raf: ızgara tekrarını kırıyor. */}
+      <Reveal>
+        <ProductBlock
+          title="Çok satanlar"
+          note="Müşterilerimizin en sık tercih ettiği ürünler."
+          href="/koleksiyon/cok-satan-cilt-bakim-urunleri"
+          hrefLabel="Tümünü gör"
+          products={best}
+          alt
+          rail
+        />
+      </Reveal>
 
       {theme.show_campaign && (
+        <Reveal>
         <section data-arvo-section="campaign" className="panel promo">
           {theme.campaign_image_url && (
             <Image
@@ -207,21 +217,26 @@ export default async function Home() {
             </Link>
           </div>
         </section>
+        </Reveal>
       )}
 
       {theme.show_featured && (
-        <div data-arvo-section="featured">
-          <ProductBlock
-            title={theme.featured_title}
-            note={theme.featured_eyebrow}
-            href="/koleksiyon/tumu"
-            hrefLabel="Tüm ürünler"
-            products={fresh}
-          />
-        </div>
+        <Reveal>
+          <div data-arvo-section="featured">
+            <ProductBlock
+              title={theme.featured_title}
+              note={theme.featured_eyebrow}
+              href="/koleksiyon/tumu"
+              hrefLabel="Tüm ürünler"
+              products={fresh}
+            />
+          </div>
+        </Reveal>
       )}
 
-      <HelpStrip />
+      <Reveal>
+        <HelpStrip />
+      </Reveal>
     </main>
   );
 }

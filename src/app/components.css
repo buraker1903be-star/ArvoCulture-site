@@ -3231,3 +3231,168 @@ button.search-box {
     gap: 2px;
   }
 }
+
+/* ==========================================================
+   Hareket
+   ========================================================== */
+
+/*
+  Kaydırmayla beliren bölümler. Görünürlük `data-shown`
+  özniteliğiyle açılıyor; JavaScript yalnızca o özniteliği
+  yazıyor, animasyonu CSS yürütüyor.
+*/
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 620ms var(--ease),
+    transform 620ms var(--ease);
+  will-change: opacity, transform;
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* --- Yatay kaydırmalı raf ------------------------------- */
+
+/*
+  Bir bölümü ızgara yerine yatay rafa çevirmek sayfaya ritim
+  katıyor: göz aynı düzenin sekiz kez tekrarından kurtuluyor
+  ve kaydırma hareketi keşfi davet ediyor.
+*/
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(220px, 20%);
+  gap: var(--s4);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  /* Kartların gölgesi kırpılmasın. */
+  padding: 4px 4px var(--s4);
+  margin: 0 -4px;
+  scrollbar-width: thin;
+}
+
+.rail > * {
+  scroll-snap-align: start;
+}
+
+.rail::-webkit-scrollbar {
+  height: 6px;
+}
+
+.rail::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+}
+
+.rail::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-3);
+}
+
+@media (max-width: 640px) {
+  .rail {
+    grid-auto-columns: minmax(160px, 46%);
+  }
+}
+
+/* --- Kart girişi ---------------------------------------- */
+
+/*
+  Kartlar sırayla beliriyor. Gecikme kart sırasına göre
+  artıyor; hepsi aynı anda düşmek yerine dalga hâlinde
+  geliyor.
+*/
+.reveal[data-shown="true"] .grid > *,
+.reveal[data-shown="true"] .rail > * {
+  animation: card-in 520ms var(--ease) backwards;
+}
+
+.reveal[data-shown="true"] .grid > *:nth-child(1),
+.reveal[data-shown="true"] .rail > *:nth-child(1) { animation-delay: 40ms; }
+.reveal[data-shown="true"] .grid > *:nth-child(2),
+.reveal[data-shown="true"] .rail > *:nth-child(2) { animation-delay: 90ms; }
+.reveal[data-shown="true"] .grid > *:nth-child(3),
+.reveal[data-shown="true"] .rail > *:nth-child(3) { animation-delay: 140ms; }
+.reveal[data-shown="true"] .grid > *:nth-child(4),
+.reveal[data-shown="true"] .rail > *:nth-child(4) { animation-delay: 190ms; }
+.reveal[data-shown="true"] .grid > *:nth-child(5),
+.reveal[data-shown="true"] .rail > *:nth-child(5) { animation-delay: 240ms; }
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal[data-shown="true"] .grid > *,
+  .reveal[data-shown="true"] .rail > * {
+    animation: none;
+  }
+}
+
+/* --- Kart etkileşimi ------------------------------------ */
+
+.card {
+  transition:
+    transform 260ms var(--ease),
+    box-shadow 260ms var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--float-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* --- Bölüm başlıklarında ince çizgi --------------------- */
+
+/*
+  Başlığın altında, göründüğünde soldan sağa çizilen bir çizgi.
+  Bölümler arası geçişi belirginleştiriyor.
+*/
+.reveal .head h2 {
+  position: relative;
+  display: inline-block;
+}
+
+.reveal .head h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 2px;
+  width: 0;
+  background: var(--brand);
+  transition: width 700ms var(--ease) 200ms;
+}
+
+.reveal[data-shown="true"] .head h2::after {
+  width: 34px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal .head h2::after {
+    width: 34px;
+    transition: none;
+  }
+}

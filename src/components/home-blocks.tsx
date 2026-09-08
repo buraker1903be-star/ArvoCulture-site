@@ -10,6 +10,7 @@ export function ProductBlock({
   hrefLabel,
   products,
   alt,
+  rail,
 }: {
   title: string;
   note?: string;
@@ -17,6 +18,12 @@ export function ProductBlock({
   hrefLabel: string;
   products: Product[];
   alt?: boolean;
+  /**
+   * Izgara yerine yatay kaydırmalı raf. Sekiz özdeş ızgaranın
+   * ardı ardına gelmesi sayfayı düzleştiriyordu; bir bölümü
+   * rafa çevirmek göze ritim veriyor.
+   */
+  rail?: boolean;
 }) {
   if (products.length === 0) return null;
 
@@ -29,7 +36,7 @@ export function ProductBlock({
         </div>
         <Link href={href}>{hrefLabel}</Link>
       </div>
-      <div className="grid">
+      <div className={rail ? "rail" : "grid"}>
         {products.map((product) => (
           <ProductCard key={product.slug} product={product} />
         ))}
