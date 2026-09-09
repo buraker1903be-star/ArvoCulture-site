@@ -157,6 +157,7 @@ export default async function RootLayout({
                   <strong>Yasal</strong>
                   <Link href="/kvkk-aydinlatma-metni">KVKK Aydınlatma Metni</Link>
                   <Link href="/gizlilik">Gizlilik ve Çerez Politikası</Link>
+                  <Link href="/uyelik-sozlesmesi">Üyelik Sözleşmesi</Link>
                   <Link href="/kullanim-kosullari">Kullanım Koşulları</Link>
                   <Link href="/yasal-bildirim">Yasal Bildirim</Link>
                   <Link href="/ticari-elektronik-ileti">

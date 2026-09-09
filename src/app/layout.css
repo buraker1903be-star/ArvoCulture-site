@@ -1115,11 +1115,26 @@ footer {
   border-bottom: 1px solid var(--line);
 }
 
+/*
+  Hukuki metinler tam genişlikte.
+
+  68ch okuma genişliği nesir için doğru ama sözleşme bir başvuru
+  belgesi: madde ararken taranıyor, baştan sona okunmuyor. Dar
+  sütun sayfayı gereksiz uzatıyor ve yarısı boş kalıyordu.
+*/
 .info-content {
   display: grid;
   gap: var(--s4);
-  max-width: 68ch;
+  max-width: none;
   color: var(--ink-2);
+}
+
+/* Satır uzunluğu yine de kontrollü: çok geniş ekranda göz
+   satır başını kaybetmesin. */
+.info-content p,
+.info-content li {
+  max-width: 105ch;
+  line-height: 1.75;
 }
 
 .info-content h2,

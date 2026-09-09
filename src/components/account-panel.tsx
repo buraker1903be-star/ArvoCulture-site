@@ -468,6 +468,25 @@ export function AccountPanel({
         </p>
       )}
 
+      {/*
+        Kayıt formunda sözleşme bildirimi. Üyelik Sözleşmesi
+        kayıt anında onaylanmış sayılıyor; bunun kullanıcıya
+        açıkça söylenmesi gerekiyor.
+      */}
+      {mode === "register" && (
+        <p className="form-note">
+          Hesap oluşturarak{" "}
+          <a href="/uyelik-sozlesmesi" target="_blank" rel="noreferrer">
+            Üyelik Sözleşmesi
+          </a>{" "}
+          ve{" "}
+          <a href="/kvkk-aydinlatma-metni" target="_blank" rel="noreferrer">
+            KVKK Aydınlatma Metni
+          </a>
+          &apos;ni kabul etmiş sayılırsınız.
+        </p>
+      )}
+
       <button
         type="button"
         className="btn btn-block"
