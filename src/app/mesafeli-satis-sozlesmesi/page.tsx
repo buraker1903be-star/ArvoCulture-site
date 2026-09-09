@@ -60,6 +60,23 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
+      <InfoSection title="1.a. İade Bilgileri">
+        <p>
+          <strong>İade adresi:</strong> {SELLER.address}
+        </p>
+        <p>
+          <strong>Anlaşmalı kargo firması:</strong> İade gönderileriniz
+          için mağazamızın anlaşmalı olduğu kargo firmasını
+          kullanabilirsiniz. Firma bilgisi iade talebiniz onaylandığında
+          size bildirilir.
+        </p>
+        <p>
+          Anlaşmalı kargo firmasıyla yapılan iadelerde sizden ücret tahsil
+          edilmez. Farklı bir taşıyıcı tercih ederseniz gönderi masrafı
+          size ait olur.
+        </p>
+      </InfoSection>
+
       <InfoSection title="2. Sözleşmenin Konusu">
         <p>
           İşbu sözleşmenin konusu, Alıcı&apos;nın Satıcı&apos;ya ait{" "}
@@ -154,42 +171,128 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="6. Cayma Hakkının Kullanılamayacağı Ürünler">
+      <InfoSection title="6. Cayma Hakkının Kullanılamayacağı Hâller">
         <p>
           Mesafeli Sözleşmeler Yönetmeliği&apos;nin 15. maddesi uyarınca
-          aşağıdaki ürünlerde cayma hakkı kullanılamaz:
+          aşağıdaki sözleşmelerde cayma hakkı kullanılamaz:
         </p>
         <ul>
           <li>
-            Tesliminden sonra ambalaj, bant, mühür, paket gibi koruyucu
-            unsurları açılmış olan ürünlerden iadesi sağlık ve hijyen
-            açısından uygun olmayanlar (kozmetik, kişisel bakım ve gıda
-            takviyesi ürünleri dâhil)
+            Fiyatı finansal piyasalardaki dalgalanmalara bağlı olarak
+            değişen ve satıcının kontrolünde olmayan mal veya hizmetler.
           </li>
           <li>
-            Alıcı&apos;nın istekleri veya kişisel ihtiyaçları doğrultusunda
-            hazırlanan ürünler
+            Tüketicinin istekleri veya kişisel ihtiyaçları doğrultusunda
+            hazırlanan mallar.
           </li>
           <li>
-            Çabuk bozulabilen veya son kullanma tarihi geçebilecek ürünler
+            Çabuk bozulabilen veya son kullanma tarihi geçebilecek mallar.
+          </li>
+          <li>
+            Tesliminden sonra ambalaj, bant, mühür veya paket gibi
+            koruyucu unsurları açılmış olan mallardan iadesi sağlık ve
+            hijyen açısından uygun olmayanlar.
           </li>
           <li>
             Tesliminden sonra başka ürünlerle karışan ve doğası gereği
-            ayrıştırılması mümkün olmayan ürünler
+            ayrıştırılması mümkün olmayan mallar.
           </li>
           <li>
-            Elektronik ortamda anında ifa edilen hizmetler ve tüketiciye
-            anında teslim edilen gayrimaddi mallar
+            Koruyucu unsurları açılmış kitap, dijital içerik ve bilgisayar
+            sarf malzemeleri.
+          </li>
+          <li>
+            Abonelik kapsamı dışındaki gazete, dergi gibi süreli yayınlar.
+          </li>
+          <li>
+            Belirli bir tarihte yapılması gereken konaklama, taşıma, araç
+            kiralama, yiyecek-içecek tedariki ve eğlence hizmetleri.
+          </li>
+          <li>
+            Elektronik ortamda anında ifa edilen hizmetler ve anında
+            teslim edilen gayrimaddi mallar.
+          </li>
+          <li>
+            Cayma süresi dolmadan, tüketicinin onayıyla ifasına başlanan
+            hizmetler.
+          </li>
+          <li>
+            Tescili zorunlu taşınırlar ve insansız hava araçları.
+          </li>
+          <li>
+            Teslim edilmiş cep telefonu, akıllı saat, tablet ve
+            bilgisayarlar.
+          </li>
+          <li>Canlı müzayede yoluyla akdedilen sözleşmeler.</li>
+          <li>
+            Kurulum veya montajı satıcı tarafından yapılan mallardan
+            kurulumu tamamlananlar.
           </li>
         </ul>
         <p>
-          Giyim ürünlerinde cayma hakkı; ürünün kullanılmamış, etiketi
-          sökülmemiş ve yeniden satılabilir durumda olması koşuluyla
-          kullanılabilir.
+          <strong>
+            Kozmetik ve kişisel bakım ürünlerinde cayma hakkı, ürünün
+            ambalajı açılmamış, bozulmamış ve kullanılmamış olması
+            şartına bağlıdır.
+          </strong>{" "}
+          Bu ürünler hijyen gereği açıldıktan sonra iade alınamaz.
+        </p>
+        <p>
+          İç giyim, mayo ve çorap gibi hijyenik ürünler de aynı kapsamda
+          değerlendirilir.
         </p>
       </InfoSection>
 
-      <InfoSection title="7. İade Masrafı">
+      <InfoSection title="7. Sipariş Sınırları">
+        <p>
+          Mağazamız yalnızca nihai tüketiciye perakende satış yapar.
+          Alıcı, siparişini kişisel kullanım amacıyla ve tüketici
+          sıfatıyla verdiğini kabul eder.
+        </p>
+        <p>
+          Kötüye kullanımı önlemek amacıyla aşağıdaki sınırlar
+          uygulanabilir:
+        </p>
+        <ul>
+          <li>Aynı gün içinde aynı karttan verilebilecek sipariş sayısı</li>
+          <li>Aynı üründen tek siparişte alınabilecek adet</li>
+          <li>Aynı gün içinde ulaşılabilecek toplam sipariş tutarı</li>
+        </ul>
+        <p>
+          Perakende satış niteliği taşımadığı açık olan siparişler ile
+          hileli olduğu tespit edilen işlemler Satıcı tarafından iptal
+          edilebilir. Bu durumda tahsil edilmiş tutar Alıcı&apos;ya iade
+          edilir.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="8. Ayıplı veya Hasarlı Teslimat">
+        <p>
+          Alıcı ya da teslimatı alan üçüncü kişi, kargoyu teslim alırken
+          paketin dış görünümünü kontrol etmelidir.
+        </p>
+        <p>
+          Kutunun açılmış, ezilmiş veya ıslanmış olması, üründe kırık ya
+          da eksik bulunması veya yanlış ürün gönderilmiş olması hâlinde:
+        </p>
+        <ul>
+          <li>
+            Mümkünse paketi açmadan kargo görevlisine tutanak tutturun.
+          </li>
+          <li>
+            Teslimattan itibaren 14 gün içinde {SELLER.email} adresine
+            sipariş numaranızla başvurun.
+          </li>
+          <li>Ürünün ve paketin fotoğraflarını ekleyin.</li>
+        </ul>
+        <p>
+          Talebiniz incelenir ve haklı bulunması hâlinde kargo masrafları
+          dâhil tüm ödemeleriniz, satın alırken kullandığınız ödeme
+          aracına iade edilir.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="9. İade Masrafı">
         <p>
           Cayma hakkının kullanılması hâlinde iade gönderim masrafı,
           Satıcı&apos;nın anlaşmalı kargo firması ile gönderilmesi
@@ -203,7 +306,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="8. Temerrüt Hâli">
+      <InfoSection title="10. Temerrüt Hâli">
         <p>
           Alıcı, kredi kartı ile yapmış olduğu işlemlerde temerrüde
           düşmesi hâlinde kart sahibi bankanın kendisi ile yapmış olduğu
@@ -213,7 +316,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="9. Yetkili Mahkeme">
+      <InfoSection title="11. Yetkili Mahkeme">
         <p>
           İşbu sözleşmeden doğan uyuşmazlıklarda, Ticaret Bakanlığı
           tarafından her yıl Aralık ayında ilan edilen parasal sınırlar
@@ -230,7 +333,25 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="10. Yürürlük">
+      <InfoSection title="12. Sözleşmenin Saklanması">
+        <p>
+          Bu sözleşme ve Ön Bilgilendirme Formu, siparişiniz onaylandıktan
+          sonra bildirdiğiniz e-posta adresine gönderilir. Belgeleri
+          saklamanızı öneririz.
+        </p>
+        <p>
+          Sözleşmenin bir örneği hesabınızdaki sipariş detayından da
+          görüntülenebilir. E-postanıza ulaşamamanız hâlinde{" "}
+          {SELLER.email} adresinden talep edebilirsiniz.
+        </p>
+        <p>
+          Sipariş anında yürürlükte olan sözleşme hükümleri o sipariş için
+          geçerlidir. Satıcı sözleşmeyi ileriye dönük olarak
+          değiştirebilir; değişiklik önceki siparişleri etkilemez.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="13. Yürürlük">
         <p>
           Alıcı, site üzerinden verdiği siparişe ait ödemeyi
           gerçekleştirdiğinde işbu sözleşmenin tüm koşullarını kabul etmiş
