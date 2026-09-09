@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { CartContext } from "@/components/cart";
+import { BankTransfer } from "@/components/bank-transfer";
+import { SELLER } from "@/lib/seller";
 import { formatPrice } from "@/lib/product-types";
 import { readCoupon, readNote } from "@/lib/cart-extras";
 import { getAuthClient } from "@/lib/auth-client";
@@ -51,6 +53,9 @@ export function CheckoutForm({
     privacy: false,
   });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  /* Banka havalesi seçilirse indirim uygulanıyor ve sipariş
+     "ödeme bekliyor" durumunda oluşuyor. */
+  const [useTransfer, setUseTransfer] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "error" | "paying">("idle");
   // Sepette girilen kupon ve not ödeme isteğine taşınır.
   const [coupon, setCoupon] = useState("");
@@ -141,6 +146,15 @@ export function CheckoutForm({
   const shipping = total >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FEE;
   const grand = total + shipping;
 
+  /*
+    Havale indirimi. Kartlı ödemede PayTR komisyonu var,
+    havalede yok; farkın bir kısmı müşteriye veriliyor.
+  */
+  const transferDiscount = useTransfer
+    ? Math.round((grand * SELLER.transferDiscountPercent) / 100)
+    : 0;
+  const payable = grand - transferDiscount;
+
   const ready = useMemo(
     () =>
       form.name.trim().length > 2 &&
@@ -184,6 +198,9 @@ export function CheckoutForm({
             postal: form.postal,
             country: "TR",
           },
+          /* Havale seçilirse sipariş ödeme beklemede oluşur. */
+          paymentMethod: useTransfer ? "havale" : "kart",
+          transferDiscount,
           items: items.map((item) => ({
             /*
               Varyant SKU'su varsa o gönderilir; ARC siparişi
@@ -203,7 +220,7 @@ export function CheckoutForm({
 
       const data = await response.json();
 
-      if (!response.ok || !data.iframeUrl) {
+      if (!response.ok || (!useTransfer && !data.iframeUrl)) {
         setState("error");
         setMessage(
           data.message ??
@@ -219,6 +236,16 @@ export function CheckoutForm({
         Yönlendirmede adres çubuğunda paytr.com görünüyordu;
         ödeme adımında alan adının değişmesi güven kırıcı.
       */
+      /*
+        Havalede PayTR sayfası açılmıyor: sipariş oluştu, müşteri
+        havaleyi kendi bankasından yapacak. Onay sayfasına
+        yönlendiriliyor.
+      */
+      if (useTransfer) {
+        window.location.href = `/siparis/tamam?no=${data.orderNumber}&yontem=havale`;
+        return;
+      }
+
       setIframeUrl(data.iframeUrl);
       setState("paying");
     } catch {
@@ -446,7 +473,21 @@ export function CheckoutForm({
         </section>
 
         <aside className="panel summary">
-          <h2>Sipariş özeti</h2>
+          <h2>Ödeme yöntemi</h2>
+
+          <BankTransfer
+            seller={{
+              legalName: SELLER.legalName,
+              bankName: SELLER.bankName,
+              iban: SELLER.iban,
+            }}
+            discountPercent={SELLER.transferDiscountPercent}
+            total={grand}
+            selected={useTransfer}
+            onSelect={setUseTransfer}
+          />
+
+          <h2 style={{ marginTop: "var(--s5)" }}>Sipariş özeti</h2>
 
           <ul className="summary-items">
             {items.map((item) => (
@@ -468,9 +509,15 @@ export function CheckoutForm({
               <dt>Kargo</dt>
               <dd>{shipping === 0 ? "Ücretsiz" : formatPrice(shipping)}</dd>
             </div>
+            {transferDiscount > 0 && (
+              <div>
+                <dt>Havale indirimi (%{SELLER.transferDiscountPercent})</dt>
+                <dd>−{formatPrice(transferDiscount)}</dd>
+              </div>
+            )}
             <div className="grand">
               <dt>Toplam</dt>
-              <dd>{formatPrice(grand)}</dd>
+              <dd>{formatPrice(payable)}</dd>
             </div>
           </dl>
 

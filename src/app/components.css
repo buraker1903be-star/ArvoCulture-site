@@ -4411,3 +4411,206 @@ button.search-box {
     height: 720px;
   }
 }
+
+/* ==========================================================
+   İade talebi
+   ========================================================== */
+
+.order-return {
+  margin-top: var(--s5);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line);
+}
+
+.return-form {
+  display: grid;
+  gap: var(--s3);
+  margin-top: var(--s3);
+}
+
+.return-items {
+  display: grid;
+  gap: var(--s2);
+}
+
+.return-items label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s3);
+  padding: var(--s3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: border-color 160ms var(--ease);
+}
+
+/* Seçili kalem belirgin: hangilerini iade ettiği net olmalı. */
+.return-items label:has(input:checked) {
+  border-color: var(--ink);
+  background: var(--panel-2);
+}
+
+.return-items input {
+  margin-top: 3px;
+  flex: none;
+}
+
+.return-items span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.return-items small {
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+}
+
+.return-form select,
+.return-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+  font-family: inherit;
+  font-size: var(--t-base);
+  color: var(--ink);
+}
+
+.return-form textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.return-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  flex-wrap: wrap;
+}
+
+.return-done {
+  display: grid;
+  gap: var(--s2);
+  margin-top: var(--s3);
+  padding: var(--s4);
+  border-radius: var(--r-sm);
+  background: var(--panel-2);
+}
+
+.return-done p {
+  margin: 0;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+/* ==========================================================
+   Ödeme yöntemi seçimi
+   ========================================================== */
+
+.pay-methods {
+  display: grid;
+  gap: var(--s2);
+  margin-bottom: var(--s4);
+}
+
+.pay-method {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s3);
+  padding: var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: border-color 160ms var(--ease), background-color 160ms var(--ease);
+}
+
+.pay-method[data-selected="true"] {
+  border-color: var(--ink);
+  background: var(--panel-2);
+}
+
+.pay-method input {
+  margin-top: 3px;
+  flex: none;
+}
+
+.pay-method span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pay-method small {
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+}
+
+.pay-method s {
+  color: var(--ink-3);
+}
+
+/* İndirim rozeti: havalenin avantajı ilk bakışta görünsün. */
+.pay-badge {
+  display: inline-block;
+  margin-left: var(--s2);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--sale);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  font-style: normal;
+  vertical-align: middle;
+}
+
+/* ---------- Banka bilgileri ------------------------------ */
+
+.pay-bank {
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel-2);
+}
+
+.pay-bank-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--line);
+}
+
+.pay-bank-row:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.pay-bank-row > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pay-bank-row small {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+}
+
+.pay-bank-row b {
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* IBAN tek satırda ve rakamlar hizalı okunsun. */
+.pay-iban {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}

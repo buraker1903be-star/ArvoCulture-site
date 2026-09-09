@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SELLER } from "@/lib/seller";
 
 export const metadata = {
   title: "Siparişiniz alındı",
@@ -16,9 +17,9 @@ export const metadata = {
 export default async function OrderDone({
   searchParams,
 }: {
-  searchParams: Promise<{ no?: string }>;
+  searchParams: Promise<{ no?: string; yontem?: string }>;
 }) {
-  const { no } = await searchParams;
+  const { no, yontem } = await searchParams;
 
   return (
     <main className="shell">
@@ -34,6 +35,68 @@ export default async function OrderDone({
         gönderilecek. Siparişinizle ilgili sorularınız için sipariş
         numaranızla bize ulaşabilirsiniz.
       </p>
+      {/*
+
+        Havale siparişinde banka bilgileri onay sayfasında da
+
+        gösteriliyor: müşteri e-postayı beklemeden ödeyebilsin.
+
+      */}
+
+      {yontem === "havale" && (
+
+        <div className="pay-bank" style={{ marginTop: "var(--s4)" }}>
+
+          <p className="hint">
+
+            Siparişiniz oluşturuldu. Aşağıdaki hesaba havale veya EFT
+
+            yaptığınızda hazırlanmaya başlanacak. Açıklama kısmına
+
+            sipariş numaranızı yazın.
+
+          </p>
+
+          <div className="pay-bank-row">
+
+            <div>
+
+              <small>ALICI UNVANI</small>
+
+              <b>{SELLER.legalName}</b>
+
+            </div>
+
+          </div>
+
+          <div className="pay-bank-row">
+
+            <div>
+
+              <small>BANKA</small>
+
+              <b>{SELLER.bankName}</b>
+
+            </div>
+
+          </div>
+
+          <div className="pay-bank-row">
+
+            <div>
+
+              <small>IBAN</small>
+
+              <b className="pay-iban">{SELLER.iban}</b>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
       <div className="order-actions">
         <Link className="btn" href="/koleksiyon/tumu">
           Alışverişe devam et

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ReturnRequest } from "@/components/return-request";
 import { getAuthClient } from "@/lib/auth-client";
 import { formatPrice } from "@/lib/product-types";
 import {
@@ -153,6 +154,32 @@ export function OrderDetail({
               );
             })}
           </ul>
+
+          {/*
+            İade talebi. Yalnızca ödemesi tamamlanmış siparişte
+            görünüyor; iptal edilmiş siparişte iade edilecek bir
+            şey yok.
+          */}
+          {/*
+            Koşul gevşek tutuldu: ödeme durumu kaynağa göre
+            farklı yazılabiliyor. İptal ve iade edilmiş
+            siparişlerde gösterilmiyor.
+          */}
+          {!["cancelled", "refunded"].includes(order.status) && (
+            <div className="order-return">
+              <ReturnRequest
+                orderNumber={order.order_number}
+                items={order.items.map((item) => ({
+                  sku: item.sku ?? "",
+                  name: item.name,
+                  quantity: item.quantity,
+                  total: item.total,
+                }))}
+                supabaseUrl={supabaseUrl}
+                supabaseKey={supabaseKey}
+              />
+            </div>
+          )}
         </section>
 
         <aside className="panel detail-side">

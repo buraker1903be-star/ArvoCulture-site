@@ -27,6 +27,12 @@ export const SELLER = {
 
   website: "https://arvoculture.com",
 
+  /* Banka havalesi bilgileri. Havalede PayTR komisyonu
+     olmadığı için müşteriye indirim veriliyor. */
+  bankName: "TÜRKİYE GARANTİ BANKASI A.Ş.",
+  iban: "TR29 0006 2001 1510 0006 2901 32",
+  transferDiscountPercent: 3,
+
   /* Teslimat ve iade koşulları. Değişirse SSS ve güvence
      şeridiyle birlikte güncellenmelidir. */
   shippingFee: "120 TL",
