@@ -34,8 +34,18 @@ export function ProductCard({ product }: { product: Product }) {
         data-art={product.artStyle}
       >
         <span className="card-flags">
-          {off > 0 && <b className="tag tag-sale">%{off} indirim</b>}
-          {product.bestSeller && <b className="tag tag-best">Çok satan</b>}
+          {/*
+            Tükendi rozeti önce gelir: müşteri indirimi görüp
+            tıkladıktan sonra satın alamayacağını öğrenmemeli.
+          */}
+          {product.available === false ? (
+            <b className="tag tag-out">Tükendi</b>
+          ) : (
+            <>
+              {off > 0 && <b className="tag tag-sale">%{off} indirim</b>}
+              {product.bestSeller && <b className="tag tag-best">Çok satan</b>}
+            </>
+          )}
         </span>
         {/*
           Dokunmatikte kaydırılabilir galeri, masaüstünde tek

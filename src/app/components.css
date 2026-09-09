@@ -4370,3 +4370,16 @@ button.search-box {
     opacity: 1 !important;
   }
 }
+
+/* Tükendi rozeti. Diğer rozetlerden ayrışsın: satın alınamayan
+   ürün indirim rozetiyle karışmamalı. */
+.tag-out {
+  background: var(--ink-3);
+  color: #fff;
+}
+
+/* Tükenen kartta görsel soluk: listede tarama sırasında ayırt
+   edilsin. */
+.card:has(.tag-out) .card-art {
+  opacity: 0.62;
+}
