@@ -69,6 +69,32 @@ export default async function LegalNoticePage() {
         </p>
       </InfoSection>
 
+      <InfoSection title="ETBİS Kaydı">
+        <p>
+          Mağazamız Elektronik Ticaret Bilgi Sistemi&apos;ne (ETBİS)
+          kayıtlıdır. Kayıt doğrulaması için sitenin alt kısmındaki ETBİS
+          bandını kullanabilirsiniz.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Şikâyet Mercileri">
+        <p>
+          Tüketici uyuşmazlıklarında, parasal sınırlar dâhilinde
+          bulunduğunuz yerdeki İl veya İlçe Tüketici Hakem Heyeti&apos;ne,
+          sınırın üzerindeki uyuşmazlıklarda Tüketici Mahkemeleri&apos;ne
+          başvurabilirsiniz.
+        </p>
+        <p>
+          Elektronik ticarete ilişkin şikâyetlerinizi Ticaret
+          Bakanlığı&apos;na iletebilirsiniz.
+        </p>
+        <p>
+          Bize doğrudan ulaşmak isterseniz {SELLER.email} adresini
+          kullanabilirsiniz; başvurularınız en geç on beş gün içinde
+          yanıtlanır.
+        </p>
+      </InfoSection>
+
       <InfoSection title="Fikri Mülkiyet">
         <p>
           Sitede yer alan marka, logo, tasarım, metin ve görseller{" "}

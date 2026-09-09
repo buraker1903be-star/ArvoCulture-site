@@ -103,6 +103,38 @@ export default async function PreInfoPage() {
         </p>
       </InfoSection>
 
+      <InfoSection title="Cayma Hakkının Kullanılamayacağı Hâller">
+        <p>
+          Mesafeli Sözleşmeler Yönetmeliği&apos;nin 15. maddesi uyarınca
+          bazı ürünlerde cayma hakkı kullanılamaz. Katalogumuzda bu
+          kapsama girenler:
+        </p>
+        <ul>
+          <li>
+            Ambalajı, bandı veya mührü açılmış kozmetik ve kişisel bakım
+            ürünleri
+          </li>
+          <li>İç giyim, mayo, çorap gibi hijyenik ürünler</li>
+          <li>Gıda takviyeleri</li>
+          <li>Kişiye özel hazırlanan ürünler</li>
+        </ul>
+        <p>
+          Tam liste{" "}
+          <Link href="/mesafeli-satis-sozlesmesi">
+            Mesafeli Satış Sözleşmesi
+          </Link>{" "}
+          sayfasındadır.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Sözleşmenin Saklanması">
+        <p>
+          Bu form ve Mesafeli Satış Sözleşmesi, siparişiniz onaylandıktan
+          sonra e-posta adresinize gönderilir. Hesabınızdaki sipariş
+          detayından da görüntüleyebilirsiniz.
+        </p>
+      </InfoSection>
+
       <InfoSection title="Şikâyet ve İtiraz">
         <p>
           Uyuşmazlık hâlinde, parasal sınırlar dâhilinde yerleşim

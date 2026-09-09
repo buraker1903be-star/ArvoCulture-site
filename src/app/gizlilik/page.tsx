@@ -86,6 +86,28 @@ export default async function PrivacyPage() {
         </p>
       </InfoSection>
 
+      <InfoSection title="Kullandığımız Çerez Türleri">
+        <p>
+          <strong>Zorunlu çerezler.</strong> Oturum açma, sepet ve
+          güvenlik için gereklidir. Bunlar olmadan site çalışmaz ve
+          kapatılamazlar. Oturum süresince ya da en fazla bir yıl saklanır.
+        </p>
+        <p>
+          <strong>İşlevsel çerezler.</strong> Dil tercihi, favori
+          ürünleriniz ve son gezdiğiniz ürünler gibi seçimlerinizi
+          hatırlar. Tarayıcınızda tutulur; sunucumuza gönderilmez.
+        </p>
+        <p>
+          <strong>Analitik çerezler.</strong> Hangi sayfaların
+          görüntülendiğini anlamak için kullanılır. Kimliğinizi tespit
+          etmeye yönelik değildir.
+        </p>
+        <p>
+          Reklam veya izleme amaçlı üçüncü taraf çerezleri
+          kullanmıyoruz.
+        </p>
+      </InfoSection>
+
       <InfoSection title="Üçüncü Taraf Hizmetleri">
         <p>
           Ödeme (PayTR), barındırma ve kargo hizmetleri için üçüncü taraf

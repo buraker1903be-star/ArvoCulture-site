@@ -180,6 +180,40 @@ export default async function KvkkPage() {
         </ul>
       </InfoSection>
 
+      <InfoSection title="Otomatik Karar ve Profilleme">
+        <p>
+          Alışveriş geçmişinize göre ürün önerisi gösterebiliriz. Bu
+          öneriler yalnızca site içi deneyimi kişiselleştirmek içindir.
+        </p>
+        <p>
+          Hakkınızda hukuki sonuç doğuran ya da sizi önemli ölçüde
+          etkileyen otomatik bir karar verilmez. Sipariş iptali gibi
+          kararlar insan incelemesiyle alınır.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Yurt Dışına Aktarım">
+        <p>
+          Sitemizin altyapısı ve e-posta gönderimi için kullandığımız
+          hizmet sağlayıcıların sunucuları yurt dışında bulunabilir. Bu
+          kapsamda kişisel verileriniz KVKK&apos;nın 9. maddesindeki
+          şartlara uygun olarak yurt dışına aktarılabilir.
+        </p>
+        <p>
+          Aktarım, hizmetin sunulabilmesi için gereken asgari veriyle
+          sınırlıdır ve sağlayıcılarla veri işleme sözleşmeleri
+          yapılmıştır.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="Veri Güvenliği İhlali">
+        <p>
+          Kişisel verilerinizin hukuka aykırı olarak başkaları tarafından
+          elde edilmesi hâlinde, durum en kısa sürede size ve Kişisel
+          Verileri Koruma Kurulu&apos;na bildirilir.
+        </p>
+      </InfoSection>
+
       <InfoSection title="Başvuru">
         <p>
           Haklarınıza ilişkin taleplerinizi {SELLER.email} adresine
