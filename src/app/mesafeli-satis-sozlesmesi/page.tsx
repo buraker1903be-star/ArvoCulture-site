@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { InfoPage, InfoSection } from "@/components/info-page";
-import { SELLER } from "@/lib/seller";
+import { getSeller } from "@/lib/seller-source";
 
 export const metadata: Metadata = {
   title: "Mesafeli Satış Sözleşmesi",
@@ -19,7 +19,14 @@ export const metadata: Metadata = {
  * ve kayıtlı kargo firması bilgileri işletmenin fiili
  * uygulamasıyla örtüşmelidir.
  */
-export default function DistanceSalesPage() {
+/*
+  Satıcı bilgileri veritabanından okunuyor: her mağaza
+  kendi unvanı ve adresiyle görünmeli. Sabit dosya
+  ArvoCulture'a özeldi.
+*/
+export default async function DistanceSalesPage() {
+  const SELLER = await getSeller();
+
   return (
     <InfoPage
       eyebrow="Yasal"
