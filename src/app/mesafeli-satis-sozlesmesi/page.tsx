@@ -109,69 +109,163 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="4. Genel Hükümler">
+      <InfoSection title="4. Ürün Fiyatı ve Ödeme">
         <p>
-          Alıcı, sözleşme konusu ürünün temel nitelikleri, satış fiyatı,
-          ödeme şekli ve teslimata ilişkin ön bilgileri okuyup bilgi
-          sahibi olduğunu ve elektronik ortamda gerekli teyidi verdiğini
-          beyan eder.
+          Sitede yer alan ürünlere, siparişin verildiği anda geçerli olan
+          ve Türk Lirası cinsinden belirtilen satış fiyatları uygulanır.
+          Fiyatlar zaman zaman değiştirilebilir; değişiklik önceden
+          verilmiş siparişleri etkilemez.
         </p>
         <p>
-          Sözleşme konusu ürün, yasal {SELLER.deliveryDaysMax} günlük süreyi
-          aşmamak koşuluyla Alıcı&apos;nın belirttiği adrese teslim edilir.
-          Bu süre içinde teslim edilememesi hâlinde Alıcı sözleşmeyi
-          feshedebilir ve ödediği tutarın iadesini talep edebilir.
+          <strong>Belirtilen fiyatlara KDV dâhildir.</strong> Kargo ücreti
+          dâhil değildir ve sipariş onaylanmadan önce ayrıca gösterilir.
+          {SELLER.freeShippingThreshold
+            ? " Belirlenen tutarın üzerindeki siparişlerde kargo ücretsizdir."
+            : ""}
         </p>
         <p>
-          Ürünün tesliminden sonra Alıcı&apos;ya ait kredi kartının
-          Alıcı&apos;nın kusurundan kaynaklanmayan bir şekilde yetkisiz
-          kişilerce haksız veya hukuka aykırı olarak kullanılması nedeniyle
-          ilgili banka veya finans kuruluşunun ürün bedelini Satıcı&apos;ya
-          ödememesi hâlinde, ürünün Alıcı&apos;ya teslim edilmiş olması
-          kaydıyla ürün Satıcı&apos;ya iade edilir.
+          Ödeme, 3D Secure korumalı sanal POS altyapısı üzerinden kredi
+          kartı veya banka kartıyla yapılır. Kart bilgileriniz
+          sunucularımıza hiçbir aşamada ulaşmaz; doğrudan ödeme
+          kuruluşuna iletilir.
         </p>
         <p>
-          Sözleşme konusu ürünün Alıcı&apos;dan başka bir kişiye teslim
-          edilecek olması hâlinde, teslim edilecek kişinin teslimatı kabul
-          etmemesinden Satıcı sorumlu tutulamaz.
+          Herhangi bir nedenle ürün bedelinin tamamı ya da bir kısmı
+          ödenmez veya banka kayıtlarında iptal edilirse, Satıcı siparişi
+          ifa etme yükümlülüğünden kurtulmuş sayılır.
         </p>
         <p>
-          Satıcı, sipariş konusu ürünün tedarikinin imkânsızlaştığı
-          durumlarda bu durumu öğrendiği tarihten itibaren üç gün içinde
-          Alıcı&apos;ya yazılı olarak bildirir ve varsa teslimat masrafları
-          da dâhil olmak üzere tahsil edilen tüm ödemeleri en geç on dört
-          gün içinde iade eder.
-        </p>
-      </InfoSection>
-
-      <InfoSection title="5. Cayma Hakkı">
-        <p>
-          Alıcı, sözleşme konusu ürünün kendisine veya gösterdiği adresteki
-          kişiye tesliminden itibaren {SELLER.withdrawalDays} gün içinde
-          hiçbir gerekçe göstermeksizin ve cezai şart ödemeksizin cayma
-          hakkına sahiptir.
-        </p>
-        <p>
-          Cayma hakkının kullanıldığına dair bildirimin bu süre içinde{" "}
-          {SELLER.email} adresine yazılı olarak veya kalıcı veri
-          saklayıcısı ile iletilmesi yeterlidir.
-        </p>
-        <p>
-          Cayma hakkının kullanılması hâlinde ürünün Satıcı&apos;ya iade
-          edilmesi zorunludur. Ürünün kutusu, ambalajı, varsa standart
-          aksesuarları ile birlikte eksiksiz ve hasarsız olarak teslim
-          edilmesi gerekir.
-        </p>
-        <p>
-          Satıcı, cayma bildiriminin kendisine ulaşmasından itibaren on
-          dört gün içinde ürün bedelini ve varsa teslimat masraflarını
-          Alıcı&apos;ya iade eder. İade, ödemenin yapıldığı yöntemle
-          gerçekleştirilir. Kredi kartıyla yapılan ödemelerde tutarın
-          karta yansıma süresi bankaya bağlıdır.
+          Ürünün tesliminden sonra Alıcı&apos;ya ait kartın Alıcı&apos;nın
+          kusuru olmaksızın yetkisiz kişilerce kullanılması nedeniyle
+          banka ya da finans kuruluşunun bedeli Satıcı&apos;ya ödememesi
+          hâlinde, ürün teslim edilmiş olmak kaydıyla Satıcı&apos;ya iade
+          edilir.
         </p>
       </InfoSection>
 
-      <InfoSection title="6. Cayma Hakkının Kullanılamayacağı Hâller">
+      <InfoSection title="5. Ürün Bilgileri ve Stok">
+        <p>
+          Ürünlerin temel nitelikleri, satış fiyatı ve içeriği ürün
+          sayfasında yer alır. Bilgiler özenle hazırlanır; yine de baskı,
+          sistem ya da tedarik kaynaklı hata oluşabilir.
+        </p>
+        <p>
+          Ürün görselleri tanıtım amaçlıdır. Ekran ayarlarına bağlı olarak
+          renklerde farklılık görülebilir.
+        </p>
+        <p>
+          Stok bilgisi sipariş anında gösterilir. Teknik nedenlerle
+          istisnai olarak hata oluşabilir. Ürünün bir kısmının ya da
+          tamamının stokta bulunmadığının sonradan anlaşılması hâlinde
+          durum Alıcı&apos;ya bildirilir; siparişin ilgili kısmı iptal
+          edilir ve tahsil edilmiş tutar iade edilir.
+        </p>
+        <p>
+          Kampanya, indirim ve özel teklifler belirtilen tarihlerde
+          ve/veya stoklar tükenene kadar geçerlidir.
+        </p>
+        <p>
+          Satıcı, fiyat ya da stok bilgisinde açık maddi hata bulunması
+          hâlinde siparişi iptal etme hakkını saklı tutar. Bu durumda
+          tahsil edilmiş tutar iade edilir.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="6. Siparişin Kurulması">
+        <p>
+          Alıcı, siparişini onaylamadan önce sepetindeki ürünleri, adet
+          ve tutarları ile teslimat bilgilerini kontrol edebilir ve
+          düzeltebilir.
+        </p>
+        <p>
+          Sözleşme, Alıcı&apos;nın ödeme adımını onaylamasıyla kurulur.
+          Alıcı bu onayla birlikte ödeme yükümlülüğü altına girdiğini
+          kabul eder.
+        </p>
+        <p>
+          Sipariş onayının ardından Ön Bilgilendirme Formu ve bu sözleşme,
+          Alıcı&apos;nın bildirdiği e-posta adresine gönderilir.
+          Belgelerin saklanması önerilir.
+        </p>
+        <p>
+          E-posta adresinin hatalı bildirilmesi veya erişim sorunları
+          nedeniyle bildirimlerin ulaşmamasından Satıcı sorumlu değildir.
+          Bu durumda da onaylanmış sipariş geçerli sayılır.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="7. Teslimat">
+        <p>
+          Sipariş, ödemenin onaylanmasından sonra hazırlanır ve yasal
+          süreyi aşmamak kaydıyla, her hâlükârda siparişin Satıcı&apos;ya
+          ulaştığı tarihten itibaren en geç {SELLER.deliveryDaysMax} gün
+          içinde Alıcı&apos;nın bildirdiği adrese teslim edilir.
+        </p>
+        <p>
+          Satıcı ürünün sağlam, eksiksiz, siparişte belirtilen niteliklere
+          uygun ve varsa garanti belgeleriyle birlikte teslim
+          edilmesinden sorumludur.
+        </p>
+        <p>
+          Teslimatın Alıcı&apos;dan başka bir kişiye yapılacak olması
+          hâlinde, teslim alacak kişinin kabul etmemesinden Satıcı
+          sorumlu tutulamaz.
+        </p>
+        <p>
+          Mücbir sebep hâllerinde Satıcı durumu Alıcı&apos;ya bildirir.
+          Alıcı bu durumda siparişi iptal edip bedelin iadesini isteyebilir
+          ya da engel ortadan kalkana kadar teslimatın ertelenmesini kabul
+          edebilir.
+        </p>
+        <p>
+          Ürünün tedarikinin imkânsızlaştığı hâllerde Satıcı bu durumu
+          öğrendiği tarihten itibaren üç gün içinde Alıcı&apos;ya bildirir
+          ve tahsil edilen tutarı en geç on dört gün içinde iade eder.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="8. Cayma Hakkı">
+        <p>
+          Alıcı, ürünü teslim aldığı ya da ürünün gönderildiği üçüncü
+          kişiye teslim edildiği tarihten itibaren{" "}
+          <strong>{SELLER.withdrawalDays} gün</strong> içinde, hiçbir gerekçe
+          göstermeksizin ve cezai şart ödemeksizin sözleşmeden cayabilir.
+        </p>
+        <p>
+          Cayma hakkı, sözleşmenin kurulmasından ürünün teslimine kadar
+          olan süre içinde de kullanılabilir.
+        </p>
+        <p>
+          <strong>Nasıl kullanılır:</strong> Hesabınızdaki sipariş
+          detayından iade talebi oluşturabilir ya da {SELLER.email}{" "}
+          adresine sipariş numaranızla yazabilirsiniz. Cayma bildiriminin
+          süre içinde yapılmış olması yeterlidir.
+        </p>
+        <p>
+          Ürünü, cayma bildiriminden itibaren on gün içinde Satıcı&apos;ya
+          göndermeniz gerekir. Ürünün kutusu, ambalajı, varsa standart
+          aksesuarları ve faturasıyla birlikte, satılabilirliğini
+          yitirmemiş olarak iade edilmesi gerekir.
+        </p>
+        <p>
+          <strong>İade süresi:</strong> Cayma bildirimi Satıcı&apos;ya
+          ulaştıktan sonra en geç on dört gün içinde, teslimat masrafları
+          dâhil tüm ödemeleriniz, satın alırken kullandığınız ödeme
+          aracına iade edilir.
+        </p>
+        <p>
+          İade tutarının kartınıza yansıma süresi bankanıza bağlıdır;
+          bu süredeki gecikmelerden Satıcı sorumlu tutulamaz.
+        </p>
+        <p>
+          Ürünün kullanımdan doğan değer kaybı olması hâlinde, kaybın
+          bedeli iade tutarından düşülebilir. Ürünün niteliği, özellikleri
+          ve işleyişini anlamak için yapılan olağan kullanım bu kapsamda
+          değildir.
+        </p>
+      </InfoSection>
+
+      <InfoSection title="9. Cayma Hakkının Kullanılamayacağı Hâller">
         <p>
           Mesafeli Sözleşmeler Yönetmeliği&apos;nin 15. maddesi uyarınca
           aşağıdaki sözleşmelerde cayma hakkı kullanılamaz:
@@ -243,7 +337,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="7. Sipariş Sınırları">
+      <InfoSection title="10. Sipariş Sınırları">
         <p>
           Mağazamız yalnızca nihai tüketiciye perakende satış yapar.
           Alıcı, siparişini kişisel kullanım amacıyla ve tüketici
@@ -266,7 +360,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="8. Ayıplı veya Hasarlı Teslimat">
+      <InfoSection title="11. Ayıplı veya Hasarlı Teslimat">
         <p>
           Alıcı ya da teslimatı alan üçüncü kişi, kargoyu teslim alırken
           paketin dış görünümünü kontrol etmelidir.
@@ -292,7 +386,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="9. İade Masrafı">
+      <InfoSection title="12. İade Masrafı">
         <p>
           Cayma hakkının kullanılması hâlinde iade gönderim masrafı,
           Satıcı&apos;nın anlaşmalı kargo firması ile gönderilmesi
@@ -306,7 +400,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="10. Temerrüt Hâli">
+      <InfoSection title="13. Temerrüt Hâli">
         <p>
           Alıcı, kredi kartı ile yapmış olduğu işlemlerde temerrüde
           düşmesi hâlinde kart sahibi bankanın kendisi ile yapmış olduğu
@@ -316,7 +410,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="11. Yetkili Mahkeme">
+      <InfoSection title="14. Yetkili Mahkeme">
         <p>
           İşbu sözleşmeden doğan uyuşmazlıklarda, Ticaret Bakanlığı
           tarafından her yıl Aralık ayında ilan edilen parasal sınırlar
@@ -333,7 +427,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="12. Sözleşmenin Saklanması">
+      <InfoSection title="15. Sözleşmenin Saklanması">
         <p>
           Bu sözleşme ve Ön Bilgilendirme Formu, siparişiniz onaylandıktan
           sonra bildirdiğiniz e-posta adresine gönderilir. Belgeleri
@@ -351,7 +445,7 @@ export default async function DistanceSalesPage() {
         </p>
       </InfoSection>
 
-      <InfoSection title="13. Yürürlük">
+      <InfoSection title="16. Yürürlük">
         <p>
           Alıcı, site üzerinden verdiği siparişe ait ödemeyi
           gerçekleştirdiğinde işbu sözleşmenin tüm koşullarını kabul etmiş
