@@ -4302,17 +4302,15 @@ button.search-box {
 }
 
 /*
-  Görseller üst üste; yalnızca etkin olan görünür. Yatay
-  kaydırma konteyneri kullanmak kart bağlantısının dokunma
-  davranışıyla çakışıyordu.
+  Görseller üst üste; yalnızca etkin olan görünür. Opaklık
+  bileşende satır içi stille veriliyor — burada tanımlandığında
+  `.card-art img` kuralları tarafından eziliyordu.
+
+  Yatay kaydırma konteyneri kullanılmadı: kart bağlantısının
+  dokunma davranışıyla çakışıyordu.
 */
 .card-gallery .card-img {
-  opacity: 0;
   transition: opacity 260ms var(--ease);
-}
-
-.card-gallery .card-img[data-shown="true"] {
-  opacity: 1;
 }
 
 /* Noktalar: kaç görsel var, hangisindeyiz. */
@@ -4362,8 +4360,13 @@ button.search-box {
   Masaüstünde hover davranışı korunur: ikinci görsel üstte
   belirir, galeri noktaları gizli kalır.
 */
+/*
+  Masaüstünde üzerine gelince ikinci görsel belirir. Satır içi
+  stili ezmek için `!important` gerekiyor; hover davranışı
+  bileşenin bilmediği bir durum.
+*/
 @media (hover: hover) {
   .card-art:hover .card-gallery .card-img:nth-child(2) {
-    opacity: 1;
+    opacity: 1 !important;
   }
 }

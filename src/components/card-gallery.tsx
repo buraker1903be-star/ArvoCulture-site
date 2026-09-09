@@ -83,7 +83,13 @@ export function CardGallery({
           alt={position === 0 ? alt : ""}
           fill
           sizes={sizes}
-          data-shown={position === index ? "true" : undefined}
+          /*
+            Görünürlük satır içi stille veriliyor. Öznitelik
+            seçicisiyle yazıldığında kart görselleri boş
+            çıkıyordu: `.card-art img` kuralları daha güçlü
+            eşleşiyor ve opaklığı eziyordu.
+          */
+          style={{ opacity: position === index ? 1 : 0 }}
           /* İlk görsel öncelikli; diğerleri kaydırınca yüklenir. */
           loading={position === 0 ? undefined : "lazy"}
         />
