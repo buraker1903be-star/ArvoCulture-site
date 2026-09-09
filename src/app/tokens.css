@@ -1,33 +1,72 @@
 /* ==========================================================
    ArvoCulture — tasarım belirteçleri
    Tek kaynak. Bileşenlerde sabit değer yazılmaz.
+
+   Yön: editoryal lüks. Fildişi zemin, derin zeytin, altın
+   kıl payı çizgiler. Az renk, çok boşluk, ince kontur.
    ========================================================== */
 
 :root {
   /* --- Renk --------------------------------------------- */
-  --ink: #14161a;
-  --ink-2: #5a5f66;
-  --ink-3: #8f949b;
-  --line: #e8e8e4;
+  /*
+    DİKKAT: `--ink` ARC panelinden <body> üzerine satır içi
+    yazılıyor (theme.primary_color). Buradaki değer yalnızca
+    panel bir renk vermezse geçerlidir; canlıda panel kazanır.
+    Bu yüzden paletin geri kalanı --ink'e bağlı kurulmadı.
+  */
+  --ink: #191b16;
+  --ink-2: #5c6055;         /* ikincil metin */
+  --ink-3: #8d9184;         /* üçüncül: etiket, üstü çizili fiyat */
+
+  /*
+    Çizgiler sıcak. Nötr gri bir hairline, fildişi zeminin
+    üzerinde mavi görünüyordu.
+  */
+  --line: #e5e0d5;
+  --line-soft: #efebe2;
+
   --panel: #ffffff;
-  --panel-2: #faf9f7;
-  --brand: #4a5d3f;
-  --sale: #c62d24;          /* indirim — Türkiye'de beklenen kırmızı */
-  --ok: #2f7d4a;
-  --gold: #b08d3f;
+  --panel-2: #faf8f3;
+
+  --brand: #3d4a33;         /* derin zeytin */
+  --brand-soft: #6f7d62;
+
+  /*
+    İndirim rengi tuğlaya çekildi. Parlak kırmızı pazarlık
+    hissi veriyordu; bu ton hâlâ "indirim" diye okunuyor ama
+    fildişi zeminle kavga etmiyor.
+  */
+  --sale: #a3342a;
+  --ok: #2f6b46;
+
+  /* Altın yalnızca kıl payı çizgi ve küçük vurgu içindir.
+     Zemin ya da buton olarak kullanılmaz; ucuzlar. */
+  --gold: #a98634;
+  --gold-soft: rgba(169, 134, 52, 0.28);
 
   /* Sabit arka plan katmanı. Paneller bunun üzerinde yüzer. */
-  --backdrop-1: #f4f3ef;
-  --backdrop-2: #eceae4;
-  --motif: rgba(74, 93, 63, 0.09);
+  --backdrop-1: #f7f4ed;
+  --backdrop-2: #efeae0;
 
   /* --- Tipografi ---------------------------------------- */
-  --t-hero: clamp(32px, 4.6vw, 54px);
-  --t-h2: clamp(19px, 2vw, 25px);
+  /*
+    Başlıklar serif, gövde sans. Değişkenleri next/font <body>
+    üzerinde tanımlıyor; bu yüzden :root'ta bir ara değişkene
+    sarılmaz, kullanıldıkları yerde doğrudan çağrılır.
+
+    Serif'in x-yüksekliği sans'tan küçük: aynı punto daha ufak
+    görünür. Başlık ölçeği bu yüzden eski değerlerin üzerine
+    çıkarıldı.
+  */
+  --t-hero: clamp(40px, 5.6vw, 76px);
+  --t-h2: clamp(26px, 2.9vw, 38px);
   --t-h3: 15px;
   --t-body: 14px;
   --t-sm: 13px;
   --t-xs: 11px;
+
+  /* Üst etiketler (eyebrow) için ortak harf aralığı. */
+  --track: 0.18em;
 
   /* --- Boşluk ------------------------------------------- */
   --s1: 4px;
@@ -37,11 +76,15 @@
   --s5: 24px;
   --s6: 32px;
   --s7: 48px;
+  --s8: 72px;
 
-  /* Panel iç dolgusu ve paneller arası boşluk. */
-  --pad: clamp(18px, 2.6vw, 34px);
-  --gap: clamp(12px, 1.4vw, 18px);
-  --edge: clamp(10px, 1.6vw, 22px);
+  /*
+    Panel iç dolgusu ve paneller arası boşluk. İkisi de büyüdü:
+    lüks his büyük ölçüde boşluktan gelir, süslemeden değil.
+  */
+  --pad: clamp(22px, 3.2vw, 48px);
+  --gap: clamp(16px, 1.9vw, 26px);
+  --edge: clamp(12px, 1.8vw, 26px);
 
   /*
     Site genişliği. Header, footer ve mega menü tam genişlikte
@@ -52,14 +95,26 @@
   --shell-max: 1600px;
   --rail: max(var(--edge), calc((100% - var(--shell-max)) / 2 + var(--edge)));
 
-  --r: 14px;              /* panel yarıçapı */
-  --r-sm: 8px;
+  /*
+    Yarıçap küçüldü. 14px'lik köşe uygulama arayüzü gibi
+    okunuyordu; editoryal düzen keskin köşe ve ince çizgiyle
+    çalışır.
+  */
+  --r: 4px;
+  --r-sm: 3px;
+  --r-pill: 999px;          /* yalnızca sayaç/rozet gibi yuvarlaklar */
 
-  /* Yüzme hissi tek bir gölge tanımından gelir. */
-  --float: 0 1px 2px rgba(16, 18, 15, 0.06),
-           0 10px 30px rgba(16, 18, 15, 0.10);
-  --float-lg: 0 2px 4px rgba(16, 18, 15, 0.08),
-              0 24px 60px rgba(16, 18, 15, 0.16);
+  /*
+    Gölge geri çekildi, sınırı artık çizgi taşıyor. Ağır gölge
+    panelleri zeminden koparıp "kart" gibi gösteriyordu; burada
+    paneller kâğıt gibi durmalı.
+  */
+  --float: 0 1px 1px rgba(25, 27, 22, 0.03),
+           0 10px 24px rgba(25, 27, 22, 0.05);
+  --float-lg: 0 2px 3px rgba(25, 27, 22, 0.05),
+              0 26px 60px rgba(25, 27, 22, 0.11);
 
   --ease: cubic-bezier(0.2, 0, 0.2, 1);
+  /* Uzun, yumuşak duruş: giriş animasyonları için. */
+  --ease-out: cubic-bezier(0.16, 0.84, 0.24, 1);
 }

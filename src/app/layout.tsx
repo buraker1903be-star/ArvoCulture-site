@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import "./globals.css";
@@ -16,12 +16,34 @@ import { JsonLd } from "@/components/json-ld";
 import { storeSchema } from "@/lib/seo";
 import { env } from "@/lib/env";
 
-const poppins = Poppins({
+/**
+ * İki font, iki iş.
+ *
+ * Poppins tek başına her yeri taşıyordu. Geometrik ve yuvarlak bir
+ * yazı karakteri; samimi görünüyor ama başlıkta da fiyatta da aynı
+ * sesle konuştuğu için sayfada hiyerarşi bırakmıyordu.
+ *
+ * Şimdi başlıklar Cormorant Garamond ile yazılıyor: ince/kalın
+ * geçişleri belirgin, klasik bir serif. Lüks hissi buradan gelir.
+ * Gövde ve arayüz Inter'e geçti: karaktersiz olması bilinçli, küçük
+ * puntoda okunaklı ve serifin önüne geçmiyor.
+ *
+ * İkisinde de `latin-ext` şart: ı, İ, ğ, ş, ç Türkçe metinde bu
+ * altkümeden gelir.
+ */
+const display = Cormorant_Garamond({
   subsets: ["latin", "latin-ext"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-poppins",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-display",
   display: "swap",
-  // Yedek font metrikleriyle eşleştirilir; Poppins yüklenirken
+});
+
+const sans = Inter({
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-sans",
+  display: "swap",
+  // Yedek font metrikleriyle eşleştirilir; Inter yüklenirken
   // sayfanın zıplamasını (layout shift) engeller.
   adjustFontFallback: true,
 });
@@ -88,7 +110,7 @@ export default async function RootLayout({
     <html lang="tr">
       <body
         style={style}
-        className={`${poppins.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio}`}
+        className={`${sans.variable} ${display.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio}`}
       >
         <CartProvider discounts={discounts}>
           <Header theme={theme} collections={collections} />
