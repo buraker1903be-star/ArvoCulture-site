@@ -33,20 +33,22 @@ export function ProductCard({ product }: { product: Product }) {
         */
         data-art={product.artStyle}
       >
-        <span className="card-flags">
-          {/*
-            Tükendi rozeti önce gelir: müşteri indirimi görüp
-            tıkladıktan sonra satın alamayacağını öğrenmemeli.
-          */}
-          {product.available === false ? (
+        {/*
+          Görselin üzerinde artık yalnızca "Tükendi" duruyor.
+
+          İndirim ve "çok satan" rozetleri de buradaydı: dört
+          doygun kırmızı dikdörtgen yan yana gelince sayfadaki en
+          gürültülü öğe onlar oluyordu ve göz ürünlerden önce
+          rozetlere gidiyordu. İkisi de bilgiyi kaybetmeden aşağı
+          taşındı — indirim fiyatın yanına, çok satan marka
+          satırına. Tükendi kalıyor: müşteri satın alamayacağı bir
+          ürüne tıklamadan önce bunu görmeli.
+        */}
+        {product.available === false && (
+          <span className="card-flags">
             <b className="tag tag-out">Tükendi</b>
-          ) : (
-            <>
-              {off > 0 && <b className="tag tag-sale">%{off} indirim</b>}
-              {product.bestSeller && <b className="tag tag-best">Çok satan</b>}
-            </>
-          )}
-        </span>
+          </span>
+        )}
         {/*
           Dokunmatikte kaydırılabilir galeri, masaüstünde tek
           görsel. İki ayrı düzen: masaüstünde hover ile ikinci
@@ -74,7 +76,19 @@ export function ProductCard({ product }: { product: Product }) {
 
       <FavouriteButton slug={product.slug} label={product.name} />
 
-      <p className="card-brand">{product.eyebrow}</p>
+      {/*
+        Künye satırı: marka ve "çok satan" işareti. İkisi de aynı
+        büyük harf dilinde, aralarında ince bir ayraç. Marka boşsa
+        ayraç da basılmaz.
+      */}
+      {(product.eyebrow || (product.bestSeller && product.available !== false)) && (
+        <p className="card-brand">
+          {product.eyebrow && <span>{product.eyebrow}</span>}
+          {product.bestSeller && product.available !== false && (
+            <em>Çok satan</em>
+          )}
+        </p>
+      )}
       <h3>
         <Link href={href}>{product.name}</Link>
       </h3>
@@ -83,6 +97,11 @@ export function ProductCard({ product }: { product: Product }) {
         <b>{formatPrice(product.price)}</b>
         {product.oldPrice && product.oldPrice > product.price && (
           <del>{formatPrice(product.oldPrice)}</del>
+        )}
+        {/* İndirim oranı: karar fiyatın yanında veriliyor, rozet
+            olarak görselin üzerinde değil. */}
+        {off > 0 && product.available !== false && (
+          <span className="price-off">−%{off}</span>
         )}
       </div>
 

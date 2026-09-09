@@ -546,12 +546,32 @@
 }
 
 .card-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
   margin: var(--s4) 0 var(--s2);
+  min-height: 1.5em;
   font-size: 10px;
   font-weight: 500;
   letter-spacing: var(--track);
   text-transform: uppercase;
   color: var(--ink-3);
+}
+
+/*
+  "Çok satan" işareti. Görselin üzerindeki dolu rozetin yerini
+  aldı: aynı bilgiyi taşıyor ama fotoğrafı kirletmiyor. Altın
+  ton, sayfadaki diğer vurgularla aynı dili konuşuyor.
+*/
+.card-brand em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+/* Ayraç yalnızca iki öğe de varsa çizilir. */
+.card-brand span + em {
+  padding-left: var(--s3);
+  border-left: 1px solid var(--line);
 }
 
 /*
@@ -581,6 +601,46 @@
 /* Buton kartın tabanına yapışır; tüm kartlarda aynı hizada durur. */
 .card-action {
   margin-top: auto;
+}
+
+/*
+  İşaretçili cihazlarda düğme dinlenme hâlinde görünmez.
+
+  Izgarada yan yana duran dört-beş çerçeveli dikdörtgen, sayfanın
+  altında ağır bir yatay bant kuruyor ve pazaryeri ızgarası gibi
+  okunuyordu. Düğme artık yalnızca kartla ilgilenildiğinde
+  beliriyor; dinlenme hâlinde kartta fotoğraf, marka, ad ve fiyat
+  kalıyor.
+
+  Yeri korunuyor (`opacity`, `display` değil): aksi hâlde imleç
+  gezdikçe ızgara sıçrardı.
+
+  `:focus-within` klavye için şart — sekme ile düğmeye
+  gelindiğinde kart kendini açıyor. Görünmez ama odaklanabilir bir
+  düğme bırakmamak için başka bir şey gerekmiyor: düğmeye
+  ulaşmanın tek yolu zaten kartın içinden geçiyor.
+*/
+@media (hover: hover) {
+  .card-action {
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 320ms var(--ease),
+      transform 320ms var(--ease);
+  }
+
+  .card:hover .card-action,
+  .card:focus-within .card-action {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: reduce) {
+  .card-action {
+    transform: none;
+    transition: none;
+  }
 }
 
 /*
@@ -4526,9 +4586,16 @@ button.search-box {
   transition: fill 200ms var(--ease), stroke 200ms var(--ease);
 }
 
+/*
+  Büyüme kaldırıldı: sayfadaki hiçbir öğe artık hover'da
+  ölçü değiştirmiyor. Vurgu kalbin renginden geliyor.
+*/
 .fav-button:hover {
   background: #fff;
-  transform: scale(1.08);
+}
+
+.fav-button:hover svg {
+  stroke: var(--sale);
 }
 
 .fav-button[aria-pressed="true"] svg {
