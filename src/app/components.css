@@ -4383,3 +4383,31 @@ button.search-box {
 .card:has(.tag-out) .card-art {
   opacity: 0.62;
 }
+
+/* ---------- Ödeme çerçevesi ------------------------------ */
+
+/*
+  PayTR sayfası kendi sitemizde açılıyor: müşteri ödeme adımında
+  alan adından ayrılmıyor. Yönlendirmede adres çubuğunda
+  paytr.com görünüyordu ve bu güven kırıcıydı.
+*/
+.checkout-frame iframe {
+  width: 100%;
+  height: 640px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+}
+
+.checkout-frame .hint {
+  margin-top: var(--s3);
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+}
+
+@media (max-width: 640px) {
+  .checkout-frame iframe {
+    /* Mobilde daha uzun: PayTR formu dikeyde yayılıyor. */
+    height: 720px;
+  }
+}

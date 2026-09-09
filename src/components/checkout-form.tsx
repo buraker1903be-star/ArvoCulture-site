@@ -50,7 +50,8 @@ export function CheckoutForm({
     preInfo: false,
     privacy: false,
   });
-  const [state, setState] = useState<"idle" | "sending" | "error">("idle");
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [state, setState] = useState<"idle" | "sending" | "error" | "paying">("idle");
   // Sepette girilen kupon ve not ödeme isteğine taşınır.
   const [coupon, setCoupon] = useState("");
   const [note, setNote] = useState("");
@@ -211,7 +212,15 @@ export function CheckoutForm({
         return;
       }
 
-      window.location.href = data.iframeUrl;
+      /*
+        PayTR sayfasına yönlendirmek yerine çerçeve içinde
+        gösteriliyor: müşteri arvoculture.com adresinde kalıyor.
+
+        Yönlendirmede adres çubuğunda paytr.com görünüyordu;
+        ödeme adımında alan adının değişmesi güven kırıcı.
+      */
+      setIframeUrl(data.iframeUrl);
+      setState("paying");
     } catch {
       setState("error");
       setMessage("Bağlantı kurulamadı. İnternet bağlantınızı kontrol edin.");
@@ -229,6 +238,43 @@ export function CheckoutForm({
           </Link>
         </div>
       </main>
+    );
+  }
+
+  /*
+    Ödeme adımı. PayTR çerçevesi kendi sayfamızda açılıyor;
+    müşteri alan adından ayrılmıyor.
+
+    Çerçeve yüksekliği sabit: PayTR sayfası kendi içinde kayar
+    ve dinamik yükseklik için alan adları arası mesaj gerekir,
+    o da güvenlik açısından gereksiz karmaşıklık.
+  */
+  if (state === "paying" && iframeUrl) {
+    return (
+      <section className="panel checkout-frame">
+        <div className="head">
+          <div>
+            <h2>Ödeme</h2>
+            <p>Kart bilgileriniz doğrudan PayTR&apos;a iletilir.</p>
+          </div>
+        </div>
+
+        <iframe
+          src={iframeUrl}
+          title="Güvenli ödeme"
+          allow="payment"
+          /* PayTR 3D Secure için üst pencereye çıkabilmeli. */
+          sandbox="allow-forms allow-scripts allow-same-origin allow-top-navigation allow-popups"
+        />
+
+        <p className="hint">
+          Ödeme sayfası yüklenmezse{" "}
+          <a href={iframeUrl} rel="noreferrer">
+            bu bağlantıdan
+          </a>{" "}
+          devam edebilirsiniz.
+        </p>
+      </section>
     );
   }
 
