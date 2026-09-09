@@ -33,6 +33,56 @@ export function CartPageView() {
 
   const [coupon, setCoupon] = useState("");
   const [couponSaved, setCouponSaved] = useState(false);
+  /*
+    Kupon anında doğrulanıyor. Öncesinde yalnızca kaydediliyordu
+    ve geçersizse ödeme adımında sessizce yok sayılıyordu;
+    müşteri indirim aldığını sanıyordu.
+  */
+  const [couponState, setCouponState] = useState<
+    "idle" | "checking" | "error"
+  >("idle");
+  const [couponMessage, setCouponMessage] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+
+  async function applyCoupon() {
+    const code = coupon.trim();
+    if (!code) return;
+
+    setCouponState("checking");
+    setCouponMessage("");
+
+    try {
+      const response = await fetch(
+        "https://arc.arvo-os.com/api/storefront/kupon",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, subtotal: total }),
+        },
+      );
+
+      const data = (await response.json()) as {
+        valid?: boolean;
+        message?: string;
+        discountAmount?: number;
+      };
+
+      if (!data.valid) {
+        setCouponState("error");
+        setCouponMessage(data.message ?? "Bu kod geçerli değil.");
+        return;
+      }
+
+      writeCoupon(code);
+      setCouponSaved(true);
+      setCouponDiscount(Number(data.discountAmount ?? 0));
+      setCouponState("idle");
+      setCouponMessage(data.message ?? "Kod uygulandı.");
+    } catch {
+      setCouponState("error");
+      setCouponMessage("Kod şu anda doğrulanamıyor. Tekrar deneyin.");
+    }
+  }
   const [note, setNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
 
@@ -209,20 +259,25 @@ export function CartPageView() {
               <button
                 type="button"
                 className="btn"
-                disabled={!coupon.trim()}
-                onClick={() => {
-                  writeCoupon(coupon);
-                  setCouponSaved(true);
-                }}
+                disabled={!coupon.trim() || couponState === "checking"}
+                onClick={applyCoupon}
               >
-                Uygula
+                {couponState === "checking" ? "Kontrol ediliyor…" : "Uygula"}
               </button>
             )}
           </div>
 
-          {couponSaved && (
+          {couponState === "error" && (
+            <p className="form-error" role="alert">
+              {couponMessage}
+            </p>
+          )}
+
+          {couponSaved && couponState !== "error" && (
             <p className="cart-saving">
-              Kod kaydedildi. İndirim, ödeme adımında toplam tutara yansır.
+              {couponDiscount > 0
+                ? `Kod uygulandı · ${formatPrice(couponDiscount)} indirim`
+                : "Kod uygulandı."}
             </p>
           )}
 

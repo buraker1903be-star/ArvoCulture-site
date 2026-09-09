@@ -220,6 +220,21 @@ export function CheckoutForm({
 
       const data = await response.json();
 
+      /*
+        Kupon reddedilmişse müşteri bilgilendiriliyor. Sepette
+        geçerliyken ödeme anında dolmuş olabilir: son kullanım
+        hakkını başka bir müşteri almış olabilir.
+      */
+      if (data.couponRejected) {
+        setState("error");
+        setMessage(
+          typeof data.couponRejected === "string"
+            ? data.couponRejected
+            : "İndirim kodunuz artık geçerli değil. Sepetinizi kontrol edin.",
+        );
+        return;
+      }
+
       if (!response.ok || (!useTransfer && !data.iframeUrl)) {
         setState("error");
         setMessage(
