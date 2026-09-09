@@ -856,27 +856,37 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--s4);
-  margin-top: var(--s6);
-  padding-top: var(--s5);
-  border-top: 1px solid var(--line);
+  gap: var(--s6);
+  margin-top: var(--s7);
+  padding-top: var(--s6);
+  border-top: 1px solid var(--line-soft);
   font-size: var(--t-sm);
 }
 
+/*
+  Sayfa bağlantıları hap düğme değil, büyük harf metin
+  bağlantısı: hero'daki kısayollarla ve bölüm başlıklarındaki
+  "Tümünü gör" ile aynı dil.
+*/
 .collection-pagination a {
-  padding: 9px 18px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--gold-soft);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition: color 200ms var(--ease), border-color 200ms var(--ease);
 }
 
 .collection-pagination a:hover {
-  background: var(--ink);
-  color: #fff;
-  border-color: var(--ink);
+  color: var(--brand);
+  border-color: var(--gold);
 }
 
 .collection-pagination span {
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
 }
@@ -911,12 +921,30 @@ footer {
   font-size: clamp(22px, 2.6vw, 32px);
 }
 
+/*
+  Künye satırı. Karttaki `.card-brand` ile aynı düzen: marka ve
+  yanında ince bir ayraçla ayrılmış "çok satan" işareti. Ayraç
+  yalnızca iki öğe de varsa çizilir.
+*/
 .eyebrow {
-  font-size: var(--t-xs);
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
   text-transform: uppercase;
   color: var(--ink-3);
+}
+
+.eyebrow em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.eyebrow span + em {
+  padding-left: var(--s3);
+  border-left: 1px solid var(--line);
 }
 
 .lead {

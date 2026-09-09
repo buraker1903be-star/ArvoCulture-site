@@ -13,14 +13,10 @@ import { useRef, useState } from "react";
 export function ProductGallery({
   images,
   name,
-  discount,
-  bestSeller,
   artStyle,
 }: {
   images: string[];
   name: string;
-  discount: number;
-  bestSeller: boolean;
   artStyle: "packshot" | "lifestyle";
 }) {
   const [active, setActive] = useState(0);
@@ -64,10 +60,12 @@ export function ProductGallery({
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <span className="card-flags">
-          {discount > 0 && <b className="tag tag-sale">%{discount} indirim</b>}
-          {bestSeller && <b className="tag tag-best">Çok satan</b>}
-        </span>
+        {/*
+          Rozetler görselin üzerinden kaldırıldı; ana sayfadaki
+          kartla aynı karar. İndirim oranı fiyatın yanında,
+          "çok satan" ise marka satırında gösteriliyor (bkz.
+          urun/[slug]/page.tsx). Ürün fotoğrafı temiz kalıyor.
+        */}
 
         {current ? (
           <Image
