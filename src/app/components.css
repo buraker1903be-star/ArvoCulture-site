@@ -602,12 +602,16 @@
   uyanıyor (çizgisi ve yazısı koyulaşıyor); doğrudan düğmenin
   üzerine gelindiğinde doluyor.
 
-  Sıralama önemli: iki seçicinin özgüllüğü eşit, o yüzden
-  doğrudan hover kuralı sonra gelmeli — yoksa kart hover'ı
-  düğme hover'ını eziyor.
+  `:not(:hover)` şart. Bu kural önce sırayla çözülmeye
+  çalışılmıştı ve düğme siyah zemin üzerine siyah yazı
+  veriyordu: `.card:hover .card-action .btn` (0,4,0),
+  `.card-action .btn:hover` ise (0,3,0) — özgüllükleri eşit
+  değil, kart kuralı yazı rengini eziyor ama zemini
+  değiştirmiyordu. İki durumu birbirini dışlayacak şekilde
+  ayırmak, sıralamaya bağlı olmayan tek doğru çözüm.
 */
-.card:hover .card-action .btn,
-.card:focus-within .card-action .btn {
+.card:hover .card-action .btn:not(:hover),
+.card:focus-within .card-action .btn:not(:hover) {
   color: var(--ink);
   border-color: var(--ink-3);
 }
