@@ -435,35 +435,38 @@
   Tek bir oran ikisine birden uymuyordu: dikey çerçevede
   şişeler küçük kalıyor, karede manken kesiliyordu.
 */
+/*
+  Görsel zemini HER ZAMAN beyaz.
+
+  Bir ara fildişine (--panel-2) çevrilmişti; yanlıştı. Katalogdaki
+  paket çekimleri beyaz fonda yapılıyor, dolayısıyla kırık beyaz
+  bir kutu fotoğrafın kendi beyazıyla uyuşmuyor ve her kartın
+  içinde görünür bir çerçeve bırakıyor.
+
+  Çerçeveyi zemin rengi değil, kıl payı çizgi tanımlıyor.
+*/
 .card-art {
   position: relative;
   display: block;
   aspect-ratio: 1;
   border-radius: var(--r-sm);
-  /*
-    Görsel çerçevesi hafif fildişi. Beyaz zeminde çekilmiş
-    paket fotoğrafları beyaz kutuda sınırsız kalıyor, ürün
-    havada duruyordu; bu ton çerçeveyi belli ediyor ama
-    fotoğrafın beyazıyla kavga etmiyor.
-  */
-  background: var(--panel-2);
+  background: #fff;
   overflow: hidden;
+  /*
+    Çizgi ve gölge hover'da belirecek; burada şeffaf başlıyor ki
+    geçiş yumuşak olsun ve kart ölçüsü hiç değişmesin.
+  */
+  border: 1px solid transparent;
+  box-shadow: 0 0 0 rgba(25, 27, 22, 0);
+  transition:
+    border-color 420ms var(--ease),
+    box-shadow 420ms var(--ease);
 }
 
 .card-art img {
   object-fit: contain;
   padding: 9%;
-  /* Yükleme sırasında zıplama olmasın. */
-  transition: transform 700ms var(--ease-out);
-}
-
-/*
-  Paket çekiminde de artık çok hafif bir yakınlaşma var. Kart
-  gövdesi yerinde durduğu için hareketin tamamını görsel
-  taşıyor; yoksa kart hover'da hiç yanıt vermiyordu.
-*/
-.card:hover .card-art img {
-  transform: scale(1.03);
+  transition: transform 900ms var(--ease-out);
 }
 
 /* Manken fotoğrafı dikey çerçevede ve kırpılarak doldurur. */
@@ -478,21 +481,16 @@
 }
 
 /*
-  Üzerine gelince hafif yakınlaşma. Yalnızca manken
-  fotoğraflarında; paket çekiminde büyütmek ürünü kesiyor.
-*/
-.card:hover .card-art[data-art="lifestyle"] img {
-  transform: scale(1.035);
-}
+  Manken fotoğrafı biraz daha yakınlaşabilir: çerçeveyi kırpılarak
+  doldurduğu için kenarda boşluk açılmıyor. Paket çekiminde aynı
+  oran ürünü çerçeveden taşırırdı.
 
-@media (prefers-reduced-motion: reduce) {
-  .card-art img {
-    transition: none;
-  }
-  .card:hover .card-art img,
-  .card:hover .card-art[data-art="lifestyle"] img {
-    transform: none;
-  }
+  Hover kurallarının tamamı "Kart etkileşimi" bölümünde; bu
+  yalnızca oranı yükseltiyor.
+*/
+.card:hover .card-art[data-art="lifestyle"] img,
+.card:focus-within .card-art[data-art="lifestyle"] img {
+  transform: scale(1.06);
 }
 
 /*
@@ -574,13 +572,7 @@
   color: var(--ink);
 }
 
-.card h3 a {
-  transition: color 200ms var(--ease);
-}
-
-.card:hover h3 a {
-  color: var(--brand);
-}
+/* Ürün adının hover davranışı "Kart etkileşimi" bölümünde. */
 
 .card .price {
   margin-bottom: var(--s4);
@@ -603,6 +595,21 @@
   letter-spacing: 0.12em;
   color: var(--ink-2);
   border-color: var(--line);
+}
+
+/*
+  İki kademe. Kartın herhangi bir yerine gelindiğinde düğme
+  uyanıyor (çizgisi ve yazısı koyulaşıyor); doğrudan düğmenin
+  üzerine gelindiğinde doluyor.
+
+  Sıralama önemli: iki seçicinin özgüllüğü eşit, o yüzden
+  doğrudan hover kuralı sonra gelmeli — yoksa kart hover'ı
+  düğme hover'ını eziyor.
+*/
+.card:hover .card-action .btn,
+.card:focus-within .card-action .btn {
+  color: var(--ink);
+  border-color: var(--ink-3);
 }
 
 .card-action .btn:hover {
@@ -3569,22 +3576,80 @@ button.search-box {
 
 /* --- Kart etkileşimi ------------------------------------ */
 
-.card {
-  transition:
-    transform 260ms var(--ease),
-    box-shadow 260ms var(--ease);
+/*
+  Kart gövdesi hover'da yerinden kıpırdamıyor.
+
+  Burada daha önce `translateY(-4px)` + `--float-lg` vardı ve
+  dosyanın başındaki kuralı eziyordu: kart 4px zıplayıp altına
+  ağır bir gölge alıyordu. Yirmi kartlık bir ızgarada bu, imleç
+  gezdikçe sürekli sıçrayan bir yüzey demek — ucuz duruyordu.
+
+  Yerine dört küçük hareket aynı anda çalışıyor (aşağıda):
+  görsel yavaşça yakınlaşır, çerçevesinde kıl payı bir çizgi
+  belirir, altına çok yumuşak bir gölge iner, ürün adının altına
+  altın bir çizgi çekilir ve sepet düğmesi dolar. Hiçbiri tek
+  başına dikkat çekmiyor; birlikte "bu kart canlandı" hissi
+  veriyorlar.
+*/
+
+/* 1. Görsel yakınlaşır. Paket çekiminde az, manken fotoğrafında
+      biraz daha: manken karesi kırpılarak doldurduğu için
+      hareketi taşıyabiliyor. */
+.card:hover .card-art img,
+.card:focus-within .card-art img {
+  transform: scale(1.04);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--float-lg);
+/* 2. Çerçevede kıl payı çizgi + altında çok yumuşak gölge. */
+.card:hover .card-art,
+.card:focus-within .card-art {
+  border-color: var(--line);
+  box-shadow: 0 14px 30px rgba(25, 27, 22, 0.09);
+}
+
+/*
+  3. Ürün adının altına altın çizgi çekilir. Bölüm başlığındaki
+     ayracın küçük kardeşi; sayfa aynı dili konuşuyor.
+
+  Çizgi mutlak konumlu bir ::after değil, arka plan görüntüsü.
+  ::after ile yapıldığında iki satıra kırılan ürün adlarında
+  hiç görünmüyordu: satır içi bir öğe kırıldığında parçalara
+  ayrılıyor ve mutlak konumlu çocuğun tutunacağı tek bir kutu
+  kalmıyor. Katalogdaki adların çoğu iki satır.
+
+  `box-decoration-break: clone` her satırın kendi arka planını
+  almasını sağlıyor; çizgi iki satırın da altına çekiliyor.
+*/
+.card h3 a {
+  background-image: linear-gradient(var(--gold), var(--gold));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-size 520ms var(--ease-out),
+    color 300ms var(--ease);
+}
+
+.card:hover h3 a,
+.card:focus-within h3 a {
+  background-size: 100% 1px;
+  color: var(--brand);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card,
-  .card:hover {
-    transform: none;
+  .card-art,
+  .card-art img,
+  .card h3 a {
     transition: none;
+  }
+
+  .card:hover .card-art img,
+  .card:focus-within .card-art img,
+  .card:hover .card-art[data-art="lifestyle"] img,
+  .card:focus-within .card-art[data-art="lifestyle"] img {
+    transform: none;
   }
 }
 
@@ -4095,11 +4160,33 @@ button.search-box {
     kaldırdıktan sonra takılı kalıyor ve kart "seçili" gibi
     duruyor; kapatılıyor.
   */
-  .card:hover,
   .cat-card:hover,
   .order-card:hover {
     transform: none;
     box-shadow: var(--float);
+  }
+
+  /*
+    Kartın hover katmanı da kapalı: görsel yakınlaşması, çerçeve
+    çizgisi, gölge ve ürün adının altındaki altın çizgi parmak
+    kalktıktan sonra takılı kalıyordu.
+  */
+  .card:hover .card-art,
+  .card:focus-within .card-art {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .card:hover .card-art img,
+  .card:focus-within .card-art img,
+  .card:hover .card-art[data-art="lifestyle"] img,
+  .card:focus-within .card-art[data-art="lifestyle"] img {
+    transform: none;
+  }
+
+  .card:hover h3 a,
+  .card:focus-within h3 a {
+    background-size: 0% 1px;
   }
 
   .cat-card:hover .cat-card-art img {
