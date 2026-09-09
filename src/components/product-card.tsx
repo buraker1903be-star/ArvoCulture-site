@@ -3,6 +3,7 @@ import Link from "next/link";
 import { QuickAdd } from "@/components/quick-add";
 import { formatPrice, type Product } from "@/lib/product-types";
 import { FavouriteButton } from "@/components/favourite-button";
+import { CardGallery } from "@/components/card-gallery";
 
 /** İndirim yüzdesi: rozet ve sıralama için tek kaynak. */
 export function discountOf(product: Product) {
@@ -36,33 +37,29 @@ export function ProductCard({ product }: { product: Product }) {
           {off > 0 && <b className="tag tag-sale">%{off} indirim</b>}
           {product.bestSeller && <b className="tag tag-best">Çok satan</b>}
         </span>
-        {product.image && (
-          <Image
-            className="card-img"
-            src={product.image}
+        {/*
+          Dokunmatikte kaydırılabilir galeri, masaüstünde tek
+          görsel. İki ayrı düzen: masaüstünde hover ile ikinci
+          görsel zaten çalışıyor ve daha az etkileşim istiyor.
+        */}
+        {product.images.length > 1 ? (
+          <CardGallery
+            images={product.images.slice(0, 4)}
             alt={product.name}
-            fill
             sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
           />
+        ) : (
+          product.image && (
+            <Image
+              className="card-img"
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
+            />
+          )
         )}
 
-        {/*
-          İkinci görsel. Tişörtlerde ön ve arka tasarım ayrı
-          fotoğraflarda olduğu için karta gelindiğinde arka yüz
-          gösteriliyor. İkinci görseli olmayan üründe bu eleman
-          hiç render edilmez; ilk görsel sabit kalır.
-        */}
-        {/* Favori düğmesi görselin üstünde, sağ üstte. */}
-        {second && (
-          <Image
-            className="card-img-alt"
-            src={second}
-            alt=""
-            fill
-            aria-hidden="true"
-            sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
-          />
-        )}
       </Link>
 
       <FavouriteButton slug={product.slug} label={product.name} />

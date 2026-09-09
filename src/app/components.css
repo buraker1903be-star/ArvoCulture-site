@@ -4292,3 +4292,78 @@ button.search-box {
     transform: none;
   }
 }
+
+/* ---------- Kart içi galeri (dokunmatik) ----------------- */
+
+.card-gallery {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/*
+  Görseller üst üste; yalnızca etkin olan görünür. Yatay
+  kaydırma konteyneri kullanmak kart bağlantısının dokunma
+  davranışıyla çakışıyordu.
+*/
+.card-gallery .card-img {
+  opacity: 0;
+  transition: opacity 260ms var(--ease);
+}
+
+.card-gallery .card-img[data-shown="true"] {
+  opacity: 1;
+}
+
+/* Noktalar: kaç görsel var, hangisindeyiz. */
+.card-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  display: none;
+  justify-content: center;
+  gap: 5px;
+  z-index: 1;
+}
+
+.card-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(16, 18, 15, 0.22);
+  transition: background-color 200ms var(--ease), width 200ms var(--ease);
+}
+
+.card-dots i[data-active] {
+  width: 14px;
+  border-radius: 999px;
+  background: rgba(16, 18, 15, 0.72);
+}
+
+/*
+  Yalnızca dokunmatikte görünür. Masaüstünde üzerine gelince
+  ikinci görselin belirmesi zaten çalışıyor; noktalar orada
+  gereksiz gürültü olurdu.
+*/
+@media (hover: none) {
+  .card-dots {
+    display: flex;
+  }
+
+  /* Kaydırma sırasında görsel sürüklenmesin. */
+  .card-gallery {
+    touch-action: pan-y;
+    -webkit-user-drag: none;
+  }
+}
+
+/*
+  Masaüstünde hover davranışı korunur: ikinci görsel üstte
+  belirir, galeri noktaları gizli kalır.
+*/
+@media (hover: hover) {
+  .card-art:hover .card-gallery .card-img:nth-child(2) {
+    opacity: 1;
+  }
+}
