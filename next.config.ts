@@ -28,6 +28,21 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      /*
+        Servis çalışanı hiçbir zaman önbellekten okunmamalı.
+        Tarayıcılar bu dosyayı zaten sınırlı süre saklıyor ama
+        araya giren bir CDN katmanı eski sürümü haftalarca
+        sunabilir — ve eski servis çalışanı, sitenin geri kalanı
+        güncellenmişken eski varlıkları dağıtmaya devam eder.
+        Bu, hata ayıklaması en zor sorunlardan biri.
+      */
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
       {
         source: "/:path*",
         headers: [

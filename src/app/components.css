@@ -5063,234 +5063,173 @@ button.search-box {
   letter-spacing: 0.02em;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   DOKUNMA GERİ BİLDİRİMİ
-
-   Site fareye göre kurulmuştu: 88 hover kuralına karşılık 6
-   basılı-tutma kuralı vardı. Telefonda hover diye bir şey yok,
-   dolayısıyla müşteri dokunduğunda neredeyse hiçbir karşılık
-   almıyordu — "tıkladığımı hissetmiyorum" şikâyetinin kaynağı bu.
-
-   Buradaki kurallar yalnızca dokunmatikte devreye giriyor.
-   Masaüstündeki hover dili olduğu gibi duruyor.
-   ═══════════════════════════════════════════════════════════ */
+/* ==========================================================
+   UYGULAMA KABUĞU
+   Bağlantı durumu, kurulum teklifi ve ana ekrandan açıldığında
+   geçerli olan düzeltmeler.
+   ========================================================== */
 
 /*
-  Tarayıcının kendi dokunma parlaması kapatılıyor.
+  Bağlantı çubuğu.
 
-  Android Chrome her dokunuşta rgba(51,181,229,0.4) — parlak mavi
-  bir kutu — çiziyordu. Krem zeminli, editoryal bir vitrinde bu tek
-  başına en ucuz görünen şeydi ve markanın hiçbir rengiyle ilgisi
-  yoktu. Yerine kendi geri bildirimimizi koyuyoruz; parlamayı
-  karşılıksız kaldırmak sessizliğe döner, o yüzden ikisi birlikte.
+  Ekranın en üstünde, içeriğin üstüne biniyor — akışa girip
+  sayfayı aşağı itseydi, bağlantı gidip geldikçe okunan yer
+  zıplardı. Bilgi verirken düzeni bozmamalı.
 */
-:where(a, button, [role="button"], input, select, textarea, summary, label) {
-  -webkit-tap-highlight-color: transparent;
+.net-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  padding: 7px var(--s4);
+  padding-top: calc(7px + env(safe-area-inset-top, 0px));
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  color: #fff;
+  animation: net-in 260ms var(--ease-out) both;
 }
 
-/*
-  Çift dokunuşla yakınlaştırma beklenmesi kalkıyor. Tarayıcı
-  "acaba ikinci dokunuş gelecek mi" diye beklerken tepki gecikmiş
-  hissettiriyor.
-*/
-:where(a, button, [role="button"], summary, .card-art, .fav-button) {
-  touch-action: manipulation;
+.net-off {
+  background: #4a4640;
 }
 
-@media (hover: none) {
-  /*
-    Basma ve bırakma farklı hızda.
+/* Geri geldi mesajı kalıcı değil; kendini kapatıyor. */
+.net-on {
+  background: var(--ok);
+}
 
-    Parmak değdiği anda tepki neredeyse anlık olmalı — gecikme,
-    dokunuşun kaydedilmediği hissini verir. Bırakırken ise yüzey
-    yerine yumuşayarak dönüyor. Bu asimetri, dokunmayı "fiziksel"
-    hissettiren şey; iki yönü de aynı hızda yaparsak mekanik
-    görünüyor.
-  */
-  .btn,
-  .card,
-  .cat-card,
-  .fav-button,
-  .quantity button,
-  .sizes button,
-  .chip,
-  .collection-pagination a,
-  .live-results a,
-  .footer-link-group a,
-  .bottom-nav a,
-  .bottom-nav button {
-    transition:
-      transform 220ms var(--ease-out),
-      background-color 220ms var(--ease),
-      border-color 220ms var(--ease);
+@keyframes net-in {
+  from {
+    transform: translateY(-100%);
   }
-
-  .btn:active,
-  .card:active,
-  .cat-card:active,
-  .fav-button:active,
-  .quantity button:active,
-  .sizes button:active,
-  .chip:active,
-  .collection-pagination a:active,
-  .live-results a:active,
-  .bottom-nav a:active,
-  .bottom-nav button:active {
-    transition-duration: 90ms;
-  }
-
-  /*
-    Ölçü değişimi ürüne göre ayarlı: büyük yüzey az küçülmeli,
-    küçük düğme biraz daha. Aynı oranı her yere vermek, büyük
-    kartlarda abartılı, küçük düğmelerde fark edilmez oluyor.
-  */
-  .card:active,
-  .cat-card:active {
-    transform: scale(0.985);
-  }
-
-  .btn:active,
-  .collection-pagination a:active {
-    transform: scale(0.97);
-  }
-
-  .fav-button:active,
-  .quantity button:active,
-  .sizes button:active,
-  .chip:active {
-    transform: scale(0.93);
-  }
-
-  /*
-    Yüzey de tepki veriyor. Yalnızca küçülme, koyu zeminli
-    düğmelerde neredeyse görünmez kalıyordu.
-  */
-  .chip:active,
-  .quantity button:active,
-  .sizes button:active,
-  .collection-pagination a:active {
-    background: var(--panel-2);
-    border-color: var(--ink-3);
-  }
-
-  .fav-button:active {
-    background: #fff;
-  }
-
-  /* Liste satırları ve gezinme: küçülme yerine zemin değişimi.
-     Satırın kendisi küçülünce liste zıplıyor. */
-  .live-results a:active,
-  .footer-link-group a:active {
-    background: var(--panel-2);
-  }
-
-  .bottom-nav a:active,
-  .bottom-nav button:active {
-    color: var(--ink);
-    transform: scale(0.94);
+  to {
+    transform: translateY(0);
   }
 }
 
 /*
-  Hareket azaltma tercihi her şeyin üstünde.
+  Kurulum teklifi.
 
-  Ölçü değişimi tamamen kalkıyor; geri bildirim yüzey renginden
-  geliyor. Dokunduğunu hissetmek bir erişilebilirlik ihtiyacı, o
-  yüzden geri bildirimi büsbütün kaldırmıyoruz — yalnızca hareketi.
+  Telefonda alt gezinme çubuğunun hemen üstünde duruyor; ekranın
+  ortasına düşen bir kutu, alışverişin önünü keserdi. Masaüstünde
+  sağ altta.
 */
-@media (prefers-reduced-motion: reduce) {
-  .btn:active,
-  .card:active,
-  .cat-card:active,
-  .fav-button:active,
-  .quantity button:active,
-  .sizes button:active,
-  .chip:active,
-  .collection-pagination a:active,
-  .bottom-nav a:active,
-  .bottom-nav button:active {
-    transform: none;
+.install-card {
+  position: fixed;
+  z-index: 120;
+  left: var(--s4);
+  right: var(--s4);
+  bottom: calc(var(--s4) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--float-lg);
+  animation: install-in 380ms var(--ease-out) both;
+}
+
+@media (max-width: 860px) {
+  /* Alt çubuğun (56px + güvenli alan) üstünde kalsın. */
+  .install-card {
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   YÜKLEME İSKELETİ
-
-   Müşteri bir bağlantıya dokunduğunda sayfa gelene kadar hiçbir
-   şey olmuyordu: koleksiyon sayfası yarım saniyeyle bir saniye
-   arasında açılıyor ve o süre boyunca ekran eski sayfada
-   duruyordu. Dokunuşun kaydedildiğine dair tek işaret yok.
-
-   Dönen bir çember koymak yerine sayfanın kendi düzeni çiziliyor.
-   Böylece gerçek içerik geldiğinde yerleşim zıplamıyor ve bekleme
-   "bir şey yükleniyor"dan çok "sayfa geliyor" gibi okunuyor.
-   ═══════════════════════════════════════════════════════════ */
-
-.skeleton {
-  background: var(--line-soft);
-  border-radius: 4px;
-  /*
-    Nefes alan bir soluklaşma. Kayan parıltı yerine opaklık
-    seçildi: parıltı dikkat çekmek için tasarlanmış bir hareket ve
-    bekleme ekranının dikkat çekmesi istenmiyor.
-  */
-  animation: skeleton-pulse 1600ms var(--ease) infinite;
+@media (min-width: 861px) {
+  .install-card {
+    left: auto;
+    width: 380px;
+    right: var(--s5);
+    bottom: var(--s5);
+  }
 }
 
-@keyframes skeleton-pulse {
-  0%,
-  100% {
+@keyframes install-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
     opacity: 1;
-  }
-  50% {
-    opacity: 0.55;
+    transform: translateY(0);
   }
 }
 
-.skeleton-card .card-art {
-  background: var(--line-soft);
+.install-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
 }
 
-.skeleton-line {
-  height: 10px;
-  margin-top: 10px;
+.install-text strong {
+  font-size: var(--t-sm);
+  font-weight: 500;
 }
 
-.skeleton-line.is-short {
-  width: 40%;
+.install-text small {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--ink-2);
 }
 
-.skeleton-line.is-medium {
-  width: 70%;
+.install-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex-shrink: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  /* Yanıp sönme kalkıyor; iskelet sabit duruyor. */
-  .skeleton {
-    animation: none;
-    opacity: 0.8;
-  }
+.install-actions .button {
+  padding: 8px 16px;
+  font-size: 12px;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   KAYDIRMA YALITIMI
-
-   Sepet çekmecesindeki liste sonuna gelindiğinde kaydırma
-   arkadaki sayfaya geçiyordu: müşteri çekmecede gezinirken vitrin
-   kayıyor, çekmeceyi kapattığında kendini sayfanın bambaşka bir
-   yerinde buluyordu. Telefonda bu, kontrolü kaybetmiş hissi verir.
-   ═══════════════════════════════════════════════════════════ */
-
-.drawer-items {
-  /* Kaydırma bu kutuda başlar ve bu kutuda biter. */
-  overscroll-behavior: contain;
-  /* Parmak kaldırıldıktan sonra da akmaya devam etsin. */
-  -webkit-overflow-scrolling: touch;
+.install-close {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /*
-  Sayfa kilidi burada yok: çekmece ve arama katmanı bunu zaten
-  JavaScript tarafında yapıyor (body.style.overflow) ve kapanışta
-  eski değeri geri veriyor. Aynı işi CSS'te tekrarlamak, ileride
-  biri birini değiştirdiğinde açıklaması zor bir davranış bırakır.
+  Ana ekrandan açıldığında.
+
+  `display-mode: standalone` yalnızca uygulama olarak kurulmuş
+  ve ana ekrandan açılmış olduğunda geçerli; tarayıcı sekmesinde
+  bu kurallar hiç uygulanmıyor.
 */
+@media (display-mode: standalone) {
+  /*
+    Aşağı çekince sayfa yenilenmesin. Tarayıcıda bu davranış
+    beklenir; uygulamada beklenmez — müşteri listeyi kaydırmak
+    isterken sayfayı baştan yüklüyordu.
+  */
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  /*
+    Arayüz öğeleri seçilemesin. Uzun basınca beliren metin
+    seçimi ve büyüteç, uygulamada olmayan bir web ayrıntısı.
+    Ürün adı, açıklama ve fiyat seçilebilir kalıyor: müşteri
+    kopyalamak isteyebilir.
+  */
+  .bottom-nav,
+  .site-header,
+  .tag,
+  .button {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}

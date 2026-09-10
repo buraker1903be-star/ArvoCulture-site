@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { useCallback, useEffect, useState } from "react";
 import { LiveSearch } from "@/components/live-search";
+import { useLayerBack } from "@/lib/use-layer-back";
 
 /**
  * Arama katmanı.
@@ -39,6 +40,9 @@ export function SearchOverlay({
       window.removeEventListener("keydown", onKey);
     };
   }, [open, close]);
+
+  /* Geri hareketi arama katmanını kapatsın, sayfayı terk etmesin. */
+  useLayerBack(open, close);
 
   return (
     <>

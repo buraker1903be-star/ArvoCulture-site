@@ -8,6 +8,7 @@ import { CartContext, cartKey } from "@/components/cart";
 import { formatPrice } from "@/lib/product-types";
 import { evaluateCoupon } from "@/lib/coupon";
 import { readCoupon, writeCoupon, clearCoupon } from "@/lib/cart-extras";
+import { useLayerBack } from "@/lib/use-layer-back";
 
 const SHIPPING_FEE = 120;
 const FREE_OVER = 2000;
@@ -38,7 +39,6 @@ export function CartDrawer({
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCode(readCoupon());
   }, []);
 
@@ -67,6 +67,9 @@ export function CartDrawer({
       window.removeEventListener("keydown", onKey);
     };
   }, [open, close]);
+
+  /* Telefonda geri hareketi çekmeceyi kapatsın, siteyi değil. */
+  useLayerBack(open, close);
 
   if (!open || !mounted) return null;
 

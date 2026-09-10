@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { CartLink } from "./cart";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
+import { useLayerBack } from "@/lib/use-layer-back";
 
 export function Header({
   theme,
@@ -26,7 +27,20 @@ export function Header({
   useEffect(() => {
     const toggle = () => setOpen((value) => !value);
     window.addEventListener("arvo:menu", toggle);
-    return () => window.removeEventListener("arvo:menu", toggle);
+
+    /*
+      Sepet çekmecesi açılırken menü kapansın. İkisi birden açık
+      kalırsa üst üste iki katman olur ve geri hareketi bunları
+      tek tek soymak zorunda kalır — müşteri "geri tuşu takıldı"
+      diye okur.
+    */
+    const kapat = () => setOpen(false);
+    window.addEventListener("arvo:cart", kapat);
+
+    return () => {
+      window.removeEventListener("arvo:menu", toggle);
+      window.removeEventListener("arvo:cart", kapat);
+    };
   }, []);
 
   /*
@@ -47,8 +61,7 @@ export function Header({
     };
   }, [open]);
 
-  /* Geri tuşu ve Esc menüyü kapatsın — açık katman, gezinmeden
-     önce kapanmalı. */
+  /* Esc menüyü kapatsın — açık katman, gezinmeden önce kapanmalı. */
   useEffect(() => {
     if (!open) return;
     const esc = (event: KeyboardEvent) => {
@@ -57,6 +70,14 @@ export function Header({
     window.addEventListener("keydown", esc);
     return () => window.removeEventListener("keydown", esc);
   }, [open]);
+
+  /*
+    Telefonda geri hareketi menüyü kapatsın. Yorumda "geri tuşu"
+    yazıyordu ama yalnızca Escape bağlanmıştı; telefonda Escape
+    yok, geri var. Katman açıkken geri basan müşteri siteden
+    çıkıyordu.
+  */
+  useLayerBack(open, close);
   /*
     Koleksiyonları menu_group’a göre getirir. ARC’taki gruplandırma
     iki farklı ekseni karıştırıyor: markalar (Aloe Via, Zeitgard)

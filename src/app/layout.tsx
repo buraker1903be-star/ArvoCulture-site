@@ -10,6 +10,7 @@ import { CartProvider } from "@/components/cart";
 import { FavouritesProvider } from "@/components/favourites";
 import { Header } from "@/components/header";
 import { BottomNav } from "@/components/bottom-nav";
+import { AppShell } from "@/components/app-shell";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getStorefrontCollections } from "@/lib/collections";
@@ -88,6 +89,23 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: { card: "summary_large_image" },
     robots: { index: true, follow: true },
+    /*
+      iOS, manifest'i kurulum için okumuyor. "Ana Ekrana Ekle"
+      sonrası tam ekran açılması, durum çubuğunun koyu renkte
+      kalması ve doğru ikonun kullanılması bu üç satıra bağlı.
+    */
+    appleWebApp: {
+      capable: true,
+      title: name,
+      /*
+        "default" seçildi, "black-translucent" değil. Saydam durum
+        çubuğu içeriğin altından geçer ve düzeni her cihazda elle
+        telafi etmek gerekir; yanlış hesaplanan tek bir boşluk,
+        başlığı saatin altında bırakır. Burada durum çubuğu kendi
+        alanında kalıyor ve fildişi zeminle uyumlu görünüyor.
+      */
+      statusBarStyle: "default",
+    },
     icons: theme.favicon_url ? { icon: theme.favicon_url } : undefined,
   };
 }
@@ -278,6 +296,12 @@ export default async function RootLayout({
             </footer>
             {/* Mobil alt gezinme; masaüstünde CSS ile gizlenir. */}
             <BottomNav />
+
+            {/*
+              Servis çalışanı kaydı, bağlantı durumu ve kurulum
+              teklifi. Görsel olarak yalnızca gerektiğinde beliriyor.
+            */}
+            <AppShell />
 
             {/*
               Mağaza kimliği ve site şeması her sayfada basılıyor:

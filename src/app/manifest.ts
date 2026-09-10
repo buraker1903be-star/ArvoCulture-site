@@ -16,9 +16,23 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "ArvoCulture",
     description:
       "Giyim, bakım ve gündelik ritüeller için seçilmiş bir yaşam kültürü.",
+    /*
+      Uygulamanın kalıcı kimliği. Verilmezse tarayıcı start_url'ü
+      kimlik olarak kullanır; ileride açılış sayfası değişirse
+      (örneğin kampanya sayfası) kurulu uygulama "başka bir
+      uygulama" sayılır ve müşterinin ana ekranındaki ikon
+      güncellenmez.
+    */
+    id: "/",
     start_url: "/",
     scope: "/",
     display: "standalone",
+    /*
+      Desteklenmeyen tarayıcıda sessizce düşülecek sıra.
+      "minimal-ui" adres çubuğunu gizler ama geri/ileri bırakır;
+      standalone'u desteklemeyen tarayıcıda sekmeye düşmekten iyidir.
+    */
+    display_override: ["standalone", "minimal-ui"],
     orientation: "portrait",
     background_color: "#f4f3ee",
     theme_color: "#10120f",
