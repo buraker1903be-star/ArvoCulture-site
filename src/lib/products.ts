@@ -230,10 +230,16 @@ export const getStorefrontProducts = cache(
  * Sitemap ürünün adından fiyatına hiçbir alanını kullanmıyor,
  * yalnızca slug'ı yazıyor. Tam satır istemek 11,9 MB, yalnızca
  * slug istemek 0,3 MB taşıyor — kırk kat fark.
+ *
+ * Burada bilerek `rpc` kullanılıyor, `rpcOrEmpty` değil. Hata
+ * yutulup boş liste dönerse ürünsüz bir sitemap yayımlanır ve
+ * Google bunu "katalog kalktı" diye okur; üstelik bu yanlış
+ * bilgi bir saat önbellekte kalır. Sessiz boş liste, açık
+ * hatadan tehlikelidir.
  */
 export const getStorefrontProductSlugs = cache(
   async (limit = CATALOG_LIMIT): Promise<string[]> => {
-    const rows = await rpcOrEmpty<{ slug: string }>(
+    const rows = await rpc<{ slug: string }>(
       "get_arvoculture_storefront_products",
       { p_limit: Math.min(CATALOG_LIMIT, Math.max(1, limit)) },
       {
