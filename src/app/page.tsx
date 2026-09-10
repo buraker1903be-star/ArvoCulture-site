@@ -79,11 +79,20 @@ const SEARCH_TERMS = [
 export default async function Home() {
   const [theme, products, discounts, searchItems, curatedBest, dealItems] =
     await Promise.all([
-    getStorefrontTheme(),
-    getStorefrontProducts(200),
-    getStorefrontDiscounts(),
-    getSearchIndex(),
-    /*
+      getStorefrontTheme(),
+      getStorefrontProducts(200),
+      getStorefrontDiscounts(),
+      /*
+      Ana sayfa arama katmanını taşıyor; dizin çekilemezse sayfanın
+      tamamının düşmesi kabul edilemez. Hata görünür kalsın diye
+      günlüğe yazılıyor, ama ana sayfa arama kutusu olmadan da
+      açılmaya devam ediyor.
+    */
+      getSearchIndex().catch((error) => {
+        console.error("Ana sayfa arama dizini getirilemedi:", error);
+        return [];
+      }),
+      /*
       Çok satanlar ARC’taki "Çok Satanlar" koleksiyonundan gelir.
       Slug eski adından kalma; başlık panelden değiştirilmiş.
       Böylece hangi ürünlerin öne çıkacağına panelden siz karar
@@ -91,17 +100,17 @@ export default async function Home() {
       tedarikçiden yeni gelen, hiç satılmamış ürünler "çok satan"
       olarak gösteriliyordu.
     */
-    getStorefrontCollectionProducts({
-      collectionSlug: "cok-satan-cilt-bakim-urunleri",
-    }),
-    /*
+      getStorefrontCollectionProducts({
+        collectionSlug: "cok-satan-cilt-bakim-urunleri",
+      }),
+      /*
       İndirimliler ayrı uç noktadan gelir. Katalogdan süzmek,
       katalog 3.000 ürünü aştıktan sonra işe yaramıyordu:
       ana sayfa ilk 200 ürünü çekiyor ve indirimliler o listeye
       hiç giremiyordu.
     */
-    getStorefrontDeals(10),
-  ]);
+      getStorefrontDeals(10),
+    ]);
 
   const coupon = discounts.find((discount) => discount.code);
 
@@ -144,7 +153,10 @@ export default async function Home() {
 
       <Perks />
 
-      <section className="panel panel-tight utility" aria-label="Arama ve kampanya">
+      <section
+        className="panel panel-tight utility"
+        aria-label="Arama ve kampanya"
+      >
         <div className="utility-search">
           <SearchOverlay terms={searchTerms} items={searchItems} />
         </div>
@@ -198,49 +210,49 @@ export default async function Home() {
 
       {theme.show_campaign && (
         <Reveal>
-        <section data-arvo-section="campaign" className="panel promo">
-          {theme.campaign_image_url && (
-            <Image
-              unoptimized
-              src={theme.campaign_image_url}
-              alt=""
-              width={1600}
-              height={600}
-            />
-          )}
-          {/* Filigran: indirim oranı, panelin sağ tarafındaki boşluğu
+          <section data-arvo-section="campaign" className="panel promo">
+            {theme.campaign_image_url && (
+              <Image
+                unoptimized
+                src={theme.campaign_image_url}
+                alt=""
+                width={1600}
+                height={600}
+              />
+            )}
+            {/* Filigran: indirim oranı, panelin sağ tarafındaki boşluğu
               dolduran dev bir kontur rakam. Dekoratif olduğu için
               ekran okuyuculardan gizli. */}
-          {coupon?.discount_type === "percentage" && (
-            <span className="promo-watermark" aria-hidden="true">
-              %{coupon.value}
-            </span>
-          )}
-
-          <div className="promo-body">
-            <p className="promo-eyebrow">Yeni müşterilere özel</p>
-            <h2 data-arvo-field="campaign_title">{theme.campaign_title}</h2>
-            <p data-arvo-field="campaign_description">
-              {theme.campaign_description}
-            </p>
-
-            {/* Kupon kodu, açıklama metninin içinde kaybolmasın diye
-                ayrı bir kart olarak gösteriliyor. */}
-            {coupon?.code && (
-              <div className="promo-code">
-                <div>
-                  <small>İndirim kodu</small>
-                  <strong>{coupon.code}</strong>
-                </div>
-                <CouponCopy code={coupon.code} />
-              </div>
+            {coupon?.discount_type === "percentage" && (
+              <span className="promo-watermark" aria-hidden="true">
+                %{coupon.value}
+              </span>
             )}
 
-            <Link className="btn btn-light" href="/koleksiyon/tumu">
-              Alışverişe başla
-            </Link>
-          </div>
-        </section>
+            <div className="promo-body">
+              <p className="promo-eyebrow">Yeni müşterilere özel</p>
+              <h2 data-arvo-field="campaign_title">{theme.campaign_title}</h2>
+              <p data-arvo-field="campaign_description">
+                {theme.campaign_description}
+              </p>
+
+              {/* Kupon kodu, açıklama metninin içinde kaybolmasın diye
+                ayrı bir kart olarak gösteriliyor. */}
+              {coupon?.code && (
+                <div className="promo-code">
+                  <div>
+                    <small>İndirim kodu</small>
+                    <strong>{coupon.code}</strong>
+                  </div>
+                  <CouponCopy code={coupon.code} />
+                </div>
+              )}
+
+              <Link className="btn btn-light" href="/koleksiyon/tumu">
+                Alışverişe başla
+              </Link>
+            </div>
+          </section>
         </Reveal>
       )}
 
@@ -297,7 +309,8 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
           {theme.hero_eyebrow}
         </p>
         <h1 data-arvo-field="hero_title">
-          {theme.hero_title} <span data-arvo-field="hero_emphasis">{theme.hero_emphasis}</span>
+          {theme.hero_title}{" "}
+          <span data-arvo-field="hero_emphasis">{theme.hero_emphasis}</span>
         </h1>
         <p data-arvo-field="hero_description" className="hero-lede">
           {theme.hero_description}

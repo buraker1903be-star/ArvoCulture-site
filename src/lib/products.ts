@@ -57,7 +57,17 @@ const plainText = (value: string | null | undefined) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const inferCategory = (row: StorefrontRow) => {
+/**
+ * Ürün kategorisi ad ve tür alanından çıkarılıyor.
+ *
+ * Arama dizini de aynı sınıflandırmayı kullanmak zorunda; iki ayrı
+ * kural kümesi olsaydı aynı ürün koleksiyonda "Giyim", aramada
+ * "Kişisel Bakım" görünebilirdi.
+ */
+export const inferCategory = (row: {
+  product_type?: string | null;
+  name: string;
+}) => {
   const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase(
     "tr-TR",
   );
