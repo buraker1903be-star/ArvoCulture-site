@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { env } from "@/lib/env";
-import { getStorefrontProducts, CATALOG_LIMIT } from "@/lib/products";
+import { getStorefrontProductSlugs } from "@/lib/products";
 import { getStorefrontCollections } from "@/lib/collections";
 
 const staticPaths = [
@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const [products, collections] = await Promise.all([
-    getStorefrontProducts(CATALOG_LIMIT),
+    getStorefrontProductSlugs(),
     getStorefrontCollections(),
   ]);
 
@@ -43,8 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily" as const,
       priority: 0.8,
     })),
-    ...products.map((product) => ({
-      url: `${env.siteUrl}/urun/${product.slug}`,
+    ...products.map((slug) => ({
+      url: `${env.siteUrl}/urun/${slug}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.9,
