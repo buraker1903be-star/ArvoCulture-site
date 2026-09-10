@@ -21,7 +21,7 @@ export function normalize(value: string) {
 }
 
 /** Normalleştirilmiş metni aranabilir kelimelere böler. */
-const toWords = (value: string) =>
+export const toWords = (value: string) =>
   normalize(value)
     .split(/[^a-z0-9]+/)
     .filter(Boolean);
