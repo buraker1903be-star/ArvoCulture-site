@@ -9,6 +9,7 @@ import {
   type Product,
 } from "@/lib/products";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbSchema, collectionSchema } from "@/lib/seo";
@@ -82,6 +83,23 @@ export async function generateMetadata({
   */
   const collections = await getStorefrontCollections();
   const collection = collections.find((item) => item.slug === slug);
+
+  /*
+    Tanınmayan slug 404 veriyor.
+
+    Önceden her uydurma adres 200 dönüyordu: "Tüm Ürünler"
+    başlığıyla, sıfır ürünle ve `index, follow` ile. Yani
+    /koleksiyon/ altına yazılan her şey arama motoru için geçerli
+    bir sayfaydı — sonsuz sayıda sahte sayfa.
+
+    Kontrol üstveride yapılıyor, gövdede değil: `loading.tsx` bir
+    Suspense sınırı kurduğu için sayfa akış hâlinde gönderiliyor ve
+    durum kodu iskeletle birlikte kilitleniyor. Üstveri akıştan
+    önce çözülüyor, dolayısıyla buradaki `notFound()` gerçek 404
+    üretiyor.
+  */
+  if (!collection && !labels[slug]) notFound();
+
   const label = collection?.title ?? labels[slug] ?? "Koleksiyon";
 
   /* ARC'taki açıklama varsa o kullanılıyor; arama sonucunda

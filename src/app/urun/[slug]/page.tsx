@@ -58,7 +58,24 @@ type Params = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const product = await getStorefrontProduct(slug);
-  if (!product) return { title: "Ürün bulunamadı" };
+
+  /*
+    Olmayan ürün burada 404'e çevriliyor — sayfa gövdesinde değil.
+    Sebebi, sayfanın akış hâlinde gönderilmesi: `loading.tsx`
+    bir Suspense sınırı kuruyor, Next iskeleti hemen yolluyor ve
+    yanıtın durum kodu o anda kilitleniyor. Gövdedeki `notFound()`
+    sonradan çalıştığında artık geç oluyordu; sonuç HTTP 200 ile
+    "Ürün bulunamadı" sayfasıydı ve üstelik `index, follow` ile.
+
+    Bu, arama motoru için sahte sayfa üretmek demek: uydurulan her
+    adres 200 dönüyor ve dizine girmeye aday oluyor. Üstveri ise
+    akış başlamadan önce çözülüyor; buradan çağrılan `notFound()`
+    gerçek 404 üretiyor.
+
+    Ürün ayrıca `cache` ile sarılı: bu çağrı sayfa gövdesindekiyle
+    aynı istekte tekilleşiyor, fazladan sorgu doğmuyor.
+  */
+  if (!product) notFound();
 
   const description =
     product.subtitle || product.description.slice(0, 155) || product.name;
