@@ -14,7 +14,7 @@ import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getStorefrontCollections } from "@/lib/collections";
 import { JsonLd } from "@/components/json-ld";
-import { storeSchema } from "@/lib/seo";
+import { storeSchema, websiteSchema } from "@/lib/seo";
 import { env } from "@/lib/env";
 
 /**
@@ -279,7 +279,17 @@ export default async function RootLayout({
             {/* Mobil alt gezinme; masaüstünde CSS ile gizlenir. */}
             <BottomNav />
 
-            <JsonLd data={storeSchema()} />
+            {/*
+              Mağaza kimliği ve site şeması her sayfada basılıyor:
+              sabit @id sayesinde tekrar değil, aynı varlığa
+              yapılan atıf oluyor.
+            */}
+            <JsonLd
+              data={storeSchema({
+                instagramUrl: theme.instagram_url ?? undefined,
+              })}
+            />
+            <JsonLd data={websiteSchema()} />
           </CartProvider>
         </FavouritesProvider>
       </body>

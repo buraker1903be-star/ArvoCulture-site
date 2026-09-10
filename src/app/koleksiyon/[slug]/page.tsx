@@ -10,6 +10,8 @@ import {
 } from "@/lib/products";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/json-ld";
+import { breadcrumbSchema, collectionSchema } from "@/lib/seo";
 
 const labels: Record<string, string> = {
   giyim: "Giyim",
@@ -274,6 +276,28 @@ export default async function Collection({
           </nav>
         )}
       </section>
+
+      {/*
+        Listeleme sayfalarının hiçbir işaretlemesi yoktu. ItemList
+        sayfadaki ürünleri ve sıralarını bildiriyor; kırıntı yolu ise
+        koleksiyonun katalog içindeki yerini.
+      */}
+      <JsonLd
+        data={collectionSchema({
+          title: label,
+          description:
+            exactCollection?.description ||
+            `ArvoCulture ${label} seçkisi. Güncel ürünler, fiyatlar ve stok durumu.`,
+          path: `/koleksiyon/${slug}`,
+          products: visibleProducts,
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Ana sayfa", path: "/" },
+          { name: label, path: `/koleksiyon/${slug}` },
+        ])}
+      />
     </main>
   );
 }
