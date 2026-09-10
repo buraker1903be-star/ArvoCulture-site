@@ -34,10 +34,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     Ürünsüz sitemap yayımlanmaz.
 
     Katalog çağrısı geçici bir sebeple boş dönerse, üretilen
-    sitemap Google'a "3.400 ürünün hepsi kalktı" der ve bu yanlış
+    sitemap Google’a "3.400 ürünün hepsi kalktı" der ve bu yanlış
     bilgi bir saat önbellekte kalır. Dizinden düşen sayfaları geri
     kazanmak haftalar sürer. Üretimi durdurmak çok daha ucuz:
-    arama motoru bir önceki sitemap'i kullanmaya devam eder.
+    arama motoru bir önceki sitemap’i kullanmaya devam eder.
   */
   if (products.length === 0) {
     throw new Error(

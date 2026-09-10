@@ -29,7 +29,7 @@ type RpcOptions = {
    * destekler. Kullanılmayan sütunları istememek büyük fark
    * yaratıyor: katalog listesi tüm sütunlarla 11,9 MB, yalnızca
    * kart için gereken sütunlarla 3,0 MB. Bu veri her istekte
-   * Supabase'den sunucuya taşınıyor.
+   * Supabase’den sunucuya taşınıyor.
    *
    * Verilmezse fonksiyonun tüm sütunları gelir.
    */

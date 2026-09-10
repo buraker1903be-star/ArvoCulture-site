@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function CommercialMessagesPage() {
   const SELLER = await getSeller();
@@ -100,7 +100,7 @@ export default async function CommercialMessagesPage() {
 
       <InfoSection title="İleti Yönetim Sistemi">
         <p>
-          Onay ve ret kayıtları, mevzuat gereği İleti Yönetim Sistemi&apos;ne
+          Onay ve ret kayıtları, mevzuat gereği İleti Yönetim Sistemi’ne
           (İYS) bildirilir. İYS üzerinden tüm izinlerinizi tek bir yerden
           görüntüleyebilir ve yönetebilirsiniz.
         </p>

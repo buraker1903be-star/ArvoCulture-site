@@ -358,7 +358,9 @@
   font-size: var(--t-sm);
   font-weight: 500;
   color: var(--ink);
-  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+  transition:
+    background-color 160ms var(--ease),
+    color 160ms var(--ease);
 }
 
 .mega-panel-head a:hover {
@@ -499,7 +501,9 @@
     height: 1.6px;
     border-radius: 2px;
     background: var(--ink);
-    transition: transform 240ms var(--ease), opacity 200ms var(--ease);
+    transition:
+      transform 240ms var(--ease),
+      opacity 200ms var(--ease);
   }
 
   /* Açıkken çarpıya döner. */
@@ -584,7 +588,6 @@
   }
 
   /* Alt gezinme çubuğu: mobilde başparmak erişimindeki bölge. */
-
 
   .shell {
     padding-bottom: 96px;
@@ -783,6 +786,51 @@ footer {
   color: var(--ink-3);
 }
 
+/*
+  Tasarım künyesi.
+
+  Yasal satırın sağ ucuna yaslanıyor: telif ve marka bilgisi
+  soldan okunurken künye sayfanın kenarında sessizce duruyor.
+  Dar ekranda satır zaten sarıyor, orada da doğal yerine geçiyor.
+
+  Logo dinlenme hâlinde biraz soluk; üzerine gelince tam
+  opaklığa çıkıyor. Sayfadaki hiçbir öğe hover'da ölçü
+  değiştirmediği için burada da büyüme yok.
+*/
+.footer-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-left: auto;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.62;
+  transition: opacity 200ms var(--ease);
+}
+
+.footer-credit span {
+  font-size: var(--t-xs);
+  letter-spacing: 0.04em;
+}
+
+.footer-credit img {
+  /* Yükseklikten kilitleniyor; genişlik oranla geliyor. */
+  height: 20px;
+  width: auto;
+}
+
+.footer-credit:hover,
+.footer-credit:focus-visible {
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  /* Dar ekranda satır sarıyor; sağa yaslamanın anlamı kalmıyor. */
+  .footer-credit {
+    margin-left: 0;
+  }
+}
+
 @media (max-width: 1000px) {
   .footer-top {
     grid-template-columns: 1fr;
@@ -876,7 +924,9 @@ footer {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-2);
-  transition: color 200ms var(--ease), border-color 200ms var(--ease);
+  transition:
+    color 200ms var(--ease),
+    border-color 200ms var(--ease);
 }
 
 .collection-pagination a:hover {
@@ -1325,8 +1375,6 @@ footer {
     text-align: center;
     line-height: 1.3;
   }
-
-
 }
 
 @media (max-width: 1024px) {

@@ -6,8 +6,8 @@ import { SELLER as FALLBACK } from "@/lib/seller";
  * Satıcı kimliği — veritabanından.
  *
  * Öncesinde bu bilgiler `seller.ts` içinde sabitti ve
- * ArvoCulture'a özeldi. İkinci bir mağaza açıldığında onun
- * sözleşmelerinde de ArvoCulture'ın unvanı görünürdü.
+ * ArvoCulture’a özeldi. İkinci bir mağaza açıldığında onun
+ * sözleşmelerinde de ArvoCulture’ın unvanı görünürdü.
  *
  * Mevzuat açısından ciddi: mesafeli satış sözleşmesinde satıcı
  * bilgilerinin doğru olması zorunlu.

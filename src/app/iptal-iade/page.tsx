@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function ReturnsPage() {
   const SELLER = await getSeller();
@@ -60,7 +60,7 @@ export default async function ReturnsPage() {
 
       <InfoSection title="Cayma Hakkı Kapsamı Dışındaki Ürünler">
         <p>
-          Mesafeli Sözleşmeler Yönetmeliği&apos;nin 15. maddesi uyarınca
+          Mesafeli Sözleşmeler Yönetmeliği’nin 15. maddesi uyarınca
           aşağıdaki ürünlerde cayma hakkı kullanılamaz:
         </p>
         <ul>
@@ -101,7 +101,7 @@ export default async function ReturnsPage() {
         </ol>
         <p>
           Kredi kartına yapılan iadelerin karta yansıma süresi bankanıza
-          bağlıdır ve bu süre Satıcı&apos;nın kontrolünde değildir.
+          bağlıdır ve bu süre Satıcı’nın kontrolünde değildir.
         </p>
       </InfoSection>
 
@@ -136,7 +136,7 @@ export default async function ReturnsPage() {
           Talebinizin karşılanmadığını düşünüyorsanız, parasal sınırlar
           dâhilinde yerleşim yerinizdeki Tüketici Hakem Heyetine veya
           Tüketici Mahkemesine başvurabilirsiniz. Ticaret
-          Bakanlığı&apos;nın{" "}
+          Bakanlığı’nın{" "}
           <a href="https://tuketicisikayeti.ticaret.gov.tr" rel="noopener">
             Tüketici Bilgi Sistemi
           </a>{" "}

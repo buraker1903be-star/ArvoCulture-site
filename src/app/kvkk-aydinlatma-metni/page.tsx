@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function KvkkPage() {
   const SELLER = await getSeller();
@@ -196,7 +196,7 @@ export default async function KvkkPage() {
         <p>
           Sitemizin altyapısı ve e-posta gönderimi için kullandığımız
           hizmet sağlayıcıların sunucuları yurt dışında bulunabilir. Bu
-          kapsamda kişisel verileriniz KVKK&apos;nın 9. maddesindeki
+          kapsamda kişisel verileriniz KVKK’nın 9. maddesindeki
           şartlara uygun olarak yurt dışına aktarılabilir.
         </p>
         <p>
@@ -210,7 +210,7 @@ export default async function KvkkPage() {
         <p>
           Kişisel verilerinizin hukuka aykırı olarak başkaları tarafından
           elde edilmesi hâlinde, durum en kısa sürede size ve Kişisel
-          Verileri Koruma Kurulu&apos;na bildirilir.
+          Verileri Koruma Kurulu’na bildirilir.
         </p>
       </InfoSection>
 

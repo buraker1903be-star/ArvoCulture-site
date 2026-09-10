@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function PreInfoPage() {
   const SELLER = await getSeller();
@@ -56,7 +56,7 @@ export default async function PreInfoPage() {
           Türk Lirası cinsinden ve KDV dâhildir.
         </p>
         <p>
-          Kargo ücreti {SELLER.shippingFee}&apos;dir.{" "}
+          Kargo ücreti {SELLER.shippingFee}’dir.{" "}
           {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo
           ücretsizdir. Toplam tutar, ödeme adımında kargo ücreti ve varsa
           indirim düşülerek gösterilir.
@@ -70,7 +70,7 @@ export default async function PreInfoPage() {
           seçenekleri kullanılabilir.
         </p>
         <p>
-          Kart bilgileriniz Satıcı&apos;ya iletilmez ve Satıcı
+          Kart bilgileriniz Satıcı’ya iletilmez ve Satıcı
           sunucularında saklanmaz.
         </p>
       </InfoSection>
@@ -83,7 +83,7 @@ export default async function PreInfoPage() {
           geçmez.
         </p>
         <p>
-          Teslimat masrafı, aksi belirtilmedikçe Alıcı&apos;ya aittir.
+          Teslimat masrafı, aksi belirtilmedikçe Alıcı’ya aittir.
           Kargo teslim alınırken paketin hasarlı olup olmadığı kontrol
           edilmeli, hasar varsa tutanak tutturulmalıdır.
         </p>
@@ -105,7 +105,7 @@ export default async function PreInfoPage() {
 
       <InfoSection title="Cayma Hakkının Kullanılamayacağı Hâller">
         <p>
-          Mesafeli Sözleşmeler Yönetmeliği&apos;nin 15. maddesi uyarınca
+          Mesafeli Sözleşmeler Yönetmeliği’nin 15. maddesi uyarınca
           bazı ürünlerde cayma hakkı kullanılamaz. Katalogumuzda bu
           kapsama girenler:
         </p>
@@ -142,7 +142,7 @@ export default async function PreInfoPage() {
           başvurabilirsiniz.
         </p>
         <p>
-          Ticaret Bakanlığı&apos;nın{" "}
+          Ticaret Bakanlığı’nın{" "}
           <a href="https://tuketicisikayeti.ticaret.gov.tr" rel="noopener">
             Tüketici Bilgi Sistemi
           </a>{" "}
@@ -156,7 +156,7 @@ export default async function PreInfoPage() {
           <Link href="/mesafeli-satis-sozlesmesi">
             Mesafeli Satış Sözleşmesi
           </Link>
-          &apos;ni okuduğunuzu ve kabul ettiğinizi beyan etmiş olursunuz.
+          ’ni okuduğunuzu ve kabul ettiğinizi beyan etmiş olursunuz.
         </p>
       </InfoSection>
     </InfoPage>

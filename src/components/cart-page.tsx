@@ -13,7 +13,7 @@ import {
   writeNote,
 } from "@/lib/cart-extras";
 
-/** Kargo kuralı ARC'taki sipariş fonksiyonuyla aynı tutulmalıdır. */
+/** Kargo kuralı ARC’taki sipariş fonksiyonuyla aynı tutulmalıdır. */
 const SHIPPING_FEE = 120;
 const FREE_OVER = 2000;
 
@@ -88,7 +88,7 @@ export function CartPageView() {
 
   useEffect(() => {
     /*
-      localStorage sunucuda okunamaz; değerler ilk render'dan
+      localStorage sunucuda okunamaz; değerler ilk render’dan
       sonra yüklenir. Tek seferlik başlangıç değeri olduğu için
       zincirleme render riski yok.
     */

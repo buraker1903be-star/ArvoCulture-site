@@ -34,5 +34,5 @@ export const env = {
   ).replace(/\/$/, ""),
 } as const;
 
-/** next.config.ts içindeki görsel allowlist'i için gerekir. */
+/** next.config.ts içindeki görsel allowlist’i için gerekir. */
 export const supabaseHostname = new URL(env.supabaseUrl).hostname;

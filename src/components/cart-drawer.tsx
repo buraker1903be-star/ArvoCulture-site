@@ -33,7 +33,7 @@ export function CartDrawer({
   const [closing, setClosing] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Portal yalnızca tarayıcıda kurulabilir; ilk render'dan sonra
+  // Portal yalnızca tarayıcıda kurulabilir; ilk render’dan sonra
   // bir kez işaretlenir. Kayıtlı kupon da burada okunur.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

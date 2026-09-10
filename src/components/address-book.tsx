@@ -57,7 +57,7 @@ const EMPTY = {
  * Adres defteri.
  *
  * Bir adres aynı anda hem fatura hem teslimat adresi olabilir —
- * Türkiye'de en sık durum bu. İki ayrı liste tutmak yerine
+ * Türkiye’de en sık durum bu. İki ayrı liste tutmak yerine
  * kayıtta iki bayrak var; müşteri ikisini de işaretleyip tek
  * adres girebiliyor.
  *

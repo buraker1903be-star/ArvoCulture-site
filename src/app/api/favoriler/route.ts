@@ -8,7 +8,7 @@ import type { Product } from "@/lib/product-types";
  * Favoriler tarayıcıda tutuluyor; sunucu hangi ürünlerin istendiğini
  * ancak istemci söyleyince bilir. Eskiden favoriler sayfası tüm
  * kataloğu çekip eşleştirmeyi istemcide yapıyordu. Bunun iki bedeli
- * vardı: sayfa 3.400 ürünlük katalogda megabaytlarca HTML'e şişiyor
+ * vardı: sayfa 3.400 ürünlük katalogda megabaytlarca HTML’e şişiyor
  * ve katalog sınırının dışında kalan ürünler sessizce kayboluyordu —
  * müşteri favorilediği ürünü listede bulamıyordu. Artık yalnızca
  * istenen ürünler çekiliyor; katalog ne kadar büyürse büyüsün bu

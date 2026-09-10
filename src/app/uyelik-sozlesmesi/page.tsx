@@ -218,8 +218,8 @@ export default async function MembershipPage() {
           Bu sözleşmeye Türkiye Cumhuriyeti hukuku uygulanır.
         </p>
         <p>
-          Uyuşmazlıklarda, Ticaret Bakanlığı&apos;nca her yıl ilan edilen
-          parasal sınırlar dâhilinde Üye&apos;nin yerleşim yerindeki veya
+          Uyuşmazlıklarda, Ticaret Bakanlığı’nca her yıl ilan edilen
+          parasal sınırlar dâhilinde Üye’nin yerleşim yerindeki veya
           işlemin yapıldığı yerdeki İl ya da İlçe Tüketici Hakem
           Heyetleri; bu sınırların üzerindeki uyuşmazlıklarda Tüketici
           Mahkemeleri yetkilidir.
@@ -228,7 +228,7 @@ export default async function MembershipPage() {
 
       <InfoSection title="12. Yürürlük">
         <p>
-          Bu sözleşme, Üye&apos;nin kayıt sırasında elektronik ortamda
+          Bu sözleşme, Üye’nin kayıt sırasında elektronik ortamda
           onaylamasıyla yürürlüğe girer ve üyelik devam ettiği sürece
           geçerliliğini korur.
         </p>

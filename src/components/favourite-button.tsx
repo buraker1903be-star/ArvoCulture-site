@@ -5,7 +5,7 @@ import { useFavourites } from "@/components/favourites";
 /**
  * Favori düğmesi.
  *
- * Durum artık FavouritesProvider'dan geliyor; üye müşteride bu
+ * Durum artık FavouritesProvider’dan geliyor; üye müşteride bu
  * liste hesaptan, misafirde tarayıcıdan beslenir. Düğmenin kendisi
  * ikisini ayırt etmez.
  *

@@ -9,9 +9,9 @@ import type { Product } from "@/lib/product-types";
 /**
  * Favoriler listesi.
  *
- * Slug listesi FavouritesProvider'dan gelir — üye müşteride
+ * Slug listesi FavouritesProvider’dan gelir — üye müşteride
  * hesaptan, misafirde tarayıcıdan. Ürün bilgileri /api/favoriler
- * ucundan yalnızca o slug'lar için çekilir; katalog büyüdükçe bu
+ * ucundan yalnızca o slug’lar için çekilir; katalog büyüdükçe bu
  * sayfanın maliyeti artmaz.
  */
 

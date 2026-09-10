@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function LegalNoticePage() {
   const SELLER = await getSeller();
@@ -50,7 +50,7 @@ export default async function LegalNoticePage() {
           <strong>Vergi No:</strong> {SELLER.taxNumber}
         </p>
         <p>
-          İşletmemiz ETBİS (Elektronik Ticaret Bilgi Sistemi)&apos;ne
+          İşletmemiz ETBİS (Elektronik Ticaret Bilgi Sistemi)’ne
           kayıtlıdır.
         </p>
       </InfoSection>
@@ -71,7 +71,7 @@ export default async function LegalNoticePage() {
 
       <InfoSection title="ETBİS Kaydı">
         <p>
-          Mağazamız Elektronik Ticaret Bilgi Sistemi&apos;ne (ETBİS)
+          Mağazamız Elektronik Ticaret Bilgi Sistemi’ne (ETBİS)
           kayıtlıdır. Kayıt doğrulaması için sitenin alt kısmındaki ETBİS
           bandını kullanabilirsiniz.
         </p>
@@ -80,13 +80,13 @@ export default async function LegalNoticePage() {
       <InfoSection title="Şikâyet Mercileri">
         <p>
           Tüketici uyuşmazlıklarında, parasal sınırlar dâhilinde
-          bulunduğunuz yerdeki İl veya İlçe Tüketici Hakem Heyeti&apos;ne,
-          sınırın üzerindeki uyuşmazlıklarda Tüketici Mahkemeleri&apos;ne
+          bulunduğunuz yerdeki İl veya İlçe Tüketici Hakem Heyeti’ne,
+          sınırın üzerindeki uyuşmazlıklarda Tüketici Mahkemeleri’ne
           başvurabilirsiniz.
         </p>
         <p>
           Elektronik ticarete ilişkin şikâyetlerinizi Ticaret
-          Bakanlığı&apos;na iletebilirsiniz.
+          Bakanlığı’na iletebilirsiniz.
         </p>
         <p>
           Bize doğrudan ulaşmak isterseniz {SELLER.email} adresini
@@ -98,7 +98,7 @@ export default async function LegalNoticePage() {
       <InfoSection title="Fikri Mülkiyet">
         <p>
           Sitede yer alan marka, logo, tasarım, metin ve görseller{" "}
-          {SELLER.legalName}&apos;ne veya ilgili hak sahiplerine aittir.
+          {SELLER.legalName}’ne veya ilgili hak sahiplerine aittir.
           İzinsiz kopyalanması, çoğaltılması veya kullanılması hukuka
           aykırıdır.
         </p>

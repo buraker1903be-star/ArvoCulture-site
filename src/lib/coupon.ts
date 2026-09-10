@@ -3,8 +3,8 @@ import type { StorefrontDiscount } from "@/lib/discounts";
 /**
  * Kupon değerlendirmesi — yalnızca gösterim içindir.
  *
- * Gerçek indirim ARC'ta, veritabanındaki kayıttan hesaplanır ve
- * PayTR'a giden tutar odur. Burada aynı kuralları uygulayıp
+ * Gerçek indirim ARC’ta, veritabanındaki kayıttan hesaplanır ve
+ * PayTR’a giden tutar odur. Burada aynı kuralları uygulayıp
  * müşteriye anında geri bildirim veriyoruz; iki taraf ayrıldığında
  * sunucu kazanır.
  */
@@ -28,7 +28,7 @@ export function evaluateCoupon(
     return { ok: false, reason: "Bu kod geçerli değil." };
   }
 
-  // Tutarlar ARC'ta kuruş cinsinden tutulur.
+  // Tutarlar ARC’ta kuruş cinsinden tutulur.
   const minimum = (found.minimum_subtotal ?? 0) / 100;
   if (subtotal < minimum) {
     return {

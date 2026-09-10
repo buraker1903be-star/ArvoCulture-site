@@ -98,7 +98,7 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
   const description = plainText(row.description);
   /*
     Görsel yolu iki biçimde gelebilir: ARC deposundaki göreli yol
-    ya da tedarikçi CDN'inin tam adresi. Tedarikçi ürünlerinde
+    ya da tedarikçi CDN’inin tam adresi. Tedarikçi ürünlerinde
     görselleri kopyalamak yerine kaynağı kullanıyoruz.
   */
   const images = paths.map((path) =>
@@ -176,12 +176,12 @@ const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,199}$/;
  * (3.400 civarı) belirgin biçimde üzerinde tutulmalı. Daha önce bu
  * değer üç ayrı dosyaya 3.000 olarak yazılmıştı ve katalog o sayıyı
  * aşınca aradaki ürünler sessizce görünmez oldu: arama onları
- * bulamıyor, sitemap Google'a bildirmiyor, favorilere eklenince
+ * bulamıyor, sitemap Google’a bildirmiyor, favorilere eklenince
  * listede çıkmıyorlardı.
  *
- * Not: veritabanı tarafında da bir tavan var. Supabase'in PostgREST
- * `db_max_rows` ayarı öntanımlı olarak 1.000'dir ve buradaki değer
- * ne olursa olsun yanıtı keser; bu ayar 20.000'e çıkarıldı.
+ * Not: veritabanı tarafında da bir tavan var. Supabase’in PostgREST
+ * `db_max_rows` ayarı öntanımlı olarak 1.000’dir ve buradaki değer
+ * ne olursa olsun yanıtı keser; bu ayar 20.000’e çıkarıldı.
  */
 export const CATALOG_LIMIT = 5000;
 
@@ -190,7 +190,7 @@ export const CATALOG_LIMIT = 5000;
  *
  * `description` bilerek yok. Kartta kullanılmıyor ama satır başına
  * en ağır alan o: katalog tüm sütunlarla 11,9 MB, bu listeyle
- * 3,0 MB. Fark her istekte Supabase'den sunucuya taşınan veridir.
+ * 3,0 MB. Fark her istekte Supabase’den sunucuya taşınan veridir.
  * Kart için gereken kısa metin `subtitle` alanından geliyor ve o
  * zaten veritabanı tarafında hesaplanıyor.
  *
@@ -228,7 +228,7 @@ export const getStorefrontProducts = cache(
  * Sitemap için yalnızca ürün adresleri.
  *
  * Sitemap ürünün adından fiyatına hiçbir alanını kullanmıyor,
- * yalnızca slug'ı yazıyor. Tam satır istemek 11,9 MB, yalnızca
+ * yalnızca slug’ı yazıyor. Tam satır istemek 11,9 MB, yalnızca
  * slug istemek 0,3 MB taşıyor — kırk kat fark.
  *
  * Burada bilerek `rpc` kullanılıyor, `rpcOrEmpty` değil. Hata
@@ -259,7 +259,7 @@ export const getStorefrontProductSlugs = cache(
  *
  * Katalogdan süzmek yerine ayrı bir uç nokta kullanılıyor:
  * katalog son güncellenene göre sıralı olduğu için tedarikçi
- * ürünleri ilk 200'ü dolduruyor ve indirimliler listeye hiç
+ * ürünleri ilk 200’ü dolduruyor ve indirimliler listeye hiç
  * giremiyordu.
  */
 export const getStorefrontDeals = cache(async (limit = 12) => {
@@ -307,7 +307,7 @@ export const getStorefrontCollectionProducts = cache(
 /**
  * Tek ürün. Burada hata bilinçli olarak yutulmuyor: ARC erişilemezse
  * istisna fırlar ve hata sınırı devreye girer. Aksi hâlde geçici bir
- * kesinti sırasında Google'a "bu ürün yok" (404) sinyali gider ve ürün
+ * kesinti sırasında Google’a "bu ürün yok" (404) sinyali gider ve ürün
  * dizinden düşer.
  */
 export const getStorefrontProduct = cache(

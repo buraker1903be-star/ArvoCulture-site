@@ -5,7 +5,7 @@
  *
  * Sepet kalemleriyle aynı depoda ama ayrı anahtarlarda tutulur;
  * sepet temizlendiğinde de silinirler. Ödeme sayfası bu değerleri
- * okuyup ARC'a gönderir.
+ * okuyup ARC’a gönderir.
  *
  * Not: kuponun geçerliliği burada değil sunucuda doğrulanır.
  * Buradaki değer yalnızca müşterinin yazdığıdır.

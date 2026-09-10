@@ -39,7 +39,7 @@ export function AccountPanel({
   const [profileSaved, setProfileSaved] = useState(false);
 
   /*
-    Şifre sıfırlama akışı. Supabase'in kurtarma bağlantısı
+    Şifre sıfırlama akışı. Supabase’in kurtarma bağlantısı
     kullanıcıyı geçici olarak oturum açtırıyor; yeni şifre
     belirlenmezse müşteri eski şifresiyle kalıyor ve bir daha
     giremiyor.
@@ -143,7 +143,7 @@ export function AccountPanel({
     try {
       /*
         Kayıt ve şifre sıfırlama e-postaları ARC üzerinden
-        gönderiliyor. Supabase'in kendi gönderimi proje geneli
+        gönderiliyor. Supabase’in kendi gönderimi proje geneli
         SMTP ayarını kullanıyor ve o ayar ArvoARC panelinden
         giden personel e-postalarını da etkiliyor; müşteriye
         giden e-postalar ArvoCulture kimliğinde olmalı.
@@ -483,7 +483,7 @@ export function AccountPanel({
           <a href="/kvkk-aydinlatma-metni" target="_blank" rel="noreferrer">
             KVKK Aydınlatma Metni
           </a>
-          &apos;ni kabul etmiş sayılırsınız.
+          ’ni kabul etmiş sayılırsınız.
         </p>
       )}
 
@@ -516,7 +516,7 @@ export function AccountPanel({
 
       {/*
         Sosyal giriş. Supabase Auth destekliyor ama her sağlayıcı
-        için OAuth uygulaması açılıp anahtarların Supabase'e
+        için OAuth uygulaması açılıp anahtarların Supabase’e
         girilmesi gerekiyor. Hazır olmadan buton koymuyoruz.
       */}
       <div className="soon-social" aria-label="Yakında eklenecek giriş yöntemleri">
@@ -550,7 +550,7 @@ function translateAuthError(message: string) {
 /**
  * Kayıt ve şifre sıfırlama e-postası isteği.
  *
- * ARC'a gidiyor: bağlantıyı üretmek `service_role` yetkisi
+ * ARC’a gidiyor: bağlantıyı üretmek `service_role` yetkisi
  * gerektiriyor ve o anahtar tarayıcıya konulamaz.
  */
 async function requestAuthEmail(payload: {

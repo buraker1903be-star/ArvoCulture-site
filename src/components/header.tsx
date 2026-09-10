@@ -23,11 +23,11 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
     return () => window.removeEventListener("arvo:menu", toggle);
   }, []);
   /*
-    Koleksiyonları menu_group'a göre getirir. ARC'taki gruplandırma
+    Koleksiyonları menu_group’a göre getirir. ARC’taki gruplandırma
     iki farklı ekseni karıştırıyor: markalar (Aloe Via, Zeitgard)
     ile ürün tipleri (Serumlar, Nemlendiriciler) aynı grupta.
     Aşağıdaki BRANDS listesi markaları slug üzerinden ayırıp kendi
-    sütununa taşır; başlık ve ürün sayısı yine ARC'tan gelir.
+    sütununa taşır; başlık ve ürün sayısı yine ARC’tan gelir.
   */
   /*
     Menü, ARC koleksiyonlarından kuruluyor. Tedarikçi kategori

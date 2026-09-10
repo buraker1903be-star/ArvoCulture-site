@@ -178,7 +178,7 @@ export default async function ProductPage({ params }: Params) {
               <p>
                 Siparişiniz ödeme onayının ardından hazırlanır ve kargoya
                 verildiğinde e-posta ile bilgilendirilirsiniz. Kargo ücreti
-                120 TL&apos;dir; 2.000 TL ve üzeri siparişlerde ücretsizdir.
+                120 TL’dir; 2.000 TL ve üzeri siparişlerde ücretsizdir.
               </p>
             </details>
 

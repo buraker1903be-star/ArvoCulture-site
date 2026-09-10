@@ -114,7 +114,7 @@ export default async function Collection({
   const label = exactCollection?.title ?? labels[slug] ?? "Tüm Ürünler";
 
   /*
-    "Tüm Ürünler" kataloğun tamamını kapsar ve 3.400'ü aşkın ürün
+    "Tüm Ürünler" kataloğun tamamını kapsar ve 3.400’ü aşkın ürün
     demektir. Bu sayfa eskiden hepsini çekip 24 tanesini
     gösteriyordu: 3,0 MB veri ve her ürün için gereksiz işlem.
     Artık filtre, sıralama ve sayfalama veritabanında yapılıyor.

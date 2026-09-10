@@ -4,7 +4,7 @@
  * Son gezilen ürünler.
  *
  * Tarayıcıda tutuluyor; üyelik gerekmiyor. Yalnızca ürün
- * slug'ları saklanıyor — ürün bilgisi katalogdan tazelenir,
+ * slug’ları saklanıyor — ürün bilgisi katalogdan tazelenir,
  * böylece fiyatı değişen ya da tükenen ürün eski bilgisiyle
  * görünmez.
  */

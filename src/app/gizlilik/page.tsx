@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function PrivacyPage() {
   const SELLER = await getSeller();
@@ -31,7 +31,7 @@ export default async function PrivacyPage() {
         <p>
           Kişisel verilerinizin işlenmesine ilişkin ayrıntılı bilgi için{" "}
           <Link href="/kvkk-aydinlatma-metni">KVKK Aydınlatma Metni</Link>
-          &apos;ni inceleyebilirsiniz.
+          ’ni inceleyebilirsiniz.
         </p>
       </InfoSection>
 

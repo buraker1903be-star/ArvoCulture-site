@@ -6,7 +6,7 @@
  * nereye gittiğini görüyor. Buton yazısının "Sepete eklendi" olması
  * tek başına gözden kaçıyordu.
  *
- * DOM'a doğrudan yazılır; React durumu tutmaya değmeyecek kadar
+ * DOM’a doğrudan yazılır; React durumu tutmaya değmeyecek kadar
  * kısa ömürlü bir efekt.
  */
 export function flyToCart(origin: HTMLElement | null, image?: string) {

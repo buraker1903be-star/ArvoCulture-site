@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function DeliveryPage() {
   const SELLER = await getSeller();
@@ -25,7 +25,7 @@ export default async function DeliveryPage() {
     >
       <InfoSection title="Kargo Ücreti">
         <p>
-          Kargo ücreti {SELLER.shippingFee}&apos;dir.{" "}
+          Kargo ücreti {SELLER.shippingFee}’dir.{" "}
           {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo ücreti
           tarafımızca karşılanır.
         </p>

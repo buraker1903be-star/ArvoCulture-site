@@ -13,7 +13,7 @@ export const metadata: Metadata = {
  *
  * İki iş yapar: müşteriyi doğru kanala yönlendirir ve mesafeli
  * satış mevzuatının aradığı satıcı bilgilerini erişilebilir kılar.
- * Footer'dan ticaret unvanı kaldırıldığı için o bilgi burada
+ * Footer’dan ticaret unvanı kaldırıldığı için o bilgi burada
  * bulunmak zorunda.
  */
 
@@ -27,7 +27,7 @@ const CHANNELS = [
     value: WHATSAPP,
     href: WHATSAPP_LINK,
     note: "Kurumsal hat — en hızlı yanıt",
-    action: "WhatsApp'tan yaz",
+    action: "WhatsApp’tan yaz",
   },
   {
     title: "E-posta",

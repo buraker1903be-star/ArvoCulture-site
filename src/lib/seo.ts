@@ -4,7 +4,7 @@ import type { Product } from "@/lib/product-types";
 const CURRENCY = "TRY";
 
 /**
- * Product + Offer şeması. Google Alışveriş'in ücretsiz listelemeleri ve
+ * Product + Offer şeması. Google Alışveriş’in ücretsiz listelemeleri ve
  * zengin sonuçlar bu işaretlemeye bağlıdır; fiyat, para birimi ve stok
  * durumu eksiksiz olmalıdır.
  */

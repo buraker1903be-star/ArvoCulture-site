@@ -10,7 +10,7 @@ export const metadata = {
  * PayTR başarılı ödeme sonrası buraya yönlendirir.
  *
  * Dikkat: bu sayfanın görünmesi ödemenin kesinleştiği anlamına
- * gelmez. Siparişi "ödendi" yapan tek şey PayTR'ın ARC'a
+ * gelmez. Siparişi "ödendi" yapan tek şey PayTR’ın ARC’a
  * gönderdiği sunucudan sunucuya bildirimdir. Bu yüzden burada
  * "ödemeniz alındı" değil, "siparişiniz alındı" denir.
  */

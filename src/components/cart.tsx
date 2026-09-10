@@ -11,14 +11,18 @@ import {
   useSyncExternalStore,
 } from "react";
 import { CartDrawer } from "@/components/cart-drawer";
-import { formatPrice, type Product } from "@/lib/product-types";
+import {
+  formatPrice,
+  type Product,
+  displayVariantLabel,
+} from "@/lib/product-types";
 import type { StorefrontDiscount } from "@/lib/discounts";
 
 /*
   Sepet kalemi.
 
   `sku` varyantı tanımlar; sipariş bunun üzerinden kurulur.
-  Önceden yalnızca ürün slug'ı taşınıyordu ve müşteri "L" seçse
+  Önceden yalnızca ürün slug’ı taşınıyordu ve müşteri "L" seçse
   bile sipariş herhangi bir varyanta bağlanıyor, yanlış beden
   gönderiliyordu.
 
@@ -40,7 +44,8 @@ export const cartKey = (item: { slug: string; sku?: string }) =>
 /** Sepete eklenirken seçilen varyant. */
 export type CartVariant = {
   sku: string;
-  label: string;
+  /* Yer tutucu başlıklar etikete dönüşmediği için boş kalabilir. */
+  label?: string;
   price?: number;
 };
 
@@ -91,7 +96,19 @@ export function CartProvider({
   );
   const items = useMemo(() => {
     try {
-      return JSON.parse(snapshot) as CartItem[];
+      const stored = JSON.parse(snapshot) as CartItem[];
+      /*
+        Müşterinin sepetinde önceden kaydedilmiş satırlar da
+        temizleniyor: yer tutucu varyant başlıkları ("Default
+        Title") daha önce sepete yazılmış olabilir ve düzeltme
+        yalnızca yeni eklenenleri kapsasaydı eski sepetler bozuk
+        kalırdı.
+      */
+      return stored.map((item) =>
+        item.variantLabel && !displayVariantLabel({ title: item.variantLabel })
+          ? { ...item, variantLabel: undefined }
+          : item,
+      );
     } catch {
       return [];
     }
@@ -177,10 +194,10 @@ export function CartLink() {
         aria-label={`Sepet, ${count} ürün`}
         aria-haspopup="dialog"
       >
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M6 8h12l-1 11.5a1.5 1.5 0 0 1-1.5 1.4h-9A1.5 1.5 0 0 1 5 19.5Z" />
-        <path d="M9 8V6.5a3 3 0 0 1 6 0V8" />
-      </svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M6 8h12l-1 11.5a1.5 1.5 0 0 1-1.5 1.4h-9A1.5 1.5 0 0 1 5 19.5Z" />
+          <path d="M9 8V6.5a3 3 0 0 1 6 0V8" />
+        </svg>
         <span className="cart-count">{count}</span>
       </button>
 

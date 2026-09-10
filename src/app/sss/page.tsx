@@ -29,7 +29,7 @@ const GROUPS = [
       ],
       [
         "Kargo ücreti ne kadar?",
-        "Kargo ücreti 120 TL'dir. 2.000 TL ve üzerindeki siparişlerde kargo ücretsizdir.",
+        "Kargo ücreti 120 TL’dir. 2.000 TL ve üzerindeki siparişlerde kargo ücretsizdir.",
       ],
       [
         "Siparişimi nasıl takip ederim?",
@@ -152,7 +152,7 @@ export default function FAQ() {
         </div>
         <div className="faq-cta-actions">
           <a className="btn" href="https://wa.me/905074370507" rel="noopener">
-            WhatsApp&apos;tan yaz
+            WhatsApp’tan yaz
           </a>
           <Link href="/iletisim">Tüm iletişim kanalları</Link>
         </div>

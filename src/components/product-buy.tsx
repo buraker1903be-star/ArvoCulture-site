@@ -3,17 +3,17 @@
 import { useContext, useMemo, useRef, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { flyToCart } from "@/lib/fly-to-cart";
-import type { Product } from "@/lib/product-types";
+import { displayVariantLabel, type Product } from "@/lib/product-types";
 import type { Variant } from "@/lib/variants";
 
 /**
  * Satın alma bloğu: beden, adet, sepete ekleme.
  *
  * Bedenler artık sabit bir listeden değil, ürünün gerçek
- * varyantlarından geliyor. Seçilen varyantın SKU'su sepete
+ * varyantlarından geliyor. Seçilen varyantın SKU’su sepete
  * yazılıyor; sipariş bu SKU üzerinden kuruluyor.
  *
- * Öncesinde sepet yalnızca ürün slug'ı taşıyordu: müşteri "L"
+ * Öncesinde sepet yalnızca ürün slug’ı taşıyordu: müşteri "L"
  * seçse bile ARC stokta olan herhangi bir varyantı alıyor ve
  * yanlış beden gönderiliyordu.
  */
@@ -63,7 +63,7 @@ export function ProductBuy({
     const variant = selected
       ? {
           sku: selected.sku,
-          label: selected.size ?? selected.title,
+          label: displayVariantLabel(selected),
           price: selected.price,
         }
       : undefined;

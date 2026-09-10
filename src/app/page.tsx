@@ -26,7 +26,7 @@ import {
 } from "@/lib/storefront-theme";
 
 /**
- * Ana sayfa. Sıralama, Türkiye'de alışveriş yapan kullanıcının
+ * Ana sayfa. Sıralama, Türkiye’de alışveriş yapan kullanıcının
  * öncelik sırasına göre kurulmuştur: önce fiyat/indirim, sonra ürün
  * görseli, sonra bulunabilirlik, sonra güven.
  *
@@ -55,7 +55,7 @@ const CATEGORIES = [
   sığıyordu. Etiketle çok daha fazla terim gösterilebiliyor ve
   hiçbir zaman boş kalmıyor.
 
-  Bağlantılar aramaya gidiyor, koleksiyon slug'ına değil:
+  Bağlantılar aramaya gidiyor, koleksiyon slug’ına değil:
   koleksiyon adı değişse bile kırılmaz.
 */
 const SEARCH_TERMS = [
@@ -84,7 +84,7 @@ export default async function Home() {
     getStorefrontDiscounts(),
     getSearchIndex(),
     /*
-      Çok satanlar ARC'taki "Çok Satanlar" koleksiyonundan gelir.
+      Çok satanlar ARC’taki "Çok Satanlar" koleksiyonundan gelir.
       Slug eski adından kalma; başlık panelden değiştirilmiş.
       Böylece hangi ürünlerin öne çıkacağına panelden siz karar
       verirsiniz. Öncesinde katalog sırasına düşüyordu ve
@@ -112,7 +112,7 @@ export default async function Home() {
   const deals = dealItems.filter((product) => product.available !== false);
 
   /*
-    Koleksiyon boşsa ARC'ta işaretlenmiş ürünlere düşülür.
+    Koleksiyon boşsa ARC’ta işaretlenmiş ürünlere düşülür.
     Katalog sırasına asla düşülmez.
   */
   const curated = curatedBest.filter((product) => product.available !== false);
@@ -320,7 +320,7 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
         </div>
 
         {/*
-          Kategori kısayolları. Hero'nun altında, kaydırmadan
+          Kategori kısayolları. Hero’nun altında, kaydırmadan
           erişilebilir. Müşteri "nereden başlayacağım" sorusuna
           ilk ekranda yanıt buluyor.
         */}

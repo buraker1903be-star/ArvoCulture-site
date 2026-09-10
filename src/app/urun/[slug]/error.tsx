@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 /**
  * ARC kesintisinde devreye girer. Eskiden bu durumda 404 dönüyordu ve
- * Google'a "bu ürün yok" sinyali gidiyordu; artık ürün dizinde kalıyor.
+ * Google’a "bu ürün yok" sinyali gidiyordu; artık ürün dizinde kalıyor.
  */
 export default function ProductError({
   error,

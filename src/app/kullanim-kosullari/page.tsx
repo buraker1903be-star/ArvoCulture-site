@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function TermsPage() {
   const SELLER = await getSeller();
@@ -87,7 +87,7 @@ export default async function TermsPage() {
       <InfoSection title="Fikri Mülkiyet">
         <p>
           Sitede yer alan marka, logo, tasarım, metin, görsel ve yazılım{" "}
-          {SELLER.legalName}&apos;ne veya ilgili hak sahiplerine aittir.
+          {SELLER.legalName}’ne veya ilgili hak sahiplerine aittir.
           İzinsiz kullanımı, kopyalanması veya çoğaltılması hukuka
           aykırıdır.
         </p>

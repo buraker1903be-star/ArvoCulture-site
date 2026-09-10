@@ -13,7 +13,7 @@ export const metadata: Metadata = {
  * Mesafeli Satış Sözleşmesi.
  *
  * İçerik, 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve
- * Mesafeli Sözleşmeler Yönetmeliği'nin aradığı başlıklara göre
+ * Mesafeli Sözleşmeler Yönetmeliği’nin aradığı başlıklara göre
  * düzenlenmiştir. Yayına almadan önce hukuki inceleme
  * yaptırılması gerekir; özellikle iade masrafı, teslimat süresi
  * ve kayıtlı kargo firması bilgileri işletmenin fiili
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 /*
   Satıcı bilgileri veritabanından okunuyor: her mağaza
   kendi unvanı ve adresiyle görünmeli. Sabit dosya
-  ArvoCulture'a özeldi.
+  ArvoCulture’a özeldi.
 */
 export default async function DistanceSalesPage() {
   const SELLER = await getSeller();
@@ -79,7 +79,7 @@ export default async function DistanceSalesPage() {
 
       <InfoSection title="2. Sözleşmenin Konusu">
         <p>
-          İşbu sözleşmenin konusu, Alıcı&apos;nın Satıcı&apos;ya ait{" "}
+          İşbu sözleşmenin konusu, Alıcı’nın Satıcı’ya ait{" "}
           {SELLER.website} adresli internet sitesinden elektronik ortamda
           sipariş verdiği, aşağıda nitelikleri ve satış fiyatı belirtilen
           ürünün satışı ve teslimi ile ilgili olarak 6502 sayılı
@@ -103,7 +103,7 @@ export default async function DistanceSalesPage() {
           fiyatlar ise belirtilen süre sonuna kadar geçerlidir.
         </p>
         <p>
-          Kargo ücreti {SELLER.shippingFee}&apos;dir.{" "}
+          Kargo ücreti {SELLER.shippingFee}’dir.{" "}
           {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo ücreti
           Satıcı tarafından karşılanır.
         </p>
@@ -135,10 +135,10 @@ export default async function DistanceSalesPage() {
           ifa etme yükümlülüğünden kurtulmuş sayılır.
         </p>
         <p>
-          Ürünün tesliminden sonra Alıcı&apos;ya ait kartın Alıcı&apos;nın
+          Ürünün tesliminden sonra Alıcı’ya ait kartın Alıcı’nın
           kusuru olmaksızın yetkisiz kişilerce kullanılması nedeniyle
-          banka ya da finans kuruluşunun bedeli Satıcı&apos;ya ödememesi
-          hâlinde, ürün teslim edilmiş olmak kaydıyla Satıcı&apos;ya iade
+          banka ya da finans kuruluşunun bedeli Satıcı’ya ödememesi
+          hâlinde, ürün teslim edilmiş olmak kaydıyla Satıcı’ya iade
           edilir.
         </p>
       </InfoSection>
@@ -157,7 +157,7 @@ export default async function DistanceSalesPage() {
           Stok bilgisi sipariş anında gösterilir. Teknik nedenlerle
           istisnai olarak hata oluşabilir. Ürünün bir kısmının ya da
           tamamının stokta bulunmadığının sonradan anlaşılması hâlinde
-          durum Alıcı&apos;ya bildirilir; siparişin ilgili kısmı iptal
+          durum Alıcı’ya bildirilir; siparişin ilgili kısmı iptal
           edilir ve tahsil edilmiş tutar iade edilir.
         </p>
         <p>
@@ -178,13 +178,13 @@ export default async function DistanceSalesPage() {
           düzeltebilir.
         </p>
         <p>
-          Sözleşme, Alıcı&apos;nın ödeme adımını onaylamasıyla kurulur.
+          Sözleşme, Alıcı’nın ödeme adımını onaylamasıyla kurulur.
           Alıcı bu onayla birlikte ödeme yükümlülüğü altına girdiğini
           kabul eder.
         </p>
         <p>
           Sipariş onayının ardından Ön Bilgilendirme Formu ve bu sözleşme,
-          Alıcı&apos;nın bildirdiği e-posta adresine gönderilir.
+          Alıcı’nın bildirdiği e-posta adresine gönderilir.
           Belgelerin saklanması önerilir.
         </p>
         <p>
@@ -197,9 +197,9 @@ export default async function DistanceSalesPage() {
       <InfoSection title="7. Teslimat">
         <p>
           Sipariş, ödemenin onaylanmasından sonra hazırlanır ve yasal
-          süreyi aşmamak kaydıyla, her hâlükârda siparişin Satıcı&apos;ya
+          süreyi aşmamak kaydıyla, her hâlükârda siparişin Satıcı’ya
           ulaştığı tarihten itibaren en geç {SELLER.deliveryDaysMax} gün
-          içinde Alıcı&apos;nın bildirdiği adrese teslim edilir.
+          içinde Alıcı’nın bildirdiği adrese teslim edilir.
         </p>
         <p>
           Satıcı ürünün sağlam, eksiksiz, siparişte belirtilen niteliklere
@@ -207,19 +207,19 @@ export default async function DistanceSalesPage() {
           edilmesinden sorumludur.
         </p>
         <p>
-          Teslimatın Alıcı&apos;dan başka bir kişiye yapılacak olması
+          Teslimatın Alıcı’dan başka bir kişiye yapılacak olması
           hâlinde, teslim alacak kişinin kabul etmemesinden Satıcı
           sorumlu tutulamaz.
         </p>
         <p>
-          Mücbir sebep hâllerinde Satıcı durumu Alıcı&apos;ya bildirir.
+          Mücbir sebep hâllerinde Satıcı durumu Alıcı’ya bildirir.
           Alıcı bu durumda siparişi iptal edip bedelin iadesini isteyebilir
           ya da engel ortadan kalkana kadar teslimatın ertelenmesini kabul
           edebilir.
         </p>
         <p>
           Ürünün tedarikinin imkânsızlaştığı hâllerde Satıcı bu durumu
-          öğrendiği tarihten itibaren üç gün içinde Alıcı&apos;ya bildirir
+          öğrendiği tarihten itibaren üç gün içinde Alıcı’ya bildirir
           ve tahsil edilen tutarı en geç on dört gün içinde iade eder.
         </p>
       </InfoSection>
@@ -242,13 +242,13 @@ export default async function DistanceSalesPage() {
           süre içinde yapılmış olması yeterlidir.
         </p>
         <p>
-          Ürünü, cayma bildiriminden itibaren on gün içinde Satıcı&apos;ya
+          Ürünü, cayma bildiriminden itibaren on gün içinde Satıcı’ya
           göndermeniz gerekir. Ürünün kutusu, ambalajı, varsa standart
           aksesuarları ve faturasıyla birlikte, satılabilirliğini
           yitirmemiş olarak iade edilmesi gerekir.
         </p>
         <p>
-          <strong>İade süresi:</strong> Cayma bildirimi Satıcı&apos;ya
+          <strong>İade süresi:</strong> Cayma bildirimi Satıcı’ya
           ulaştıktan sonra en geç on dört gün içinde, teslimat masrafları
           dâhil tüm ödemeleriniz, satın alırken kullandığınız ödeme
           aracına iade edilir.
@@ -267,7 +267,7 @@ export default async function DistanceSalesPage() {
 
       <InfoSection title="9. Cayma Hakkının Kullanılamayacağı Hâller">
         <p>
-          Mesafeli Sözleşmeler Yönetmeliği&apos;nin 15. maddesi uyarınca
+          Mesafeli Sözleşmeler Yönetmeliği’nin 15. maddesi uyarınca
           aşağıdaki sözleşmelerde cayma hakkı kullanılamaz:
         </p>
         <ul>
@@ -355,7 +355,7 @@ export default async function DistanceSalesPage() {
         <p>
           Perakende satış niteliği taşımadığı açık olan siparişler ile
           hileli olduğu tespit edilen işlemler Satıcı tarafından iptal
-          edilebilir. Bu durumda tahsil edilmiş tutar Alıcı&apos;ya iade
+          edilebilir. Bu durumda tahsil edilmiş tutar Alıcı’ya iade
           edilir.
         </p>
       </InfoSection>
@@ -389,14 +389,14 @@ export default async function DistanceSalesPage() {
       <InfoSection title="12. İade Masrafı">
         <p>
           Cayma hakkının kullanılması hâlinde iade gönderim masrafı,
-          Satıcı&apos;nın anlaşmalı kargo firması ile gönderilmesi
-          koşuluyla Satıcı&apos;ya aittir. Alıcı&apos;nın farklı bir kargo
+          Satıcı’nın anlaşmalı kargo firması ile gönderilmesi
+          koşuluyla Satıcı’ya aittir. Alıcı’nın farklı bir kargo
           firmasını tercih etmesi hâlinde masraf Alıcı tarafından
           karşılanır.
         </p>
         <p>
           Ayıplı ürün, yanlış ürün veya eksik gönderim hâllerinde tüm
-          gönderim masrafları Satıcı&apos;ya aittir.
+          gönderim masrafları Satıcı’ya aittir.
         </p>
       </InfoSection>
 
@@ -414,7 +414,7 @@ export default async function DistanceSalesPage() {
         <p>
           İşbu sözleşmeden doğan uyuşmazlıklarda, Ticaret Bakanlığı
           tarafından her yıl Aralık ayında ilan edilen parasal sınırlar
-          dâhilinde Alıcı&apos;nın veya Satıcı&apos;nın yerleşim yerindeki
+          dâhilinde Alıcı’nın veya Satıcı’nın yerleşim yerindeki
           Tüketici Hakem Heyetleri, bu sınırların üzerindeki
           uyuşmazlıklarda Tüketici Mahkemeleri yetkilidir.
         </p>
@@ -453,7 +453,7 @@ export default async function DistanceSalesPage() {
           yükümlülüklerini yerine getirmesiyle sona erer.
         </p>
         <p>
-          Bu sözleşmenin bir örneği Alıcı&apos;nın e-posta adresine
+          Bu sözleşmenin bir örneği Alıcı’nın e-posta adresine
           gönderilir ve hesabı üzerinden erişilebilir durumda tutulur.
         </p>
       </InfoSection>

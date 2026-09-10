@@ -4,7 +4,7 @@ import { rpcOrEmpty } from "@/lib/arc";
 /**
  * Ürün varyantları.
  *
- * Sepet ürün slug'ı yerine varyant SKU'su taşımalı; aksi hâlde
+ * Sepet ürün slug’ı yerine varyant SKU’su taşımalı; aksi hâlde
  * müşteri "L" seçse bile sipariş stokta olan herhangi bir
  * varyanta bağlanıyor ve yanlış beden gönderiliyor.
  */

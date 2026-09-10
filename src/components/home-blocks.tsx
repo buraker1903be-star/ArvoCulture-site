@@ -55,7 +55,7 @@ export function ProductBlock({
   );
 }
 
-/** Alışveriş güvencesi. Türkiye'de ilk kez alışveriş yapılan sitede
+/** Alışveriş güvencesi. Türkiye’de ilk kez alışveriş yapılan sitede
  *  en sık sorulan sorular: kargo, iade, ödeme güvenliği. */
 const PERKS = [
   {

@@ -13,7 +13,7 @@ import type { SearchItem } from "@/lib/search-index";
  *
  * Kutuya basıldığında sayfayı terk etmek yerine tam ekran bir
  * katman açılır. İçindeki arama ilk harften itibaren sonuç
- * gösterir; müşteri aradığını bulamazsa Escape'e basıp kaldığı
+ * gösterir; müşteri aradığını bulamazsa Escape’e basıp kaldığı
  * yerden devam eder.
  */
 export function SearchOverlay({

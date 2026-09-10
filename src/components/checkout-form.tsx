@@ -16,14 +16,14 @@ import type { Address } from "@/components/address-book";
  * Ödeme sayfası.
  *
  * Buradaki tutarlar yalnızca müşteriye gösterim içindir. Gerçek
- * tutar ARC'ta, veritabanındaki fiyatlardan hesaplanır ve PayTR'a
+ * tutar ARC’ta, veritabanındaki fiyatlardan hesaplanır ve PayTR’a
  * giden tutar odur. Bu sayfadan gönderilen tek bilgi hangi ürünün
  * kaç adet istendiğidir.
  */
 
 const ARC_URL = "https://arc.arvo-os.com";
 
-/** Kargo kuralı ARC'taki fonksiyonla aynı tutulmalıdır. */
+/** Kargo kuralı ARC’taki fonksiyonla aynı tutulmalıdır. */
 const SHIPPING_FEE = 120;
 const FREE_SHIPPING_OVER = 2000;
 
@@ -63,7 +63,7 @@ export function CheckoutForm({
 
   useEffect(() => {
     /*
-      localStorage sunucuda okunamaz; değerler ilk render'dan
+      localStorage sunucuda okunamaz; değerler ilk render’dan
       sonra yüklenir.
     */
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -203,8 +203,8 @@ export function CheckoutForm({
           transferDiscount,
           items: items.map((item) => ({
             /*
-              Varyant SKU'su varsa o gönderilir; ARC siparişi
-              doğru bedene bağlar. Yoksa ürün slug'ı yedek
+              Varyant SKU’su varsa o gönderilir; ARC siparişi
+              doğru bedene bağlar. Yoksa ürün slug’ı yedek
               olarak kullanılır (tek varyantlı ürünler).
             */
             sku: item.sku ?? item.slug,
@@ -297,7 +297,7 @@ export function CheckoutForm({
         <div className="head">
           <div>
             <h2>Ödeme</h2>
-            <p>Kart bilgileriniz doğrudan PayTR&apos;a iletilir.</p>
+            <p>Kart bilgileriniz doğrudan PayTR’a iletilir.</p>
           </div>
         </div>
 
@@ -451,7 +451,7 @@ export function CheckoutForm({
                 <Link href="/on-bilgilendirme-formu" target="_blank">
                   Ön Bilgilendirme Formu
                 </Link>
-                &apos;nu okudum ve onaylıyorum.
+                ’nu okudum ve onaylıyorum.
               </span>
             </label>
             <label>
@@ -466,7 +466,7 @@ export function CheckoutForm({
                 <Link href="/mesafeli-satis-sozlesmesi" target="_blank">
                   Mesafeli Satış Sözleşmesi
                 </Link>
-                &apos;ni okudum ve kabul ediyorum.
+                ’ni okudum ve kabul ediyorum.
               </span>
             </label>
             <label>
@@ -481,7 +481,7 @@ export function CheckoutForm({
                 <Link href="/kvkk-aydinlatma-metni" target="_blank">
                   KVKK Aydınlatma Metni
                 </Link>
-                &apos;ni okudum.
+                ’ni okudum.
               </span>
             </label>
           </div>

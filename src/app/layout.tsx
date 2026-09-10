@@ -26,7 +26,7 @@ import { env } from "@/lib/env";
  *
  * Şimdi başlıklar Cormorant Garamond ile yazılıyor: ince/kalın
  * geçişleri belirgin, klasik bir serif. Lüks hissi buradan gelir.
- * Gövde ve arayüz Inter'e geçti: karaktersiz olması bilinçli, küçük
+ * Gövde ve arayüz Inter’e geçti: karaktersiz olması bilinçli, küçük
  * puntoda okunaklı ve serifin önüne geçmiyor.
  *
  * İkisinde de `latin-ext` şart: ı, İ, ğ, ş, ç Türkçe metinde bu
@@ -55,7 +55,7 @@ const sans = Inter({
  * uygulama olarak kurulduğunda fark belirgindir.
  *
  * `viewportFit: "cover"` çentikli ekranlarda tam alanı kullanır;
- * güvenli alan boşlukları CSS'te `env(safe-area-inset-*)` ile
+ * güvenli alan boşlukları CSS’te `env(safe-area-inset-*)` ile
  * verilir.
  */
 export const viewport: Viewport = {
@@ -153,7 +153,7 @@ export default async function RootLayout({
                         height={34}
                       />
                       <small>
-                        ETBİS&apos;e kayıtlıdır
+                        ETBİS’e kayıtlıdır
                         <br />
                         Elektronik Ticaret Bilgi Sistemi
                       </small>
@@ -250,6 +250,30 @@ export default async function RootLayout({
                   saklıdır.
                 </small>
                 <small>Bir ArvoCulture Group markasıdır.</small>
+
+                {/*
+                  Tasarım künyesi. Logo dosyası kaynağındaki
+                  1920×1080’lik tuvalden içerik sınırına kırpıldı;
+                  olduğu gibi kullanılsaydı altında ve üstünde
+                  312’şer piksel boşlukla gelirdi.
+
+                  Dış siteye açıldığı için rel="noreferrer" var;
+                  künye bağlantısının referrer taşımasına gerek yok.
+                */}
+                <a
+                  className="footer-credit"
+                  href="https://arvo-os.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>Design by</span>
+                  <Image
+                    src="/arvoos-logo.png"
+                    alt="ARVOOS"
+                    width={232}
+                    height={44}
+                  />
+                </a>
               </div>
             </footer>
             {/* Mobil alt gezinme; masaüstünde CSS ile gizlenir. */}

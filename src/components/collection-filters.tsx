@@ -185,8 +185,8 @@ export function CollectionFilters({
 
 /**
  * Fiyat basamakları katalogdan türetilir. Sabit basamaklar
- * (500, 1000, 2000) 300 TL'lik bir katalogda anlamsız,
- * 30.000 TL'lik bir katalogda yetersiz kalıyordu.
+ * (500, 1000, 2000) 300 TL’lik bir katalogda anlamsız,
+ * 30.000 TL’lik bir katalogda yetersiz kalıyordu.
  */
 function priceSteps(maxPrice: number) {
   const rounded = Math.ceil(maxPrice / 100) * 100;
