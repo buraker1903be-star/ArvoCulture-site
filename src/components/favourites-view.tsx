@@ -10,7 +10,7 @@ import type { Product } from "@/lib/product-types";
  * Favoriler listesi.
  *
  * Slug listesi FavouritesProvider’dan gelir — üye müşteride
- * hesaptan, misafirde tarayıcıdan. Ürün bilgileri /api/favoriler
+ * hesaptan, misafirde tarayıcıdan. Ürün bilgileri /api/urunler
  * ucundan yalnızca o slug’lar için çekilir; katalog büyüdükçe bu
  * sayfanın maliyeti artmaz.
  */
@@ -36,7 +36,7 @@ export function FavouritesView() {
     }
 
     try {
-      const response = await fetch("/api/favoriler", {
+      const response = await fetch("/api/urunler", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slugs: wanted }),

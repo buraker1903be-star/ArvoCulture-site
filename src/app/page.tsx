@@ -20,6 +20,7 @@ import {
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { Reveal } from "@/components/reveal";
 import { RecentProducts } from "@/components/recent-products";
+import { ForYou } from "@/components/for-you";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
@@ -279,7 +280,16 @@ export default async function Home() {
 
       {/* Daha önce gelen ziyaretçi kaldığı yerden devam etsin. */}
       <Reveal>
-        <RecentProducts products={products} />
+        <RecentProducts />
+      </Reveal>
+
+      {/*
+        Vitrinin müşteriye göre değişen parçası. Yeni ziyaretçide
+        hiç görünmüyor; gösterecek bir şey olmadan "senin için"
+        demek süs olurdu.
+      */}
+      <Reveal>
+        <ForYou />
       </Reveal>
 
       <Reveal>

@@ -216,7 +216,7 @@ export default async function ProductPage({ params }: Params) {
       )}
 
       {/* Son gezilenler: bu ürünü listeye ekler, diğerlerini gösterir. */}
-      <RecentProducts products={catalogue} currentSlug={product.slug} />
+      <RecentProducts currentSlug={product.slug} />
 
       <JsonLd data={productSchema(product)} />
       <JsonLd

@@ -4,20 +4,29 @@ import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { Rail } from "@/components/rail";
 import { readRecent, pushRecent } from "@/lib/recent";
-import type { Product } from "@/lib/product-types";
+import { useProductList } from "@/lib/use-product-list";
 
 /**
  * Son gezilen ürünler rafı.
  *
  * Ürün sayfasında o ürünü listeye ekler ve diğerlerini gösterir.
  * Ana sayfada yalnızca gösterir.
+ *
+ * Önceden bu bileşene sayfanın elindeki ürün listesi veriliyor ve
+ * son gezilenler onun içinde aranıyordu. Ana sayfa katalogdan 200,
+ * ürün sayfası 120 ürün alıyor; katalog ise 3.429 ürün. Yani
+ * müşterinin gezdiği ürünün bu pencereye düşme ihtimali yüzde altı
+ * civarındaydı ve raf neredeyse hiç görünmüyordu — sitedeki tek
+ * kişiselleştirme, sessizce çalışmıyordu.
+ *
+ * Artık ürünler slug'larıyla /api/urunler'den isteniyor. Katalog ne
+ * kadar büyürse büyüsün raf çalışıyor ve maliyet on iki ürünle
+ * sınırlı kalıyor.
  */
 export function RecentProducts({
-  products,
   currentSlug,
   title = "Son gezdikleriniz",
 }: {
-  products: Product[];
   /** Ürün sayfasındaysa o ürün listeye eklenir ve gösterilmez. */
   currentSlug?: string;
   title?: string;
@@ -30,19 +39,19 @@ export function RecentProducts({
     const previous = readRecent();
     // Tek seferlik başlangıç değeri; zincirleme render riski yok.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSlugs(previous);
+    setSlugs(previous.filter((slug) => slug !== currentSlug));
     if (currentSlug) pushRecent(currentSlug);
   }, [currentSlug]);
 
-  if (slugs === null) return null;
+  const { durum, products } = useProductList("/api/urunler", slugs);
 
-  const chosen = slugs
-    .filter((slug) => slug !== currentSlug)
-    .map((slug) => products.find((product) => product.slug === slug))
-    .filter((product): product is Product => Boolean(product));
-
-  // İki üründen az varsa raf göstermeye değmez.
-  if (chosen.length < 2) return null;
+  /*
+    İki üründen az varsa raf göstermeye değmez. Yükleniyorken de
+    iskelet çizilmiyor: bu raf sayfanın altında, müşteri oraya
+    gelene kadar liste çoktan hazır oluyor ve boş bir kutunun
+    belirip dolması sayfayı zıplatmaktan başka işe yaramıyor.
+  */
+  if (durum !== "hazir" || products.length < 2) return null;
 
   return (
     <section className="panel">
@@ -54,7 +63,7 @@ export function RecentProducts({
       </div>
 
       <Rail>
-        {chosen.map((product) => (
+        {products.map((product) => (
           <ProductCard key={product.slug} product={product} />
         ))}
       </Rail>
