@@ -15,16 +15,28 @@ import { CartContext } from "@/components/cart";
  * Yalnızca mobilde görünür; masaüstünde CSS ile gizlenir.
  */
 const TABS = [
-  { href: "/", label: "Ana sayfa", icon: "home" },
-  { href: "/arama", label: "Ara", icon: "search" },
-  /* "Menü" gezinmez, kategori menüsünü açar. */
-  { href: null, label: "Menü", icon: "menu" },
-  { href: "/sepet", label: "Sepet", icon: "bag" },
-  { href: "/hesap", label: "Hesabım", icon: "user" },
+  { href: "/", label: "Ana sayfa", icon: "home", event: null },
+  { href: "/arama", label: "Ara", icon: "search", event: null },
+  /*
+    "Katalog" gezinmez, kategori menüsünü açar. Etiket "Menü"ydü;
+    müşteri için belirsizdi — uygulamalarda "Menü" genelde ayarlar
+    ya da hesap demek. Burada açılan şey ürün ağacı.
+  */
+  { href: null, label: "Katalog", icon: "menu", event: "arvo:menu" },
+  /*
+    Sepet de gezinmiyor: çekmeceyi açıyor. Telefonda sepete bakmak
+    için sayfadan çıkmak, alışverişin akışını kesiyordu — müşteri
+    baktığı ürünü kaybediyor ve geri tuşuyla dönmek zorunda
+    kalıyordu. Çekmecede "Sepete git" bağlantısı duruyor.
+  */
+  { href: null, label: "Sepet", icon: "bag", event: "arvo:cart" },
+  { href: "/hesap", label: "Hesabım", icon: "user", event: null },
 ] as const;
 
 const ICONS: Record<string, React.ReactNode> = {
-  home: <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" />,
+  home: (
+    <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" />
+  ),
   search: (
     <>
       <circle cx="11" cy="11" r="6.5" />
@@ -60,22 +72,27 @@ export function BottomNav() {
     <nav className="bottom-nav" aria-label="Ana gezinme">
       {TABS.map((tab) => {
         /*
-          "Menü" sekmesi bir sayfaya gitmez; başlıktaki kategori
-          menüsünü açar. İletişim özel bir olayla kuruluyor:
-          başlık ve alt çubuk ayrı bileşenler ve aralarında
-          ortak bir sarmalayıcı yok.
+          Bazı sekmeler sayfaya gitmez, bir katman açar. İletişim
+          özel bir olayla kuruluyor: başlık, sepet ve alt çubuk ayrı
+          bileşenler ve aralarında ortak bir sarmalayıcı yok.
         */
         if (!tab.href) {
           return (
             <button
               key={tab.label}
               type="button"
-              onClick={() => window.dispatchEvent(new Event("arvo:menu"))}
+              onClick={() =>
+                window.dispatchEvent(new Event(tab.event as string))
+              }
             >
               <span className="bottom-nav-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   {ICONS[tab.icon]}
                 </svg>
+                {/* Sepet rozeti burada da görünmeli. */}
+                {tab.icon === "bag" && count > 0 && (
+                  <em aria-hidden="true">{count > 9 ? "9+" : count}</em>
+                )}
               </span>
               <small>{tab.label}</small>
             </button>
@@ -96,9 +113,6 @@ export function BottomNav() {
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 {ICONS[tab.icon]}
               </svg>
-              {tab.icon === "bag" && count > 0 && (
-                <em aria-hidden="true">{count > 9 ? "9+" : count}</em>
-              )}
             </span>
             <small>{tab.label}</small>
           </Link>

@@ -7,7 +7,13 @@ import { CartLink } from "./cart";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
 
-export function Header({ theme, collections }: { theme: StorefrontTheme; collections: StorefrontCollection[] }) {
+export function Header({
+  theme,
+  collections,
+}: {
+  theme: StorefrontTheme;
+  collections: StorefrontCollection[];
+}) {
   const [open, setOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const close = () => setOpen(false);
@@ -22,6 +28,35 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
     window.addEventListener("arvo:menu", toggle);
     return () => window.removeEventListener("arvo:menu", toggle);
   }, []);
+
+  /*
+    Menü açıkken arkadaki sayfa kaydırılamaz.
+
+    Sepet çekmecesi ve arama katmanı bunu zaten yapıyordu, menü
+    yapmıyordu: müşteri kategori listesinde gezinirken altındaki
+    vitrin kayıyor ve menüyü kapattığında kendini sayfanın bambaşka
+    bir yerinde buluyordu. Telefonda bu, kontrolü kaybetmiş hissi
+    verir ve uygulama gibi değil, web sayfası gibi durur.
+  */
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  /* Geri tuşu ve Esc menüyü kapatsın — açık katman, gezinmeden
+     önce kapanmalı. */
+  useEffect(() => {
+    if (!open) return;
+    const esc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", esc);
+    return () => window.removeEventListener("keydown", esc);
+  }, [open]);
   /*
     Koleksiyonları menu_group’a göre getirir. ARC’taki gruplandırma
     iki farklı ekseni karıştırıyor: markalar (Aloe Via, Zeitgard)
@@ -89,9 +124,17 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
 
   const BRAND_NAMES = {
     care: [
-      "Aloe Via", "Zeitgard", "Microsilver", "Beauty Diamonds",
-      "Platinum", "Racine", "Nanogold", "L-Recapin", "Serox",
-      "Colostrum", "Profesyonel Bakım",
+      "Aloe Via",
+      "Zeitgard",
+      "Microsilver",
+      "Beauty Diamonds",
+      "Platinum",
+      "Racine",
+      "Nanogold",
+      "L-Recapin",
+      "Serox",
+      "Colostrum",
+      "Profesyonel Bakım",
     ],
     fragrance: ["Mood Infusion", "Iconic Elixirs"],
     supplements: ["LifeTakt"],
@@ -170,7 +213,9 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
   }));
 
   const bestSeller = collections.find((item) => item.title === "Çok Satanlar");
-  const offers = collections.find((item) => item.title === "Haftanın Fırsatları");
+  const offers = collections.find(
+    (item) => item.title === "Haftanın Fırsatları",
+  );
   return (
     <>
       <div className="announcement" aria-label="Mağaza duyuruları">
@@ -204,7 +249,13 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
         </Link>
         <nav className="desktop-nav" aria-label="Ana menü">
           <div className="mega-menu menu-featured">
-            <Link href={bestSeller ? `/koleksiyon/${bestSeller.slug}` : "/koleksiyon/tumu"}>
+            <Link
+              href={
+                bestSeller
+                  ? `/koleksiyon/${bestSeller.slug}`
+                  : "/koleksiyon/tumu"
+              }
+            >
               Yeni &amp; Çok Satan
             </Link>
           </div>
@@ -259,7 +310,11 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
             </Link>
           )}
           {theme.show_account && (
-            <Link href="/hesap" aria-label="Hesabım" className="header-action-link">
+            <Link
+              href="/hesap"
+              aria-label="Hesabım"
+              className="header-action-link"
+            >
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="3.5" />
                 <path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6" />
@@ -303,9 +358,7 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
                 <button
                   type="button"
                   aria-expanded={expanded}
-                  onClick={() =>
-                    setMobileSection(expanded ? null : menu.title)
-                  }
+                  onClick={() => setMobileSection(expanded ? null : menu.title)}
                 >
                   <b>{menu.title}</b>
                   <span>{expanded ? "−" : "+"}</span>
@@ -347,7 +400,6 @@ export function Header({ theme, collections }: { theme: StorefrontTheme; collect
             );
           })}
         </nav>
-
       </div>
       {open && (
         <button

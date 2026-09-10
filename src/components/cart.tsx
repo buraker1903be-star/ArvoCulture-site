@@ -9,6 +9,7 @@ import {
   useMemo,
   useState,
   useSyncExternalStore,
+  useEffect,
 } from "react";
 import { CartDrawer } from "@/components/cart-drawer";
 import {
@@ -184,6 +185,17 @@ export function CartProvider({
 export function CartLink() {
   const { count } = useContext(CartContext);
   const [open, setOpen] = useState(false);
+
+  /*
+    Alt çubuktaki sepet sekmesi bu olayı gönderiyor. Başlıktaki
+    düğmeyle aynı çekmeceyi açıyor; telefonda sepete bakmak için
+    sayfadan çıkmak gerekmiyor.
+  */
+  useEffect(() => {
+    const ac = () => setOpen(true);
+    window.addEventListener("arvo:cart", ac);
+    return () => window.removeEventListener("arvo:cart", ac);
+  }, []);
 
   return (
     <>
