@@ -225,32 +225,35 @@ export const getStorefrontProducts = cache(
 );
 
 /**
- * Sitemap için yalnızca ürün adresleri.
+ * Sitemap için ürün adresleri ve güncellenme tarihleri.
  *
- * Sitemap ürünün adından fiyatına hiçbir alanını kullanmıyor,
- * yalnızca slug’ı yazıyor. Tam satır istemek 11,9 MB, yalnızca
- * slug istemek 0,3 MB taşıyor — kırk kat fark.
+ * Kendi hafif fonksiyonunu kullanıyor. Katalog fonksiyonu fiyat,
+ * stok ve beden hesaplamak için tüm ürünleri `group by` ile
+ * topluyor; sitemap bunların hiçbirini kullanmıyor, yalnızca adres
+ * yazıyor. Yapılan işin neredeyse tamamı çöpe gidiyordu ve derleme
+ * sırasında üç işçi aynı anda sorgu atınca 8 saniyelik
+ * `statement_timeout` sınırı aşılıp sitemap boş kalıyordu.
  *
- * Burada bilerek `rpc` kullanılıyor, `rpcOrEmpty` değil. Hata
- * yutulup boş liste dönerse ürünsüz bir sitemap yayımlanır ve
- * Google bunu "katalog kalktı" diye okur; üstelik bu yanlış
- * bilgi bir saat önbellekte kalır. Sessiz boş liste, açık
- * hatadan tehlikelidir.
+ * Bilerek `rpc` kullanılıyor, `rpcOrEmpty` değil: hata yutulup boş
+ * liste dönerse ürünsüz bir sitemap yayımlanır ve Google bunu
+ * "katalog kalktı" diye okur.
  */
+export type ProductSitemapEntry = { slug: string; updatedAt: Date | null };
+
 export const getStorefrontProductSlugs = cache(
-  async (limit = CATALOG_LIMIT): Promise<string[]> => {
-    const rows = await rpc<{ slug: string }>(
-      "get_arvoculture_storefront_products",
-      { p_limit: Math.min(CATALOG_LIMIT, Math.max(1, limit)) },
-      {
-        revalidate: 3600,
-        tags: ["storefront-products"],
-        columns: "slug",
-      },
+  async (limit = 20000): Promise<ProductSitemapEntry[]> => {
+    const rows = await rpc<{ slug: string; updated_at: string | null }>(
+      "get_arvoculture_storefront_product_slugs",
+      { p_limit: Math.max(1, limit) },
+      { revalidate: 3600, tags: ["storefront-products"] },
     );
+
     return rows
-      .map((row) => row.slug)
-      .filter((slug): slug is string => typeof slug === "string");
+      .filter((row) => typeof row.slug === "string")
+      .map((row) => ({
+        slug: row.slug,
+        updatedAt: row.updated_at ? new Date(row.updated_at) : null,
+      }));
   },
 );
 

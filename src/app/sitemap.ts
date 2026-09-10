@@ -20,7 +20,16 @@ const staticPaths = [
   "/ticari-elektronik-ileti",
 ];
 
-export const revalidate = 3600;
+/*
+  Sitemap derleme sırasında değil, istek anında üretiliyor.
+
+  Önceden derleme sırasında üretiliyordu ve katalog sorgusu zaman
+  aşımına uğrayınca tüm dağıtım düşüyordu. Sitemap'in geçici bir
+  veritabanı takılması yüzünden yayını engellemesi doğru değil:
+  burada hata olursa sitemap 500 döner, arama motoru bir öncekini
+  kullanmaya devam eder, site yayına çıkar.
+*/
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -58,9 +67,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily" as const,
       priority: 0.8,
     })),
-    ...products.map((slug) => ({
-      url: `${env.siteUrl}/urun/${slug}`,
-      lastModified: now,
+    ...products.map((product) => ({
+      url: `${env.siteUrl}/urun/${product.slug}`,
+      /* Ürünün kendi güncellenme tarihi. Hepsine üretim zamanını
+         yazmak, her sayfanın her gün değiştiği anlamına gelirdi ve
+         arama motoru için işe yaramaz bir sinyaldir. */
+      lastModified: product.updatedAt ?? now,
       changeFrequency: "daily" as const,
       priority: 0.9,
     })),
