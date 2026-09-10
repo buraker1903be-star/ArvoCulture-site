@@ -64,14 +64,40 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const label = labels[slug] ?? "Koleksiyon";
+
+  /*
+    Başlık ARC'taki koleksiyon adından geliyor.
+
+    Önceden yalnızca aşağıdaki altı sabit slug'a bakılıyordu ve
+    geri kalan her şey "Koleksiyon" oluyordu. Site haritasındaki
+    118 kategori sayfasının tamamı aynı başlığı ve aynı açıklamayı
+    taşıyordu: "Koleksiyon | ArvoCulture". Sayfanın kendi H1'i
+    doğruydu ("Erkek T-Shirt"), yalnızca <title> yanlıştı — yani
+    müşteri doğru sayfayı görüyor ama arama sonucunda hepsi aynı
+    isimle sıralanıyordu.
+
+    getStorefrontCollections React'in cache'iyle sarılı; aynı
+    istekte sayfanın gövdesi de onu çağırıyor, bu yüzden burada
+    ikinci bir veritabanı sorgusu doğmuyor.
+  */
+  const collections = await getStorefrontCollections();
+  const collection = collections.find((item) => item.slug === slug);
+  const label = collection?.title ?? labels[slug] ?? "Koleksiyon";
+
+  /* ARC'taki açıklama varsa o kullanılıyor; arama sonucunda
+     görünen metin kategoriye özel olmalı. */
+  const ownDescription = collection?.description?.trim();
+  const description =
+    ownDescription && ownDescription.length > 40
+      ? ownDescription.slice(0, 155)
+      : `ArvoCulture ${label} seçkisi. Güncel ürünler, fiyatlar ve stok durumu.`;
 
   return {
     title: label,
-    description: `ArvoCulture ${label} seçkisi. Güncel ürünler, fiyatlar ve stok durumu.`,
+    description,
     // Sayfalama parametresi (?sayfa=2) kanonik adresi bölmesin.
     alternates: { canonical: `/koleksiyon/${slug}` },
-    openGraph: { url: `/koleksiyon/${slug}`, title: label },
+    openGraph: { url: `/koleksiyon/${slug}`, title: label, description },
   };
 }
 
