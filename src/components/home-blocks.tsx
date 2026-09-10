@@ -82,22 +82,6 @@ export function Perks() {
 }
 
 /*
-  Kategori ikonları — eskiz (sketch) tarzı.
-
-  El çizimi hissi iki şeyden gelir:
-  1. Çizgiler tam düz değil; her kenar hafif bir eğri (C) taşır,
-     tıpkı elle çekilmiş bir çizgi gibi.
-  2. Ana çizginin altında hafifçe kaymış soluk bir kopya var —
-     kalemin ikinci geçişi gibi. Bileşende `sketch-ghost` katmanı
-     bunu yapar.
-
-  Siluetler bilinçli olarak birbirinden farklı: askı, damlalıklı
-  şişe, ruj, flakon, kapsül.
-*/
-
-
-/** Yuvarlak kategori kısayolları — mobilde tanıdık bir kalıp. */
-/*
   Kategori kartları.
 
   Önceden küçük çizim ikonlar vardı; kategori adını söylüyorlardı

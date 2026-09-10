@@ -291,7 +291,11 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
       <span className="hero-veil" aria-hidden="true" />
 
       <div className="hero-body">
-        <p data-arvo-field="hero_eyebrow">{theme.hero_eyebrow}</p>
+        {/* Sınıf şart: `.hero-eyebrow` üst etiketin harf aralığını ve
+            yanındaki altın çizgiyi taşıyor. */}
+        <p className="hero-eyebrow" data-arvo-field="hero_eyebrow">
+          {theme.hero_eyebrow}
+        </p>
         <h1 data-arvo-field="hero_title">
           {theme.hero_title} <span data-arvo-field="hero_emphasis">{theme.hero_emphasis}</span>
         </h1>

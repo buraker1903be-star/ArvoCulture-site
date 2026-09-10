@@ -40,15 +40,16 @@ body {
   color: var(--ink);
   /*
     Font ailesi burada doğrudan yazılır, --font gibi bir ara
-    değişken üzerinden değil. next/font `--font-poppins`'i <body>
+    değişken üzerinden değil. next/font `--font-sans`'ı <body>
     üzerinde tanımlıyor; :root'ta tanımlı bir değişkenin içinden
     çağrılırsa orada bulunamıyor, zincir kırılıyor ve tarayıcı
     varsayılan serif'e düşüyor.
   */
-  font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
   font-size: var(--t-body);
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body::before {
@@ -56,12 +57,20 @@ body::before {
   position: fixed;
   inset: -20%;
   z-index: -2;
+  /*
+    Noktalı motif kaldırıldı: seyrek de olsa el işi/oyuncak
+    hissi veriyordu ve fildişi zeminin sakinliğini bozuyordu.
+    Yerine kâğıt dokusuna benzeyen, neredeyse görünmez bir
+    dikey tarama var. Fark edilmez ama zemin düz plastik gibi
+    durmaz.
+  */
   background:
-    /* Motif: ince zeytin noktalardan oluşan seyrek doku. */
-    radial-gradient(var(--motif) 1.4px, transparent 1.5px) 0 0 / 26px 26px,
-    radial-gradient(var(--motif) 1.4px, transparent 1.5px) 13px 13px / 26px 26px,
+    repeating-linear-gradient(
+      90deg,
+      rgba(61, 74, 51, 0.016) 0 1px,
+      transparent 1px 3px
+    ),
     linear-gradient(155deg, var(--backdrop-1) 0%, var(--backdrop-2) 100%);
-  animation: drift 90s linear infinite;
 }
 
 /*
@@ -76,22 +85,16 @@ body::after {
   pointer-events: none;
   background:
     radial-gradient(
-      42% 38% at 18% 22%,
-      rgba(74, 93, 63, 0.13) 0%,
-      transparent 70%
+      46% 42% at 16% 20%,
+      rgba(61, 74, 51, 0.09) 0%,
+      transparent 72%
     ),
     radial-gradient(
-      38% 34% at 82% 72%,
-      rgba(176, 141, 63, 0.12) 0%,
-      transparent 70%
+      40% 36% at 84% 74%,
+      rgba(169, 134, 52, 0.08) 0%,
+      transparent 72%
     );
-  animation: breathe 26s ease-in-out infinite alternate;
-}
-
-@keyframes drift {
-  to {
-    transform: translate3d(26px, 26px, 0);
-  }
+  animation: breathe 34s ease-in-out infinite alternate;
 }
 
 @keyframes breathe {
@@ -139,19 +142,42 @@ h1,
 h2,
 h3 {
   margin: 0;
-  font-weight: 600;
-  line-height: 1.18;
-  letter-spacing: -0.02em;
+}
+
+/*
+  Büyük başlıklar serif. Değişken <body> üzerinde tanımlı
+  olduğu için burada doğrudan çağrılır; :root üzerinden bir
+  ara değişkene sarılırsa zincir kırılır.
+
+  Harf aralığı sıfıra yakın: serif zaten geniş nefes alır,
+  sans'taki gibi sıkıştırmak (-0.02em) harfleri birbirine
+  yapıştırıyor.
+*/
+h1,
+h2 {
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.005em;
 }
 
 h1 {
   font-size: var(--t-hero);
 }
+
 h2 {
   font-size: var(--t-h2);
 }
+
+/*
+  h3 ürün adı taşıyor: küçük puntoda serif okunmuyor, sans
+  kalıyor.
+*/
 h3 {
   font-size: var(--t-h3);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
 }
 
 p {
@@ -210,8 +236,15 @@ p {
   min-width: 0;
 }
 
+/*
+  Panelin sınırını artık kıl payı bir çizgi taşıyor, gölge
+  değil. Ağır gölge her bölümü havada duran bir "kart" gibi
+  gösteriyordu; editoryal düzende bölümler kâğıt yaprakları
+  gibi durmalı: kenarı belli, ağırlığı yok.
+*/
 .panel {
   padding: var(--pad);
+  border: 1px solid var(--line-soft);
   border-radius: var(--r);
   background: var(--panel);
   box-shadow: var(--float);
@@ -234,32 +267,48 @@ p {
 
 /* --- Bölüm başlığı ---------------------------------------- */
 
+/*
+  Bölüm başlığı, altında panel boyunca uzanan kıl payı bir
+  çizgiyle biter. Dergi sayfalarındaki bölüm ayracının aynısı:
+  başlığı içerikten ayırır ve sayfaya ritim verir.
+*/
 .head {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: var(--s4);
-  margin-bottom: var(--s4);
+  gap: var(--s5);
+  margin-bottom: var(--s5);
+  padding-bottom: var(--s4);
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .head p {
-  margin-top: 2px;
+  margin-top: var(--s2);
   color: var(--ink-2);
   font-size: var(--t-sm);
+  max-width: 46ch;
 }
 
+/*
+  "Tümünü gör" bağlantısı küçük, harf aralığı açık ve büyük
+  harf. Başlıkla yarışmaz; bakılınca bulunur.
+*/
 .head a {
   flex: none;
-  font-size: var(--t-sm);
+  padding-bottom: 3px;
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--ink-2);
   white-space: nowrap;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 2px;
+  border-bottom: 1px solid var(--gold-soft);
+  transition: color 200ms var(--ease), border-color 200ms var(--ease);
 }
 
 .head a:hover {
-  color: var(--ink);
-  border-color: currentColor;
+  color: var(--brand);
+  border-color: var(--gold);
 }
 
 .panel-clear .head p,
@@ -269,31 +318,48 @@ p {
 
 /* --- Butonlar --------------------------------------------- */
 
+/*
+  Buton hap şeklinden dikdörtgene geçti. Yuvarlak uçlu düğme
+  mobil uygulama dilinin işareti; editoryal bir vitrinde
+  keskin kenar ve büyük harf etiket daha ağır basıyor.
+
+  Etiket büyük harf ve harf aralığı açık: kısa metinler
+  (Sepete ekle, Alışverişe başla) bu ölçekte küçük bir levha
+  gibi okunuyor.
+*/
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--s2);
-  padding: 13px 24px;
+  padding: 15px 30px;
   border: 1px solid var(--ink);
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   background: var(--ink);
   color: #fff;
-  font-size: var(--t-sm);
+  font-size: var(--t-xs);
   font-weight: 500;
-  transition: transform 160ms var(--ease), box-shadow 160ms var(--ease);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background-color 220ms var(--ease), color 220ms var(--ease),
+    border-color 220ms var(--ease);
 }
 
+/*
+  Vurgu, yükselmek yerine renk değiştirmekten geliyor. Zıplayan
+  buton oyuncu duruyordu; zeytine dönüşen zemin sakin ve
+  markanın rengini hatırlatıyor.
+*/
 .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--float);
+  background: var(--brand);
+  border-color: var(--brand);
 }
 
 .btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: default;
-  transform: none;
-  box-shadow: none;
+  background: var(--ink);
+  border-color: var(--ink);
 }
 
 .btn-ghost {
@@ -321,14 +387,21 @@ p {
 
 /* --- Rozet ------------------------------------------------ */
 
+/*
+  Rozet artık dolu bir hap değil, küçük bir levha. Parlak
+  kırmızı balon fildişi zeminde en gürültülü öğeydi ve ürünün
+  önüne geçiyordu.
+*/
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 4px 9px;
-  border-radius: 999px;
-  font-size: var(--t-xs);
-  font-weight: 600;
-  line-height: 1.5;
+  padding: 5px 9px;
+  border-radius: var(--r-sm);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.4;
 }
 
 .tag-sale {
@@ -337,27 +410,55 @@ p {
 }
 
 .tag-best {
-  background: rgba(20, 22, 26, 0.88);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  border: 1px solid var(--line);
 }
 
 /* --- Fiyat ------------------------------------------------ */
 
+/*
+  Satır kırılabilir olmalı. Fiyat satırı artık üç parça taşıyor
+  (fiyat, eski fiyat, indirim oranı) ve dar ızgarada — mobilde
+  iki sütun — üçü tek satıra sığmıyordu: `nowrap` ile 60px'e
+  varan taşma oluyor, indirim oranı kartın dışına sarkıyordu.
+*/
 .price {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--s2);
+  gap: 2px var(--s2);
   font-variant-numeric: tabular-nums;
 }
 
+/*
+  Fiyat kalın değil, biraz büyük. Kalın rakam "kampanya"
+  bağırıyor; burada fiyatın sakin durması isteniyor.
+*/
 .price b {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .price del {
   font-size: var(--t-sm);
+  font-weight: 300;
   color: var(--ink-3);
+  text-decoration-thickness: 1px;
+}
+
+/*
+  İndirim oranı. Görselin üzerindeki dolu kırmızı rozetin yerini
+  aldı; karar zaten burada, eski fiyatın hemen yanında veriliyor.
+  Renk aynı kırmızı ama zemini yok — okunuyor, bağırmıyor.
+*/
+.price-off {
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--sale);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

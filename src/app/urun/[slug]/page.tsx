@@ -67,8 +67,6 @@ export default async function ProductPage({ params }: Params) {
         <ProductGallery
           images={product.images}
           name={product.name}
-          discount={off}
-          bestSeller={Boolean(product.bestSeller)}
           artStyle={product.artStyle}
         />
 
@@ -81,7 +79,12 @@ export default async function ProductPage({ params }: Params) {
             <span aria-current="page">{product.name}</span>
           </nav>
 
-          <p className="eyebrow">{product.eyebrow}</p>
+          {/* Künye satırı: marka ve "çok satan" işareti — karttaki
+              düzenin aynısı. Rozet görselin üzerinden buraya taşındı. */}
+          <p className="eyebrow">
+            {product.eyebrow && <span>{product.eyebrow}</span>}
+            {product.bestSeller && <em>Çok satan</em>}
+          </p>
           <h1>{product.name}</h1>
           {product.subtitle && <p className="lead">{product.subtitle}</p>}
 
@@ -90,6 +93,9 @@ export default async function ProductPage({ params }: Params) {
             {product.oldPrice && product.oldPrice > product.price && (
               <>
                 <del>{formatPrice(product.oldPrice)}</del>
+                {off > 0 && <span className="price-off">−%{off}</span>}
+                {/* Tutar olarak tasarruf, pahalı ürünlerde yüzdeden
+                    daha ikna edici; ikisi birlikte duruyor. */}
                 <span className="pdp-save">
                   {formatPrice(product.oldPrice - product.price)} tasarruf
                 </span>

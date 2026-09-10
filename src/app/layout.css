@@ -15,11 +15,13 @@
   diye). İkincisi zaten aria-hidden; sabit düzende gizleniyor.
 */
 .announcement {
-  padding: 8px var(--rail);
-  background: rgba(20, 22, 26, 0.9);
-  color: rgba(255, 255, 255, 0.92);
-  font-size: var(--t-xs);
-  letter-spacing: 0.04em;
+  padding: 11px var(--rail);
+  background: #1b1f19;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
 }
 
 .announcement-track {
@@ -54,6 +56,16 @@
 }
 
 @media (max-width: 640px) {
+  /*
+    Dar ekranda harf aralığı toplanıyor. Geniş aralık şeridi üç
+    satıra çıkarıp başlığın yarısı kadar yer kaplamasına yol
+    açıyordu.
+  */
+  .announcement {
+    padding-block: 9px;
+    letter-spacing: 0.09em;
+  }
+
   .announcement-group {
     gap: 4px var(--s4);
   }
@@ -69,10 +81,10 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--s5);
-  padding: var(--s3) var(--rail);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
+  padding: var(--s4) var(--rail);
+  background: rgba(250, 248, 243, 0.86);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .logo img {
@@ -84,26 +96,44 @@
   filter: brightness(0) invert(1);
 }
 
+/*
+  Aralık ekran genişliğiyle daralıyor. Dokuz büyük harf etiket
+  1025px'te sabit 24px boşlukla başlığı taşırıyordu; alt sınırda
+  14px'e inip 1440px ve üzerinde 24px'e çıkıyor.
+*/
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: var(--s5);
+  gap: clamp(14px, 1.7vw, 24px);
 }
 
+/*
+  Gezinme etiketleri büyük harf ve seyrek aralıklı. Dokuz
+  başlığın hepsi kısa olduğu için satır genişliği eski hâline
+  yakın kalıyor; ton belirgin şekilde sakinleşiyor.
+*/
 .mega-trigger,
+.menu-featured > a,
 .desktop-nav > a {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   padding: 6px 0;
   border: 0;
   background: none;
-  font-size: var(--t-sm);
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  /* Etiketler asla satır kırmaz: "Yeni & Çok Satan" üç satıra
+     bölününce başlık yüksekliği zıplıyordu. */
+  white-space: nowrap;
   color: var(--ink);
+  transition: color 200ms var(--ease);
 }
 
 .desktop-nav > a:hover,
+.menu-featured > a:hover,
 .mega-trigger:hover {
   color: var(--brand);
 }
@@ -443,7 +473,7 @@
   display: none;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .desktop-nav {
     display: none;
   }
@@ -564,7 +594,7 @@
 /* ---------- Alt bilgi ------------------------------------- */
 
 footer {
-  padding: var(--s7) var(--rail) var(--s5);
+  padding: var(--s8) var(--rail) var(--s5);
   border-top: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(10px);
@@ -642,19 +672,29 @@ footer {
   min-width: 0;
 }
 
+/*
+  Sütun başlıkları büyük harf ve seyrek: sayfanın geri kalanında
+  bölüm işaretlerinin taşıdığı dilin aynısı. Bağlantılardan
+  belirgin şekilde ayrılıyorlar, kalın yazmaya gerek kalmıyor.
+*/
 .footer-link-group strong {
-  margin-bottom: var(--s1);
-  font-size: var(--t-sm);
+  margin-bottom: var(--s3);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--ink);
 }
 
 .footer-link-group a {
   font-size: var(--t-sm);
   color: var(--ink-2);
   white-space: nowrap;
+  transition: color 200ms var(--ease);
 }
 
 .footer-link-group a:hover {
-  color: var(--ink);
+  color: var(--brand);
 }
 
 /* --- Ödeme --- */
@@ -816,27 +856,37 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--s4);
-  margin-top: var(--s6);
-  padding-top: var(--s5);
-  border-top: 1px solid var(--line);
+  gap: var(--s6);
+  margin-top: var(--s7);
+  padding-top: var(--s6);
+  border-top: 1px solid var(--line-soft);
   font-size: var(--t-sm);
 }
 
+/*
+  Sayfa bağlantıları hap düğme değil, büyük harf metin
+  bağlantısı: hero'daki kısayollarla ve bölüm başlıklarındaki
+  "Tümünü gör" ile aynı dil.
+*/
 .collection-pagination a {
-  padding: 9px 18px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--gold-soft);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition: color 200ms var(--ease), border-color 200ms var(--ease);
 }
 
 .collection-pagination a:hover {
-  background: var(--ink);
-  color: #fff;
-  border-color: var(--ink);
+  color: var(--brand);
+  border-color: var(--gold);
 }
 
 .collection-pagination span {
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
 }
@@ -871,12 +921,30 @@ footer {
   font-size: clamp(22px, 2.6vw, 32px);
 }
 
+/*
+  Künye satırı. Karttaki `.card-brand` ile aynı düzen: marka ve
+  yanında ince bir ayraçla ayrılmış "çok satan" işareti. Ayraç
+  yalnızca iki öğe de varsa çizilir.
+*/
 .eyebrow {
-  font-size: var(--t-xs);
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
   text-transform: uppercase;
   color: var(--ink-3);
+}
+
+.eyebrow em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.eyebrow span + em {
+  padding-left: var(--s3);
+  border-left: 1px solid var(--line);
 }
 
 .lead {
@@ -1180,7 +1248,7 @@ footer {
    Mobil menü — alt kategoriler
    ========================================================== */
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   /*
     Alt menü artık tam ekran katman değil, akordeonun içinde
     açılıyor. Tam ekran katmanda müşteri nerede olduğunu
@@ -1246,7 +1314,7 @@ footer {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   /*
     "Tüm ... ürünleri" düğmesi. Uzun kategori adlarında metin
     hapın dışına taşıyordu; sarmalı ve esnek hale getirildi.
