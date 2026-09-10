@@ -22,27 +22,14 @@ export class ArcError extends Error {
 type RpcOptions = {
   revalidate?: number;
   tags?: string[];
-  /**
-   * İstenen sütunlar, virgülle ayrılmış.
-   *
-   * PostgREST, tablo döndüren fonksiyonlarda da dikey süzmeyi
-   * destekler. Kullanılmayan sütunları istememek büyük fark
-   * yaratıyor: katalog listesi tüm sütunlarla 11,9 MB, yalnızca
-   * kart için gereken sütunlarla 3,0 MB. Bu veri her istekte
-   * Supabase'den sunucuya taşınıyor.
-   *
-   * Verilmezse fonksiyonun tüm sütunları gelir.
-   */
-  columns?: string;
 };
 
 export async function rpc<TResult, TParams extends object = object>(
   name: string,
   params: TParams = {} as TParams,
-  { revalidate = 60, tags = [], columns }: RpcOptions = {},
+  { revalidate = 60, tags = [] }: RpcOptions = {},
 ): Promise<TResult[]> {
   const endpoint = new URL(`/rest/v1/rpc/${name}`, env.supabaseUrl);
-  if (columns) endpoint.searchParams.set("select", columns);
 
   let response: Response;
   try {

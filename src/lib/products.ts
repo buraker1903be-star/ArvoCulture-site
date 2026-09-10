@@ -9,12 +9,7 @@ export type { Product } from "@/lib/product-types";
 type StorefrontRow = {
   slug: string;
   name: string;
-  /*
-    Liste sorgularında istenmiyor: kart bu alanı kullanmıyor ve
-    3.400 ürün için tek başına 9 MB yer tutuyor. Ürün detay
-    sayfası tekil sorguda tam satırı alır.
-  */
-  description?: string | null;
+  description: string | null;
   subtitle: string | null;
   vendor: string | null;
   product_type: string | null;
@@ -182,21 +177,6 @@ const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,199}$/;
 export const CATALOG_LIMIT = 5000;
 
 /**
- * Ürün kartının ihtiyaç duyduğu sütunlar.
- *
- * `description` bilerek yok. Kartta kullanılmıyor ama satır başına
- * en ağır alan o: katalog tüm sütunlarla 11,9 MB, bu listeyle
- * 3,0 MB. Fark her istekte Supabase'den sunucuya taşınan veridir.
- * Kart için gereken kısa metin `subtitle` alanından geliyor ve o
- * zaten veritabanı tarafında hesaplanıyor.
- *
- * `specs` ve `size_guide` de yalnızca ürün detay sayfasında
- * gösteriliyor; tekil sorgu tam satırı getirir.
- */
-const CARD_COLUMNS =
-  "slug,name,subtitle,vendor,product_type,price,compare_at_price,available,image_paths,sizes";
-
-/**
  * Katalog listesi. ARC ulaşılamazsa boş liste döner; sayfa "katalog
  * geçici olarak görüntülenemiyor" durumunu gösterir. Eski fiyat gösterilmez.
  */
@@ -206,41 +186,13 @@ export const getStorefrontProducts = cache(
       rpcOrEmpty<StorefrontRow>(
         "get_arvoculture_storefront_products",
         { p_limit: Math.min(CATALOG_LIMIT, Math.max(1, limit)) },
-        {
-          revalidate: 60,
-          tags: ["storefront-products"],
-          columns: CARD_COLUMNS,
-        },
+        { revalidate: 60, tags: ["storefront-products"] },
       ),
       getProductBadges(),
     ]);
     return rows.map((row, index) =>
       applyBadge(mapProduct(row, index), badges.get(row.slug)),
     );
-  },
-);
-
-/**
- * Sitemap için yalnızca ürün adresleri.
- *
- * Sitemap ürünün adından fiyatına hiçbir alanını kullanmıyor,
- * yalnızca slug'ı yazıyor. Tam satır istemek 11,9 MB, yalnızca
- * slug istemek 0,3 MB taşıyor — kırk kat fark.
- */
-export const getStorefrontProductSlugs = cache(
-  async (limit = CATALOG_LIMIT): Promise<string[]> => {
-    const rows = await rpcOrEmpty<{ slug: string }>(
-      "get_arvoculture_storefront_products",
-      { p_limit: Math.min(CATALOG_LIMIT, Math.max(1, limit)) },
-      {
-        revalidate: 3600,
-        tags: ["storefront-products"],
-        columns: "slug",
-      },
-    );
-    return rows
-      .map((row) => row.slug)
-      .filter((slug): slug is string => typeof slug === "string");
   },
 );
 
