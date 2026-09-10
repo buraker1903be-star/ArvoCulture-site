@@ -31,6 +31,28 @@ import { breadcrumbSchema, productSchema } from "@/lib/seo";
  */
 export const revalidate = 60;
 
+/**
+ * Boş liste dönüyor ve bu bilinçli.
+ *
+ * `revalidate` tek başına yetmedi: canlıda ölçtüğümde sayfa hâlâ
+ * her istekte baştan çiziliyordu (`x-vercel-cache: MISS`,
+ * `cache-control: private, no-store`). Sebebi, `generateStaticParams`
+ * bulunmayan dinamik bir segmentin Next tarafından tamamen dinamik
+ * sayılması — yenilenme süresi verilmiş olsa bile saklanacak bir
+ * sayfa üretilmiyor.
+ *
+ * Boş liste vermek, "bu yolu önceden üretme ama istendiğinde üret
+ * ve sakla" demek. Derleme süresi değişmiyor: 3.429 ürünün hiçbiri
+ * önceden çizilmiyor. İlk isteyen müşteri sayfayı üretiyor,
+ * sonrakiler uçtan alıyor.
+ *
+ * `dynamicParams` öntanımlı olarak açık; listede olmayan slug'lar
+ * yine çalışıyor, olmayan ürün yine 404 veriyor.
+ */
+export async function generateStaticParams() {
+  return [];
+}
+
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
