@@ -11,6 +11,26 @@ import { getProductVariants } from "@/lib/variants";
 import { formatPrice } from "@/lib/product-types";
 import { breadcrumbSchema, productSchema } from "@/lib/seo";
 
+/**
+ * Ürün sayfası altmış saniyeliğine saklanıyor.
+ *
+ * Ölçüm: sayfa her istekte baştan çiziliyordu (`x-vercel-cache:
+ * MISS`, ~355 ms). Sebebi, sayfadaki tüm veri çağrılarının POST
+ * olması — Next yalnızca GET isteklerini önbelleğe alıyor, bu
+ * yüzden segmentin yenilenme süresi sıfıra düşüyor ve sayfa
+ * dinamik sayılıyordu. Buradaki tek satır, `arc.ts` içinde zaten
+ * yazılı olan niyeti (`revalidate: 60`) gerçekten uygulanır hâle
+ * getiriyor.
+ *
+ * Bedeli açık: bir fiyat değişikliği müşteriye en geç bir dakika
+ * gecikmeyle yansıyor. Bunu kabul edilebilir kılan şey, ödenecek
+ * tutarın burada değil ARC'ta hesaplanması — vitrindeki rakam
+ * bilgilendirme, sepetteki rakam taahhüt.
+ *
+ * Süre kısaltılmak istenirse değiştirilecek yer burası.
+ */
+export const revalidate = 60;
+
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -177,8 +197,8 @@ export default async function ProductPage({ params }: Params) {
               </summary>
               <p>
                 Siparişiniz ödeme onayının ardından hazırlanır ve kargoya
-                verildiğinde e-posta ile bilgilendirilirsiniz. Kargo ücreti
-                120 TL’dir; 2.000 TL ve üzeri siparişlerde ücretsizdir.
+                verildiğinde e-posta ile bilgilendirilirsiniz. Kargo ücreti 120
+                TL’dir; 2.000 TL ve üzeri siparişlerde ücretsizdir.
               </p>
             </details>
 

@@ -20,6 +20,21 @@ export class ArcError extends Error {
 }
 
 type RpcOptions = {
+  /**
+   * DİKKAT: Bu değer tek başına bir şey yapmıyor.
+   *
+   * PostgREST'te fonksiyon çağrısı POST ile yapılıyor; Next'in veri
+   * önbelleği ise yalnızca GET isteklerini saklıyor. Yani buradaki
+   * süre sessizce yok sayılıyor ve her çağrı veritabanına gidiyor.
+   *
+   * Değer yine de veriliyor: niyeti belgeliyor ve Next'in ileride
+   * POST önbelleklemesi gelirse yerinde duruyor. Ama gerçekten
+   * önbelleğe alınması gereken çağrılar `ttlCache` ile sarılmalı —
+   * koleksiyonlar, indirimler ve arama dizini öyle yapıyor.
+   *
+   * Tema bunun istisnası: o `GET` ile çekiliyor ve Next tarafından
+   * gerçekten önbelleğe alınıyor.
+   */
   revalidate?: number;
   tags?: string[];
   /**
