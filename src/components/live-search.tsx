@@ -2,31 +2,32 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatPrice } from "@/lib/product-types";
-import { searchProducts } from "@/lib/search";
 import type { SearchItem } from "@/lib/search-index";
 
 /**
  * Canlı arama.
  *
  * İlk harften itibaren sonuç gösterir; arama butonuna basmak
- * gerekmez. Dizin sunucudan hazır geldiği için filtreleme
- * tarayıcıda yapılır — her tuşta ağ isteği atılmaz, sonuç anında
- * gelir.
+ * gerekmez. Dizin artık sunucuda: 3.100 ürünlük listeyi her
+ * ziyaretçiye indirtmek yerine yazdıkça /api/arama sorgulanıyor.
+ * Ana sayfa bu yüzden 1,8 MB taşıyordu.
  *
- * `useDeferredValue`: yazma işlemi her zaman akıcı kalır, ağır
- * liste hesabı bir adım geriden gelir.
+ * Yazma hissi korunuyor: istek 180 ms geciktiriliyor, önceki istek
+ * iptal ediliyor ve yeni sonuç gelene kadar eski liste ekranda
+ * kalıyor. Böylece her tuşta liste boşalıp yeniden dolmuyor.
  */
+
+type Durum = "bos" | "yukleniyor" | "hazir" | "hata";
+
 export function LiveSearch({
-  items,
   initialQuery = "",
   autoFocus = false,
   limit = 24,
   variant = "list",
   onNavigate,
 }: {
-  items: SearchItem[];
   initialQuery?: string;
   autoFocus?: boolean;
   limit?: number;
@@ -38,14 +39,76 @@ export function LiveSearch({
   onNavigate?: () => void;
 }) {
   const [query, setQuery] = useState(initialQuery);
-  const deferred = useDeferredValue(query);
 
-  const results = useMemo(
-    () => searchProducts(items, deferred).slice(0, limit),
-    [items, deferred, limit],
-  );
+  /*
+    Sonuçlar ait oldukları sorguyla birlikte tutuluyor. Böylece
+    "bu liste hangi aramanın cevabı" sorusunu durum değişkeniyle
+    değil, verinin kendisiyle cevaplıyoruz — geç dönen bir yanıtın
+    yeni sorgunun üstüne yazması da imkânsız hâle geliyor.
+  */
+  const [cevap, setCevap] = useState<{ q: string; items: SearchItem[] }>({
+    q: "",
+    items: [],
+  });
+  const [hataliSorgu, setHataliSorgu] = useState<string | null>(null);
 
-  const typed = deferred.trim().length > 0;
+  /* Uçuştaki istek: yeni harf gelince öncekini iptal ediyoruz. */
+  const istek = useRef<AbortController | null>(null);
+
+  const aranan = query.trim();
+
+  useEffect(() => {
+    if (aranan.length === 0) {
+      istek.current?.abort();
+      return;
+    }
+
+    /* Her tuşta değil, yazma duraklayınca istek atılıyor. */
+    const zamanlayici = setTimeout(() => {
+      istek.current?.abort();
+      const controller = new AbortController();
+      istek.current = controller;
+
+      fetch(`/api/arama?q=${encodeURIComponent(aranan)}&limit=${limit}`, {
+        signal: controller.signal,
+      })
+        .then(async (response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = (await response.json()) as { results?: SearchItem[] };
+          setCevap({
+            q: aranan,
+            items: Array.isArray(data.results) ? data.results : [],
+          });
+        })
+        .catch((error) => {
+          /* İptal edilen istek hata değil; kullanıcı yazmaya devam
+             ettiği için bilerek durduruldu. */
+          if ((error as Error).name === "AbortError") return;
+          console.error("Arama isteği başarısız:", error);
+          setHataliSorgu(aranan);
+        });
+    }, 180);
+
+    return () => clearTimeout(zamanlayici);
+  }, [aranan, limit]);
+
+  const typed = aranan.length > 0;
+  const hazir = cevap.q === aranan;
+  const hata = hataliSorgu === aranan;
+  const durum: Durum = !typed
+    ? "bos"
+    : hata
+      ? "hata"
+      : hazir
+        ? "hazir"
+        : "yukleniyor";
+
+  /*
+    Yeni sonuç gelene kadar eski liste ekranda kalıyor. Aksi hâlde
+    her tuş vuruşunda liste boşalıp yeniden doluyor ve arama
+    tökezliyormuş gibi hissettiriyor.
+  */
+  const results = cevap.items;
 
   return (
     <div className="live-search">
@@ -72,13 +135,22 @@ export function LiveSearch({
 
       {typed && (
         <p className="live-count" role="status">
-          {results.length > 0
-            ? `${results.length} sonuç`
-            : "Sonuç bulunamadı"}
+          {/*
+            Sonuç sayısı yalnızca yanıt geldiğinde yazılıyor.
+            Yükleniyorken "Sonuç bulunamadı" yazmak, bir an için
+            müşteriye aradığının olmadığını söylemek olurdu.
+          */}
+          {durum === "hata"
+            ? "Arama şu anda kullanılamıyor."
+            : durum === "yukleniyor"
+              ? "Aranıyor…"
+              : results.length > 0
+                ? `${results.length} sonuç`
+                : "Sonuç bulunamadı"}
         </p>
       )}
 
-      {typed && results.length === 0 && (
+      {typed && durum === "hazir" && results.length === 0 && (
         <p className="live-empty">
           Farklı bir kelime deneyin ya da{" "}
           <Link href="/koleksiyon/tumu" onClick={onNavigate}>
@@ -88,7 +160,7 @@ export function LiveSearch({
         </p>
       )}
 
-      {results.length > 0 && variant === "list" && (
+      {typed && results.length > 0 && variant === "list" && (
         <ul className="live-results">
           {results.map((item) => (
             <li key={item.slug}>
@@ -114,7 +186,7 @@ export function LiveSearch({
         </ul>
       )}
 
-      {results.length > 0 && variant === "grid" && (
+      {typed && results.length > 0 && variant === "grid" && (
         <div className="grid">
           {results.map((item) => {
             const off =

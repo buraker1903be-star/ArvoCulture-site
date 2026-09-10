@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CouponCopy } from "@/components/coupon-strip";
+import { getCachedSearchIndex } from "@/lib/search-cache";
 import { SearchOverlay } from "@/components/search-overlay";
 import {
   ProductBlock,
@@ -17,7 +18,6 @@ import {
   getStorefrontDeals,
 } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
-import { getSearchIndex } from "@/lib/search-index";
 import { Reveal } from "@/components/reveal";
 import { RecentProducts } from "@/components/recent-products";
 import {
@@ -77,21 +77,11 @@ const SEARCH_TERMS = [
 ];
 
 export default async function Home() {
-  const [theme, products, discounts, searchItems, curatedBest, dealItems] =
+  const [theme, products, discounts, curatedBest, dealItems] =
     await Promise.all([
       getStorefrontTheme(),
       getStorefrontProducts(200),
       getStorefrontDiscounts(),
-      /*
-      Ana sayfa arama katmanını taşıyor; dizin çekilemezse sayfanın
-      tamamının düşmesi kabul edilemez. Hata görünür kalsın diye
-      günlüğe yazılıyor, ama ana sayfa arama kutusu olmadan da
-      açılmaya devam ediyor.
-    */
-      getSearchIndex().catch((error) => {
-        console.error("Ana sayfa arama dizini getirilemedi:", error);
-        return [];
-      }),
       /*
       Çok satanlar ARC’taki "Çok Satanlar" koleksiyonundan gelir.
       Slug eski adından kalma; başlık panelden değiştirilmiş.
@@ -134,14 +124,31 @@ export default async function Home() {
     Sonuç vermeyen terimler gösterilmiyor: müşteri tıklayıp boş
     sayfayla karşılaşmasın.
   */
-  const searchTerms = SEARCH_TERMS.filter((term) => {
-    const needle = term.toLocaleLowerCase("tr-TR");
-    return searchItems.some((item) =>
-      `${item.name} ${item.category}`
-        .toLocaleLowerCase("tr-TR")
-        .includes(needle),
-    );
+  /*
+    Dizin burada yalnızca okunuyor, istemciye gönderilmiyor. Önceden
+    arama bileşenine prop olarak veriliyordu ve 3.100 ürünlük liste
+    her ziyaretçinin indirdiği 1,8 MB'ın büyük kısmıydı.
+
+    Dizin çekilemezse terimlerin tamamı gösteriliyor: öneri
+    şeridinin boş kalması, birkaç teriminin sonuçsuz çıkmasından
+    daha kötü.
+  */
+  const searchIndex = await getCachedSearchIndex().catch((error) => {
+    console.error("Ana sayfa arama dizini getirilemedi:", error);
+    return [];
   });
+
+  const searchTerms =
+    searchIndex.length === 0
+      ? SEARCH_TERMS
+      : SEARCH_TERMS.filter((term) => {
+          const needle = term.toLocaleLowerCase("tr-TR");
+          return searchIndex.some((item) =>
+            `${item.name} ${item.category}`
+              .toLocaleLowerCase("tr-TR")
+              .includes(needle),
+          );
+        });
 
   const categories = CATEGORIES;
 
@@ -158,7 +165,7 @@ export default async function Home() {
         aria-label="Arama ve kampanya"
       >
         <div className="utility-search">
-          <SearchOverlay terms={searchTerms} items={searchItems} />
+          <SearchOverlay terms={searchTerms} />
         </div>
 
         {coupon?.code && (

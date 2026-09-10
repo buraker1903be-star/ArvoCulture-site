@@ -4,9 +4,6 @@ import Link from "next/link";
 
 import { useCallback, useEffect, useState } from "react";
 import { LiveSearch } from "@/components/live-search";
-import type { SearchItem } from "@/lib/search-index";
-
-
 
 /**
  * Arama katmanı.
@@ -18,11 +15,9 @@ import type { SearchItem } from "@/lib/search-index";
  */
 export function SearchOverlay({
   terms,
-  items,
 }: {
   /** Popüler arama terimleri. */
   terms: string[];
-  items: SearchItem[];
 }) {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
@@ -73,7 +68,7 @@ export function SearchOverlay({
 
           <div className="search-sheet">
             <div className="search-head">
-              <LiveSearch items={items} autoFocus onNavigate={close} limit={8} />
+              <LiveSearch autoFocus onNavigate={close} limit={8} />
               <button type="button" className="search-close" onClick={close}>
                 Kapat
               </button>

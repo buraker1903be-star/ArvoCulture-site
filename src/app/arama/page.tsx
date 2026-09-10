@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { LiveSearch } from "@/components/live-search";
-import { getSearchIndex, type SearchItem } from "@/lib/search-index";
 
 export const metadata: Metadata = {
   title: "Arama",
@@ -19,21 +17,10 @@ export default async function Search({
   const { q } = await searchParams;
 
   /*
-    Dizin çekilemezse arama boş sonuç göstermemeli.
-
-    Eskiden hata yutulup boş liste dönüyordu ve müşteri "sonuç
-    bulunamadı" görüyordu — kataloğun 3.100 ürünü yerinde dururken.
-    Bu, aramanın bozuk olduğunu gizleyen en kötü davranış: ne
-    müşteri anlıyor ne de biz fark ediyoruz.
+    Dizin artık burada çekilmiyor. 3.100 ürünlük liste sayfaya
+    gömülüyordu (1,3 MB) ve arama yapmayacak ziyaretçi de bunu
+    indiriyordu. Sorgu yazıldıkça /api/arama'ya gidiyor.
   */
-  let items: SearchItem[] = [];
-  let indexFailed = false;
-  try {
-    items = await getSearchIndex();
-  } catch (error) {
-    console.error("Arama dizini getirilemedi:", error);
-    indexFailed = true;
-  }
 
   return (
     <main className="shell">
@@ -46,21 +33,12 @@ export default async function Search({
       </section>
 
       <section className="panel">
-        {indexFailed ? (
-          <p className="hint">
-            Arama şu anda kullanılamıyor. Kataloğa{" "}
-            <Link href="/koleksiyon/tumu">tüm ürünler</Link> sayfasından göz
-            atabilirsiniz.
-          </p>
-        ) : (
-          <LiveSearch
-            items={items}
-            initialQuery={q ?? ""}
-            autoFocus
-            limit={48}
-            variant="grid"
-          />
-        )}
+        <LiveSearch
+          initialQuery={q ?? ""}
+          autoFocus
+          limit={48}
+          variant="grid"
+        />
       </section>
     </main>
   );
