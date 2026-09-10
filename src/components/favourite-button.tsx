@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { readFavourites, toggleFavourite } from "@/lib/favourites";
+import { useFavourites } from "@/components/favourites";
 
 /**
  * Favori düğmesi.
  *
- * Sunucuda render edilirken favori durumu bilinmiyor; ilk
- * çizimde boş kalp gösterilip istemcide düzeltiliyor. Aksi
- * hâlde sunucu ve istemci çıktısı uyuşmuyor ve React uyarı
- * veriyor.
+ * Durum artık FavouritesProvider'dan geliyor; üye müşteride bu
+ * liste hesaptan, misafirde tarayıcıdan beslenir. Düğmenin kendisi
+ * ikisini ayırt etmez.
+ *
+ * Sunucuda render edilirken favori durumu bilinmiyor: ilk çizimde
+ * boş kalp gösterilip istemcide düzeltiliyor. Aksi hâlde sunucu ve
+ * istemci çıktısı uyuşmaz ve React uyarı verir.
  */
 export function FavouriteButton({
   slug,
@@ -18,20 +20,8 @@ export function FavouriteButton({
   slug: string;
   label: string;
 }) {
-  const [active, setActive] = useState(false);
-
-  useEffect(() => {
-    const sync = () => setActive(readFavourites().includes(slug));
-    sync();
-
-    window.addEventListener("arvo:favourites", sync);
-    // Başka sekmede eklenirse burada da güncellensin.
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener("arvo:favourites", sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, [slug]);
+  const { isFavourite, toggle } = useFavourites();
+  const active = isFavourite(slug);
 
   return (
     <button
@@ -46,7 +36,7 @@ export function FavouriteButton({
         // Kart bağlantısının içinde; tıklama ürüne gitmesin.
         event.preventDefault();
         event.stopPropagation();
-        toggleFavourite(slug);
+        toggle(slug);
       }}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true">

@@ -1,19 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ProductCard } from "@/components/product-card";
-import { readFavourites } from "@/lib/favourites";
+import { useFavourites } from "@/components/favourites";
 import type { Product } from "@/lib/product-types";
 
 /**
  * Favoriler listesi.
  *
- * Ürünler artık sayfa yüklenirken sunucudan toplu hâlde gelmiyor;
- * tarayıcıdaki favori listesi /api/favoriler ucuna gönderilip
- * yalnızca o ürünler çekiliyor. Katalog büyüdükçe bu sayfanın
- * maliyeti artmıyor ve katalog sınırının dışında kalan ürünler
- * kaybolmuyor.
+ * Slug listesi FavouritesProvider'dan gelir — üye müşteride
+ * hesaptan, misafirde tarayıcıdan. Ürün bilgileri /api/favoriler
+ * ucundan yalnızca o slug'lar için çekilir; katalog büyüdükçe bu
+ * sayfanın maliyeti artmaz.
  */
 
 type State =
@@ -23,19 +22,15 @@ type State =
   | { status: "error" };
 
 export function FavouritesView() {
+  const { slugs, syncing } = useFavourites();
   const [state, setState] = useState<State>({ status: "loading" });
 
-  const load = useCallback(async () => {
-    /*
-      Okuma bilerek bir mikro göreve bırakılıyor. readFavourites()
-      senkron çalıştığı için boş liste durumunda setState, effect ile
-      aynı tik'te çağrılır ve React zincirleme render uyarısı verir.
-    */
-    await Promise.resolve();
+  /* Hangi liste için istek yapıldığını tutar: aynı liste için
+     tekrar tekrar ağ isteği yapılmasın. */
+  const lastKey = useRef<string | null>(null);
 
-    const slugs = readFavourites();
-
-    if (slugs.length === 0) {
+  const load = useCallback(async (wanted: string[]) => {
+    if (wanted.length === 0) {
       setState({ status: "empty" });
       return;
     }
@@ -44,7 +39,7 @@ export function FavouritesView() {
       const response = await fetch("/api/favoriler", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slugs }),
+        body: JSON.stringify({ slugs: wanted }),
       });
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -59,33 +54,26 @@ export function FavouritesView() {
       );
     } catch {
       /*
-        Hata sessizce "favoriniz yok" diye gösterilmiyor: müşterinin
-        listesi duruyor olabilir ve boş liste yanıltıcı olurdu.
+        Hata "favoriniz yok" diye gösterilmiyor: müşterinin listesi
+        duruyor olabilir ve boş liste yanıltıcı olurdu.
       */
       setState({ status: "error" });
     }
   }, []);
 
   useEffect(() => {
-    /*
-      Kural burada yanlış alarm veriyor: load() ilk satırında await
-      kullandığı için içindeki setState çağrıları effect'in tik'inde
-      değil, sonraki mikro görevde çalışır. Kuralın statik çözümlemesi
-      bunu göremiyor.
-    */
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load();
+    /* Hesapla eşitleme sürerken bekleniyor: yarım listeyle istek
+       yapmak, az sonra değişecek bir ekran çizmek demektir. */
+    if (syncing) return;
 
-    window.addEventListener("arvo:favourites", load);
-    // Başka sekmede değişirse burası da tazelensin.
-    window.addEventListener("storage", load);
-    return () => {
-      window.removeEventListener("arvo:favourites", load);
-      window.removeEventListener("storage", load);
-    };
-  }, [load]);
+    const key = slugs.join("|");
+    if (lastKey.current === key) return;
+    lastKey.current = key;
 
-  if (state.status === "loading") {
+    void load(slugs);
+  }, [slugs, syncing, load]);
+
+  if (syncing || state.status === "loading") {
     return (
       <section className="panel">
         <p className="hint">Yükleniyor…</p>
@@ -98,11 +86,18 @@ export function FavouritesView() {
       <section className="panel order-result">
         <h2>Liste şu anda getirilemedi.</h2>
         <p>
-          Favorileriniz duruyor; bağlantı sorunu geçici olabilir. Sayfayı
-          yenilemeyi deneyin.
+          Favorileriniz duruyor; bağlantı sorunu geçici olabilir. Tekrar denemek
+          ister misiniz?
         </p>
         <div className="order-actions">
-          <button className="btn" type="button" onClick={() => void load()}>
+          <button
+            className="btn"
+            type="button"
+            onClick={() => {
+              lastKey.current = null;
+              void load(slugs);
+            }}
+          >
             Tekrar dene
           </button>
         </div>
@@ -131,9 +126,7 @@ export function FavouritesView() {
     <section className="panel">
       <div className="head">
         <div>
-          <h2>
-            {state.products.length} ürün
-          </h2>
+          <h2>{state.products.length} ürün</h2>
           <p>Favorilerinize eklediğiniz ürünler.</p>
         </div>
       </div>
