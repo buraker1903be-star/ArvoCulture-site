@@ -1,7 +1,13 @@
 import { ProductCard, discountOf } from "@/components/product-card";
 import { CollectionFilters } from "@/components/collection-filters";
 import { getStorefrontCollections } from "@/lib/collections";
-import { getStorefrontCollectionProducts, getStorefrontProducts, CATALOG_LIMIT } from "@/lib/products";
+import {
+  getStorefrontCollectionProducts,
+  getStorefrontProductsPage,
+  getStorefrontFacets,
+  CATALOG_PAGE_SIZE,
+  type Product,
+} from "@/lib/products";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -27,6 +33,27 @@ const menuGroups: Record<string, string[]> = {
   kozmetik: ["Kozmetik"],
   parfum: ["Parfüm"],
   takviyeler: ["Takviyeler"],
+};
+
+/* Bedenler varyantlardan gelir; ürün etiketlerinde yok. */
+const SIZE_ORDER = [
+  "XXS",
+  "XS",
+  "S",
+  "M",
+  "L",
+  "XL",
+  "2XL",
+  "XXL",
+  "3XL",
+  "4XL",
+];
+
+/** Listede olmayan bedenler (tek beden, numara) sona. */
+const bySizeOrder = (a: string, b: string) => {
+  const ia = SIZE_ORDER.indexOf(a);
+  const ib = SIZE_ORDER.indexOf(b);
+  return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
 };
 
 export async function generateMetadata({
@@ -67,18 +94,7 @@ export default async function Collection({
   const requestedPage = Number(query.sayfa ?? "1");
   const page =
     Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
-  const collections = await getStorefrontCollections();
-  const exactCollection = collections.find(
-    (collection) => collection.slug === slug,
-  );
-  const label = exactCollection?.title ?? labels[slug] ?? "Tüm Ürünler";
-  const list =
-    slug === "tumu"
-      ? await getStorefrontProducts(CATALOG_LIMIT)
-      : await getStorefrontCollectionProducts({
-          collectionSlug: exactCollection?.slug,
-          menuGroups: exactCollection ? undefined : menuGroups[slug],
-        });
+
   /*
     Filtreleme ve sıralama sunucuda yapılıyor. Seçimler adres
     çubuğundan okunuyor: müşteri filtreli sayfayı paylaşabiliyor,
@@ -91,66 +107,109 @@ export default async function Collection({
   const stokta = query.stokta === "1";
   const sirala = (query.sirala ?? "onerilen").toString();
 
-  /* Filtre seçenekleri katalogdan türetilir; sabit liste
-     tutulmuyor çünkü katalog sürekli değişiyor. */
-  /* Bedenler varyantlardan gelir; ürün etiketlerinde yok. */
-  const SIZE_ORDER = ["XXS", "XS", "S", "M", "L", "XL", "2XL", "XXL", "3XL", "4XL"];
-
-  const sizes = [...new Set(list.flatMap((product) => product.sizes))].sort(
-    (a, b) => {
-      const ia = SIZE_ORDER.indexOf(a);
-      const ib = SIZE_ORDER.indexOf(b);
-      // Listede olmayan bedenler (tek beden, numara) sona.
-      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
-    },
+  const collections = await getStorefrontCollections();
+  const exactCollection = collections.find(
+    (collection) => collection.slug === slug,
   );
+  const label = exactCollection?.title ?? labels[slug] ?? "Tüm Ürünler";
 
-  const brands = [...new Set(list.map((product) => product.eyebrow))]
-    .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, "tr"))
-    .slice(0, 12);
+  /*
+    "Tüm Ürünler" kataloğun tamamını kapsar ve 3.400'ü aşkın ürün
+    demektir. Bu sayfa eskiden hepsini çekip 24 tanesini
+    gösteriyordu: 3,0 MB veri ve her ürün için gereksiz işlem.
+    Artık filtre, sıralama ve sayfalama veritabanında yapılıyor.
 
-  const maxPrice = list.reduce(
-    (top, product) => Math.max(top, product.price),
-    0,
-  );
+    Diğer koleksiyonlar en fazla 200 ürün döndüren ayrı bir uç
+    nokta kullanıyor; orada toplu çekmek ucuz ve filtreler bellekte
+    çalışabiliyor.
+  */
+  const isFullCatalogue = slug === "tumu";
 
-  let filtered = list.filter((product) => {
-    if (marka && product.eyebrow !== marka) return false;
-    if (ust > 0 && product.price > ust) return false;
-    if (indirimli && discountOf(product) <= 0) return false;
-    if (stokta && product.available === false) return false;
-    if (beden && !product.sizes.includes(beden.toUpperCase())) return false;
-    return true;
-  });
+  let visibleProducts: Product[];
+  let pageCount: number;
+  let currentPage: number;
+  let shownCount: number;
+  let totalCount: number;
+  let sizes: string[];
+  let brands: string[];
+  let maxPrice: number;
 
-  filtered = [...filtered].sort((a, b) => {
-    switch (sirala) {
-      case "ucuz":
-        return a.price - b.price;
-      case "pahali":
-        return b.price - a.price;
-      case "indirim":
-        return discountOf(b) - discountOf(a);
-      case "yeni":
-        // Katalog zaten son güncellenene göre sıralı geliyor.
-        return 0;
-      default:
-        // Önerilen: stokta olanlar önce, sonra indirimliler.
-        if ((a.available === false) !== (b.available === false)) {
-          return a.available === false ? 1 : -1;
-        }
-        return discountOf(b) - discountOf(a);
-    }
-  });
+  if (isFullCatalogue) {
+    const [result, facets] = await Promise.all([
+      getStorefrontProductsPage(page, {
+        brand: marka,
+        size: beden,
+        maxPrice: ust,
+        onlyDiscounted: indirimli,
+        onlyAvailable: stokta,
+        sort: sirala,
+      }),
+      getStorefrontFacets(),
+    ]);
 
-  const pageSize = 24;
-  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const currentPage = Math.min(page, pageCount);
-  const visibleProducts = filtered.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
+    visibleProducts = result.products;
+    pageCount = result.pageCount;
+    currentPage = Math.min(result.page, result.pageCount);
+    shownCount = result.total;
+    totalCount = facets.total || result.total;
+    sizes = [...facets.sizes].sort(bySizeOrder);
+    brands = facets.brands.slice(0, 12);
+    maxPrice = facets.maxPrice;
+  } else {
+    const list = await getStorefrontCollectionProducts({
+      collectionSlug: exactCollection?.slug,
+      menuGroups: exactCollection ? undefined : menuGroups[slug],
+    });
+
+    /* Filtre seçenekleri katalogdan türetilir; sabit liste
+       tutulmuyor çünkü katalog sürekli değişiyor. */
+    sizes = [...new Set(list.flatMap((product) => product.sizes))].sort(
+      bySizeOrder,
+    );
+    brands = [...new Set(list.map((product) => product.eyebrow))]
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b, "tr"))
+      .slice(0, 12);
+    maxPrice = list.reduce((top, product) => Math.max(top, product.price), 0);
+
+    let filtered = list.filter((product) => {
+      if (marka && product.eyebrow !== marka) return false;
+      if (ust > 0 && product.price > ust) return false;
+      if (indirimli && discountOf(product) <= 0) return false;
+      if (stokta && product.available === false) return false;
+      if (beden && !product.sizes.includes(beden.toUpperCase())) return false;
+      return true;
+    });
+
+    filtered = [...filtered].sort((a, b) => {
+      switch (sirala) {
+        case "ucuz":
+          return a.price - b.price;
+        case "pahali":
+          return b.price - a.price;
+        case "indirim":
+          return discountOf(b) - discountOf(a);
+        case "yeni":
+          // Katalog zaten son güncellenene göre sıralı geliyor.
+          return 0;
+        default:
+          // Önerilen: stokta olanlar önce, sonra indirimliler.
+          if ((a.available === false) !== (b.available === false)) {
+            return a.available === false ? 1 : -1;
+          }
+          return discountOf(b) - discountOf(a);
+      }
+    });
+
+    pageCount = Math.max(1, Math.ceil(filtered.length / CATALOG_PAGE_SIZE));
+    currentPage = Math.min(page, pageCount);
+    visibleProducts = filtered.slice(
+      (currentPage - 1) * CATALOG_PAGE_SIZE,
+      currentPage * CATALOG_PAGE_SIZE,
+    );
+    shownCount = filtered.length;
+    totalCount = list.length;
+  }
 
   return (
     <main className="shell">
@@ -164,8 +223,8 @@ export default async function Collection({
       </section>
       <section className="panel">
         <CollectionFilters
-          total={list.length}
-          shown={filtered.length}
+          total={totalCount}
+          shown={shownCount}
           sizes={sizes}
           brands={brands}
           maxPrice={maxPrice}
@@ -175,6 +234,19 @@ export default async function Collection({
             <ProductCard key={product.slug} product={product} />
           ))}
         </div>
+
+        {/*
+          Var olmayan bir sayfa numarası istendiğinde boş bir ızgara
+          bırakmak yerine geri dönüş veriliyor. Sayfalama artık
+          veritabanında olduğu için bu durum sessizce boş gelebilir.
+        */}
+        {visibleProducts.length === 0 && (
+          <p className="hint">
+            Bu seçimle ürün bulunamadı.{" "}
+            <Link href={`/koleksiyon/${slug}`}>Filtreleri temizle</Link>
+          </p>
+        )}
+
         {pageCount > 1 && (
           <nav
             className="collection-pagination"

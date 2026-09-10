@@ -58,7 +58,9 @@ const plainText = (value: string | null | undefined) =>
     .trim();
 
 const inferCategory = (row: StorefrontRow) => {
-  const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase("tr-TR");
+  const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase(
+    "tr-TR",
+  );
   /*
     Giyim anahtar kelimeleri. Tedarikçi kataloğu geldiğinden beri
     liste genişletildi: eşofman, ceket, hırka, pantolon gibi
@@ -115,8 +117,9 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     manken fotoğrafıdır. Göreli yol ise kendi deposundaki
     paket çekimidir.
   */
-  const artStyle: "packshot" | "lifestyle" =
-    paths[0]?.startsWith("http") ? "lifestyle" : "packshot";
+  const artStyle: "packshot" | "lifestyle" = paths[0]?.startsWith("http")
+    ? "lifestyle"
+    : "packshot";
   return {
     slug: row.slug,
     name: row.name,
@@ -128,7 +131,8 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     eyebrow: row.vendor || "ARVOCULTURE",
     tone: TONES[index % TONES.length] as string,
     subtitle:
-      plainText(row.subtitle) || "ArvoCulture seçkisinden özenle seçilmiş ürün.",
+      plainText(row.subtitle) ||
+      "ArvoCulture seçkisinden özenle seçilmiş ürün.",
     description: description || plainText(row.subtitle),
     tags: row.product_type ? [row.product_type] : [],
     image: images[0],
@@ -317,3 +321,128 @@ export const getStorefrontProduct = cache(
     return row ? applyBadge(mapProduct(row), badges.get(row.slug)) : undefined;
   },
 );
+
+/* ═══════════════════════════════════════════════════════════
+   Sayfalanmış katalog
+
+   "Tüm Ürünler" sayfası 24 ürün göstermek için kataloğun
+   tamamını çekiyordu: 3.432 satır, 3,0 MB, ve her satır için
+   Node tarafında kategori çıkarımı ve metin temizliği. Sayfa
+   2,7 saniyede açılıyordu.
+
+   Filtreleme, sıralama ve sayfalama artık veritabanında
+   yapılıyor; buraya yalnızca gösterilecek 24 ürün geliyor
+   (26 KB). Toplam sayı da aynı sorgudan `total_count` olarak
+   dönüyor, ayrıca sayım sorgusu gerekmiyor.
+   ═══════════════════════════════════════════════════════════ */
+
+export const CATALOG_PAGE_SIZE = 24;
+
+export type CatalogFilters = {
+  brand?: string;
+  size?: string;
+  /** Üst fiyat sınırı, TL cinsinden. Veritabanı kuruş tutar. */
+  maxPrice?: number;
+  onlyDiscounted?: boolean;
+  onlyAvailable?: boolean;
+  /** onerilen | ucuz | pahali | indirim | yeni */
+  sort?: string;
+};
+
+export type CatalogPage = {
+  products: Product[];
+  /** Filtre uygulandıktan sonraki toplam. */
+  total: number;
+  page: number;
+  pageCount: number;
+};
+
+type CatalogPageRow = StorefrontRow & { total_count: number };
+
+export const getStorefrontProductsPage = cache(
+  async (
+    page: number,
+    filters: CatalogFilters = {},
+    pageSize: number = CATALOG_PAGE_SIZE,
+  ): Promise<CatalogPage> => {
+    const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+    const size = Math.min(200, Math.max(1, pageSize));
+
+    const [rows, badges] = await Promise.all([
+      rpcOrEmpty<CatalogPageRow>(
+        "get_arvoculture_storefront_products_page",
+        {
+          p_limit: size,
+          p_offset: (safePage - 1) * size,
+          p_brand: filters.brand || null,
+          p_size: filters.size || null,
+          p_max_price:
+            filters.maxPrice && filters.maxPrice > 0
+              ? Math.round(filters.maxPrice * 100)
+              : null,
+          p_only_discounted: Boolean(filters.onlyDiscounted),
+          p_only_available: Boolean(filters.onlyAvailable),
+          p_sort: filters.sort || "onerilen",
+        },
+        { revalidate: 60, tags: ["storefront-products"] },
+      ),
+      getProductBadges(),
+    ]);
+
+    const total = rows[0] ? Number(rows[0].total_count) : 0;
+    const pageCount = Math.max(1, Math.ceil(total / size));
+
+    return {
+      products: rows.map((row, index) =>
+        applyBadge(mapProduct(row, index), badges.get(row.slug)),
+      ),
+      total,
+      page: safePage,
+      pageCount,
+    };
+  },
+);
+
+export type CatalogFacets = {
+  brands: string[];
+  sizes: string[];
+  /** TL cinsinden. */
+  maxPrice: number;
+  /** Filtresiz katalog toplamı. */
+  total: number;
+};
+
+type FacetRow = {
+  brands: unknown;
+  sizes: unknown;
+  max_price: number;
+  total_count: number;
+};
+
+/**
+ * Filtre seçenekleri: marka listesi, beden listesi, en yüksek
+ * fiyat ve filtresiz toplam.
+ *
+ * Katalog kadar sık değişmediği için beş dakika önbellekte
+ * tutuluyor; her sayfa isteğinde yeniden hesaplanması gereksiz.
+ */
+export const getStorefrontFacets = cache(async (): Promise<CatalogFacets> => {
+  const rows = await rpcOrEmpty<FacetRow>(
+    "get_arvoculture_storefront_facets",
+    {},
+    { revalidate: 300, tags: ["storefront-facets"] },
+  );
+
+  const row = rows[0];
+  const strings = (value: unknown) =>
+    Array.isArray(value)
+      ? value.filter((item): item is string => typeof item === "string")
+      : [];
+
+  return {
+    brands: strings(row?.brands),
+    sizes: strings(row?.sizes),
+    maxPrice: row?.max_price ? Number(row.max_price) / 100 : 0,
+    total: row?.total_count ? Number(row.total_count) : 0,
+  };
+});
