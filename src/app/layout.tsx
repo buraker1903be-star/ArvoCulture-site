@@ -11,6 +11,7 @@ import { FavouritesProvider } from "@/components/favourites";
 import { Header } from "@/components/header";
 import { BottomNav } from "@/components/bottom-nav";
 import { AppShell } from "@/components/app-shell";
+import { PageTransition } from "@/components/page-transition";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getStorefrontCollections } from "@/lib/collections";
@@ -143,7 +144,13 @@ export default async function RootLayout({
         >
           <CartProvider discounts={discounts}>
             <Header theme={theme} collections={collections} />
-            {children}
+            {/*
+              Sayfa içeriği geçiş sarmalayıcısının içinde; başlık,
+              alt çubuk ve altbilgi dışarıda kalıyor. Gezinirken
+              yerinde duran çerçeve, hareket eden içerik — uygulama
+              hissini veren ayrım bu.
+            */}
+            <PageTransition>{children}</PageTransition>
             <footer>
               <div className="footer-top">
                 <div className="footer-brand">

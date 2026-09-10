@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useFavourites } from "@/components/favourites";
 
 /**
@@ -23,10 +24,19 @@ export function FavouriteButton({
   const { isFavourite, toggle } = useFavourites();
   const active = isFavourite(slug);
 
+  /*
+    Favoriye eklendiği an kalp bir kez büyüyüp yerine oturuyor.
+    Bunu CSS'e `aria-pressed="true"` üzerinden bağlamak kolay
+    olurdu ama yanlış olurdu: favoriler sayfası açıldığında
+    ekrandaki bütün kalpler aynı anda zıplardı. Hareketin anlamı
+    "şu an ekledin" — o yüzden tıklamaya bağlı.
+  */
+  const [vurgu, setVurgu] = useState(false);
+
   return (
     <button
       type="button"
-      className="fav-button"
+      className={`fav-button${vurgu ? " is-pop" : ""}`}
       aria-pressed={active}
       aria-label={
         active ? `${label} favorilerden çıkar` : `${label} favorilere ekle`
@@ -36,6 +46,11 @@ export function FavouriteButton({
         // Kart bağlantısının içinde; tıklama ürüne gitmesin.
         event.preventDefault();
         event.stopPropagation();
+        /* Yalnızca eklerken; çıkarırken kutlama olmaz. */
+        if (!active) {
+          setVurgu(true);
+          window.setTimeout(() => setVurgu(false), 420);
+        }
         toggle(slug);
       }}
     >

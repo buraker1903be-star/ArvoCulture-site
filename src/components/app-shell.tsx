@@ -93,6 +93,18 @@ export function AppShell() {
     () => true,
   );
 
+  /*
+    0 — "Sayfa canlandı" işareti.
+
+    Sayfa geçiş animasyonu buna bağlı. İşaret ancak hidrasyondan
+    sonra konduğu için siteye ilk giren müşteri animasyon
+    beklemiyor: sunucudan gelen HTML olduğu gibi, anında görünür.
+    Sonraki her gezinme ise yumuşak geçiyor.
+  */
+  useEffect(() => {
+    document.documentElement.dataset.hydrated = "1";
+  }, []);
+
   /* 1 — Servis çalışanı. */
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;

@@ -5233,3 +5233,65 @@ button.search-box {
     user-select: none;
   }
 }
+
+/* ==========================================================
+   SAYFA GEÇİŞİ
+   ========================================================== */
+
+/*
+  Gezinirken içerik yerine oturarak geliyor.
+
+  Kural `[data-hydrated]` altında: bu işaret sayfa canlandıktan
+  sonra konuyor. Siteye ilk giren müşteri sunucudan gelen HTML'i
+  animasyonsuz, anında görüyor — açılış hızı süse feda edilmiyor.
+  Sonraki gezinmelerin hepsi yumuşak.
+
+  Süre kısa tutuldu. Sayfa geçişinde 300 ms'in üstü, hızlı
+  gezinen müşteride "site ağır" hissi yaratır; buradaki iş
+  gösteriş değil, kesintiyi yumuşatmak.
+*/
+[data-hydrated] .page-transition {
+  animation: page-in 260ms var(--ease-out) both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/*
+  Kalp vurgusu. Favoriye eklendiği an bir kez büyüyüp yerine
+  oturuyor; geri esneme (1.24 → 0.96 → 1) hareketi mekanik
+  olmaktan çıkarıyor.
+*/
+.fav-button.is-pop svg {
+  animation: fav-pop 420ms var(--ease-out);
+}
+
+@keyframes fav-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.24);
+  }
+  65% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/*
+  Hareketi azaltılmış tercihte ikisi de kapalı. İçerik yine
+  görünür — animasyon bir süs, içeriğin şartı değil.
+*/
+@media (prefers-reduced-motion: reduce) {
+  [data-hydrated] .page-transition,
+  .fav-button.is-pop svg {
+    animation: none;
+  }
+}
