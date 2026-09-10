@@ -271,7 +271,9 @@
   letter-spacing: 0.04em;
   color: var(--ink-2);
   white-space: nowrap;
-  transition: border-color 200ms var(--ease), color 200ms var(--ease);
+  transition:
+    border-color 200ms var(--ease),
+    color 200ms var(--ease);
 }
 
 .chips a:hover {
@@ -324,7 +326,8 @@
   border-radius: var(--r-sm);
   background: var(--ink);
   color: #fff;
-  transition: background-color 220ms var(--ease),
+  transition:
+    background-color 220ms var(--ease),
     border-color 220ms var(--ease);
 }
 
@@ -348,8 +351,6 @@
   border-radius: var(--r-sm);
   background: rgba(255, 255, 255, 0.16);
 }
-
-
 
 @media (max-width: 900px) {
   .utility {
@@ -923,7 +924,9 @@
   font-size: var(--t-sm);
   color: var(--ink-2);
   border-bottom: 1px solid transparent;
-  transition: color 200ms var(--ease), border-color 200ms var(--ease);
+  transition:
+    color 200ms var(--ease),
+    border-color 200ms var(--ease);
 }
 
 .help a:hover {
@@ -1282,7 +1285,9 @@ button.search-box {
   border-radius: var(--r-sm);
   background: var(--panel-2);
   overflow: hidden;
-  transition: transform 220ms var(--ease), box-shadow 220ms var(--ease);
+  transition:
+    transform 220ms var(--ease),
+    box-shadow 220ms var(--ease);
 }
 
 .search-tile:hover .search-tile-art {
@@ -1615,7 +1620,9 @@ button.search-box {
   padding: var(--s4);
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
-  transition: border-color 160ms var(--ease), transform 160ms var(--ease),
+  transition:
+    border-color 160ms var(--ease),
+    transform 160ms var(--ease),
     box-shadow 160ms var(--ease);
 }
 
@@ -2522,7 +2529,9 @@ button.search-box {
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--panel);
-  transition: border-color 240ms var(--ease), box-shadow 240ms var(--ease);
+  transition:
+    border-color 240ms var(--ease),
+    box-shadow 240ms var(--ease);
 }
 
 /*
@@ -2700,16 +2709,24 @@ button.search-box {
 }
 
 @keyframes veil-in {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 @keyframes veil-out {
-  to { opacity: 0; }
+  to {
+    opacity: 0;
+  }
 }
 @keyframes drawer-in {
-  from { transform: translateX(100%); }
+  from {
+    transform: translateX(100%);
+  }
 }
 @keyframes drawer-out {
-  to { transform: translateX(100%); }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .drawer-head {
@@ -3070,7 +3087,9 @@ button.search-box {
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--panel);
-  transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease);
+  transition:
+    border-color 160ms var(--ease),
+    box-shadow 160ms var(--ease);
 }
 
 .address-picker button:hover {
@@ -3128,7 +3147,9 @@ button.search-box {
   background: transparent;
   font-size: var(--t-xs);
   color: var(--ink-2);
-  transition: border-color 160ms var(--ease), background-color 160ms var(--ease);
+  transition:
+    border-color 160ms var(--ease),
+    background-color 160ms var(--ease);
 }
 
 .title-presets button:hover {
@@ -3231,7 +3252,9 @@ button.search-box {
   background: #fff;
   overflow: hidden;
   opacity: 0.62;
-  transition: opacity 160ms var(--ease), border-color 160ms var(--ease);
+  transition:
+    opacity 160ms var(--ease),
+    border-color 160ms var(--ease);
 }
 
 .pdp-thumbs button:hover {
@@ -3329,7 +3352,9 @@ button.search-box {
   background: var(--panel);
   font-size: var(--t-sm);
   font-weight: 500;
-  transition: border-color 160ms var(--ease), background-color 160ms var(--ease);
+  transition:
+    border-color 160ms var(--ease),
+    background-color 160ms var(--ease);
 }
 
 .sizes button:hover {
@@ -3683,15 +3708,25 @@ button.search-box {
 }
 
 .reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(1),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(1) { animation-delay: 40ms; }
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(1) {
+  animation-delay: 40ms;
+}
 .reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(2),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(2) { animation-delay: 90ms; }
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(2) {
+  animation-delay: 90ms;
+}
 .reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(3),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(3) { animation-delay: 140ms; }
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(3) {
+  animation-delay: 140ms;
+}
 .reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(4),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(4) { animation-delay: 190ms; }
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(4) {
+  animation-delay: 190ms;
+}
 .reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(5),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(5) { animation-delay: 240ms; }
+.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(5) {
+  animation-delay: 240ms;
+}
 
 @keyframes card-in {
   from {
@@ -3889,11 +3924,21 @@ button.search-box {
   animation: hero-in 720ms var(--ease) backwards;
 }
 
-.hero-body > *:nth-child(1) { animation-delay: 120ms; }
-.hero-body > *:nth-child(2) { animation-delay: 220ms; }
-.hero-body > *:nth-child(3) { animation-delay: 320ms; }
-.hero-body > *:nth-child(4) { animation-delay: 420ms; }
-.hero-body > *:nth-child(5) { animation-delay: 520ms; }
+.hero-body > *:nth-child(1) {
+  animation-delay: 120ms;
+}
+.hero-body > *:nth-child(2) {
+  animation-delay: 220ms;
+}
+.hero-body > *:nth-child(3) {
+  animation-delay: 320ms;
+}
+.hero-body > *:nth-child(4) {
+  animation-delay: 420ms;
+}
+.hero-body > *:nth-child(5) {
+  animation-delay: 520ms;
+}
 
 @keyframes hero-in {
   from {
@@ -3973,16 +4018,13 @@ button.search-box {
   bottom: 18px;
   width: 1px;
   height: 28px;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.6),
-    transparent
-  );
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), transparent);
   animation: hero-hint 2.4s ease-in-out infinite;
 }
 
 @keyframes hero-hint {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.2;
     transform: translateY(-6px);
   }
@@ -4373,7 +4415,9 @@ button.search-box {
     height: 6px;
     border-radius: 50%;
     background: var(--line);
-    transition: background-color 200ms var(--ease), width 200ms var(--ease);
+    transition:
+      background-color 200ms var(--ease),
+      width 200ms var(--ease);
   }
 
   .pdp-dots span[data-active="true"] {
@@ -4431,7 +4475,6 @@ button.search-box {
   color: var(--line);
   background: var(--panel-2);
 }
-
 
 /* ---------- Arama katmanı: sık aranan terimler ----------- */
 
@@ -4658,7 +4701,9 @@ button.search-box {
   stroke: var(--ink-2);
   stroke-width: 1.6;
   stroke-linejoin: round;
-  transition: fill 200ms var(--ease), stroke 200ms var(--ease);
+  transition:
+    fill 200ms var(--ease),
+    stroke 200ms var(--ease);
 }
 
 /*
@@ -4729,7 +4774,9 @@ button.search-box {
   height: 5px;
   border-radius: 50%;
   background: rgba(16, 18, 15, 0.22);
-  transition: background-color 200ms var(--ease), width 200ms var(--ease);
+  transition:
+    background-color 200ms var(--ease),
+    width 200ms var(--ease);
 }
 
 .card-dots i[data-active] {
@@ -4923,7 +4970,9 @@ button.search-box {
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   cursor: pointer;
-  transition: border-color 160ms var(--ease), background-color 160ms var(--ease);
+  transition:
+    border-color 160ms var(--ease),
+    background-color 160ms var(--ease);
 }
 
 .pay-method[data-selected="true"] {
@@ -5013,3 +5062,235 @@ button.search-box {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   DOKUNMA GERİ BİLDİRİMİ
+
+   Site fareye göre kurulmuştu: 88 hover kuralına karşılık 6
+   basılı-tutma kuralı vardı. Telefonda hover diye bir şey yok,
+   dolayısıyla müşteri dokunduğunda neredeyse hiçbir karşılık
+   almıyordu — "tıkladığımı hissetmiyorum" şikâyetinin kaynağı bu.
+
+   Buradaki kurallar yalnızca dokunmatikte devreye giriyor.
+   Masaüstündeki hover dili olduğu gibi duruyor.
+   ═══════════════════════════════════════════════════════════ */
+
+/*
+  Tarayıcının kendi dokunma parlaması kapatılıyor.
+
+  Android Chrome her dokunuşta rgba(51,181,229,0.4) — parlak mavi
+  bir kutu — çiziyordu. Krem zeminli, editoryal bir vitrinde bu tek
+  başına en ucuz görünen şeydi ve markanın hiçbir rengiyle ilgisi
+  yoktu. Yerine kendi geri bildirimimizi koyuyoruz; parlamayı
+  karşılıksız kaldırmak sessizliğe döner, o yüzden ikisi birlikte.
+*/
+:where(a, button, [role="button"], input, select, textarea, summary, label) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/*
+  Çift dokunuşla yakınlaştırma beklenmesi kalkıyor. Tarayıcı
+  "acaba ikinci dokunuş gelecek mi" diye beklerken tepki gecikmiş
+  hissettiriyor.
+*/
+:where(a, button, [role="button"], summary, .card-art, .fav-button) {
+  touch-action: manipulation;
+}
+
+@media (hover: none) {
+  /*
+    Basma ve bırakma farklı hızda.
+
+    Parmak değdiği anda tepki neredeyse anlık olmalı — gecikme,
+    dokunuşun kaydedilmediği hissini verir. Bırakırken ise yüzey
+    yerine yumuşayarak dönüyor. Bu asimetri, dokunmayı "fiziksel"
+    hissettiren şey; iki yönü de aynı hızda yaparsak mekanik
+    görünüyor.
+  */
+  .btn,
+  .card,
+  .cat-card,
+  .fav-button,
+  .quantity button,
+  .sizes button,
+  .chip,
+  .collection-pagination a,
+  .live-results a,
+  .footer-link-group a,
+  .bottom-nav a,
+  .bottom-nav button {
+    transition:
+      transform 220ms var(--ease-out),
+      background-color 220ms var(--ease),
+      border-color 220ms var(--ease);
+  }
+
+  .btn:active,
+  .card:active,
+  .cat-card:active,
+  .fav-button:active,
+  .quantity button:active,
+  .sizes button:active,
+  .chip:active,
+  .collection-pagination a:active,
+  .live-results a:active,
+  .bottom-nav a:active,
+  .bottom-nav button:active {
+    transition-duration: 90ms;
+  }
+
+  /*
+    Ölçü değişimi ürüne göre ayarlı: büyük yüzey az küçülmeli,
+    küçük düğme biraz daha. Aynı oranı her yere vermek, büyük
+    kartlarda abartılı, küçük düğmelerde fark edilmez oluyor.
+  */
+  .card:active,
+  .cat-card:active {
+    transform: scale(0.985);
+  }
+
+  .btn:active,
+  .collection-pagination a:active {
+    transform: scale(0.97);
+  }
+
+  .fav-button:active,
+  .quantity button:active,
+  .sizes button:active,
+  .chip:active {
+    transform: scale(0.93);
+  }
+
+  /*
+    Yüzey de tepki veriyor. Yalnızca küçülme, koyu zeminli
+    düğmelerde neredeyse görünmez kalıyordu.
+  */
+  .chip:active,
+  .quantity button:active,
+  .sizes button:active,
+  .collection-pagination a:active {
+    background: var(--panel-2);
+    border-color: var(--ink-3);
+  }
+
+  .fav-button:active {
+    background: #fff;
+  }
+
+  /* Liste satırları ve gezinme: küçülme yerine zemin değişimi.
+     Satırın kendisi küçülünce liste zıplıyor. */
+  .live-results a:active,
+  .footer-link-group a:active {
+    background: var(--panel-2);
+  }
+
+  .bottom-nav a:active,
+  .bottom-nav button:active {
+    color: var(--ink);
+    transform: scale(0.94);
+  }
+}
+
+/*
+  Hareket azaltma tercihi her şeyin üstünde.
+
+  Ölçü değişimi tamamen kalkıyor; geri bildirim yüzey renginden
+  geliyor. Dokunduğunu hissetmek bir erişilebilirlik ihtiyacı, o
+  yüzden geri bildirimi büsbütün kaldırmıyoruz — yalnızca hareketi.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .btn:active,
+  .card:active,
+  .cat-card:active,
+  .fav-button:active,
+  .quantity button:active,
+  .sizes button:active,
+  .chip:active,
+  .collection-pagination a:active,
+  .bottom-nav a:active,
+  .bottom-nav button:active {
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   YÜKLEME İSKELETİ
+
+   Müşteri bir bağlantıya dokunduğunda sayfa gelene kadar hiçbir
+   şey olmuyordu: koleksiyon sayfası yarım saniyeyle bir saniye
+   arasında açılıyor ve o süre boyunca ekran eski sayfada
+   duruyordu. Dokunuşun kaydedildiğine dair tek işaret yok.
+
+   Dönen bir çember koymak yerine sayfanın kendi düzeni çiziliyor.
+   Böylece gerçek içerik geldiğinde yerleşim zıplamıyor ve bekleme
+   "bir şey yükleniyor"dan çok "sayfa geliyor" gibi okunuyor.
+   ═══════════════════════════════════════════════════════════ */
+
+.skeleton {
+  background: var(--line-soft);
+  border-radius: 4px;
+  /*
+    Nefes alan bir soluklaşma. Kayan parıltı yerine opaklık
+    seçildi: parıltı dikkat çekmek için tasarlanmış bir hareket ve
+    bekleme ekranının dikkat çekmesi istenmiyor.
+  */
+  animation: skeleton-pulse 1600ms var(--ease) infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.skeleton-card .card-art {
+  background: var(--line-soft);
+}
+
+.skeleton-line {
+  height: 10px;
+  margin-top: 10px;
+}
+
+.skeleton-line.is-short {
+  width: 40%;
+}
+
+.skeleton-line.is-medium {
+  width: 70%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Yanıp sönme kalkıyor; iskelet sabit duruyor. */
+  .skeleton {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   KAYDIRMA YALITIMI
+
+   Sepet çekmecesindeki liste sonuna gelindiğinde kaydırma
+   arkadaki sayfaya geçiyordu: müşteri çekmecede gezinirken vitrin
+   kayıyor, çekmeceyi kapattığında kendini sayfanın bambaşka bir
+   yerinde buluyordu. Telefonda bu, kontrolü kaybetmiş hissi verir.
+   ═══════════════════════════════════════════════════════════ */
+
+.drawer-items {
+  /* Kaydırma bu kutuda başlar ve bu kutuda biter. */
+  overscroll-behavior: contain;
+  /* Parmak kaldırıldıktan sonra da akmaya devam etsin. */
+  -webkit-overflow-scrolling: touch;
+}
+
+/*
+  Sayfa kilidi burada yok: çekmece ve arama katmanı bunu zaten
+  JavaScript tarafında yapıyor (body.style.overflow) ve kapanışta
+  eski değeri geri veriyor. Aynı işi CSS'te tekrarlamak, ileride
+  biri birini değiştirdiğinde açıklaması zor bir davranış bırakır.
+*/
