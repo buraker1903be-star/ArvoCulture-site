@@ -5250,8 +5250,22 @@ button.search-box {
   gezinen müşteride "site ağır" hissi yaratır; buradaki iş
   gösteriş değil, kesintiyi yumuşatmak.
 */
+/*
+  Doldurma kipi (`both`) bilinçli olarak yok.
+
+  `both` yazılsaydı animasyon başlamadan önce de ilk karenin
+  değerleri geçerli olurdu — yani `opacity: 0`. Animasyon herhangi
+  bir sebeple ilerlemezse (sekme arka planda açıldıysa, tarayıcı
+  animasyonları dondurduysa) içerik görünmez kalırdı. Test
+  sırasında tam olarak bunu gördüm: pencere gizliyken kare
+  üretilmiyor, animasyon sıfırıncı saniyede duruyor ve sayfa boş
+  görünüyordu.
+
+  Doldurma olmadan en kötü ihtimalle animasyon oynamaz ve içerik
+  olduğu gibi görünür. Süs, içeriğin şartı olmamalı.
+*/
 [data-hydrated] .page-transition {
-  animation: page-in 260ms var(--ease-out) both;
+  animation: page-in 260ms var(--ease-out);
 }
 
 @keyframes page-in {
