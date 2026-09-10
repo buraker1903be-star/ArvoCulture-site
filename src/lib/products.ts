@@ -160,6 +160,23 @@ const applyBadge = (
 const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,199}$/;
 
 /**
+ * Katalogun tamamını kapsaması gereken çağrılar için tek üst sınır.
+ *
+ * Sitemap, arama dizini ve "tüm ürünler" koleksiyonu kataloğun
+ * tamamını görmek zorunda; bu sayı kataloğun bugünkü boyutunun
+ * (3.400 civarı) belirgin biçimde üzerinde tutulmalı. Daha önce bu
+ * değer üç ayrı dosyaya 3.000 olarak yazılmıştı ve katalog o sayıyı
+ * aşınca aradaki ürünler sessizce görünmez oldu: arama onları
+ * bulamıyor, sitemap Google'a bildirmiyor, favorilere eklenince
+ * listede çıkmıyorlardı.
+ *
+ * Not: veritabanı tarafında da bir tavan var. Supabase'in PostgREST
+ * `db_max_rows` ayarı öntanımlı olarak 1.000'dir ve buradaki değer
+ * ne olursa olsun yanıtı keser; bu ayar 20.000'e çıkarıldı.
+ */
+export const CATALOG_LIMIT = 5000;
+
+/**
  * Katalog listesi. ARC ulaşılamazsa boş liste döner; sayfa "katalog
  * geçici olarak görüntülenemiyor" durumunu gösterir. Eski fiyat gösterilmez.
  */
@@ -168,13 +185,7 @@ export const getStorefrontProducts = cache(
     const [rows, badges] = await Promise.all([
       rpcOrEmpty<StorefrontRow>(
         "get_arvoculture_storefront_products",
-        /*
-          Üst sınır 200'dü; katalog 3.000 ürünü aştıktan sonra
-          arama ve koleksiyon sayfaları katalogun küçük bir
-          kısmını görüyordu. Veritabanı tarafındaki sınır da
-          5.000'e çıkarıldı.
-        */
-        { p_limit: Math.min(5000, Math.max(1, limit)) },
+        { p_limit: Math.min(CATALOG_LIMIT, Math.max(1, limit)) },
         { revalidate: 60, tags: ["storefront-products"] },
       ),
       getProductBadges(),

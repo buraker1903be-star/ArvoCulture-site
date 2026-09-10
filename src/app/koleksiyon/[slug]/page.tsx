@@ -1,10 +1,7 @@
 import { ProductCard, discountOf } from "@/components/product-card";
 import { CollectionFilters } from "@/components/collection-filters";
 import { getStorefrontCollections } from "@/lib/collections";
-import {
-  getStorefrontCollectionProducts,
-  getStorefrontProducts,
-} from "@/lib/products";
+import { getStorefrontCollectionProducts, getStorefrontProducts, CATALOG_LIMIT } from "@/lib/products";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -77,7 +74,7 @@ export default async function Collection({
   const label = exactCollection?.title ?? labels[slug] ?? "Tüm Ürünler";
   const list =
     slug === "tumu"
-      ? await getStorefrontProducts(3000)
+      ? await getStorefrontProducts(CATALOG_LIMIT)
       : await getStorefrontCollectionProducts({
           collectionSlug: exactCollection?.slug,
           menuGroups: exactCollection ? undefined : menuGroups[slug],

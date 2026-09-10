@@ -1,4 +1,4 @@
-import { getStorefrontProducts } from "@/lib/products";
+import { getStorefrontProducts, CATALOG_LIMIT } from "@/lib/products";
 
 /**
  * İstemciye gönderilen hafif arama dizini.
@@ -22,7 +22,7 @@ export async function getSearchIndex(): Promise<SearchItem[]> {
     Arama tüm katalogu görmeli. 200 sınırı, tedarikçiden gelen
     3.000+ ürünü aramanın tamamen dışında bırakıyordu.
   */
-  const products = await getStorefrontProducts(3000);
+  const products = await getStorefrontProducts(CATALOG_LIMIT);
 
   return products
     .filter((product) => product.available !== false)

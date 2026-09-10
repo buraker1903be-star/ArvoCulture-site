@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { env } from "@/lib/env";
-import { getStorefrontProducts } from "@/lib/products";
+import { getStorefrontProducts, CATALOG_LIMIT } from "@/lib/products";
 import { getStorefrontCollections } from "@/lib/collections";
 
 const staticPaths = [
@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const [products, collections] = await Promise.all([
-    getStorefrontProducts(3000),
+    getStorefrontProducts(CATALOG_LIMIT),
     getStorefrontCollections(),
   ]);
 

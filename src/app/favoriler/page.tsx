@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { FavouritesView } from "@/components/favourites-view";
-import { getStorefrontProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
   title: "Favorilerim",
@@ -9,11 +8,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default async function FavouritesPage() {
-  // Katalog sunucuda çekilip istemciye veriliyor; favori
-  // listesi tarayıcıda tutulduğu için eşleştirme orada yapılır.
-  const products = await getStorefrontProducts(3000);
-
+export default function FavouritesPage() {
+  /*
+    Katalog burada artık çekilmiyor. Favori listesi tarayıcıda
+    tutulduğu için sunucunun hangi ürünlerin isteneceğini önceden
+    bilmesi mümkün değil; ürünler istemciden /api/favoriler ucuna
+    sorularak alınıyor. Eskiden tüm katalog çekilip istemciye prop
+    olarak veriliyordu ve sayfa megabaytlarca HTML üretiyordu.
+  */
   return (
     <main className="shell">
       <section className="panel about-hero detail-hero">
@@ -21,7 +23,7 @@ export default async function FavouritesPage() {
         <h1>Beğendikleriniz.</h1>
       </section>
 
-      <FavouritesView products={products} />
+      <FavouritesView />
     </main>
   );
 }
