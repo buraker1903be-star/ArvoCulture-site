@@ -38,6 +38,42 @@ const menuGroups: Record<string, string[]> = {
   takviyeler: ["Takviyeler"],
 };
 
+/**
+ * Birleştirilen koleksiyonlar.
+ *
+ * Parfümler ARC'ta iki ayrı kaynaktan geliyor ve her cinsiyet için
+ * iki koleksiyon var: LR'ninkiler ("parfumler-erkek") ve tedarikçi
+ * kataloğundakiler ("kozmetik-kisisel-bakim-erkek-parfumu").
+ * Müşteri için bu ayrımın bir anlamı yok — "erkek parfümü" arayan
+ * biri hepsini bir arada görmeli, hangi tedarikçiden geldiğini
+ * bilmek zorunda olmamalı. Menüde iki ayrı satır hâlinde durması
+ * ise doğrudan karışıklık yaratıyordu.
+ *
+ * Burada uydurulan bir koleksiyon yok: ikisi de ARC'ta duran
+ * gerçek koleksiyonlar, yalnızca tek sayfada birleştiriliyorlar.
+ * ARC tarafında bu koleksiyonlar tek çatı altında toplanırsa
+ * buradaki satır silinir ve hiçbir şey değişmez.
+ */
+const MERGED_COLLECTIONS: Record<string, string[]> = {
+  "parfumler-erkek": [
+    "parfumler-erkek",
+    "kozmetik-kisisel-bakim-erkek-parfumu",
+  ],
+  "parfumler-kadin": [
+    "parfumler-kadin",
+    "kozmetik-kisisel-bakim-kadin-parfumu",
+  ],
+};
+
+/** Birleştirmede yutulan koleksiyonlar: hangi sayfaya ait oldukları. */
+const MERGED_INTO = new Map(
+  Object.entries(MERGED_COLLECTIONS).flatMap(([hedef, kaynaklar]) =>
+    kaynaklar
+      .filter((kaynak) => kaynak !== hedef)
+      .map((kaynak) => [kaynak, hedef] as const),
+  ),
+);
+
 /* Bedenler varyantlardan gelir; ürün etiketlerinde yok. */
 const SIZE_ORDER = [
   "XXS",
@@ -110,11 +146,20 @@ export async function generateMetadata({
       ? ownDescription.slice(0, 155)
       : `ArvoCulture ${label} seçkisi. Güncel ürünler, fiyatlar ve stok durumu.`;
 
+  /*
+    Birleştirmede yutulan koleksiyon, içeriğini artık hedef sayfada
+    da gösteriyor. İkisi de kendi başına dizine girerse aynı ürünler
+    iki adreste görünür ve arama motoru hangisini göstereceğini
+    bilemez. Kanonik adres hedefi işaret ediyor; sayfa erişilebilir
+    kalıyor ama sıralamada tek bir adres yarışıyor.
+  */
+  const canonicalSlug = MERGED_INTO.get(slug) ?? slug;
+
   return {
     title: label,
     description,
     // Sayfalama parametresi (?sayfa=2) kanonik adresi bölmesin.
-    alternates: { canonical: `/koleksiyon/${slug}` },
+    alternates: { canonical: `/koleksiyon/${canonicalSlug}` },
     openGraph: { url: `/koleksiyon/${slug}`, title: label, description },
   };
 }
@@ -202,10 +247,31 @@ export default async function Collection({
     brands = facets.brands.slice(0, 12);
     maxPrice = facets.maxPrice;
   } else {
-    const list = await getStorefrontCollectionProducts({
-      collectionSlug: exactCollection?.slug,
-      menuGroups: exactCollection ? undefined : menuGroups[slug],
-    });
+    /*
+      Birleştirilen koleksiyonlarda birden çok kaynak çekiliyor ve
+      tek listede toplanıyor. Sorgular paralel; ürün çakışması
+      olursa slug'a göre tekilleşiyor — iki koleksiyonda birden
+      duran bir ürün rafta iki kez görünmemeli.
+    */
+    const kaynaklar = MERGED_COLLECTIONS[slug];
+    const list = kaynaklar
+      ? Object.values(
+          Object.fromEntries(
+            (
+              await Promise.all(
+                kaynaklar.map((kaynak) =>
+                  getStorefrontCollectionProducts({ collectionSlug: kaynak }),
+                ),
+              )
+            )
+              .flat()
+              .map((product) => [product.slug, product] as const),
+          ),
+        )
+      : await getStorefrontCollectionProducts({
+          collectionSlug: exactCollection?.slug,
+          menuGroups: exactCollection ? undefined : menuGroups[slug],
+        });
 
     /* Filtre seçenekleri katalogdan türetilir; sabit liste
        tutulmuyor çünkü katalog sürekli değişiyor. */

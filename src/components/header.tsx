@@ -138,10 +138,72 @@ export function Header({
       .filter((section) => section.items.length > 0);
   };
 
+  /*
+    Tedarikçi bazı koleksiyon adlarına üst kategorinin tam yolunu
+    yazıyor: "Kozmetik & Kişisel Bakım Erkek Parfümü". Menüde bu ad
+    sütuna sığmıyor ve üç noktayla kesiliyor; müşteri Parfüm
+    sekmesinde "Kozmetik & Kişisel Bakım Erkek Parfü…" okuyup
+    kişisel bakım bölümünün oraya karıştığını sanıyor.
+
+    Yol bilgisi zaten sekmenin kendisinde var. Cinsiyet sütunlarında
+    aynı temizlik yukarıda yapılıyor ("Erkek T-Shirt" → "T-Shirt");
+    bu, onun kategori tarafındaki karşılığı.
+
+    Ad tamamen yok olmuyor: yalnızca öneki *ve* arkasında bir şey
+    varsa kesiliyor. "Kozmetik & Kişisel Bakım" koleksiyonunun
+    kendisi adını koruyor.
+  */
+  const PATH_PREFIXES = [
+    "Kozmetik & Kişisel Bakım",
+    "Kişisel Bakım",
+    "Kozmetik",
+  ];
+
+  const shortTitle = (title: string) => {
+    for (const prefix of PATH_PREFIXES) {
+      if (!title.startsWith(`${prefix} `)) continue;
+      const kalan = title.slice(prefix.length + 1).trim();
+      /*
+        Kalan bir kelimeyle başlamalı. Bu kontrol olmasaydı
+        "Kozmetik & Kişisel Bakım" adının kendisi kısa önek olan
+        "Kozmetik"e takılıp "& Kişisel Bakım"a dönüşürdü — testte
+        tam olarak bu çıktı.
+      */
+      if (/^[\p{L}\p{N}]/u.test(kalan)) return kalan;
+    }
+    return title;
+  };
+
+  /*
+    Menüde gizlenen koleksiyonlar.
+
+    Bu ikisinin ürünleri artık "Erkek Parfümleri" ve "Kadın
+    Parfümleri" sayfalarında birleşik olarak gösteriliyor
+    (bkz. koleksiyon sayfasındaki MERGED_COLLECTIONS). Menüde ayrıca
+    durmaları, aynı şeyin ikinci kez ve daha kötü bir adla
+    listelenmesi olurdu: müşteri "Erkek Parfümleri" ile "Erkek
+    Parfümü" arasında seçim yapmak zorunda kalıyordu.
+
+    Sayfaları kapatılmıyor, yalnızca menüden çıkarılıyorlar; eski
+    bağlantılar ve arama sonuçları çalışmaya devam ediyor.
+  */
+  const HIDDEN_IN_MENU = new Set([
+    "kozmetik-kisisel-bakim-erkek-parfumu",
+    "kozmetik-kisisel-bakim-kadin-parfumu",
+  ]);
+
   const byGroup = (groups: string[]) =>
     collections
-      .filter((collection) => groups.includes(collection.menu_group))
-      .sort((a, b) => b.product_count - a.product_count);
+      .filter(
+        (collection) =>
+          groups.includes(collection.menu_group) &&
+          !HIDDEN_IN_MENU.has(collection.slug),
+      )
+      .sort((a, b) => b.product_count - a.product_count)
+      .map((collection) => ({
+        ...collection,
+        title: shortTitle(collection.title),
+      }));
 
   const BRAND_NAMES = {
     care: [
