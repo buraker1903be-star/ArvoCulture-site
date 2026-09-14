@@ -404,6 +404,16 @@ p {
   width: 100%;
 }
 
+/*
+  `b` ve `strong` tarayıcıda 700: sayfada sınıfı olmayan her kalın
+  kelime (ödeme yöntemi adı, sepetteki fiyat, adet) sitenin 500'lük
+  ağırlık ölçeğinden taşıyordu. Sınıflı kurallar yine ezebilir.
+*/
+b,
+strong {
+  font-weight: 500;
+}
+
 /* --- Rozet ------------------------------------------------ */
 
 /*

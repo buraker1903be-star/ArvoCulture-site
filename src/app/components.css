@@ -852,12 +852,15 @@
   right: clamp(-10px, 1vw, 32px);
   top: 50%;
   transform: translateY(-50%);
-  font-size: clamp(120px, 20vw, 260px);
-  font-weight: 700;
-  letter-spacing: -0.06em;
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-size: clamp(140px, 22vw, 300px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
   line-height: 0.8;
+  font-variant-numeric: lining-nums;
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.13);
+  /* Serif kontur: kalın sans rakam panelin tek yabancı sesiydi. */
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.16);
   user-select: none;
   pointer-events: none;
 }
@@ -868,8 +871,8 @@
     bottom: -18px;
     right: -8px;
     transform: none;
-    font-size: 120px;
-    -webkit-text-stroke-width: 1.2px;
+    font-size: 130px;
+    -webkit-text-stroke-width: 1px;
   }
 }
 
@@ -944,9 +947,9 @@
   min-width: min(100%, 21rem);
   margin-top: var(--s2);
   padding: var(--s3) var(--s3) var(--s3) var(--s5);
-  border: 1px dashed var(--gold-soft);
-  border-radius: var(--r-sm);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .promo-code small {
@@ -983,6 +986,7 @@
 .promo-code .coupon-code em {
   padding: 0;
   background: transparent;
+  font-style: normal;
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.14em;
@@ -4021,6 +4025,20 @@
   color: var(--ink-2);
 }
 
+/*
+  Başlığın üstündeki künye etiketi (bkz. ProductBlock `eyebrow`).
+  Yukarıdaki kural açıklama satırı içindi ama her `p`'yi yakalıyor;
+  etiket onun boyunu, rengini ve harf aralığını almasın.
+*/
+.head .about-eyebrow,
+.reveal .head .about-eyebrow {
+  margin: 0 0 var(--s2);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--ink-3);
+  max-width: none;
+}
+
 .reveal .head::after {
   content: "";
   position: absolute;
@@ -4392,6 +4410,16 @@
   .cat-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  /* Beş kart ikişerli dizilince sonuncusu yalnız kalıyordu; ilk
+     kart tam genişlikte vitrin oluyor, kalan dördü ikişerli. */
+  .cat-cards > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .cat-cards > :first-child .cat-card-art {
+    aspect-ratio: 16 / 10;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4531,10 +4559,11 @@
     display: grid;
     place-items: center;
     border-radius: 999px;
-    background: var(--sale);
+    /* Mürekkep: kırmızı sayaç bir uyarı gibi okunuyordu. */
+    background: var(--ink);
     font-style: normal;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 500;
     color: #fff;
   }
 

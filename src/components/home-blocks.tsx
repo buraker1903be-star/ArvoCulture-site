@@ -7,6 +7,7 @@ import type { Product } from "@/lib/product-types";
 /** Ürün ızgarası. Ana sayfada birden çok yerde kullanılır. */
 export function ProductBlock({
   title,
+  eyebrow,
   note,
   href,
   hrefLabel,
@@ -15,6 +16,12 @@ export function ProductBlock({
   rail,
 }: {
   title: string;
+  /**
+   * Başlığın üstündeki künye etiketi. ARC panelindeki
+   * `featured_eyebrow` buraya geliyor; önceden açıklama satırına
+   * basılıyordu ve büyük harfli etiket, cümle boyunda duruyordu.
+   */
+  eyebrow?: string;
   note?: string;
   href: string;
   hrefLabel: string;
@@ -33,6 +40,7 @@ export function ProductBlock({
     <section className={`panel${alt ? " panel-soft" : ""}`}>
       <div className="head">
         <div>
+          {eyebrow && <p className="about-eyebrow">{eyebrow}</p>}
           <h2>{title}</h2>
           {note && <p>{note}</p>}
         </div>

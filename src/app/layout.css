@@ -224,10 +224,11 @@
   padding-inline: 4px;
   border: 2px solid var(--panel);
   border-radius: 999px;
-  background: var(--sale);
+  /* Mürekkep: kırmızı sayaç bir uyarı gibi okunuyordu. */
+  background: var(--ink);
   color: #fff;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }

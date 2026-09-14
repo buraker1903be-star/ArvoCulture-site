@@ -223,7 +223,7 @@ export default async function Home() {
           <div data-arvo-section="featured">
             <ProductBlock
               title={theme.featured_title}
-              note={theme.featured_eyebrow}
+              eyebrow={theme.featured_eyebrow}
               href="/koleksiyon/tumu"
               hrefLabel="Tüm ürünler"
               products={fresh}
