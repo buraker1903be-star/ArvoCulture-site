@@ -337,9 +337,10 @@
 
 .mega-menu:hover .mega-panel,
 .mega-menu:focus-within .mega-panel {
+  /* Açılış yumuşak duruşlu eğriyle; kapanış gecikmesi aynı kaldı. */
   transition:
-    opacity 180ms var(--ease),
-    transform 180ms var(--ease);
+    opacity 260ms var(--ease-out),
+    transform 380ms var(--ease-out);
   opacity: 1;
   visibility: visible;
   transform: none;
@@ -354,33 +355,39 @@
   gap: var(--s4);
   padding-bottom: var(--s4);
   margin-bottom: var(--s5);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-soft);
 }
 
+/* Panel başlığı serif: sayfadaki bölüm başlıklarıyla aynı ses. */
 .mega-panel-head p {
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0;
 }
 
+/*
+  "Tümünü gör" hap düğmeydi; artık bölüm başlıklarındaki gibi büyük
+  harf, altın kıl payı çizgili bir metin bağlantısı.
+*/
 .mega-panel-head a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: var(--panel-2);
-  font-size: var(--t-sm);
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--gold-soft);
+  font-size: var(--t-xs);
   font-weight: 500;
-  color: var(--ink);
-  transition:
-    background-color 160ms var(--ease),
-    color 160ms var(--ease);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition: color 200ms var(--ease), border-color 200ms var(--ease);
 }
 
 .mega-panel-head a:hover {
-  background: var(--ink);
-  color: #fff;
+  color: var(--brand);
+  border-color: var(--gold);
 }
 
 /* --- Sütunlar --- */
@@ -423,41 +430,58 @@
 
 /* Sütun başlığı: kısa bir vurgu çizgisi, sütunu boydan boya
    kesen bir çizgi değil. */
+/*
+  2px koyu zeytin çizgi kıl payına indi: beş sütunun her birinin
+  altındaki kalın çizgi paneli bir tabloya çeviriyordu.
+*/
 .mega-columns > div > p:first-child {
-  padding-bottom: var(--s2);
-  margin-bottom: var(--s2);
-  border-bottom: 2px solid var(--brand);
+  padding-bottom: var(--s3);
+  margin-bottom: var(--s3);
+  border-bottom: 1px solid var(--gold-soft);
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-weight: 500;
+  letter-spacing: var(--track);
   text-transform: uppercase;
-  color: var(--brand);
+  color: var(--ink-3);
 }
 
+/*
+  Hover'da gri kutu yerine adın altına soldan altın bir çizgi
+  çekiliyor. Kutu, menüyü bir yönetim paneli listesi gibi
+  gösteriyordu. `inline-block`: çizgi sütun değil yazı genişliğinde.
+*/
 .mega-columns a {
   display: block;
-  padding: 7px 10px;
-  margin-inline: -10px;
-  border-radius: var(--r-sm);
-  transition: background-color 140ms var(--ease);
-}
-
-.mega-columns a:hover {
-  background: var(--panel-2);
+  padding: 7px 0;
 }
 
 .mega-columns a b {
-  display: block;
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
   font-size: var(--t-sm);
   font-weight: 400;
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  background-image: linear-gradient(var(--gold), var(--gold));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 420ms var(--ease-out), color 200ms var(--ease);
 }
 
-.mega-columns a:hover b {
+.mega-columns a:hover b,
+.mega-columns a:focus-visible b {
   color: var(--brand);
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mega-columns a b {
+    transition: none;
+  }
 }
 
 /* Marka sütunu öne çıkar: müşterilerin çoğu markayla arar. */
@@ -559,22 +583,32 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: var(--s4);
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--line-soft);
   }
 
+  /* "Kapat" büyük sans değil, künye dilinde küçük büyük harf. */
   .mobile-menu-head button {
     border: 0;
     background: none;
-    font-size: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
   }
 
   .mobile-collection-group {
     display: grid;
     gap: var(--s2);
-    padding-block: var(--s3);
-    border-bottom: 1px solid var(--line);
+    padding-block: var(--s4);
+    border-bottom: 1px solid var(--line-soft);
   }
 
+  /*
+    Kategori adları serif: mobil menü, telefondaki ziyaretçinin en
+    çok gördüğü yüzey. Kalın sans satırlar bir ayarlar listesi gibi
+    duruyordu; serif adlar dergi içindekiler sayfası gibi okunuyor.
+  */
   .mobile-collection-group > button,
   .mobile-collection-group > strong {
     display: flex;
