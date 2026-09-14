@@ -486,6 +486,27 @@
   aspect-ratio: 4 / 5;
 }
 
+/*
+  Karma ızgarada tek oran. Paket çekimi (1:1) ile manken fotoğrafı
+  (4:5) aynı satıra düştüğünde görsel yükseklikleri farklı oluyor ve
+  ürün adları iki ayrı yükseklikte başlıyordu (koleksiyonda 272px'e
+  karşı 329px). Izgarada tek bir manken fotoğrafı bile varsa bütün
+  kartlar 4:5 çerçeveye geçiyor.
+
+  Paket çekimi küçülmüyor: kaynak görseller kare, `contain` ile
+  genişliğe oturuyor; 4:5 çerçeve yalnızca üstüne ve altına nefes
+  ekliyor. Yalnızca paket çekimi olan ızgaralar (ana sayfadaki
+  indirimler, çok satanlar) kompakt 1:1'de kalıyor.
+
+  Kapsayıcılar açıkça sayılıyor: koleksiyon `.product-grid`, diğer
+  listeler `.grid`, raflar `.rail` kullanıyor. İlk sürüm yalnızca
+  `.grid` ve `.rail`'i sayıyordu ve kural tam da sorunun görüldüğü
+  koleksiyonda hiç devreye girmiyordu.
+*/
+:is(.grid, .product-grid, .rail):has(.card-art[data-art="lifestyle"]) .card-art {
+  aspect-ratio: 4 / 5;
+}
+
 .card-art[data-art="lifestyle"] img {
   object-fit: cover;
   object-position: center top;
