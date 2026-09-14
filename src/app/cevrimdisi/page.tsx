@@ -18,14 +18,18 @@ export const metadata: Metadata = {
 
 export default function Offline() {
   return (
-    <main className="simple-page">
-      <p className="eyebrow">Çevrimdışı</p>
-      <h1>İnternet bağlantısı görünmüyor.</h1>
-      <p>
-        Bağlantın geri geldiğinde kaldığın yerden devam edebilirsin. Sepetin ve
-        favorilerin bu cihazda duruyor; kaybolmadı.
-      </p>
-      <OfflineRetry />
+    <main className="shell">
+      <section className="panel about-hero order-result">
+        <p className="about-eyebrow">Çevrimdışı</p>
+        <h1>İnternet bağlantısı görünmüyor.</h1>
+        <p className="about-lede">
+          Bağlantın geri geldiğinde kaldığın yerden devam edebilirsin. Sepetin
+          ve favorilerin bu cihazda duruyor; kaybolmadı.
+        </p>
+        <div className="order-actions">
+          <OfflineRetry />
+        </div>
+      </section>
     </main>
   );
 }

@@ -24,9 +24,11 @@ const WHATSAPP_LINK = "https://wa.me/905074370507";
 export default function Account() {
   return (
     <main className="shell">
-      <section className="panel about-hero">
+      {/* Künye ile başlık aynı kelimeyi tekrarlıyordu; başlık artık
+          karşılıyor. Sepet ve favorilerle aynı kısa başlık boyu. */}
+      <section className="panel about-hero detail-hero">
         <p className="about-eyebrow">Hesabım</p>
-        <h1>Hesabım</h1>
+        <h1>Hoş geldiniz.</h1>
         <p className="about-lede">
           Siparişleriniz, adres defteriniz ve hesap bilgileriniz tek yerde.
           Üyelik zorunlu değil; misafir olarak da alışveriş yapabilirsiniz.
