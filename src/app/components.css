@@ -22,11 +22,17 @@
   box-shadow: var(--float-lg);
 }
 
+/*
+  Görsel çerçeveden %8 taşkın: aşağıdaki kaydırma parallax'ı onu
+  aşağı kaydırdığında üst kenarda boşluk açılmasın diye. Taşan kısım
+  `.hero { overflow: hidden }` ile kırpılıyor.
+*/
 .hero img {
   position: absolute;
-  inset: 0;
+  top: -8%;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: 116%;
   object-fit: cover;
 }
 
@@ -84,6 +90,10 @@
     renk ya da kalınlık eklemeden ton değiştiriyor.
   */
   font-weight: 500;
+  /* arvo-os.com'un display basamağı; genel --t-hero sayfa
+     başlıklarında kalıyor. */
+  font-size: var(--t-display);
+  line-height: 1.02;
 }
 
 .hero-body h1 span {
@@ -92,7 +102,8 @@
 }
 
 .hero-lede {
-  font-size: 16px;
+  font-size: clamp(16px, 1.3vw, 19px);
+  letter-spacing: -0.01em;
   font-weight: 300;
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.88);
@@ -3702,31 +3713,23 @@ button.search-box {
   artıyor; hepsi aynı anda düşmek yerine dalga hâlinde
   geliyor.
 */
-.reveal[data-motion="on"][data-shown="true"] .grid > *,
-.reveal[data-motion="on"][data-shown="true"] .rail > * {
-  animation: card-in 520ms var(--ease) backwards;
+.reveal[data-motion="on"][data-shown="true"] :is(.grid, .rail, .cat-cards) > * {
+  animation: card-in 760ms var(--ease-out) backwards;
+  animation-delay: calc(var(--stagger, 0) * 60ms + 40ms);
 }
 
-.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(1),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(1) {
-  animation-delay: 40ms;
-}
-.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(2),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(2) {
-  animation-delay: 90ms;
-}
-.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(3),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(3) {
-  animation-delay: 140ms;
-}
-.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(4),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(4) {
-  animation-delay: 190ms;
-}
-.reveal[data-motion="on"][data-shown="true"] .grid > *:nth-child(5),
-.reveal[data-motion="on"][data-shown="true"] .rail > *:nth-child(5) {
-  animation-delay: 240ms;
-}
+/*
+  Gecikme sıraya göre değil sütuna göre: `5n+k` her satırı aynı
+  dalgayla getiriyor. Önceden yalnızca ilk beş öğe gecikme alıyordu;
+  ikinci satır birinci öğeyle aynı anda düşüyordu.
+
+  Kategori kartları bu kuralın dışında kalmıştı, beşi birden
+  beliriyordu; artık aynı dalgayla geliyorlar.
+*/
+.reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 2) { --stagger: 1; }
+.reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 3) { --stagger: 2; }
+.reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 4) { --stagger: 3; }
+.reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 5) { --stagger: 4; }
 
 @keyframes card-in {
   from {
@@ -3736,8 +3739,7 @@ button.search-box {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal[data-motion="on"][data-shown="true"] .grid > *,
-  .reveal[data-motion="on"][data-shown="true"] .rail > * {
+  .reveal[data-motion="on"][data-shown="true"] :is(.grid, .rail, .cat-cards) > * {
     animation: none;
   }
 }
@@ -3840,6 +3842,33 @@ button.search-box {
   position: relative;
 }
 
+/*
+  Vitrin bölümlerinin başlık anı. arvo-os.com'da her bölüm büyük
+  bir başlıkla açılıyor; burada bölümler 38px'lik küçük başlıkla
+  birbirinin aynısı duruyor, sayfa bir kutu listesi gibi
+  okunuyordu.
+
+  `.reveal` ile sınırlı: <Reveal> yalnızca ana sayfada kullanılıyor.
+  `.head` ise ödeme, sepet ve hesap panellerinde de var ve orada
+  bu ölçek işlevsel sayfayı ağırlaştırırdı.
+*/
+.reveal .head {
+  margin-bottom: var(--s6);
+  padding-bottom: var(--s5);
+}
+
+.reveal .head h2 {
+  font-size: var(--t-section);
+  line-height: 1.02;
+}
+
+.reveal .head p {
+  margin-top: var(--s3);
+  font-size: var(--t-lead);
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+}
+
 .reveal .head::after {
   content: "";
   position: absolute;
@@ -3887,6 +3916,38 @@ button.search-box {
   }
   to {
     transform: scale(1.05);
+  }
+}
+
+/*
+  Kaydırmaya bağlı parallax — arvo-os.com'daki açılış sahnesinin
+  sadeleştirilmiş hâli. Sayfa kaydıkça fotoğraf metinden daha yavaş
+  hareket ediyor; derinlik hissi buradan geliyor. Yalnızca GPU'da
+  çalışan `translate`, kaydırma olayı dinlenmiyor.
+
+  `transform` değil `translate` özelliği: `hero-drift` zaten
+  `transform: scale()` canlandırıyor ve aynı özelliği iki animasyon
+  paylaşırsa sonraki öncekini ezer. Bağımsız `translate` ile ikisi
+  üst üste biniyor.
+
+  `@supports` şart: kaydırma zaman çizelgesini tanımayan tarayıcı
+  `animation-timeline`'ı yok sayar, animasyonu 0 saniyelik süreyle
+  çalıştırır ve görsel doğrudan son karesinde — kaymış hâlde —
+  kalırdı.
+*/
+@supports (animation-timeline: scroll()) {
+  .hero img {
+    animation:
+      hero-drift 24s var(--ease) forwards,
+      hero-parallax linear both;
+    animation-timeline: auto, scroll(root);
+    animation-range: normal, 0 90vh;
+  }
+}
+
+@keyframes hero-parallax {
+  to {
+    translate: 0 6%;
   }
 }
 
