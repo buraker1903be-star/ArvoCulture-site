@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CouponCopy } from "@/components/coupon-strip";
-import { getCachedSearchIndex } from "@/lib/search-cache";
+import { getPopularSearches } from "@/lib/popular-searches";
 import { SearchOverlay } from "@/components/search-overlay";
 import {
   ProductBlock,
@@ -44,37 +44,6 @@ const CATEGORIES = [
   { label: "Kozmetik", href: "/koleksiyon/kozmetik" },
   { label: "Parfüm", href: "/koleksiyon/parfum" },
   { label: "Takviyeler", href: "/koleksiyon/takviyeler" },
-];
-
-/* Arama katmanındaki popüler aramalar. Görselleri katalogdan
-   eşleşen ilk üründen alınır; sabit görsel dosyası tutulmaz. */
-/*
-  Arama katmanındaki popüler aramalar.
-
-  Görsel kutular yerine metin etiketleri: görsel eşleştirmesi
-  katalog değiştikçe boşalıyordu ve tek satıra ancak altı kutu
-  sığıyordu. Etiketle çok daha fazla terim gösterilebiliyor ve
-  hiçbir zaman boş kalmıyor.
-
-  Bağlantılar aramaya gidiyor, koleksiyon slug’ına değil:
-  koleksiyon adı değişse bile kırılmaz.
-*/
-const SEARCH_TERMS = [
-  "Güneş kremi",
-  "El kremi",
-  "Yüz serumu",
-  "Nemlendirici",
-  "Şampuan",
-  "Oversize tişört",
-  "Sweatshirt",
-  "Eşofman",
-  "Parfüm",
-  "Ruj",
-  "Vitamin",
-  "Kolajen",
-  "Aloe vera",
-  "Kapüşonlu",
-  "Ceket",
 ];
 
 export default async function Home() {
@@ -125,31 +94,7 @@ export default async function Home() {
     Sonuç vermeyen terimler gösterilmiyor: müşteri tıklayıp boş
     sayfayla karşılaşmasın.
   */
-  /*
-    Dizin burada yalnızca okunuyor, istemciye gönderilmiyor. Önceden
-    arama bileşenine prop olarak veriliyordu ve 3.100 ürünlük liste
-    her ziyaretçinin indirdiği 1,8 MB'ın büyük kısmıydı.
-
-    Dizin çekilemezse terimlerin tamamı gösteriliyor: öneri
-    şeridinin boş kalması, birkaç teriminin sonuçsuz çıkmasından
-    daha kötü.
-  */
-  const searchIndex = await getCachedSearchIndex().catch((error) => {
-    console.error("Ana sayfa arama dizini getirilemedi:", error);
-    return [];
-  });
-
-  const searchTerms =
-    searchIndex.length === 0
-      ? SEARCH_TERMS
-      : SEARCH_TERMS.filter((term) => {
-          const needle = term.toLocaleLowerCase("tr-TR");
-          return searchIndex.some((item) =>
-            `${item.name} ${item.category}`
-              .toLocaleLowerCase("tr-TR")
-              .includes(needle),
-          );
-        });
+  const searchTerms = await getPopularSearches();
 
   const categories = CATEGORIES;
 

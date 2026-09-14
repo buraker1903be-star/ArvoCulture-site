@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LiveSearch } from "@/components/live-search";
+import { getPopularSearches } from "@/lib/popular-searches";
 
 export const metadata: Metadata = {
   title: "Arama",
@@ -14,17 +15,21 @@ export default async function Search({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
-  const { q } = await searchParams;
-
   /*
-    Dizin artık burada çekilmiyor. 3.100 ürünlük liste sayfaya
-    gömülüyordu (1,3 MB) ve arama yapmayacak ziyaretçi de bunu
-    indiriyordu. Sorgu yazıldıkça /api/arama'ya gidiyor.
+    Dizin sayfaya gömülmüyor: 3.100 ürünlük liste 1,3 MB tutuyordu
+    ve arama yapmayacak ziyaretçi de bunu indiriyordu. Sorgu
+    yazıldıkça /api/arama'ya gidiyor; buraya yalnızca sık arananlar
+    geliyor. Sayfa boşken ve sonuç çıkmadığında müşteriye nereden
+    başlayacağını gösteriyorlar.
   */
+  const [{ q }, suggestions] = await Promise.all([
+    searchParams,
+    getPopularSearches(),
+  ]);
 
   return (
     <main className="shell">
-      <section className="panel about-hero">
+      <section className="panel about-hero detail-hero">
         <p className="about-eyebrow">Arama</p>
         <h1>Ne aramıştınız?</h1>
         <p className="about-lede">
@@ -38,6 +43,7 @@ export default async function Search({
           autoFocus
           limit={48}
           variant="grid"
+          suggestions={suggestions}
         />
       </section>
     </main>
