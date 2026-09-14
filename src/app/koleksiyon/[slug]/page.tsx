@@ -353,10 +353,21 @@ export default async function Collection({
           veritabanında olduğu için bu durum sessizce boş gelebilir.
         */}
         {visibleProducts.length === 0 && (
-          <p className="hint">
-            Bu seçimle ürün bulunamadı.{" "}
-            <Link href={`/koleksiyon/${slug}`}>Filtreleri temizle</Link>
-          </p>
+          <div className="collection-empty">
+            <h2>Bu seçimle ürün bulunamadı.</h2>
+            <p>
+              Filtrelerden birini kaldırmayı ya da seçkinin tamamına göz
+              atmayı deneyin.
+            </p>
+            <div className="order-actions">
+              <Link className="btn" href={`/koleksiyon/${slug}`}>
+                Filtreleri temizle
+              </Link>
+              {slug !== "tumu" && (
+                <Link href="/koleksiyon/tumu">Tüm ürünler</Link>
+              )}
+            </div>
+          </div>
         )}
 
         {pageCount > 1 && (

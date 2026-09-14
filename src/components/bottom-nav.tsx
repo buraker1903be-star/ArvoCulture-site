@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useContext } from "react";
+import { useContext, useSyncExternalStore } from "react";
 import { CartContext } from "@/components/cart";
 
 /**
@@ -64,9 +64,25 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
+/* Tarayıcıda mıyız? Sunucuda ve hidrasyonda `false`, sonra `true`. */
+const subscribeNothing = () => () => {};
+
 export function BottomNav() {
   const pathname = usePathname();
   const { count } = useContext(CartContext);
+  /*
+    Etkin sekme hidrasyondan sonra işaretleniyor. Ana sayfa önceden
+    oluşturulup önbellekten sunuluyor ve o kopyada "Ana sayfa"
+    sekmesi etkin değildi; React hidrasyonda özellik farkını
+    düzeltmediği için istemci doğru yolu bilse de işaret hiç
+    gelmiyordu. İlk çizim sunucuyla aynı, işaret hemen ardından
+    normal bir güncellemeyle ekleniyor.
+  */
+  const hydrated = useSyncExternalStore(
+    subscribeNothing,
+    () => true,
+    () => false,
+  );
 
   return (
     <nav className="bottom-nav" aria-label="Ana gezinme">
@@ -101,7 +117,8 @@ export function BottomNav() {
 
         // Ana sayfa yalnızca tam eşleşmede etkin sayılır.
         const active =
-          tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
+          hydrated &&
+          (tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href));
 
         return (
           <Link
