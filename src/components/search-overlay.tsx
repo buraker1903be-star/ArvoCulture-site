@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 import { useCallback, useEffect, useState } from "react";
 import { LiveSearch } from "@/components/live-search";
 import { useLayerBack } from "@/lib/use-layer-back";
@@ -72,30 +70,22 @@ export function SearchOverlay({
 
           <div className="search-sheet">
             <div className="search-head">
-              <LiveSearch autoFocus onNavigate={close} limit={8} />
+              <LiveSearch
+                autoFocus
+                onNavigate={close}
+                limit={8}
+                suggestions={terms}
+              />
               <button type="button" className="search-close" onClick={close}>
                 Kapat
               </button>
             </div>
 
-            <p className="search-heading">Sık aranan aramalar</p>
-
             {/*
-              Metin etiketleri. Görsel kutular katalog
-              değiştikçe boşalıyordu; etiket her zaman çalışıyor
-              ve aynı alana çok daha fazla terim sığıyor.
+              Sık arananlar arama bileşeninin içinde: yazmaya
+              başlayınca kayboluyor, sonuçları aşağı itmiyor.
+              Tıklanan terim katmandan çıkmadan aramaya yazılıyor.
             */}
-            <div className="search-terms">
-              {terms.map((term) => (
-                <Link
-                  key={term}
-                  href={`/arama?q=${encodeURIComponent(term)}`}
-                  onClick={close}
-                >
-                  {term}
-                </Link>
-              ))}
-            </div>
           </div>
         </div>
       )}

@@ -29,13 +29,21 @@ export async function GET(request: Request) {
       : MAX_LIMIT;
 
   if (query.trim().length === 0) {
-    return NextResponse.json({ results: [] });
+    return NextResponse.json({ results: [], total: 0 });
   }
 
   try {
     const items = await getCachedSearchIndex();
-    const results = searchProducts(items, query).slice(0, limit);
-    return NextResponse.json({ results });
+    /*
+      Toplam da dönüyor: sonuçlar en fazla 48 ile sınırlı ve sayı
+      yalnızca listeden okununca 300 eşleşmeli bir arama "48 sonuç"
+      diyordu.
+    */
+    const matches = searchProducts(items, query);
+    return NextResponse.json({
+      results: matches.slice(0, limit),
+      total: matches.length,
+    });
   } catch (error) {
     /*
       Hata boş sonuç olarak gösterilmiyor. "Sonuç bulunamadı" demek,

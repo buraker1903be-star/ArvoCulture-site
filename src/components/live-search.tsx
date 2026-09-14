@@ -27,6 +27,7 @@ export function LiveSearch({
   limit = 24,
   variant = "list",
   onNavigate,
+  suggestions = [],
 }: {
   initialQuery?: string;
   autoFocus?: boolean;
@@ -37,6 +38,11 @@ export function LiveSearch({
    */
   variant?: "grid" | "list";
   onNavigate?: () => void;
+  /**
+   * Sık arananlar. Alan boşken ve sonuç çıkmadığında gösterilir;
+   * tıklanan terim aramaya yazılır, sayfadan çıkılmaz.
+   */
+  suggestions?: string[];
 }) {
   const [query, setQuery] = useState(initialQuery);
 
@@ -46,9 +52,14 @@ export function LiveSearch({
     değil, verinin kendisiyle cevaplıyoruz — geç dönen bir yanıtın
     yeni sorgunun üstüne yazması da imkânsız hâle geliyor.
   */
-  const [cevap, setCevap] = useState<{ q: string; items: SearchItem[] }>({
+  const [cevap, setCevap] = useState<{
+    q: string;
+    items: SearchItem[];
+    total: number;
+  }>({
     q: "",
     items: [],
+    total: 0,
   });
   const [hataliSorgu, setHataliSorgu] = useState<string | null>(null);
 
@@ -74,10 +85,15 @@ export function LiveSearch({
       })
         .then(async (response) => {
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = (await response.json()) as { results?: SearchItem[] };
+          const data = (await response.json()) as {
+            results?: SearchItem[];
+            total?: number;
+          };
+          const items = Array.isArray(data.results) ? data.results : [];
           setCevap({
             q: aranan,
-            items: Array.isArray(data.results) ? data.results : [],
+            items,
+            total: typeof data.total === "number" ? data.total : items.length,
           });
         })
         .catch((error) => {
@@ -145,7 +161,9 @@ export function LiveSearch({
             : durum === "yukleniyor"
               ? "Aranıyor…"
               : results.length > 0
-                ? `${results.length} sonuç`
+                ? cevap.total > results.length
+                  ? `İlk ${results.length} · toplam ${cevap.total} sonuç`
+                  : `${results.length} sonuç`
                 : "Sonuç bulunamadı"}
         </p>
       )}
@@ -159,6 +177,30 @@ export function LiveSearch({
           göz atın.
         </p>
       )}
+
+      {/*
+        Sık arananlar: alan boşken nereden başlanacağını, sonuç
+        çıkmadığında ne denenebileceğini gösteriyor.
+      */}
+      {suggestions.length > 0 &&
+        (!typed || (durum === "hazir" && results.length === 0)) && (
+          <div className="live-suggest">
+            <p className="search-heading">
+              {typed ? "Şunları deneyin" : "Sık arananlar"}
+            </p>
+            <div className="search-terms">
+              {suggestions.map((term) => (
+                <button
+                  type="button"
+                  key={term}
+                  onClick={() => setQuery(term)}
+                >
+                  {term}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
       {typed && results.length > 0 && variant === "list" && (
         <ul className="live-results">
