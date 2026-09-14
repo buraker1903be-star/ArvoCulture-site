@@ -299,15 +299,6 @@ p {
   max-width: 46ch;
 }
 
-/* Başlığın üstündeki künye etiketi (bkz. ProductBlock `eyebrow`).
-   `.head p` açıklama satırını hedefliyor; etiket onun boyunu almasın. */
-.head .about-eyebrow {
-  margin: 0 0 var(--s2);
-  font-size: 10px;
-  color: var(--ink-3);
-  max-width: none;
-}
-
 /*
   "Tümünü gör" bağlantısı küçük, harf aralığı açık ve büyük
   harf. Başlıkla yarışmaz; bakılınca bulunur.
