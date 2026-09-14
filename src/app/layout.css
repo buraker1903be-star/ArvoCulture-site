@@ -73,6 +73,20 @@
 
 /* ---------- Başlık ---------------------------------------- */
 
+/*
+  Buzlu cam — arvo-os.com'daki (ve apple.com'daki) tarif: yarı
+  saydam zemin + `saturate(180%) blur(20px)`. Doygunluk artırımı
+  olmadan bulanıklık, altından geçen fotoğrafı soluk bir griye
+  çeviriyor; bununla renk cama sızıyor ve yüzey canlı duruyor.
+  Zemin fildişi kaldı: ArvoCulture'ın kendi tonu.
+
+  `-webkit-` öneki şart: öneksiz `backdrop-filter`'ı yalnızca
+  Safari 18 ve sonrası tanıyor, daha eski iPhone'larda başlık
+  düz yarı saydam bir şerit olarak kalıyordu.
+
+  Alt çizgi kenarlık değil iç gölge: başlık yüksekliğine
+  eklenmiyor ve camın üzerinde kıl payı gibi okunuyor.
+*/
 .site-header {
   position: sticky;
   top: 0;
@@ -82,9 +96,10 @@
   justify-content: space-between;
   gap: var(--s5);
   padding: var(--s4) var(--rail);
-  background: rgba(250, 248, 243, 0.86);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--line-soft);
+  background: rgba(250, 248, 243, 0.72);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  box-shadow: inset 0 -1px 0 rgba(25, 27, 22, 0.08);
 }
 
 .logo img {

@@ -184,6 +184,15 @@ p {
   margin: 0;
 }
 
+/*
+  Metin seçimi altın tonunda — arvo-os.com'daki küçük dokunuşun
+  aynısı. Varsayılan mavi seçim, fildişi ve zeytin paletin içinde
+  yabancı duruyordu. Metin rengi değişmiyor; okunurluk korunuyor.
+*/
+::selection {
+  background: rgba(169, 134, 52, 0.24);
+}
+
 :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
@@ -243,7 +252,8 @@ p {
   gibi durmalı: kenarı belli, ağırlığı yok.
 */
 .panel {
-  padding: var(--pad);
+  /* Dikey boşluk yataydan ayrı: bölümler nefes alsın (bkz. --pad-y). */
+  padding: var(--pad-y) var(--pad);
   border: 1px solid var(--line-soft);
   border-radius: var(--r);
   background: var(--panel);
@@ -342,7 +352,16 @@ p {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   transition: background-color 220ms var(--ease), color 220ms var(--ease),
-    border-color 220ms var(--ease);
+    border-color 220ms var(--ease), transform 160ms var(--ease-out);
+}
+
+/*
+  Basma geri bildirimi: düğme parmağın ya da imlecin altında çok
+  hafifçe içe çöküyor. Hover'da yer değiştirme yok (bilinçli), ama
+  basıldığını hissettirmek dokunsal kaliteyi belirleyen şey.
+*/
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 /*

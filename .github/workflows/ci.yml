@@ -19,3 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+      # Tanimsiz CSS degiskenini ne derleme ne lint goruyor (bkz.
+      # scripts/check-css-vars.mjs). Denetim `build`'in basinda da var ama CI
+      # artik derleme yapmiyor; PR'da erken gorunsun diye burada ayrica.
+      - run: npm run check:css
