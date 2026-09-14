@@ -587,6 +587,31 @@
 }
 
 /*
+  Künye satırı tek satırda kalmalı. Dar kartta (koleksiyonda 5 sütun,
+  ~230px) "LR HEALTH & BEAUTY │ ÇOK SATAN" iki satıra kırılıyor ve
+  ürün adını aşağı itiyordu: çok satan işareti olan kartların başlığı
+  komşularından bir satır aşağıda başlıyor, ızgara satırı kayıyordu.
+
+  Marka gerekirse üç noktayla kısalıyor, işaret hiç kısalmıyor: marka
+  ürün adında da okunuyor, "çok satan" ise yalnızca burada.
+*/
+.card-brand {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  letter-spacing: 0.14em;
+}
+
+.card-brand span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-brand em {
+  flex: none;
+}
+
+/*
   Başlık iki satıra sabitlenir; kartlar aynı hizada biter.
   (Bu kural daha önce blok içinde iki kez yazılmıştı; tek
   kopya bırakıldı.)
