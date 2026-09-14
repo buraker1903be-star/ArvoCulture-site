@@ -273,13 +273,21 @@ export function CheckoutForm({
   if (items.length === 0) {
     return (
       <main className="shell">
-        <h1>Sepetiniz boş</h1>
-        <p>Ödeme adımına geçmek için sepetinize ürün ekleyin.</p>
-        <div className="order-actions">
-          <Link className="btn" href="/koleksiyon/tumu">
-            Alışverişe başla
-          </Link>
-        </div>
+        {/* Sepet sayfasının boş hâliyle aynı panel dili. Önceden
+            paneli yoktu; başlık ekranın kenarına yapışıyordu. */}
+        <section className="panel about-hero order-result">
+          <p className="about-eyebrow">Ödeme</p>
+          <h1>Sepetiniz boş.</h1>
+          <p className="about-lede">
+            Ödeme adımına geçmek için sepetinize ürün ekleyin.
+          </p>
+          <div className="order-actions">
+            <Link className="btn" href="/koleksiyon/tumu">
+              Alışverişe başla
+            </Link>
+            <Link href="/koleksiyon/firsatlar">İndirimdeki ürünler</Link>
+          </div>
+        </section>
       </main>
     );
   }
