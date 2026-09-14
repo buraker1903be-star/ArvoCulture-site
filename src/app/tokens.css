@@ -16,7 +16,13 @@
   */
   --ink: #191b16;
   --ink-2: #5c6055;         /* ikincil metin */
-  --ink-3: #8d9184;         /* üçüncül: etiket, üstü çizili fiyat */
+  /*
+    Üçüncül metin 4.5:1 kontrastta: künye etiketleri 10–11px ve
+    #8d9184 beyazda 3.2, fildişinde 3.0 veriyordu (WCAG AA küçük
+    metin için 4.5 ister). #6f7367: beyazda 4.9, fildişinde 4.6;
+    --ink-2 ile arasındaki kademe korunuyor.
+  */
+  --ink-3: #6f7367;         /* üçüncül: etiket, üstü çizili fiyat */
 
   /*
     Çizgiler sıcak. Nötr gri bir hairline, fildişi zeminin
@@ -42,6 +48,9 @@
   /* Altın yalnızca kıl payı çizgi ve küçük vurgu içindir.
      Zemin ya da buton olarak kullanılmaz; ucuzlar. */
   --gold: #a98634;
+  /* Altın METİN için: #a98634 küçük yazıda 3.2:1 kalıyordu.
+     Çizgi ve süs için --gold, okunacak yazı için --gold-ink. */
+  --gold-ink: #85692a;
   --gold-soft: rgba(169, 134, 52, 0.28);
 
   /* Sabit arka plan katmanı. Paneller bunun üzerinde yüzer. */
