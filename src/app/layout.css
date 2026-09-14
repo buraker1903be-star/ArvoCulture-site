@@ -1266,19 +1266,6 @@ footer {
   color: var(--ok);
 }
 
-.coupon-form {
-  display: flex;
-  gap: var(--s2);
-}
-
-.coupon-form input {
-  flex: 1;
-  min-width: 0;
-  padding: 11px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-}
-
 .empty-cart {
   display: grid;
   gap: var(--s4);

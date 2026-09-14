@@ -11,6 +11,7 @@ import { getAuthClient } from "@/lib/auth-client";
 import { formatPhone, isValidPhone, phoneDigits } from "@/lib/phone";
 import { evaluateCoupon } from "@/lib/coupon";
 import type { Address } from "@/components/address-book";
+import { CheckoutSteps } from "@/components/checkout-steps";
 
 /**
  * Ödeme sayfası.
@@ -322,7 +323,11 @@ export function CheckoutForm({
 
   return (
     <main className="shell">
-      <div className="panel panel-tight"><h1 style={{ fontSize: "var(--t-h2)" }}>Ödeme</h1></div>
+      {/* Sepet sayfasıyla aynı başlık: adımlar ve sayfanın adı. */}
+      <section className="panel about-hero detail-hero">
+        <CheckoutSteps current="teslimat" />
+        <h1>Teslimat ve ödeme</h1>
+      </section>
 
       <div className="checkout">
         <section className="panel">

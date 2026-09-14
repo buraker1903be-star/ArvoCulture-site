@@ -1050,6 +1050,18 @@
   align-items: start;
 }
 
+/*
+  Form bölümlerinin başlıkları vitrin başlığı boyunda değil: dar
+  özet sütununda "Ödeme yöntemi" iki satıra taşıyordu.
+*/
+.checkout h2 {
+  font-size: clamp(26px, 2.4vw, 34px);
+}
+
+.checkout h2 + .hint {
+  margin-top: var(--s2);
+}
+
 .hint {
   font-size: var(--t-sm);
   color: var(--ink-2);
@@ -1190,11 +1202,33 @@
   font-variant-numeric: tabular-nums;
 }
 
+/*
+  Genel toplam: etiket künye dilinde, tutar başlık yazısıyla.
+  Sayfadaki en önemli rakam artık ürün sayfasındaki fiyatla aynı
+  ağırlıkta okunuyor.
+*/
 .summary-totals .grand {
+  align-items: baseline;
   padding-top: var(--s3);
   border-top: 1px solid var(--line);
-  font-size: 16px;
+}
+
+.summary-totals .grand dt {
+  font-size: 10px;
   font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.summary-totals .grand dd {
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1;
+  /* Cormorant varsayılan olarak eski usul rakam çiziyor; tutarda
+     rakamlar aynı hizada ve eşit genişlikte dursun. */
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 .form-error {
@@ -2730,8 +2764,54 @@
 }
 
 .detail-hero h1 {
+  max-width: 24ch;
   font-size: clamp(24px, 3vw, 36px);
   font-variant-numeric: tabular-nums;
+}
+
+/* Sipariş adımları (bkz. checkout-steps.tsx). */
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.steps li + li::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--gold-soft);
+}
+
+.steps [aria-current="step"] {
+  color: var(--ink);
+}
+
+.steps a {
+  border-bottom: 1px solid var(--line);
+  transition:
+    color 220ms var(--ease),
+    border-color 220ms var(--ease);
+}
+
+.steps a:hover {
+  color: var(--ink);
+  border-color: currentColor;
 }
 
 .detail-meta {
@@ -2851,14 +2931,23 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--s5) var(--s5) var(--s4);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-soft);
 }
 
+/* "Kapat" yazıyla: mobil menüdeki kapatma düğmesiyle aynı dil. */
 .drawer-head button {
   border: 0;
   background: none;
-  font-size: 18px;
+  padding: var(--s2) 0;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
   color: var(--ink-2);
+}
+
+.drawer-head button:hover {
+  color: var(--ink);
 }
 
 .drawer-empty {
@@ -2868,13 +2957,37 @@
   padding: var(--s6) var(--s5);
 }
 
-/* Ücretsiz kargoya kalan tutar: en etkili sepet büyütme aracı. */
+/*
+  Ücretsiz kargoya kalan tutar ve altında ilerleme çizgisi. Dolu
+  zeminli şerit yerine kıl payı çizgi: eşik yaklaştıkça altın çizgi
+  uzuyor, müşteri ne kadar kaldığını okumadan da görüyor.
+*/
 .drawer-nudge {
-  padding: var(--s3) var(--s5);
-  background: var(--panel-2);
-  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s3) var(--s5) var(--s4);
+  border-bottom: 1px solid var(--line-soft);
   font-size: var(--t-sm);
   color: var(--ink-2);
+}
+
+.drawer-nudge b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.drawer-progress {
+  display: block;
+  height: 2px;
+  background: var(--line-soft);
+  overflow: hidden;
+}
+
+.drawer-progress i {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  transition: width 600ms var(--ease-out);
 }
 
 .drawer-items {
@@ -2897,8 +3010,8 @@
   position: relative;
   display: block;
   aspect-ratio: 1;
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
+  border: 1px solid var(--line-soft);
+  border-radius: 0;
   background: #fff;
   overflow: hidden;
 }
@@ -2917,7 +3030,7 @@
 
 .drawer-text > a {
   font-size: var(--t-sm);
-  font-weight: 500;
+  font-weight: 400;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -2941,7 +3054,7 @@
   display: grid;
   gap: var(--s3);
   padding: var(--s4) var(--s5) var(--s5);
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--line-soft);
   background: var(--panel);
 }
 
@@ -2994,7 +3107,7 @@
   gap: var(--s4);
   align-items: center;
   padding-bottom: var(--s4);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .cart-item:last-child {
@@ -3006,8 +3119,8 @@
   position: relative;
   display: block;
   aspect-ratio: 1;
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
+  border: 1px solid var(--line-soft);
+  border-radius: 0;
   background: #fff;
   overflow: hidden;
 }
@@ -3033,7 +3146,7 @@
 
 .cart-item-text > a {
   font-size: var(--t-body);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .cart-item-text > a:hover {
@@ -3134,20 +3247,53 @@
   gap: var(--s4);
 }
 
+/*
+  İndirim kodu tek bir alt çizgili satır: alan ve "Uygula" aynı
+  çizginin üstünde. Kutu içindeki alanın yanında boşken gri bir
+  blok olarak duran düğme özetin en ağır öğesiydi ve dar sütunda
+  yer tutucu metni kesiyordu.
+*/
 .coupon-form {
   display: flex;
+  align-items: center;
   gap: var(--s2);
+  border-bottom: 1px solid var(--line);
+  transition: border-color 220ms var(--ease);
+}
+
+.coupon-form:focus-within {
+  border-bottom-color: var(--ink);
 }
 
 .coupon-form input {
   flex: 1;
   min-width: 0;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-  font-size: var(--t-sm);
-  letter-spacing: 0.06em;
+  padding: 12px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+/* Odak alt çizginin koyulaşmasıyla gösteriliyor. */
+.coupon-form input:focus-visible {
+  outline: none;
+}
+
+.coupon-form .btn,
+.coupon-form .btn:disabled {
+  padding: 12px 0 12px var(--s3);
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink);
+}
+
+.coupon-form .btn:hover:not(:disabled) {
+  border-color: transparent;
+  background: transparent;
+  color: var(--brand);
 }
 
 .cart-saving {
@@ -4593,6 +4739,23 @@
     min-height: 44px;
   }
 
+  /*
+    Sepet ve çekmece satırlarında adet seçici ürün adının altında
+    duruyor; 44px'lik düğmeler onu satırın en iri öğesi yapıyordu.
+    36px hâlâ rahat bir dokunma hedefi.
+  */
+  .cart-item .quantity,
+  .drawer .quantity {
+    gap: 0;
+    padding: 0 4px;
+  }
+
+  .cart-item .quantity button,
+  .drawer .quantity button {
+    min-width: 36px;
+    min-height: 36px;
+  }
+
   .card-add {
     min-height: 44px;
   }
@@ -5194,6 +5357,7 @@
 .pay-method input {
   margin-top: 3px;
   flex: none;
+  accent-color: var(--ink);
 }
 
 .pay-method span {
@@ -5211,18 +5375,19 @@
   color: var(--ink-3);
 }
 
-/* İndirim rozeti: havalenin avantajı ilk bakışta görünsün. */
+/*
+  Havale indirimi: dolu kırmızı rozet yerine indirim renginde
+  künye yazısı — ürün kartındaki indirim oranıyla aynı karar.
+*/
 .pay-badge {
-  display: inline-block;
-  margin-left: var(--s2);
-  padding: 2px 8px;
-  border-radius: var(--r-sm);
-  background: var(--sale);
-  color: #fff;
+  display: block;
+  margin-top: 2px;
   font-size: 10px;
   font-weight: 500;
   font-style: normal;
-  vertical-align: middle;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--sale);
 }
 
 /* ---------- Banka bilgileri ------------------------------ */
