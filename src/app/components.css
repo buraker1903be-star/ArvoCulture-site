@@ -150,99 +150,67 @@
   color: #fff;
 }
 
-/* ---------- Güvence şeridi -------------------------------- */
+/* ---------- Arama, kupon ve güvence: tek panel ------------ */
 
 /*
-  Güvence şeridi. Ayraçlar 1px'lik ızgara boşluğu yerine gerçek
-  kenarlık: boşluk hilesi panelin zemin rengini sızdırıyordu ve
-  şerit dört ayrı kutuya bölünmüş gibi duruyordu. Artık tek bir
-  yaprak, içinde ince ayraçlar.
+  Hero'nun altında önceden iki ayrı ince bant vardı: güvence şeridi
+  ve arama + kupon. Birlikte masaüstünde ~230px, mobilde ~460px —
+  telefonda ekranın yarısından fazlası — ürünlerden önce yer
+  kaplıyordu; kargo ve güvenli ödeme de hemen üstteki duyuru
+  çubuğunu tekrarlıyordu.
+
+  Şimdi tek panel, iki kat: üstte arama daveti ve kupon künyesi,
+  altta kıl payı bir ayraçla dört güvence maddesi. Hiçbir bilgi
+  silinmedi; güvence hâlâ hero'dan hemen sonra.
 */
-.perks {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 0;
-  overflow: hidden;
-}
-
-.perks a {
-  display: grid;
-  gap: var(--s2);
-  padding: var(--s5) var(--pad);
-  transition: background-color 240ms var(--ease);
-}
-
-.perks a + a {
-  border-left: 1px solid var(--line-soft);
-}
-
-.perks a:hover {
-  background: var(--panel-2);
-}
-
-.perks strong {
-  font-size: var(--t-sm);
-  font-weight: 500;
-}
-
-/*
-  Alt satır büyük harf ve seyrek: bir cümle değil, bir künye
-  satırı gibi okunuyor.
-*/
-.perks small {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-@media (max-width: 900px) {
-  .perks {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* ---------- Arama + kupon --------------------------------- */
-
 .utility {
+  display: grid;
+  padding-block: 0;
+}
+
+.utility-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--s5);
+  gap: var(--s6);
+  padding-block: var(--s4);
 }
 
 .utility-search {
   display: flex;
   align-items: center;
-  gap: var(--s3);
   min-width: 0;
 }
 
 /*
-  Arama kutusu hap şeklinden çıktı ve genişledi. Sağdaki "ARA"
-  etiketi artık kutunun içinde ayrı bir bölme: çizgiyle ayrılmış,
-  tıklanacak yeri belli.
+  Arama tetikleyicisi arama sayfasındaki alanla aynı dilde: kutu
+  değil, altı çizili italik serif bir davet. Kutulu hâli, hemen
+  yanındaki kupon künyesiyle yarışan ikinci bir çerçeveydi.
 */
 .search-box {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--s4);
-  flex: 0 1 30rem;
-  padding: 0 0 0 var(--s4);
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-  background: var(--panel);
+  flex: 0 1 34rem;
+  min-width: 0;
+  padding: var(--s2) 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  text-align: left;
   transition: border-color 240ms var(--ease);
 }
 
 .search-box:hover {
-  border-color: var(--ink-3);
+  border-bottom-color: var(--ink-3);
 }
 
 .search-box span {
-  padding: 14px 0;
-  font-size: var(--t-sm);
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-size: clamp(19px, 1.6vw, 23px);
+  font-style: italic;
   color: var(--ink-3);
   white-space: nowrap;
   overflow: hidden;
@@ -250,17 +218,61 @@
 }
 
 .search-box em {
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  padding: 0 var(--s4);
-  border-left: 1px solid var(--line-soft);
+  flex: none;
   font-style: normal;
   font-size: 10px;
   font-weight: 500;
   letter-spacing: var(--track);
   text-transform: uppercase;
   color: var(--ink-2);
+  transition: color 200ms var(--ease);
+}
+
+.search-box:hover em {
+  color: var(--brand);
+}
+
+/*
+  Güvence künyesi: dört madde tek satırda, aralarında kıl payı
+  ayraçlar. Kutu kutu bölünmüş bir şerit değil, panelin alt katına
+  işlenmiş bir künye. Hover'da zemin kutusu yok, yalnızca başlık
+  zeytine dönüyor — mega menüdeki kararla aynı.
+*/
+.perks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line-soft);
+}
+
+.perks a {
+  display: grid;
+  gap: 3px;
+  padding: var(--s4);
+}
+
+.perks a:first-child {
+  padding-left: 0;
+}
+
+.perks a + a {
+  border-left: 1px solid var(--line-soft);
+}
+
+.perks strong {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  transition: color 200ms var(--ease);
+}
+
+.perks a:hover strong {
+  color: var(--brand);
+}
+
+.perks small {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
 .chips {
@@ -364,19 +376,55 @@
 }
 
 @media (max-width: 900px) {
-  .utility {
+  .utility-row {
     grid-template-columns: 1fr;
     gap: var(--s3);
-  }
-  .utility-search {
-    flex-direction: column;
-    align-items: stretch;
   }
   .search-box {
     flex: 1 1 auto;
   }
   .coupon {
     justify-content: space-between;
+  }
+  /*
+    Telefonda güvence 2×2 ve yalnızca başlıklar. Alt satırlar
+    ("Türkiye geneli", "Kullanılmamış ürünlerde"…) bağlantının
+    götürdüğü sayfada zaten var; burada dört kutuyu 224px'e
+    çıkarıyorlardı.
+  */
+  .perks {
+    grid-template-columns: 1fr 1fr;
+  }
+  .perks small {
+    display: none;
+  }
+  .perks a {
+    padding: var(--s3);
+  }
+  .perks a:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .perks a:nth-child(n + 3) {
+    border-top: 1px solid var(--line-soft);
+  }
+}
+
+@media (max-width: 640px) {
+  /*
+    Kupon künyesi dar ekranda alt alta. Yan yana sığmıyordu: metin
+    üç satıra ("İlk / alışverişte / %10 indirim"), alt satırı da üç
+    satıra kırılıyor, künye ~160px'e çıkıyordu. Tam genişlikteki
+    düğme daha güçlü bir eylem.
+  */
+  .coupon {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--s3);
+    padding: var(--s4);
+  }
+  .coupon button {
+    justify-content: center;
   }
 }
 
@@ -1206,14 +1254,6 @@
 /* ==========================================================
    Arama katmanı
    ========================================================== */
-
-/* Tetikleyici buton, eski arama kutusuyla aynı görünür. */
-button.search-box {
-  width: 100%;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  text-align: left;
-}
 
 .search-layer {
   position: fixed;

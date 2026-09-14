@@ -31,7 +31,7 @@ import {
  * öncelik sırasına göre kurulmuştur: önce fiyat/indirim, sonra ürün
  * görseli, sonra bulunabilirlik, sonra güven.
  *
- *   Hero → Güvence → Arama + kupon → İNDİRİMDEKİLER → Kategoriler
+ *   Hero → Arama + kupon + güvence (tek panel) → İNDİRİMDEKİLER → Kategoriler
  *   → Çok satanlar → Kampanya → Yeni gelenler → Yardım
  *
  * `data-arvo-section` / `data-arvo-field` nitelikleri ARC panelinin
@@ -159,31 +159,40 @@ export default async function Home() {
 
       <Hero theme={theme} />
 
-      <Perks />
-
+      {/*
+        Arama, kupon ve güvence tek panelde. Önceden iki ayrı bant
+        (güvence şeridi + arama/kupon) masaüstünde ~230px, mobilde
+        ~460px — ekranın yarısından fazlası — ürünlerden önce yer
+        kaplıyordu. Hiçbir bilgi silinmedi; güvence hâlâ hero'dan
+        hemen sonra.
+      */}
       <section
         className="panel panel-tight utility"
-        aria-label="Arama ve kampanya"
+        aria-label="Arama, kampanya ve alışveriş güvencesi"
       >
-        <div className="utility-search">
-          <SearchOverlay terms={searchTerms} />
+        <div className="utility-row">
+          <div className="utility-search">
+            <SearchOverlay terms={searchTerms} />
+          </div>
+
+          {coupon?.code && (
+            <div className="coupon">
+              <div>
+                <strong>
+                  İlk alışverişte{" "}
+                  {coupon.discount_type === "percentage"
+                    ? `%${coupon.value}`
+                    : formatPrice(coupon.value / 100)}{" "}
+                  indirim
+                </strong>
+                <small>Kodu sepette uygulayın</small>
+              </div>
+              <CouponCopy code={coupon.code} />
+            </div>
+          )}
         </div>
 
-        {coupon?.code && (
-          <div className="coupon">
-            <div>
-              <strong>
-                İlk alışverişte{" "}
-                {coupon.discount_type === "percentage"
-                  ? `%${coupon.value}`
-                  : formatPrice(coupon.value / 100)}{" "}
-                indirim
-              </strong>
-              <small>Kodu sepette uygulayın</small>
-            </div>
-            <CouponCopy code={coupon.code} />
-          </div>
-        )}
+        <Perks />
       </section>
 
       {/* Fiyat birinci öncelik: indirimler en üstte. */}
