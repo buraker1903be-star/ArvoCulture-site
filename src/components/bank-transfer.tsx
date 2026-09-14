@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { BankDetails } from "@/components/bank-details";
 
 /**
  * Banka havalesi ile ödeme.
@@ -26,8 +26,6 @@ export function BankTransfer({
   onSelect: (useTransfer: boolean) => void;
   selected: boolean;
 }) {
-  const [copied, setCopied] = useState<string | null>(null);
-
   const money = (kurus: number) =>
     new Intl.NumberFormat("tr-TR", {
       style: "currency",
@@ -36,17 +34,6 @@ export function BankTransfer({
 
   const discount = Math.round((total * discountPercent) / 100);
   const discounted = total - discount;
-
-  async function copy(label: string, value: string) {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(label);
-      setTimeout(() => setCopied(null), 2000);
-    } catch {
-      /* Pano erişimi engellenmişse sessizce geç: müşteri
-         metni elle seçebiliyor. */
-    }
-  }
 
   return (
     <div className="pay-methods">
@@ -83,55 +70,13 @@ export function BankTransfer({
       </label>
 
       {selected && (
-        <div className="pay-bank">
+        <BankDetails seller={seller}>
           <p className="hint">
             Siparişinizi tamamladıktan sonra aşağıdaki hesaba havale veya
             EFT yapın. Açıklama kısmına sipariş numaranızı yazın; ödemeniz
             onaylandığında siparişiniz hazırlanmaya başlar.
           </p>
-
-          <div className="pay-bank-row">
-            <div>
-              <small>ALICI UNVANI</small>
-              <b>{seller.legalName}</b>
-            </div>
-            <button
-              type="button"
-              className="linklike"
-              onClick={() => copy("unvan", seller.legalName)}
-            >
-              {copied === "unvan" ? "Kopyalandı ✓" : "Kopyala"}
-            </button>
-          </div>
-
-          <div className="pay-bank-row">
-            <div>
-              <small>BANKA</small>
-              <b>{seller.bankName}</b>
-            </div>
-          </div>
-
-          <div className="pay-bank-row">
-            <div>
-              <small>IBAN</small>
-              <b className="pay-iban">{seller.iban}</b>
-            </div>
-            <button
-              type="button"
-              className="linklike"
-              onClick={() =>
-                copy("iban", seller.iban.replace(/\s/g, ""))
-              }
-            >
-              {copied === "iban" ? "Kopyalandı ✓" : "Kopyala"}
-            </button>
-          </div>
-
-          <p className="hint">
-            IBAN kopyalandığında boşluklar kaldırılır. Havale ücreti
-            bankanıza aittir.
-          </p>
-        </div>
+        </BankDetails>
       )}
     </div>
   );

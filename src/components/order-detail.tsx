@@ -79,9 +79,12 @@ export function OrderDetail({
 
   if (state === "signed-out") {
     return (
-      <section className="panel order-result">
-        <h1>Giriş yapmanız gerekiyor</h1>
-        <p>Sipariş detayını görmek için hesabınıza giriş yapın.</p>
+      <section className="panel about-hero order-result">
+        <p className="about-eyebrow">Sipariş detayı</p>
+        <h1>Giriş yapmanız gerekiyor.</h1>
+        <p className="about-lede">
+          Sipariş detayını görmek için hesabınıza giriş yapın.
+        </p>
         <Link className="btn" href="/hesap">
           Hesabıma git
         </Link>
@@ -91,9 +94,10 @@ export function OrderDetail({
 
   if (state === "missing" || !order) {
     return (
-      <section className="panel order-result">
-        <h1>Sipariş bulunamadı</h1>
-        <p>
+      <section className="panel about-hero order-result">
+        <p className="about-eyebrow">Sipariş detayı</p>
+        <h1>Sipariş bulunamadı.</h1>
+        <p className="about-lede">
           Bu sipariş hesabınıza bağlı değil ya da numara hatalı olabilir.
         </p>
         <Link className="btn" href="/hesap">

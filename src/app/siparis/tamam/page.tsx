@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BankDetails } from "@/components/bank-details";
 import { SELLER } from "@/lib/seller";
 
 export const metadata = {
@@ -23,87 +24,46 @@ export default async function OrderDone({
 
   return (
     <main className="shell">
-      <div className="panel order-result">
-      <h1>Siparişiniz alındı</h1>
-      {no && (
-        <p className="order-number">
-          Sipariş numaranız: <b>{no}</b>
-        </p>
-      )}
-      <p>
-        Ödemeniz onaylandığında sipariş özetiniz e-posta adresinize
-        gönderilecek. Siparişinizle ilgili sorularınız için sipariş
-        numaranızla bize ulaşabilirsiniz.
-      </p>
-      {/*
+      <section className="panel about-hero order-result">
+        <p className="about-eyebrow">Teşekkür ederiz</p>
+        <h1>Siparişiniz alındı.</h1>
 
-        Havale siparişinde banka bilgileri onay sayfasında da
-
-        gösteriliyor: müşteri e-postayı beklemeden ödeyebilsin.
-
-      */}
-
-      {yontem === "havale" && (
-
-        <div className="pay-bank" style={{ marginTop: "var(--s4)" }}>
-
-          <p className="hint">
-
-            Siparişiniz oluşturuldu. Aşağıdaki hesaba havale veya EFT
-
-            yaptığınızda hazırlanmaya başlanacak. Açıklama kısmına
-
-            sipariş numaranızı yazın.
-
+        {/* Sipariş numarası künye etiketi ve başlık yazısıyla:
+            müşterinin not alacağı tek bilgi bu. */}
+        {no && (
+          <p className="order-number">
+            <small>Sipariş numarası</small>
+            <b>{no}</b>
           </p>
+        )}
 
-          <div className="pay-bank-row">
+        <p className="about-lede">
+          Ödemeniz onaylandığında sipariş özetiniz e-posta adresinize
+          gönderilecek. Siparişinizle ilgili sorularınız için sipariş
+          numaranızla bize ulaşabilirsiniz.
+        </p>
 
-            <div>
+        {/*
+          Havale siparişinde banka bilgileri onay sayfasında da
+          gösteriliyor: müşteri e-postayı beklemeden ödeyebilsin.
+        */}
+        {yontem === "havale" && (
+          <BankDetails seller={SELLER}>
+            <p className="hint">
+              Aşağıdaki hesaba havale veya EFT yaptığınızda siparişiniz
+              hazırlanmaya başlanacak. Açıklama kısmına sipariş numaranızı
+              yazın.
+            </p>
+          </BankDetails>
+        )}
 
-              <small>ALICI UNVANI</small>
-
-              <b>{SELLER.legalName}</b>
-
-            </div>
-
-          </div>
-
-          <div className="pay-bank-row">
-
-            <div>
-
-              <small>BANKA</small>
-
-              <b>{SELLER.bankName}</b>
-
-            </div>
-
-          </div>
-
-          <div className="pay-bank-row">
-
-            <div>
-
-              <small>IBAN</small>
-
-              <b className="pay-iban">{SELLER.iban}</b>
-
-            </div>
-
-          </div>
-
+        <div className="order-actions">
+          <Link className="btn" href="/koleksiyon/tumu">
+            Alışverişe devam et
+          </Link>
+          <Link href="/iletisim">Bize ulaşın</Link>
         </div>
-
-      )}
-
-      <div className="order-actions">
-        <Link className="btn" href="/koleksiyon/tumu">
-          Alışverişe devam et
-        </Link>
-        <Link href="/iletisim">Bize ulaşın</Link>
-      </div>
-      </div>
+      </section>
     </main>
   );
 }
