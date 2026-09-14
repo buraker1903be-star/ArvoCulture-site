@@ -29,6 +29,13 @@ export type SearchItem = {
   price: number;
   oldPrice?: number;
   image?: string;
+  /*
+    Görsel türü: manken fotoğrafı mı, paket çekimi mi. Arama kartı
+    çerçeveyi buna göre seçiyor (bkz. .card-art[data-art]); bu bilgi
+    yokken dikey manken fotoğrafları kare çerçevede küçülüyordu.
+    İsteğe bağlı: SearchItem üreten başka yerler kırılmasın.
+  */
+  artStyle?: "packshot" | "lifestyle";
 };
 
 type SearchRow = {
@@ -70,5 +77,8 @@ export const getSearchIndex = cache(async (): Promise<SearchItem[]> => {
       ? Number(row.compare_at_price) / 100
       : undefined,
     image: imageUrl(row.image_path),
+    /* Kural products.ts'teki ile aynı: tedarikçi CDN'inden gelen tam
+       adres manken fotoğrafı, ARC deposundaki yol paket çekimi. */
+    artStyle: row.image_path?.startsWith("http") ? "lifestyle" : "packshot",
   }));
 });

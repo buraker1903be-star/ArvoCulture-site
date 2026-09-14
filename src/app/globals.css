@@ -423,17 +423,6 @@ p {
   line-height: 1.4;
 }
 
-.tag-sale {
-  background: var(--sale);
-  color: #fff;
-}
-
-.tag-best {
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--ink);
-  border: 1px solid var(--line);
-}
-
 /* --- Fiyat ------------------------------------------------ */
 
 /*
