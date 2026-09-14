@@ -1585,15 +1585,22 @@
   background: var(--panel);
 }
 
+/* Rakamlar başlık yazısıyla: sepetteki toplam ve sipariş
+   numarasıyla aynı dil. */
 .about-figures strong {
-  font-size: clamp(22px, 2.4vw, 30px);
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-size: clamp(32px, 3.4vw, 46px);
   font-weight: 500;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 .about-figures small {
-  font-size: var(--t-xs);
+  margin-top: var(--s2);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
   color: var(--ink-3);
 }
 
@@ -1616,19 +1623,21 @@
   gap: var(--s2);
   align-content: start;
   padding-top: var(--s4);
-  border-top: 2px solid var(--brand);
+  border-top: 1px solid var(--gold);
 }
 
 .pillar-index {
   font-size: var(--t-xs);
   font-weight: 500;
   letter-spacing: 0.12em;
-  color: var(--brand);
+  color: var(--gold);
   font-variant-numeric: tabular-nums;
 }
 
 .pillar-grid h3 {
-  font-size: 18px;
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 500;
 }
 
 .pillar-grid p {
@@ -1695,20 +1704,19 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* Söz maddeleri kutu değil satır: koyu zeminde ince çizgiler. */
 .promise-list {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: var(--s3);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .promise-list li {
   display: grid;
   gap: 2px;
-  padding: var(--s3) var(--s4);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--r-sm);
-  background: rgba(255, 255, 255, 0.05);
+  padding: var(--s4) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .promise-list strong {
@@ -1749,14 +1757,15 @@
   gap: var(--s2);
   justify-items: start;
   padding: var(--s5);
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
+  border: 1px solid var(--line-soft);
+  border-radius: 0;
 }
 
 .channel-grid strong {
-  font-size: 18px;
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-size: clamp(22px, 2vw, 26px);
   font-weight: 500;
-  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .channel-grid small {
@@ -1775,22 +1784,20 @@
   gap: var(--s3);
 }
 
+/*
+  Hızlı yanıtlar. Hover'da kart zıplıyordu; sitede artık hiçbir öğe
+  yer değiştirmiyor — vurgu çizginin koyulaşmasından geliyor.
+*/
 .quick-grid a {
   display: grid;
   gap: 3px;
   padding: var(--s4);
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-  transition:
-    border-color 160ms var(--ease),
-    transform 160ms var(--ease),
-    box-shadow 160ms var(--ease);
+  border: 1px solid var(--line-soft);
+  transition: border-color 220ms var(--ease);
 }
 
 .quick-grid a:hover {
-  border-color: transparent;
-  transform: translateY(-2px);
-  box-shadow: var(--float);
+  border-color: var(--ink-3);
 }
 
 .quick-grid strong {
@@ -1823,6 +1830,11 @@
 }
 
 .seller-info dt {
+  padding-top: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
   color: var(--ink-3);
 }
 
@@ -1856,11 +1868,11 @@
 }
 
 .faq-list details {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--line-soft);
 }
 
 .faq-list details:last-child {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .faq-list summary {
