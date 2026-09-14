@@ -19,19 +19,21 @@ export default function ProductError({
   }, [error]);
 
   return (
-    <main className="simple-page">
-      <p className="eyebrow">GEÇİCİ BİR SORUN</p>
-      <h1>Ürün bilgisi şu anda yüklenemiyor.</h1>
-      <p>
-        Güncel fiyat ve stok bilgisini doğrulayamadığımız için sayfayı eksik
-        göstermiyoruz. Birkaç dakika sonra tekrar deneyin.
-      </p>
-      <p>
-        <button className="button button-dark" type="button" onClick={reset}>
-          Tekrar dene
-        </button>{" "}
-        <Link href="/koleksiyon/tumu">Tüm ürünlere dön</Link>
-      </p>
+    <main className="shell">
+      <section className="panel about-hero order-result">
+        <p className="about-eyebrow">Geçici bir sorun</p>
+        <h1>Ürün bilgisi şu anda yüklenemiyor.</h1>
+        <p className="about-lede">
+          Güncel fiyat ve stok bilgisini doğrulayamadığımız için sayfayı
+          eksik göstermiyoruz. Birkaç dakika sonra tekrar deneyin.
+        </p>
+        <div className="order-actions">
+          <button className="btn" type="button" onClick={reset}>
+            Tekrar dene
+          </button>
+          <Link href="/koleksiyon/tumu">Tüm ürünlere dön</Link>
+        </div>
+      </section>
     </main>
   );
 }
