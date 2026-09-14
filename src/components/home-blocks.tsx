@@ -70,14 +70,19 @@ const PERKS = [
 
 export function Perks() {
   return (
-    <section className="panel perks" aria-label="Alışveriş güvencesi">
+    /*
+      Kendi paneli yok: ana sayfada arama ve kupon panelinin alt katı
+      (bkz. page.tsx). Ayrı bir bant olarak duyuru çubuğunu tekrar
+      ediyor, mobilde tek başına 224px yer kaplıyordu.
+    */
+    <nav className="perks" aria-label="Alışveriş güvencesi">
       {PERKS.map((perk) => (
         <Link key={perk.title} href={perk.href}>
           <strong>{perk.title}</strong>
           <small>{perk.note}</small>
         </Link>
       ))}
-    </section>
+    </nav>
   );
 }
 
