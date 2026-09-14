@@ -201,12 +201,10 @@ export function LiveSearch({
                   className="card-art"
                   aria-label={item.name}
                   onClick={onNavigate}
+                  data-art={item.artStyle}
                 >
-                  {off > 0 && (
-                    <span className="card-flags">
-                      <b className="tag tag-sale">%{off} indirim</b>
-                    </span>
-                  )}
+                  {/* İndirim görselin üstünde değil, fiyat satırında: ürün
+                      kartı ve ürün sayfasıyla aynı karar. */}
                   {item.image && (
                     <Image
                       src={item.image}
@@ -217,7 +215,9 @@ export function LiveSearch({
                   )}
                 </Link>
 
-                <p className="card-brand">{item.brand}</p>
+                <p className="card-brand">
+                  <span>{item.brand}</span>
+                </p>
                 <h3>
                   <Link href={`/urun/${item.slug}`} onClick={onNavigate}>
                     {item.name}
@@ -229,6 +229,7 @@ export function LiveSearch({
                   {item.oldPrice && item.oldPrice > item.price && (
                     <del>{formatPrice(item.oldPrice)}</del>
                   )}
+                  {off > 0 && <span className="price-off">−%{off}</span>}
                 </div>
               </article>
             );
