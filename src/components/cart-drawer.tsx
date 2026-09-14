@@ -109,8 +109,8 @@ export function CartDrawer({
       <aside className="drawer">
         <header className="drawer-head">
           <h2>Sepetim</h2>
-          <button type="button" onClick={close} aria-label="Kapat">
-            ✕
+          <button type="button" onClick={close}>
+            Kapat
           </button>
         </header>
 
@@ -123,14 +123,31 @@ export function CartDrawer({
           </div>
         ) : (
           <>
-            {/* Ücretsiz kargoya kalan tutar: en etkili sepet
-                büyütme aracı. */}
-            {remaining > 0 && (
-              <p className="drawer-nudge">
-                <b>{formatPrice(remaining)}</b> daha ekleyin, kargo ücretsiz
-                olsun.
+            {/*
+              Ücretsiz kargoya kalan tutar: en etkili sepet büyütme
+              aracı. Altındaki çizgi eşiğe ne kadar yaklaşıldığını
+              gösteriyor; eşik geçilince mesaj kaybolmak yerine
+              müşteriye kargonun ücretsiz olduğunu söylüyor.
+            */}
+            <div className="drawer-nudge">
+              <p>
+                {shipping === 0 ? (
+                  "Kargonuz ücretsiz."
+                ) : (
+                  <>
+                    <b>{formatPrice(remaining)}</b> daha ekleyin, kargo
+                    ücretsiz olsun.
+                  </>
+                )}
               </p>
-            )}
+              <span className="drawer-progress" aria-hidden="true">
+                <i
+                  style={{
+                    width: `${shipping === 0 ? 100 : Math.min(100, (afterDiscount / FREE_OVER) * 100)}%`,
+                  }}
+                />
+              </span>
+            </div>
 
             <ul className="drawer-items">
               {items.map((item) => (

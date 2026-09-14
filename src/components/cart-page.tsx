@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { CartContext, cartKey } from "@/components/cart";
+import { CheckoutSteps } from "@/components/checkout-steps";
 import { formatPrice } from "@/lib/product-types";
 import {
   readCoupon,
@@ -123,7 +124,7 @@ export function CartPageView() {
   return (
     <>
       <section className="panel about-hero detail-hero">
-        <p className="about-eyebrow">Sepetim</p>
+        <CheckoutSteps current="sepet" />
         <h1>Seçimlerinizi tamamlayın.</h1>
       </section>
 
