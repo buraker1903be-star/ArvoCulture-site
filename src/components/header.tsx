@@ -442,13 +442,31 @@ export function Header({
           </button>
         </div>
         <nav>
-          <Link
-            href={offers ? `/koleksiyon/${offers.slug}` : "/koleksiyon/tumu"}
-            className="mobile-featured"
-            onClick={close}
-          >
-            Haftanın Fırsatları <span>↗</span>
-          </Link>
+          {/*
+            Öne çıkanlar: masaüstü menünün ilk bağlantısı ("Yeni & Çok
+            Satan") mobilde hiç yoktu; "Haftanın Fırsatları" işaretlemede
+            vardı ama CSS'te gizliydi. İkisi de menünün başında.
+          */}
+          <div className="mobile-featured-list">
+            <Link
+              href={
+                bestSeller
+                  ? `/koleksiyon/${bestSeller.slug}`
+                  : "/koleksiyon/tumu"
+              }
+              className="mobile-featured"
+              onClick={close}
+            >
+              Yeni &amp; Çok Satan <span aria-hidden="true">↗</span>
+            </Link>
+            <Link
+              href={offers ? `/koleksiyon/${offers.slug}` : "/koleksiyon/tumu"}
+              className="mobile-featured"
+              onClick={close}
+            >
+              Haftanın Fırsatları <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
           {navigation.map((menu) => {
             const expanded = mobileSection === menu.title;
             return (
@@ -498,6 +516,30 @@ export function Header({
             );
           })}
         </nav>
+
+        {/*
+          Yardımcı bağlantılar. Kategorilerin altı boştu; favoriler,
+          hesap ve yardım masaüstünde başlıkta, mobilde yalnızca alt
+          çubukta (Hesabım) duruyordu.
+        */}
+        <div className="mobile-utility">
+          {theme.show_account && (
+            <>
+              <Link href="/favoriler" onClick={close}>
+                Favorilerim
+              </Link>
+              <Link href="/hesap" onClick={close} prefetch={false}>
+                Hesabım ve siparişlerim
+              </Link>
+            </>
+          )}
+          <Link href="/sss" onClick={close}>
+            Sıkça sorulanlar
+          </Link>
+          <Link href="/iletisim" onClick={close}>
+            İletişim
+          </Link>
+        </div>
       </div>
       {open && (
         <button
