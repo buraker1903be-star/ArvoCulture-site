@@ -1,6 +1,7 @@
 import { env } from "@/lib/env";
 import type { Product } from "@/lib/product-types";
 import { SELLER } from "@/lib/seller";
+import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "@/lib/shipping";
 
 const CURRENCY = "TRY";
 const COUNTRY = "TR";
@@ -66,6 +67,24 @@ export function productSchema(product: Product) {
           ? "https://schema.org/OutOfStock"
           : "https://schema.org/InStock",
       seller: { "@id": STORE_ID },
+      /*
+        Kargo. Google'ın ürün listelemeleri bu alan yokken uyarı
+        veriyordu. Ücret ürünün kendi fiyatına göre: eşiğin üzerindeki
+        tek ürün ücretsiz gönderiliyor. Teslimat süresi verilmiyor —
+        mağazanın taahhüt ettiği bir süre yok, uydurulmamalı.
+      */
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: (product.price >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FEE).toFixed(2),
+          currency: CURRENCY,
+        },
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: COUNTRY,
+        },
+      },
       /*
         İade koşulları. Değerler seller.ts’ten geliyor — mağazanın
         hukuki metinleriyle aynı kaynak. Şemada yazan süre ile

@@ -12,6 +12,7 @@ import { formatPhone, isValidPhone, phoneDigits } from "@/lib/phone";
 import { evaluateCoupon } from "@/lib/coupon";
 import type { Address } from "@/components/address-book";
 import { CheckoutSteps } from "@/components/checkout-steps";
+import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "@/lib/shipping";
 
 /**
  * Ödeme sayfası.
@@ -25,8 +26,6 @@ import { CheckoutSteps } from "@/components/checkout-steps";
 const ARC_URL = "https://arc.arvo-os.com";
 
 /** Kargo kuralı ARC’taki fonksiyonla aynı tutulmalıdır. */
-const SHIPPING_FEE = 120;
-const FREE_SHIPPING_OVER = 2000;
 
 export function CheckoutForm({
   supabaseUrl,

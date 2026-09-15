@@ -86,7 +86,13 @@ export function ProductGallery({
             */
             preload
             fetchPriority="high"
-            sizes="(max-width: 900px) 100vw, 46vw"
+            /*
+              Görsel alanı telefonda ekranın %81–84'ü, tablette %90'ı,
+              masaüstünde en fazla ~720px (ölçüldü). "100vw" alanı büyük
+              bildiriyordu: 430px'lik telefonda 1080px yeterken 1920px
+              iniyordu.
+            */
+            sizes="(max-width: 640px) 84vw, (max-width: 900px) 90vw, min(46vw, 740px)"
           />
         ) : (
           <span className="pdp-empty" aria-hidden="true">
