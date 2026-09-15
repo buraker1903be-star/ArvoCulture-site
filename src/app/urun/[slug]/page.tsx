@@ -89,7 +89,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title: product.name,
       description,
       url: `/urun/${product.slug}`,
-      ...(product.image ? { images: [{ url: product.image }] } : {}),
+      // Görsel: aynı klasördeki opengraph-image.tsx (marka kartı).
     },
     // Tükenmiş ürünü dizine ekletmiyoruz; stok gelince tekrar açılır.
     robots: { index: product.available !== false, follow: true },
