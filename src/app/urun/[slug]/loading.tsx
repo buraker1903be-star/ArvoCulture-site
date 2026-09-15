@@ -2,7 +2,9 @@
  * Ürün sayfası yükleme iskeleti.
  *
  * Solda görsel alanı, sağda başlık ve fiyat bloğu — gerçek
- * sayfanın iki sütunlu düzeniyle aynı oranlarda.
+ * sayfanın iki sütunlu düzeniyle aynı oranlarda. Köşeler ve
+ * parıltı CSS'ten geliyor (components.css, "Yükleme iskeleti");
+ * satır içinde 10px ve hap (999px) köşe vardı.
  */
 export default function Loading() {
   return (
@@ -11,7 +13,7 @@ export default function Loading() {
         <div className="pdp-media">
           <div
             className="skeleton"
-            style={{ width: "100%", aspectRatio: "1 / 1", borderRadius: 10 }}
+            style={{ width: "100%", aspectRatio: "1 / 1" }}
           />
         </div>
 
@@ -28,7 +30,7 @@ export default function Loading() {
           />
           <div
             className="skeleton"
-            style={{ height: 48, marginTop: 28, borderRadius: 999 }}
+            style={{ height: 48, marginTop: 28 }}
           />
         </div>
       </section>
