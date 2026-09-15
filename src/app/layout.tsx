@@ -35,18 +35,31 @@ import { env } from "@/lib/env";
  * altkümeden gelir.
  */
 /*
-  Başlık yazısı: yalnızca kullanılan ağırlıklar (400, 500) ve gerçek
-  italik. İtalik kesim tanımlı değilken hero'daki "senin hikâyen." ve
-  arama alanları tarayıcının eğdiği sahte italikle çiziliyordu;
-  Cormorant'ın asıl italiği bambaşka bir yazı. 600/700 hiçbir yerde
-  kullanılmıyordu. Kesimler yalnızca sayfada gerekiyorsa iner.
+  Başlık yazısı: yalnızca kullanılan ağırlıklar (400, 500). 600/700
+  hiçbir yerde kullanılmıyordu.
 */
 const display = Cormorant_Garamond({
   subsets: ["latin", "latin-ext"],
   weight: ["400", "500"],
-  style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
+});
+
+/*
+  Gerçek italik, ayrı ve önceden yüklenmeyen bir tanımda. İtalik yokken
+  hero'daki "senin hikâyen." ve arama alanları tarayıcının eğdiği sahte
+  italikle çiziliyordu. Aynı tanıma eklenince next/font iki italik
+  dosyasını (73 KB) italiğin hiç görünmediği sayfalarda da önceden
+  yüklüyor ve ürün görseliyle bant genişliği için yarışıyordu. Burada
+  yalnızca italik metin çizilen sayfada iniyor (bkz. --font-display-italic).
+*/
+const displayItalic = Cormorant_Garamond({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500"],
+  style: ["italic"],
+  variable: "--font-display-italic",
+  display: "swap",
+  preload: false,
 });
 
 const sans = Inter({
@@ -138,7 +151,7 @@ export default async function RootLayout({
     <html lang="tr">
       <body
         style={style}
-        className={`${sans.variable} ${display.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio}`}
+        className={`${sans.variable} ${display.variable} ${displayItalic.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio}`}
       >
         {/*
           Favori listesi sayfanın her yerinden erişilebilir olmalı:

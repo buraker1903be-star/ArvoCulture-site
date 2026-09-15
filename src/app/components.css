@@ -97,6 +97,7 @@
 }
 
 .hero-body h1 span {
+  font-family: var(--font-display-italic), var(--font-display), "Iowan Old Style", Georgia, serif;
   font-style: italic;
   font-weight: 400;
 }
@@ -208,7 +209,7 @@
 }
 
 .search-box span {
-  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-family: var(--font-display-italic), var(--font-display), "Iowan Old Style", Georgia, serif;
   font-size: clamp(19px, 1.6vw, 23px);
   font-style: italic;
   color: var(--ink-3);
@@ -1948,6 +1949,7 @@
 
 .live-field input::placeholder {
   color: var(--ink-3);
+  font-family: var(--font-display-italic), var(--font-display), "Iowan Old Style", Georgia, serif;
   font-style: italic;
 }
 
