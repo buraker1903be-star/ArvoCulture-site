@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getAuthClient } from "@/lib/auth-client";
 import { readFavourites, writeFavourites } from "@/lib/favourites";
 
 /**
@@ -32,6 +31,15 @@ import { readFavourites, writeFavourites } from "@/lib/favourites";
  * Çıkışta tarayıcıdaki liste temizlenir. Bu bilinçli: aynı
  * bilgisayarda başka bir müşteri giriş yaparsa, bir öncekinin
  * favorileri onun hesabına karışmamalı.
+ *
+ * Supabase istemcisi yalnızca gerektiğinde yükleniyor. Bu bileşen
+ * her sayfada (layout.tsx) çiziliyor ve istemciyi en başta içe
+ * aktardığı için supabase-js (233 KB, sıkıştırılmış 60 KB) hiç giriş
+ * yapmamış ziyaretçiye de her sayfada iniyordu. Artık yalnızca
+ * kayıtlı bir oturum varsa, adreste e-posta bağlantısından gelen
+ * kimlik bilgisi varsa ya da başka bir bileşen (hesap paneli)
+ * istemciyi kurduysa yükleniyor. Misafirin favorileri tarayıcıda
+ * kalıyor; kalbe dokunmak Supabase'i yüklemiyor.
  */
 
 type FavouritesContextValue = {
@@ -69,14 +77,57 @@ export function FavouritesProvider({
      için tutuluyor: token yenilendiğinde de olay tetikleniyor. */
   const syncedUser = useRef<string | null>(null);
 
-  const client = useMemo<SupabaseClient | null>(() => {
+  /* İstemci ancak gerektiğinde kuruluyor (bkz. yukarıdaki açıklama). */
+  const [client, setClient] = useState<SupabaseClient | null>(null);
+
+  /*
+    supabase-js oturumu varsayılan olarak `sb-<proje>-auth-token`
+    anahtarında saklıyor (auth-client.ts özel `storageKey` vermiyor).
+    Anahtar yoksa müşteri giriş yapmamış: istemciye gerek yok.
+  */
+  const sessionKey = useMemo(() => {
+    try {
+      return `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
+    } catch {
+      return null;
+    }
+  }, [supabaseUrl]);
+
+  const hasStoredSession = useCallback(() => {
+    if (!sessionKey) return false;
+    try {
+      return localStorage.getItem(sessionKey) !== null;
+    } catch {
+      return false;
+    }
+  }, [sessionKey]);
+
+  const loadClient = useCallback(async () => {
     if (!supabaseUrl || !supabaseKey) return null;
     try {
-      return getAuthClient(supabaseUrl, supabaseKey);
+      const { getAuthClient } = await import("@/lib/auth-client");
+      const loaded = getAuthClient(supabaseUrl, supabaseKey);
+      setClient(loaded);
+      return loaded;
     } catch {
       return null;
     }
   }, [supabaseUrl, supabaseKey]);
+
+  useEffect(() => {
+    /* E-posta bağlantısından (kayıt onayı, şifre sıfırlama) gelindiyse
+       istemci adresteki kimlik bilgisini okuyup oturumu kurmalı. */
+    const authInUrl = /access_token=|refresh_token=|[?&]code=|type=recovery/.test(
+      window.location.hash + window.location.search,
+    );
+    if (hasStoredSession() || authInUrl) void loadClient();
+
+    /* Hesap paneli istemciyi kurduğunda (giriş anı) favoriler de
+       bağlanıyor; ilk oturum olayı listeyi eşitliyor. */
+    const onClient = () => void loadClient();
+    window.addEventListener("arvo:auth-client", onClient);
+    return () => window.removeEventListener("arvo:auth-client", onClient);
+  }, [hasStoredSession, loadClient]);
 
   /** Hesaptaki listeyi eklenme sırasına göre okur. */
   const fetchRemote = useCallback(async (): Promise<string[]> => {
@@ -199,14 +250,17 @@ export function FavouritesProvider({
       writeFavourites(next);
       setSlugs(next);
 
-      if (!client) return;
+      /* Misafir: liste yalnızca tarayıcıda, Supabase yüklenmiyor. */
+      if (!client && !hasStoredSession()) return;
 
       void (async () => {
-        const { data } = await client.auth.getSession();
+        const active = client ?? (await loadClient());
+        if (!active) return;
+        const { data } = await active.auth.getSession();
         if (!data.session) return;
 
         const { error } = adding
-          ? await client
+          ? await active
               .from(TABLE)
               /* Aynı ürün iki kez eklenemez (unique kısıt); iki
                  sekmeden aynı anda eklenirse çakışma yok sayılır. */
@@ -214,7 +268,7 @@ export function FavouritesProvider({
                 { product_slug: slug },
                 { onConflict: "user_id,product_slug", ignoreDuplicates: true },
               )
-          : await client.from(TABLE).delete().eq("product_slug", slug);
+          : await active.from(TABLE).delete().eq("product_slug", slug);
 
         /* 23505 benzersizlik ihlali: ürün zaten favorilerde. İki
            sekmeden aynı anda eklenmesi hata değil — istenen sonuç
@@ -226,7 +280,7 @@ export function FavouritesProvider({
         }
       })();
     },
-    [client],
+    [client, hasStoredSession, loadClient],
   );
 
   const value = useMemo<FavouritesContextValue>(

@@ -27,5 +27,16 @@ export function getAuthClient(url: string, key: string) {
     },
   });
 
+  /*
+    İstemci kuruldu: favoriler (layout.tsx'teki FavouritesProvider)
+    Supabase'i kendisi yüklemiyorsa bu olayla bağlanıyor. Hesap
+    panelinden giriş yapan müşterinin favorileri böylece sayfa
+    yenilenmeden eşitleniyor. Mikro görevde: kurulum bir bileşenin
+    çizimi sırasında olabilir, olay çizimi bölmemeli.
+  */
+  if (typeof window !== "undefined") {
+    queueMicrotask(() => window.dispatchEvent(new Event("arvo:auth-client")));
+  }
+
   return client;
 }
