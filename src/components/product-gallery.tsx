@@ -77,7 +77,15 @@ export function ProductGallery({
                 : name
             }
             fill
-            priority
+            /*
+              Sayfanın en büyük öğesi (LCP). Next 16'da `priority` yalnızca
+              önyükleme bağlantısı üretiyor; tarayıcı görseli yine "Low"
+              öncelikle istiyor ve dört font dosyasıyla bant genişliği
+              paylaşıyordu (yavaş 4G'de inmesi 2,2–3,4 sn). `fetchPriority`
+              onu fontların önüne alıyor.
+            */
+            preload
+            fetchPriority="high"
             sizes="(max-width: 900px) 100vw, 46vw"
           />
         ) : (

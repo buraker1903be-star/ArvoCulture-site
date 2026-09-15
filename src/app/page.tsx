@@ -272,7 +272,8 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
           width={2000}
           height={1000}
           sizes="(max-width: 1600px) 100vw, 1600px"
-          priority
+          preload
+          fetchPriority="high"
         />
       )}
       {/*
