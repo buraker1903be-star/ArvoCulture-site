@@ -94,7 +94,6 @@ export function CartPageView() {
     */
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCoupon(readCoupon());
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNote(readNote());
   }, []);
 

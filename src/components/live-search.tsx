@@ -136,7 +136,6 @@ export function LiveSearch({
         <input
           type="search"
           value={query}
-          // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus={autoFocus}
           placeholder="Ürün, marka veya kategori ara"
           aria-label="Ürün ara"
