@@ -122,7 +122,7 @@ export function CategoryStrip({
       </div>
 
       <div className="cat-cards">
-        {items.map((item) => {
+        {items.map((item, index) => {
           // "/koleksiyon/bakim" → "bakim"
           const key = item.href.split("/").pop() ?? "";
           return (
@@ -132,7 +132,16 @@ export function CategoryStrip({
                   src={`/kategori/${key}.jpg`}
                   alt=""
                   fill
-                  sizes="(max-width: 640px) 45vw, (max-width: 980px) 30vw, 19vw"
+                  /*
+                    Telefonda ilk kart tam genişlik (bkz. .cat-cards
+                    > :first-child), diğerleri ikişerli. Tek bir "45vw"
+                    ilk kartı yarı çözünürlükte, bulanık çiziyordu.
+                  */
+                  sizes={
+                    index === 0
+                      ? "(max-width: 640px) 90vw, (max-width: 980px) 30vw, 19vw"
+                      : "(max-width: 640px) 42vw, (max-width: 980px) 30vw, 19vw"
+                  }
                 />
               </span>
               <span className="cat-card-body">

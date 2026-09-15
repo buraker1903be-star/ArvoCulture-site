@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   images: {
+    /*
+      Ara genişlik basamakları: 480 ve 560. Varsayılan liste 384'ten
+      640'a atlıyor; ürün kartı telefonda ve tablette 408–453px
+      istiyor ve 640 iniyordu (%41–57 fazla). Ölçüldü.
+    */
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 480, 560],
     // Host artık ortam değişkeninden türetiliyor; staging ve production
     // farklı ARC projeleri kullanabilir.
     remotePatterns: [
