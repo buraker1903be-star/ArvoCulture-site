@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { CartContext, cartKey } from "@/components/cart";
 import { CheckoutSteps } from "@/components/checkout-steps";
+import { FREE_SHIPPING_OVER as FREE_OVER, SHIPPING_FEE } from "@/lib/shipping";
 import { formatPrice } from "@/lib/product-types";
 import {
   readCoupon,
@@ -15,8 +16,6 @@ import {
 } from "@/lib/cart-extras";
 
 /** Kargo kuralı ARC’taki sipariş fonksiyonuyla aynı tutulmalıdır. */
-const SHIPPING_FEE = 120;
-const FREE_OVER = 2000;
 
 /**
  * Sepet sayfası.

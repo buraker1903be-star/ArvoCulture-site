@@ -9,9 +9,8 @@ import { formatPrice } from "@/lib/product-types";
 import { evaluateCoupon } from "@/lib/coupon";
 import { readCoupon, writeCoupon, clearCoupon } from "@/lib/cart-extras";
 import { useLayerBack } from "@/lib/use-layer-back";
+import { FREE_SHIPPING_OVER as FREE_OVER, SHIPPING_FEE } from "@/lib/shipping";
 
-const SHIPPING_FEE = 120;
-const FREE_OVER = 2000;
 
 /**
  * Sepet çekmecesi.
