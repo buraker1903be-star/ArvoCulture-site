@@ -5462,6 +5462,66 @@
 }
 
 /* ==========================================================
+   Yükleme iskeleti
+   ========================================================== */
+
+/*
+  Koleksiyon ve ürün sayfalarının `loading.tsx` iskeletleri. Bu
+  sınıfların hiç kuralı yoktu: iskelet kutuları zeminsiz ve çoğu
+  sıfır yükseklikte çiziliyor, sayfa geçişinde boş paneller
+  görünüyordu. Şimdi iki token rengi arasında yavaş bir parıltı;
+  köşe yok, sitenin kıl payı diliyle aynı.
+*/
+.skeleton,
+.skeleton-card .card-art {
+  display: block;
+  border-radius: 0;
+  background: linear-gradient(
+    90deg,
+    var(--line-soft) 0%,
+    var(--backdrop-1) 50%,
+    var(--line-soft) 100%
+  );
+  background-size: 200% 100%;
+  animation: iskelet 1.6s var(--ease) infinite;
+}
+
+.skeleton-line {
+  width: 100%;
+  height: 12px;
+  margin-top: var(--s2);
+}
+
+.skeleton-line.is-short {
+  width: 38%;
+}
+
+.skeleton-line.is-medium {
+  width: 64%;
+}
+
+/* İskelet kartın görsel alanı kart çerçevesinin yerini tutuyor. */
+.skeleton-card .card-art {
+  border: 0;
+}
+
+@keyframes iskelet {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .skeleton-card .card-art {
+    animation: none;
+  }
+}
+
+/* ==========================================================
    UYGULAMA KABUĞU
    Bağlantı durumu, kurulum teklifi ve ana ekrandan açıldığında
    geçerli olan düzeltmeler.
