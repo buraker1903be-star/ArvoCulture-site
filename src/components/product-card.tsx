@@ -54,11 +54,16 @@ export function ProductCard({ product }: { product: Product }) {
           görsel. İki ayrı düzen: masaüstünde hover ile ikinci
           görsel zaten çalışıyor ve daha az etkileşim istiyor.
         */}
+        {/*
+          `sizes` ölçülen kart genişliği: telefonda ekranın %38–40'ı,
+          tablette %28'i, masaüstünde %16–21'i (en fazla ~265px).
+          "50vw / 33vw / 25vw / 20vw" kartı büyük bildiriyordu.
+        */}
         {product.images.length > 1 ? (
           <CardGallery
             images={product.images.slice(0, 4)}
             alt={product.name}
-            sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
+            sizes="(max-width: 640px) 40vw, (max-width: 980px) 29vw, (max-width: 1280px) 21vw, min(17vw, 270px)"
           />
         ) : (
           product.image && (
@@ -67,7 +72,7 @@ export function ProductCard({ product }: { product: Product }) {
               src={product.image}
               alt={product.name}
               fill
-              sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
+              sizes="(max-width: 640px) 40vw, (max-width: 980px) 29vw, (max-width: 1280px) 21vw, min(17vw, 270px)"
             />
           )
         )}

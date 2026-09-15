@@ -252,7 +252,7 @@ export function LiveSearch({
                       src={item.image}
                       alt={item.name}
                       fill
-                      sizes="(max-width:640px) 50vw,(max-width:980px) 33vw,(max-width:1280px) 25vw,20vw"
+                      sizes="(max-width: 640px) 40vw, (max-width: 980px) 29vw, (max-width: 1280px) 21vw, min(17vw, 270px)"
                     />
                   )}
                 </Link>
