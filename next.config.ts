@@ -24,6 +24,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "percdn.com",
       },
+      // ARC panelindeki hero/kampanya görselleri Shopify CDN'inde
+      // olabilir. Liste src/lib/image-hosts.ts ile aynı tutulmalı.
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+        pathname: "/s/files/**",
+      },
     ],
   },
   async headers() {

@@ -28,7 +28,7 @@ export default async function Search({
   ]);
 
   return (
-    <main className="shell">
+    <main className="shell search-page">
       <section className="panel about-hero detail-hero">
         <p className="about-eyebrow">Arama</p>
         <h1>Ne aramıştınız?</h1>

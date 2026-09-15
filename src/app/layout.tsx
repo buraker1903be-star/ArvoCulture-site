@@ -34,9 +34,17 @@ import { env } from "@/lib/env";
  * İkisinde de `latin-ext` şart: ı, İ, ğ, ş, ç Türkçe metinde bu
  * altkümeden gelir.
  */
+/*
+  Başlık yazısı: yalnızca kullanılan ağırlıklar (400, 500) ve gerçek
+  italik. İtalik kesim tanımlı değilken hero'daki "senin hikâyen." ve
+  arama alanları tarayıcının eğdiği sahte italikle çiziliyordu;
+  Cormorant'ın asıl italiği bambaşka bir yazı. 600/700 hiçbir yerde
+  kullanılmıyordu. Kesimler yalnızca sayfada gerekiyorsa iner.
+*/
 const display = Cormorant_Garamond({
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
 });
