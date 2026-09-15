@@ -6,7 +6,6 @@ import { getAuthClient } from "@/lib/auth-client";
 import { AddressBook } from "@/components/address-book";
 import { OrderCard } from "@/components/order-card";
 import type { Order } from "@/lib/order-types";
-import { formatPrice } from "@/lib/product-types";
 
 type Mode = "login" | "register" | "reset";
 
@@ -123,14 +122,9 @@ export function AccountPanel({
     */
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setProfileName(String(meta.full_name ?? ""));
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProfilePhone(String(meta.phone ?? ""));
-    /*
-      loadOrders eşzamansızdır; durum güncellemesi ağ isteği
-      döndükten sonra olur. Kural bunu ayırt edemediği için
-      burada bilinçli olarak kapatılıyor.
-    */
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    /* loadOrders eşzamansızdır; durum güncellemesi ağ isteği
+       döndükten sonra olur. */
     void loadOrders();
   }, [session, loadOrders]);
 

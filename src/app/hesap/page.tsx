@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AccountPanel } from "@/components/account-panel";
 import { env } from "@/lib/env";
+import { SELLER } from "@/lib/seller";
 
 export const metadata: Metadata = {
   title: "Hesabım",
@@ -18,8 +19,6 @@ export const metadata: Metadata = {
  * zorunlu değil: misafir alışveriş açık kalır, hesap yalnızca
  * sipariş geçmişi ve hızlı ödeme için bir kolaylıktır.
  */
-
-const WHATSAPP_LINK = "https://wa.me/905074370507";
 
 export default function Account() {
   return (
@@ -56,6 +55,13 @@ export default function Account() {
           </li>
           <li>
             <Link href="/iletisim">İletişim</Link>
+          </li>
+          {/* Sipariş sorusu olan müşteri için en hızlı yol. Numara
+              tanımlıydı ama listeye hiç eklenmemişti. */}
+          <li>
+            <a href={SELLER.phoneLink} rel="noopener">
+              WhatsApp
+            </a>
           </li>
         </ul>
       </section>

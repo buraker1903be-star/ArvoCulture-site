@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { BankTransfer } from "@/components/bank-transfer";
@@ -35,6 +36,7 @@ export function CheckoutForm({
   supabaseKey?: string;
 }) {
   const { items, total, discounts } = useContext(CartContext);
+  const router = useRouter();
   const [saved, setSaved] = useState<Address[]>([]);
   const [selected, setSelected] = useState<string | "manual">("manual");
 
@@ -68,7 +70,6 @@ export function CheckoutForm({
     */
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCoupon(readCoupon());
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNote(readNote());
   }, []);
 
@@ -125,7 +126,6 @@ export function CheckoutForm({
     return () => {
       active = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabaseUrl, supabaseKey]);
 
   function applyAddress(address: Address, email?: string) {
@@ -154,6 +154,18 @@ export function CheckoutForm({
     ? Math.round((grand * SELLER.transferDiscountPercent) / 100)
     : 0;
   const payable = grand - transferDiscount;
+
+  /*
+    Sepette uygulanan kod ödeme özetinde hiç görünmüyordu: müşteri
+    sepette indirimi görüp burada kodsuz bir özetle karşılaşıyor,
+    kodunun düştüğünü sanıyordu. Kod gösteriliyor ama tutarı
+    hesaplanmıyor: indirimi sipariş oluşurken ARC uyguluyor ve
+    kargo ile havale indirimiyle birleşme sırası orada belirleniyor.
+    Burada tahmini bir tutar göstermek, ödenen tutarla çelişebilirdi.
+  */
+  const appliedCoupon = coupon
+    ? evaluateCoupon(discounts, coupon, total)
+    : null;
 
   const ready = useMemo(
     () =>
@@ -257,7 +269,9 @@ export function CheckoutForm({
         yönlendiriliyor.
       */
       if (useTransfer) {
-        window.location.href = `/siparis/tamam?no=${encodeURIComponent(data.orderNumber)}&yontem=havale`;
+        router.push(
+          `/siparis/tamam?no=${encodeURIComponent(data.orderNumber)}&yontem=havale`,
+        );
         return;
       }
 
@@ -536,6 +550,12 @@ export function CheckoutForm({
               <dt>Kargo</dt>
               <dd>{shipping === 0 ? "Ücretsiz" : formatPrice(shipping)}</dd>
             </div>
+            {appliedCoupon?.ok && (
+              <div>
+                <dt>İndirim kodu · {coupon.trim().toUpperCase()}</dt>
+                <dd>{appliedCoupon.label}</dd>
+              </div>
+            )}
             {transferDiscount > 0 && (
               <div>
                 <dt>Havale indirimi (%{SELLER.transferDiscountPercent})</dt>
@@ -547,6 +567,12 @@ export function CheckoutForm({
               <dd>{formatPrice(payable)}</dd>
             </div>
           </dl>
+
+          {appliedCoupon?.ok && (
+            <p className="hint">
+              Kod indirimi, siparişiniz oluşturulurken toplamdan düşülür.
+            </p>
+          )}
 
           {shipping > 0 && (
             <p className="hint">

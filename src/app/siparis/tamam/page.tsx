@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BankDetails } from "@/components/bank-details";
+import { OrderCleanup } from "@/components/order-cleanup";
 import { SELLER } from "@/lib/seller";
 
 export const metadata = {
@@ -24,6 +25,7 @@ export default async function OrderDone({
 
   return (
     <main className="shell">
+      <OrderCleanup orderNumber={no} />
       <section className="panel about-hero order-result">
         <p className="about-eyebrow">Teşekkür ederiz</p>
         <h1>Siparişiniz alındı.</h1>

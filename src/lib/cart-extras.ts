@@ -34,3 +34,7 @@ export function readNote() {
 export function writeNote(value: string) {
   localStorage.setItem(NOTE_KEY, value.slice(0, 500));
 }
+
+export function clearNote() {
+  localStorage.removeItem(NOTE_KEY);
+}

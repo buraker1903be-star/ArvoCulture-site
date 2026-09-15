@@ -10,7 +10,6 @@ import {
   CategoryStrip,
   HelpStrip,
 } from "@/components/home-blocks";
-import { discountOf } from "@/components/product-card";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
 import { formatPrice } from "@/lib/product-types";
 import {
