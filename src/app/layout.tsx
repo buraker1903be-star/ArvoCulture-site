@@ -194,6 +194,8 @@ export default async function RootLayout({
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src="/rozet/etbis.png"
+                        loading="lazy"
+                        decoding="async"
                         alt=""
                         width={34}
                         height={34}
@@ -206,7 +208,14 @@ export default async function RootLayout({
                     </span>
                     <span className="badge-card">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/rozet/lr.png" alt="" width={34} height={34} />
+                      <img
+                        src="/rozet/lr.png"
+                        loading="lazy"
+                        decoding="async"
+                        alt=""
+                        width={34}
+                        height={34}
+                      />
                       <small>
                         LR Health &amp; Beauty
                         <br />
@@ -259,11 +268,15 @@ export default async function RootLayout({
               indirilen resmi logo bandı kullanılıyor.
               Dosya yoksa yalnızca metin görünür, sayfa bozulmaz.
             */}
+              {/* Alt bilgi görselleri ekranın dışında: sayfa açılırken
+                  CSS ve ürün görseliyle bant genişliği paylaşmasınlar. */}
               <div className="footer-pay">
                 <div className="pay-provider">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/rozet/paytr.png"
+                    loading="lazy"
+                    decoding="async"
                     alt="PayTR"
                     width={84}
                     height={26}
@@ -284,7 +297,12 @@ export default async function RootLayout({
                   ].map((card) => (
                     <li key={card.file}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={`/rozet/${card.file}.png`} alt={card.label} />
+                      <img
+                        src={`/rozet/${card.file}.png`}
+                        alt={card.label}
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </li>
                   ))}
                 </ul>
