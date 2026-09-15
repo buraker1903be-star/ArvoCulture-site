@@ -156,6 +156,8 @@ export function CartDrawer({
                     href={`/urun/${item.slug}`}
                     className="drawer-thumb"
                     onClick={close}
+                    aria-hidden="true"
+                    tabIndex={-1}
                   >
                     {item.image && (
                       <Image src={item.image} alt="" fill sizes="64px" />
@@ -211,6 +213,7 @@ export function CartDrawer({
                 <input
                   type="text"
                   placeholder="İndirim kodu"
+                  aria-label="İndirim kodu"
                   value={code}
                   onChange={(event) => {
                     const next = event.target.value.toUpperCase();

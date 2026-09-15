@@ -144,7 +144,14 @@ export function CartPageView() {
             <ul className="cart-items">
               {items.map((item) => (
                 <li key={cartKey(item)} className="cart-item">
-                  <Link href={`/urun/${item.slug}`} className="cart-thumb">
+                  {/* Görsel bağlantısı ürün adıyla aynı yere gidiyor;
+                      ekran okuyucu ve Tab sırasında tekrar etmesin. */}
+                  <Link
+                    href={`/urun/${item.slug}`}
+                    className="cart-thumb"
+                    aria-hidden="true"
+                    tabIndex={-1}
+                  >
                     {item.image && (
                       <Image src={item.image} alt="" fill sizes="88px" />
                     )}
@@ -201,6 +208,7 @@ export function CartPageView() {
 
             <textarea
               className="cart-note"
+              aria-label="Sipariş notu"
               rows={3}
               maxLength={500}
               placeholder="Örneğin: Kapıcıya teslim edilebilir, öğleden sonra evdeyim…"
@@ -238,6 +246,7 @@ export function CartPageView() {
             <input
               type="text"
               placeholder="İndirim kodu"
+              aria-label="İndirim kodu"
               value={coupon}
               onChange={(event) => {
                 setCoupon(event.target.value.toUpperCase());
