@@ -257,7 +257,7 @@ export function CheckoutForm({
         yönlendiriliyor.
       */
       if (useTransfer) {
-        window.location.href = `/siparis/tamam?no=${data.orderNumber}&yontem=havale`;
+        window.location.href = `/siparis/tamam?no=${encodeURIComponent(data.orderNumber)}&yontem=havale`;
         return;
       }
 
