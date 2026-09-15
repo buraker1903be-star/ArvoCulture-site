@@ -408,6 +408,10 @@ export function Header({
               href="/hesap"
               aria-label="Hesabım"
               className="header-action-link"
+              /* Önceden yüklenmiyor: hesap paneli Supabase'i (233 KB)
+                 içe aktarıyor; önceden yükleme onu giriş yapmamış
+                 ziyaretçiye de her sayfada indiriyordu. */
+              prefetch={false}
             >
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="3.5" />

@@ -125,6 +125,12 @@ export function BottomNav() {
             key={tab.href}
             href={tab.href}
             aria-current={active ? "page" : undefined}
+            /*
+              Hesap sayfası önceden yüklenmiyor: hesap paneli Supabase'i
+              (233 KB) içe aktarıyor ve önceden yükleme onu giriş
+              yapmamış ziyaretçiye de her sayfada indiriyordu.
+            */
+            prefetch={tab.href === "/hesap" ? false : undefined}
           >
             <span className="bottom-nav-icon">
               <svg viewBox="0 0 24 24" aria-hidden="true">

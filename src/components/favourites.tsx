@@ -120,7 +120,11 @@ export function FavouritesProvider({
     const authInUrl = /access_token=|refresh_token=|[?&]code=|type=recovery/.test(
       window.location.hash + window.location.search,
     );
-    if (hasStoredSession() || authInUrl) void loadClient();
+    /* Mikro görevde: yükleme sonunda durum güncelleniyor; efektin
+       eşzamanlı gövdesinde değil (react-hooks/set-state-in-effect). */
+    if (hasStoredSession() || authInUrl) {
+      queueMicrotask(() => void loadClient());
+    }
 
     /* Hesap paneli istemciyi kurduğunda (giriş anı) favoriler de
        bağlanıyor; ilk oturum olayı listeyi eşitliyor. */
