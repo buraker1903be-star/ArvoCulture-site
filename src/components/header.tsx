@@ -352,14 +352,25 @@ export function Header({
               >
                 <div className="mega-panel-head">
                   <p>{menu.title}</p>
-                  <Link href={menu.href}>Tümünü gör ↗</Link>
+                  <Link href={menu.href} prefetch={false}>
+                    Tümünü gör ↗
+                  </Link>
                 </div>
                 <div className="mega-columns">
                   {menu.sections.map((section) => (
                     <div key={section.title}>
                       <p>{section.title}</p>
                       {section.items.map((item) => (
-                        <Link href={`/koleksiyon/${item.slug}`} key={item.slug}>
+                        /*
+                          Önceden yükleme kapalı: mega menüdeki ~118
+                          koleksiyon bağlantısı sayfa açılır açılmaz
+                          sunucudan isteniyordu. Tıklayınca yükleniyor.
+                        */
+                        <Link
+                          href={`/koleksiyon/${item.slug}`}
+                          key={item.slug}
+                          prefetch={false}
+                        >
                           <b>{item.title}</b>
                         </Link>
                       ))}

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CouponCopy } from "@/components/coupon-strip";
 import { getPopularSearches } from "@/lib/popular-searches";
+import { canOptimizeImage } from "@/lib/image-hosts";
 import { SearchOverlay } from "@/components/search-overlay";
 import {
   ProductBlock,
@@ -175,11 +176,12 @@ export default async function Home() {
           <section data-arvo-section="campaign" className="panel promo">
             {theme.campaign_image_url && (
               <Image
-                unoptimized
+                unoptimized={!canOptimizeImage(theme.campaign_image_url)}
                 src={theme.campaign_image_url}
                 alt=""
                 width={1600}
                 height={600}
+                sizes="(max-width: 1600px) 100vw, 1600px"
               />
             )}
             {/* Filigran: indirim oranı, panelin sağ tarafındaki boşluğu
@@ -258,11 +260,18 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
     <section data-arvo-section="hero" className="panel hero">
       {theme.hero_image_url && (
         <Image
-          unoptimized
+          /*
+            İzinli adreste görsel optimize ediliyor: telefona 1920px'lik
+            dosya yerine ekran genişliğinde WebP gidiyor (bkz.
+            lib/image-hosts.ts). Sayfanın en büyük öğesi bu görsel;
+            yavaş bağlantıda açılış süresini o belirliyor.
+          */
+          unoptimized={!canOptimizeImage(theme.hero_image_url)}
           src={theme.hero_image_url}
           alt=""
           width={2000}
           height={1000}
+          sizes="(max-width: 1600px) 100vw, 1600px"
           priority
         />
       )}

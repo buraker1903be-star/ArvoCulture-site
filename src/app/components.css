@@ -1874,6 +1874,18 @@
    ========================================================== */
 
 /*
+  Arama sayfası en az ekran boyunda: sonuçlar geç geliyor ve kısa
+  sayfada görünür alandaki alt bilgi aşağı itiliyordu (CLS 0.27–0.32).
+  Alt bilgi baştan ekranın altında kalınca büyüyen içerik kayma
+  sayılmıyor. `align-content: start`: fazla yükseklik panelleri
+  uzatmasın, zeminde kalsın.
+*/
+.search-page {
+  min-height: 100svh;
+  align-content: start;
+}
+
+/*
   `minmax(0, 1fr)`: ızgara öğesi içeriğin en küçük genişliğinin
   altına inemiyordu; arama alanının doğal genişliği yüzünden
   telefonda "Temizle" panelin dışına taşıyordu.
