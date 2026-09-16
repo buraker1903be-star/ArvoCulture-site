@@ -21,17 +21,23 @@ export function BankTransfer({
 }: {
   seller: { legalName: string; bankName: string; iban: string };
   discountPercent: number;
-  /** Kuruş cinsinden sepet toplamı. */
+  /**
+   * TL cinsinden sipariş toplamı (kargo dahil). Önceden kuruş
+   * sanılıp 100'e bölünüyordu; ödeme formu TL gönderdiği için
+   * ₺1.617,90'lık siparişte seçenekler "₺16,18" gösteriyordu.
+   */
   total: number;
   onSelect: (useTransfer: boolean) => void;
   selected: boolean;
 }) {
-  const money = (kurus: number) =>
+  const money = (lira: number) =>
     new Intl.NumberFormat("tr-TR", {
       style: "currency",
       currency: "TRY",
-    }).format(kurus / 100);
+    }).format(lira);
 
+  /* Ödeme özetindeki havale indirimiyle aynı hesap (checkout-form):
+     iki satır aynı tutarı göstermeli. */
   const discount = Math.round((total * discountPercent) / 100);
   const discounted = total - discount;
 
