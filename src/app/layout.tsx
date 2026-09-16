@@ -13,6 +13,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { AppShell } from "@/components/app-shell";
 import { PageTransition } from "@/components/page-transition";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
+import { getStoreStage } from "@/lib/store-stage";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getStorefrontCollections } from "@/lib/collections";
 import { JsonLd } from "@/components/json-ld";
@@ -136,11 +137,30 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, discounts, collections] = await Promise.all([
+  const [theme, discounts, collections, stage] = await Promise.all([
     getStorefrontTheme(),
     getStorefrontDiscounts(),
     getStorefrontCollections(),
+    getStoreStage(),
   ]);
+  /*
+    Abonelik ödenmediğinde mağaza kademe kademe kapanır; son kademede vitrin
+    de kapanır (bkz. lib/store-stage.ts). Katalog, sepet ve ödeme hiç
+    çizilmiyor: kapalı bir mağazada fiyat göstermek mesafeli satış açısından
+    da yanlış olur.
+  */
+  if (stage === "closed") {
+    return (
+      <html lang="tr">
+        <body className={`${sans.variable} ${display.variable} store-closed-body`}>
+          <main className="store-closed">
+            <h1>Mağazamız şu anda kapalı</h1>
+            <p>Kısa süre içinde tekrar hizmetinizdeyiz. İlginiz için teşekkür ederiz.</p>
+          </main>
+        </body>
+      </html>
+    );
+  }
   const style = {
     "--ink": theme.primary_color,
     "--acid": theme.accent_color,

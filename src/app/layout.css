@@ -1510,3 +1510,14 @@ footer {
     justify-self: center;
   }
 }
+
+/* Abonelik ödenmediğinde kapanan vitrin (bkz. lib/store-stage.ts).
+   Tema değişkenleri yüklenmediği için renkler burada sabit. */
+.store-closed-body { margin: 0; background: #faf9f7; color: #1a1a1a; }
+.store-closed {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; min-height: 100vh; padding: 32px; text-align: center;
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+.store-closed h1 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
+.store-closed p { margin: 0; font-size: 15px; line-height: 1.6; opacity: .7; max-width: 42ch; }
