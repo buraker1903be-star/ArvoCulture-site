@@ -1,7 +1,7 @@
 import { env } from "@/lib/env";
 import type { Product } from "@/lib/product-types";
 import { SELLER } from "@/lib/seller";
-import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "@/lib/shipping";
+import { shippingFor } from "@/lib/order-quote";
 
 const CURRENCY = "TRY";
 const COUNTRY = "TR";
@@ -77,7 +77,7 @@ export function productSchema(product: Product) {
         "@type": "OfferShippingDetails",
         shippingRate: {
           "@type": "MonetaryAmount",
-          value: (product.price >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FEE).toFixed(2),
+          value: shippingFor(product.price).toFixed(2),
           currency: CURRENCY,
         },
         shippingDestination: {

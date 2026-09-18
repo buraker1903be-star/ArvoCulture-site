@@ -16,6 +16,7 @@ export function BankTransfer({
   seller,
   discountPercent,
   total,
+  discount,
   onSelect,
   selected,
 }: {
@@ -27,6 +28,12 @@ export function BankTransfer({
    * ₺1.617,90'lık siparişte seçenekler "₺16,18" gösteriyordu.
    */
   total: number;
+  /**
+   * TL cinsinden havale indirimi. Burada yeniden hesaplanmıyor: taban
+   * yalnızca mal bedeli (kargo hariç) ve kural ARC ile birebir olmalı;
+   * tek yer lib/order-quote.ts. Ödeme özetiyle aynı tutarı gösterir.
+   */
+  discount: number;
   onSelect: (useTransfer: boolean) => void;
   selected: boolean;
 }) {
@@ -36,9 +43,6 @@ export function BankTransfer({
       currency: "TRY",
     }).format(lira);
 
-  /* Ödeme özetindeki havale indirimiyle aynı hesap (checkout-form):
-     iki satır aynı tutarı göstermeli. */
-  const discount = Math.round((total * discountPercent) / 100);
   const discounted = total - discount;
 
   return (

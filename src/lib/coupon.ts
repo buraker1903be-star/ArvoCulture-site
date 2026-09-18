@@ -1,4 +1,5 @@
 import type { StorefrontDiscount } from "@/lib/discounts";
+import { toKurus } from "@/lib/order-quote";
 
 /**
  * Kupon değerlendirmesi — yalnızca gösterim içindir.
@@ -28,9 +29,11 @@ export function evaluateCoupon(
     return { ok: false, reason: "Bu kod geçerli değil." };
   }
 
-  // Tutarlar ARC’ta kuruş cinsinden tutulur.
+  // Tutarlar ARC’ta kuruş cinsinden tutulur; karşılaştırma ve hesap da
+  // kuruşta yapılır ki kayan nokta farkı sınırda sonucu değiştirmesin.
+  const subtotalKurus = toKurus(subtotal);
   const minimum = (found.minimum_subtotal ?? 0) / 100;
-  if (subtotal < minimum) {
+  if (subtotalKurus < (found.minimum_subtotal ?? 0)) {
     return {
       ok: false,
       reason: `Bu kod ${new Intl.NumberFormat("tr-TR", {
@@ -49,10 +52,13 @@ export function evaluateCoupon(
     };
   }
 
-  const amount =
+  // ARC sipariş fonksiyonuyla aynı: yüzde indirim kuruşta yuvarlanır,
+  // sabit indirim (value kuruş) ara toplamı aşamaz.
+  const amountKurus =
     found.discount_type === "percentage"
-      ? (subtotal * found.value) / 100
-      : Math.min(found.value / 100, subtotal);
+      ? Math.round((subtotalKurus * found.value) / 100)
+      : Math.min(found.value, subtotalKurus);
+  const amount = amountKurus / 100;
 
   return {
     ok: true,

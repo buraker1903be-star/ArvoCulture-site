@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { CartContext, cartKey } from "@/components/cart";
 import { CheckoutSteps } from "@/components/checkout-steps";
-import { FREE_SHIPPING_OVER as FREE_OVER, SHIPPING_FEE } from "@/lib/shipping";
+import { amountToFreeShipping, shippingFor, toKurus } from "@/lib/order-quote";
 import { formatPrice } from "@/lib/product-types";
 import {
   readCoupon,
@@ -43,6 +43,7 @@ export function CartPageView() {
   >("idle");
   const [couponMessage, setCouponMessage] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponFreeShipping, setCouponFreeShipping] = useState(false);
 
   async function applyCoupon() {
     const code = coupon.trim();
@@ -57,7 +58,14 @@ export function CartPageView() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, subtotal: total }),
+          /*
+            ARC'ın kupon ucu ara toplamı KURUŞ bekliyor (arc_check_coupon
+            onu kuruş cinsinden minimum_subtotal ile karşılaştırıyor).
+            Önceden TL gönderiliyordu: 2.500 TL'lik sepet 25 TL gibi
+            değerlendiriliyor, alt limitli kuponlar hak eden sepetlerde
+            "… ve üzeri sepetlerde geçerli" diye reddediliyordu.
+          */
+          body: JSON.stringify({ code, subtotal: toKurus(total) }),
         },
       );
 
@@ -65,6 +73,7 @@ export function CartPageView() {
         valid?: boolean;
         message?: string;
         discountAmount?: number;
+        freeShipping?: boolean;
       };
 
       if (!data.valid) {
@@ -75,7 +84,9 @@ export function CartPageView() {
 
       writeCoupon(code);
       setCouponSaved(true);
-      setCouponDiscount(Number(data.discountAmount ?? 0));
+      // discountAmount kuruş döner.
+      setCouponDiscount(Number(data.discountAmount ?? 0) / 100);
+      setCouponFreeShipping(Boolean(data.freeShipping));
       setCouponState("idle");
       setCouponMessage(data.message ?? "Kod uygulandı.");
     } catch {
@@ -97,8 +108,8 @@ export function CartPageView() {
     setNote(readNote());
   }, []);
 
-  const shipping = total >= FREE_OVER ? 0 : SHIPPING_FEE;
-  const remaining = Math.max(FREE_OVER - total, 0);
+  const shipping = shippingFor(total, couponSaved && couponFreeShipping);
+  const remaining = amountToFreeShipping(total, couponSaved && couponFreeShipping);
 
   if (items.length === 0) {
     return (

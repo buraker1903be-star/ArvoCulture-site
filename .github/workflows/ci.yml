@@ -13,7 +13,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # 24: birim testleri Node'un yerleşik TypeScript tip silmesine
+          # dayanıyor; ArvoARC ve ArvoOS CI'ları da 24.
+          node-version: 24
           cache: npm
       # npm install yerine npm ci: lockfile birebir uygulanir.
       - run: npm ci
@@ -23,3 +25,6 @@ jobs:
       # scripts/check-css-vars.mjs). Denetim `build`'in basinda da var ama CI
       # artik derleme yapmiyor; PR'da erken gorunsun diye burada ayrica.
       - run: npm run check:css
+      # Sepet ve ödeme tutarları ARC'ın sipariş hesabını aynalıyor
+      # (lib/order-quote.ts); iki taraf ayrılırsa burada yakalanır.
+      - run: npm test

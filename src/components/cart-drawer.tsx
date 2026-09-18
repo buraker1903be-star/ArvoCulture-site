@@ -9,7 +9,8 @@ import { formatPrice } from "@/lib/product-types";
 import { evaluateCoupon } from "@/lib/coupon";
 import { readCoupon, writeCoupon, clearCoupon } from "@/lib/cart-extras";
 import { useLayerBack } from "@/lib/use-layer-back";
-import { FREE_SHIPPING_OVER as FREE_OVER, SHIPPING_FEE } from "@/lib/shipping";
+import { amountToFreeShipping, shippingFor } from "@/lib/order-quote";
+import { FREE_SHIPPING_OVER } from "@/lib/shipping";
 
 
 /**
@@ -81,9 +82,10 @@ export function CartDrawer({
   const discount = coupon?.ok ? coupon.amount : 0;
   const afterDiscount = Math.max(total - discount, 0);
   const freeShipping = coupon?.ok ? coupon.freeShipping : false;
-  const shipping =
-    freeShipping || afterDiscount >= FREE_OVER ? 0 : SHIPPING_FEE;
-  const remaining = Math.max(FREE_OVER - afterDiscount, 0);
+  // Eşik indirim ÖNCESİ ara toplamla karşılaştırılır (ARC ile aynı):
+  // kupon kullanmak ücretsiz kargoyu kaybettirmemeli.
+  const shipping = shippingFor(total, freeShipping);
+  const remaining = amountToFreeShipping(total, freeShipping);
 
   /*
     Çekmece doğrudan <body> altına basılır. Başlık `position:
@@ -142,7 +144,7 @@ export function CartDrawer({
               <span className="drawer-progress" aria-hidden="true">
                 <i
                   style={{
-                    width: `${shipping === 0 ? 100 : Math.min(100, (afterDiscount / FREE_OVER) * 100)}%`,
+                    width: `${shipping === 0 ? 100 : Math.min(100, (total / FREE_SHIPPING_OVER) * 100)}%`,
                   }}
                 />
               </span>

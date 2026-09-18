@@ -13,7 +13,7 @@ import { formatPhone, isValidPhone, phoneDigits } from "@/lib/phone";
 import { evaluateCoupon } from "@/lib/coupon";
 import type { Address } from "@/components/address-book";
 import { CheckoutSteps } from "@/components/checkout-steps";
-import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "@/lib/shipping";
+import { amountToFreeShipping, shippingFor, transferDiscountFor } from "@/lib/order-quote";
 
 /**
  * Ödeme sayfası.
@@ -143,18 +143,6 @@ export function CheckoutForm({
   }
   const [message, setMessage] = useState("");
 
-  const shipping = total >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FEE;
-  const grand = total + shipping;
-
-  /*
-    Havale indirimi. Kartlı ödemede PayTR komisyonu var,
-    havalede yok; farkın bir kısmı müşteriye veriliyor.
-  */
-  const transferDiscount = useTransfer
-    ? Math.round((grand * SELLER.transferDiscountPercent) / 100)
-    : 0;
-  const payable = grand - transferDiscount;
-
   /*
     Sepette uygulanan kod ödeme özetinde hiç görünmüyordu: müşteri
     sepette indirimi görüp burada kodsuz bir özetle karşılaşıyor,
@@ -166,6 +154,22 @@ export function CheckoutForm({
   const appliedCoupon = coupon
     ? evaluateCoupon(discounts, coupon, total)
     : null;
+
+  // Ücretsiz kargo kuponu kargoyu sıfırlar; eşik indirim öncesi ara toplam.
+  const shipping = shippingFor(total, appliedCoupon?.ok === true && appliedCoupon.freeShipping);
+  const grand = total + shipping;
+
+  /*
+    Havale indirimi. Kartlı ödemede PayTR komisyonu var,
+    havalede yok; farkın bir kısmı müşteriye veriliyor.
+    ARC ile aynı kural: taban yalnızca mal bedeli (kargo girmez) ve
+    kuruşta yuvarlanır. Önceden kargo dahil toplamın %3'ü alınıp tam
+    liraya yuvarlanıyordu. Kod indirimi burada bilerek düşülmüyor
+    (aşağıdaki not); kodsuz siparişte gösterilen tutar ödenenle birebir.
+  */
+  const availableTransferDiscount = transferDiscountFor(total, SELLER.transferDiscountPercent);
+  const transferDiscount = useTransfer ? availableTransferDiscount : 0;
+  const payable = grand - transferDiscount;
 
   const ready = useMemo(
     () =>
@@ -524,6 +528,7 @@ export function CheckoutForm({
             }}
             discountPercent={SELLER.transferDiscountPercent}
             total={grand}
+            discount={availableTransferDiscount}
             selected={useTransfer}
             onSelect={setUseTransfer}
           />
@@ -576,7 +581,7 @@ export function CheckoutForm({
 
           {shipping > 0 && (
             <p className="hint">
-              {formatPrice(FREE_SHIPPING_OVER - total)} daha ekleyin, kargo
+              {formatPrice(amountToFreeShipping(total))} daha ekleyin, kargo
               ücretsiz olsun.
             </p>
           )}
