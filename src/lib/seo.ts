@@ -1,7 +1,7 @@
 import { env } from "@/lib/env";
 import type { Product } from "@/lib/product-types";
 import { SELLER } from "@/lib/seller";
-import { shippingFor } from "@/lib/order-quote";
+import { DEFAULT_SALES_RULES, shippingFor, type SalesRules } from "@/lib/order-quote";
 
 const CURRENCY = "TRY";
 const COUNTRY = "TR";
@@ -25,7 +25,7 @@ export const WEBSITE_ID = `${env.siteUrl}/#website`;
  * işaretlemeye bağlıdır; fiyat, para birimi ve stok durumu eksiksiz
  * olmalıdır.
  */
-export function productSchema(product: Product) {
+export function productSchema(product: Product, rules: SalesRules = DEFAULT_SALES_RULES) {
   const url = `${env.siteUrl}/urun/${product.slug}`;
 
   /*
@@ -77,7 +77,7 @@ export function productSchema(product: Product) {
         "@type": "OfferShippingDetails",
         shippingRate: {
           "@type": "MonetaryAmount",
-          value: shippingFor(product.price).toFixed(2),
+          value: shippingFor(product.price, false, rules).toFixed(2),
           currency: CURRENCY,
         },
         shippingDestination: {

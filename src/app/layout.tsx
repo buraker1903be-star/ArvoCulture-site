@@ -15,6 +15,7 @@ import { PageTransition } from "@/components/page-transition";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStoreStage } from "@/lib/store-stage";
 import { getStorefrontDiscounts } from "@/lib/discounts";
+import { getSalesRules } from "@/lib/store-settings";
 import { getStorefrontCollections } from "@/lib/collections";
 import { JsonLd } from "@/components/json-ld";
 import { storeSchema, websiteSchema } from "@/lib/seo";
@@ -137,11 +138,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, discounts, collections, stage] = await Promise.all([
+  const [theme, discounts, collections, stage, salesRules] = await Promise.all([
     getStorefrontTheme(),
     getStorefrontDiscounts(),
     getStorefrontCollections(),
     getStoreStage(),
+    getSalesRules(),
   ]);
   /*
     Abonelik ödenmediğinde mağaza kademe kademe kapanır; son kademede vitrin
@@ -183,7 +185,7 @@ export default async function RootLayout({
           supabaseUrl={env.supabaseUrl}
           supabaseKey={env.supabaseKey}
         >
-          <CartProvider discounts={discounts}>
+          <CartProvider discounts={discounts} salesRules={salesRules}>
             <Header theme={theme} collections={collections} />
             {/*
               Sayfa içeriği geçiş sarmalayıcısının içinde; başlık,

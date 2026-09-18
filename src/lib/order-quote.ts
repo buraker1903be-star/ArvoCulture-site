@@ -1,4 +1,5 @@
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "./shipping";
+import { SELLER } from "./seller";
 
 /*
   Sepet ve ödeme ekranındaki tutar hesapları — ARC'ın aynası.
@@ -28,16 +29,71 @@ import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "./shipping";
 /** TL → kuruş (tamsayı). */
 export const toKurus = (lira: number) => Math.round(lira * 100);
 
+/**
+ * Mağazanın satış ayarları (TL). ARC'ta mağaza panelinden değişir;
+ * vitrin get_arvoculture_storefront_settings ile okur
+ * (lib/store-settings.ts). Okunamazsa varsayılan: bugünkü sabitler.
+ */
+export type SalesRules = {
+  shippingFee: number;
+  freeShippingOver: number;
+  transferEnabled: boolean;
+  transferDiscountPercent: number;
+};
+
+export const DEFAULT_SALES_RULES: SalesRules = {
+  shippingFee: SHIPPING_FEE,
+  freeShippingOver: FREE_SHIPPING_OVER,
+  transferEnabled: true,
+  transferDiscountPercent: SELLER.transferDiscountPercent,
+};
+
+/** get_arvoculture_storefront_settings satırı (tutarlar kuruş). */
+export type SalesRulesRow = {
+  shipping_fee: number | string | null;
+  free_shipping_threshold: number | string | null;
+  bank_transfer_enabled: boolean | null;
+  bank_transfer_discount_percent: number | string | null;
+};
+
+export function toSalesRules(row: SalesRulesRow | undefined): SalesRules {
+  if (!row) return DEFAULT_SALES_RULES;
+  const kurus = (value: SalesRulesRow["shipping_fee"], fallback: number) => {
+    const n = Number(value);
+    return value === null || !Number.isFinite(n) || n < 0 ? fallback : n / 100;
+  };
+  const percent = Number(row.bank_transfer_discount_percent);
+  return {
+    shippingFee: kurus(row.shipping_fee, DEFAULT_SALES_RULES.shippingFee),
+    freeShippingOver: kurus(row.free_shipping_threshold, DEFAULT_SALES_RULES.freeShippingOver),
+    // ARC ile aynı: yalnızca açık bir "false" havaleyi kapatır.
+    transferEnabled: row.bank_transfer_enabled !== false,
+    // numeric sütun metin olarak gelebilir ("2.5").
+    transferDiscountPercent:
+      row.bank_transfer_discount_percent === null || !Number.isFinite(percent) || percent < 0 || percent > 100
+        ? DEFAULT_SALES_RULES.transferDiscountPercent
+        : percent,
+  };
+}
+
 /** Kargo ücreti (TL). Eşik indirim öncesi ara toplamla karşılaştırılır. */
-export function shippingFor(subtotal: number, freeShippingCoupon = false): number {
+export function shippingFor(
+  subtotal: number,
+  freeShippingCoupon = false,
+  rules: SalesRules = DEFAULT_SALES_RULES,
+): number {
   if (freeShippingCoupon) return 0;
-  return toKurus(subtotal) >= toKurus(FREE_SHIPPING_OVER) ? 0 : SHIPPING_FEE;
+  return toKurus(subtotal) >= toKurus(rules.freeShippingOver) ? 0 : rules.shippingFee;
 }
 
 /** Ücretsiz kargoya kalan tutar (TL). Kargo zaten ücretsizse 0. */
-export function amountToFreeShipping(subtotal: number, freeShippingCoupon = false): number {
+export function amountToFreeShipping(
+  subtotal: number,
+  freeShippingCoupon = false,
+  rules: SalesRules = DEFAULT_SALES_RULES,
+): number {
   if (freeShippingCoupon) return 0;
-  return Math.max(toKurus(FREE_SHIPPING_OVER) - toKurus(subtotal), 0) / 100;
+  return Math.max(toKurus(rules.freeShippingOver) - toKurus(subtotal), 0) / 100;
 }
 
 /**

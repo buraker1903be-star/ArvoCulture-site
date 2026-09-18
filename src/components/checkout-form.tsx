@@ -35,7 +35,7 @@ export function CheckoutForm({
   supabaseUrl?: string;
   supabaseKey?: string;
 }) {
-  const { items, total, discounts } = useContext(CartContext);
+  const { items, total, discounts, salesRules } = useContext(CartContext);
   const router = useRouter();
   const [saved, setSaved] = useState<Address[]>([]);
   const [selected, setSelected] = useState<string | "manual">("manual");
@@ -57,7 +57,10 @@ export function CheckoutForm({
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   /* Banka havalesi seçilirse indirim uygulanıyor ve sipariş
      "ödeme bekliyor" durumunda oluşuyor. */
-  const [useTransfer, setUseTransfer] = useState(false);
+  const [transferChosen, setUseTransfer] = useState(false);
+  /* Havale panelden kapatılmışsa ARC havaleli siparişi 422 ile
+     reddediyor; seçenek hiç gösterilmez, seçili kalmışsa yok sayılır. */
+  const useTransfer = transferChosen && salesRules.transferEnabled;
   const [state, setState] = useState<"idle" | "sending" | "error" | "paying">("idle");
   // Sepette girilen kupon ve not ödeme isteğine taşınır.
   const [coupon, setCoupon] = useState("");
@@ -156,7 +159,7 @@ export function CheckoutForm({
     : null;
 
   // Ücretsiz kargo kuponu kargoyu sıfırlar; eşik indirim öncesi ara toplam.
-  const shipping = shippingFor(total, appliedCoupon?.ok === true && appliedCoupon.freeShipping);
+  const shipping = shippingFor(total, appliedCoupon?.ok === true && appliedCoupon.freeShipping, salesRules);
   const grand = total + shipping;
 
   /*
@@ -167,7 +170,7 @@ export function CheckoutForm({
     liraya yuvarlanıyordu. Kod indirimi burada bilerek düşülmüyor
     (aşağıdaki not); kodsuz siparişte gösterilen tutar ödenenle birebir.
   */
-  const availableTransferDiscount = transferDiscountFor(total, SELLER.transferDiscountPercent);
+  const availableTransferDiscount = transferDiscountFor(total, salesRules.transferDiscountPercent);
   const transferDiscount = useTransfer ? availableTransferDiscount : 0;
   const payable = grand - transferDiscount;
 
@@ -526,9 +529,10 @@ export function CheckoutForm({
               bankName: SELLER.bankName,
               iban: SELLER.iban,
             }}
-            discountPercent={SELLER.transferDiscountPercent}
+            discountPercent={salesRules.transferDiscountPercent}
             total={grand}
             discount={availableTransferDiscount}
+            transferEnabled={salesRules.transferEnabled}
             selected={useTransfer}
             onSelect={setUseTransfer}
           />
@@ -563,7 +567,7 @@ export function CheckoutForm({
             )}
             {transferDiscount > 0 && (
               <div>
-                <dt>Havale indirimi (%{SELLER.transferDiscountPercent})</dt>
+                <dt>Havale indirimi (%{salesRules.transferDiscountPercent})</dt>
                 <dd>−{formatPrice(transferDiscount)}</dd>
               </div>
             )}
@@ -581,7 +585,7 @@ export function CheckoutForm({
 
           {shipping > 0 && (
             <p className="hint">
-              {formatPrice(amountToFreeShipping(total))} daha ekleyin, kargo
+              {formatPrice(amountToFreeShipping(total, false, salesRules))} daha ekleyin, kargo
               ücretsiz olsun.
             </p>
           )}

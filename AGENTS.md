@@ -35,10 +35,17 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
 - **Kupon geçerliliği sunucudadır.** `evaluateCoupon` yalnızca anlık geri
   bildirim içindir; kullanım sınırı ve kişi başı sınırı vitrin bilemez.
   Ödeme formu kod indirimini bu yüzden toplamdan düşmez, notla belirtir.
-- **Mağaza ayarları şimdilik vitrinde sabit.** Kargo ücreti ve eşiği
-  (`lib/shipping.ts`) ile havale oranı (`lib/seller.ts`) ARC'ta mağaza
-  panelinden değiştirilebilir hâle geldi ama vitrine açık bir uçtan
-  okunmuyor. ARC'taki ayar değişirse bu sabitler de elle güncellenmeli.
+- **Mağaza ayarları ARC'tan okunur.** Kargo ücreti, ücretsiz kargo eşiği,
+  havalenin açık olup olmadığı ve havale oranı mağaza panelinden değişir;
+  vitrin bunları `get_arvoculture_storefront_settings` ile okur
+  (`lib/store-settings.ts`, 30 sn önbellek) ve `CartContext.salesRules`
+  ile bileşenlere taşır. Okunamazsa `lib/shipping.ts` ve `lib/seller.ts`'teki
+  sabitlere düşülür — vitrin açık kalır. Hesaplarda bu sabitleri doğrudan
+  kullanmayın; `salesRules` kullanın.
+  Hâlâ sabit olan yalnızca bilgilendirme metinleri: hukuki sayfalar ve SSS'deki
+  "120 TL" / "2.000 TL" yazıları (`SELLER.shippingFee`,
+  `SELLER.freeShippingThreshold`) ve `llms.txt`. Panelde tarife değişirse
+  bunlar da elle güncellenmeli.
 - **Önbellek yalnızca müşteriden bağımsız, yavaş değişen veriye**
   (koleksiyon, indirim tanımı). Fiyat, stok, sepet ve sipariş verisi
   önbelleğe girmez (`lib/ttl-cache.ts`).

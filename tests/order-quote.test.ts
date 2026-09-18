@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { amountToFreeShipping, shippingFor, toKurus, transferDiscountFor } from "@/lib/order-quote";
+import {
+  DEFAULT_SALES_RULES,
+  amountToFreeShipping,
+  shippingFor,
+  toKurus,
+  toSalesRules,
+  transferDiscountFor,
+} from "@/lib/order-quote";
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "@/lib/shipping";
 
 // Bu testler ARC'ın sipariş hesabını (supabase/migrations/20260917150000_
@@ -74,4 +81,56 @@ test("TL → kuruş dönüşümü tamsayı verir", () => {
   assert.equal(toKurus(1617.9), 161790);
   assert.equal(toKurus(0.1 + 0.2), 30);
   assert.equal(toKurus(19.99), 1999);
+});
+
+// --- Mağaza ayarları (ARC: get_arvoculture_storefront_settings) ---
+
+
+test("ayarlar okunamazsa bugünkü sabitlere düşülür", () => {
+  assert.deepEqual(toSalesRules(undefined), DEFAULT_SALES_RULES);
+  assert.equal(DEFAULT_SALES_RULES.shippingFee, SHIPPING_FEE);
+  assert.equal(DEFAULT_SALES_RULES.freeShippingOver, FREE_SHIPPING_OVER);
+  assert.equal(DEFAULT_SALES_RULES.transferEnabled, true);
+});
+
+test("ARC'tan gelen kuruş değerleri TL'ye çevrilir", () => {
+  const kurallar = toSalesRules({
+    shipping_fee: 14900,
+    free_shipping_threshold: 250000,
+    bank_transfer_enabled: true,
+    bank_transfer_discount_percent: "2.5", // numeric metin olarak gelebilir
+  });
+  assert.deepEqual(kurallar, { shippingFee: 149, freeShippingOver: 2500, transferEnabled: true, transferDiscountPercent: 2.5 });
+});
+
+test("havaleyi yalnızca açık bir false kapatır (ARC ile aynı)", () => {
+  const satir = { shipping_fee: 12000, free_shipping_threshold: 200000, bank_transfer_discount_percent: 3 };
+  assert.equal(toSalesRules({ ...satir, bank_transfer_enabled: false }).transferEnabled, false);
+  assert.equal(toSalesRules({ ...satir, bank_transfer_enabled: null }).transferEnabled, true);
+});
+
+test("bozuk değerler varsayılana düşer", () => {
+  const kurallar = toSalesRules({
+    shipping_fee: null,
+    free_shipping_threshold: "abc",
+    bank_transfer_enabled: true,
+    bank_transfer_discount_percent: 150,
+  });
+  assert.equal(kurallar.shippingFee, DEFAULT_SALES_RULES.shippingFee);
+  assert.equal(kurallar.freeShippingOver, DEFAULT_SALES_RULES.freeShippingOver);
+  assert.equal(kurallar.transferDiscountPercent, DEFAULT_SALES_RULES.transferDiscountPercent);
+});
+
+test("paneldeki tarife hesaba yansır", () => {
+  // Mağaza sahibi eşiği 2.500 TL'ye, kargoyu 149 TL'ye çekti.
+  const kurallar = { ...DEFAULT_SALES_RULES, shippingFee: 149, freeShippingOver: 2500 };
+  assert.equal(shippingFor(2200, false, kurallar), 149, "eski eşiğin üstü ama yeni eşiğin altı");
+  assert.equal(shippingFor(2500, false, kurallar), 0);
+  assert.equal(amountToFreeShipping(2200, false, kurallar), 300);
+  assert.equal(shippingFor(100, true, kurallar), 0, "kupon yine sıfırlar");
+});
+
+test("ücretsiz kargo eşiği 0 ise her sipariş kargosuz", () => {
+  const kurallar = { ...DEFAULT_SALES_RULES, freeShippingOver: 0 };
+  assert.equal(shippingFor(0.01, false, kurallar), 0);
 });

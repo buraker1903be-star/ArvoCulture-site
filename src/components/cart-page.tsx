@@ -29,7 +29,7 @@ import {
  * hesaplanan bir indirim gerçek tutarla çelişebilirdi.
  */
 export function CartPageView() {
-  const { items, total, remove, setQuantity } = useContext(CartContext);
+  const { items, total, remove, setQuantity, salesRules } = useContext(CartContext);
 
   const [coupon, setCoupon] = useState("");
   const [couponSaved, setCouponSaved] = useState(false);
@@ -108,8 +108,8 @@ export function CartPageView() {
     setNote(readNote());
   }, []);
 
-  const shipping = shippingFor(total, couponSaved && couponFreeShipping);
-  const remaining = amountToFreeShipping(total, couponSaved && couponFreeShipping);
+  const shipping = shippingFor(total, couponSaved && couponFreeShipping, salesRules);
+  const remaining = amountToFreeShipping(total, couponSaved && couponFreeShipping, salesRules);
 
   if (items.length === 0) {
     return (

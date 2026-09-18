@@ -10,6 +10,7 @@ import { getStorefrontProduct, getStorefrontProducts } from "@/lib/products";
 import { getProductVariants } from "@/lib/variants";
 import { formatPrice } from "@/lib/product-types";
 import { breadcrumbSchema, productSchema } from "@/lib/seo";
+import { getSalesRules } from "@/lib/store-settings";
 
 /**
  * Ürün sayfası altmış saniyeliğine saklanıyor.
@@ -99,11 +100,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
 
-  const [product, catalogue, variants] = await Promise.all([
+  const [product, catalogue, variants, salesRules] = await Promise.all([
     getStorefrontProduct(slug),
     getStorefrontProducts(120),
     // Gerçek bedenler; sepete doğru SKU yazılabilsin.
     getProductVariants(slug),
+    // Yapısal verideki kargo ücreti mağazanın gerçek tarifesi olsun.
+    getSalesRules(),
   ]);
 
   if (!product) notFound();
@@ -277,7 +280,7 @@ export default async function ProductPage({ params }: Params) {
       {/* Son gezilenler: bu ürünü listeye ekler, diğerlerini gösterir. */}
       <RecentProducts currentSlug={product.slug} />
 
-      <JsonLd data={productSchema(product)} />
+      <JsonLd data={productSchema(product, salesRules)} />
       <JsonLd
         data={breadcrumbSchema([
           { name: "Ana sayfa", path: "/" },

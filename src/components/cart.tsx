@@ -12,6 +12,7 @@ import {
 import { CartDrawer } from "@/components/cart-drawer";
 import { type Product, displayVariantLabel } from "@/lib/product-types";
 import type { StorefrontDiscount } from "@/lib/discounts";
+import { DEFAULT_SALES_RULES, type SalesRules } from "@/lib/order-quote";
 
 /*
   Sepet kalemi.
@@ -52,6 +53,8 @@ type CartValue = {
   remove: (key: string) => void;
   setQuantity: (key: string, quantity: number) => void;
   discounts: StorefrontDiscount[];
+  /** Mağazanın kargo ve havale ayarları (ARC'tan, sunucuda okunur). */
+  salesRules: SalesRules;
 };
 
 const CART_KEY = "arvo-cart-v2";
@@ -89,14 +92,17 @@ export const CartContext = createContext<CartValue>({
   remove: () => {},
   setQuantity: () => {},
   discounts: [],
+  salesRules: DEFAULT_SALES_RULES,
 });
 
 export function CartProvider({
   children,
   discounts,
+  salesRules = DEFAULT_SALES_RULES,
 }: {
   children: React.ReactNode;
   discounts: StorefrontDiscount[];
+  salesRules?: SalesRules;
 }) {
   const snapshot = useSyncExternalStore(
     subscribe,
@@ -179,7 +185,7 @@ export function CartProvider({
   );
   return (
     <CartContext.Provider
-      value={{ items, count, total, add, remove, setQuantity, discounts }}
+      value={{ items, count, total, add, remove, setQuantity, discounts, salesRules }}
     >
       {children}
     </CartContext.Provider>

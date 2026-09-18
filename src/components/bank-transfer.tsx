@@ -17,6 +17,7 @@ export function BankTransfer({
   discountPercent,
   total,
   discount,
+  transferEnabled = true,
   onSelect,
   selected,
 }: {
@@ -34,6 +35,8 @@ export function BankTransfer({
    * tek yer lib/order-quote.ts. Ödeme özetiyle aynı tutarı gösterir.
    */
   discount: number;
+  /** Mağaza havaleyi panelden kapattıysa seçenek gösterilmez (ARC reddeder). */
+  transferEnabled?: boolean;
   onSelect: (useTransfer: boolean) => void;
   selected: boolean;
 }) {
@@ -60,26 +63,28 @@ export function BankTransfer({
         </span>
       </label>
 
-      <label className="pay-method" data-selected={selected}>
-        <input
-          type="radio"
-          name="payment_method"
-          checked={selected}
-          onChange={() => onSelect(true)}
-        />
-        <span>
-          <b>
-            Banka havalesi / EFT
-            <em className="pay-badge">%{discountPercent} indirim</em>
-          </b>
-          <small>
-            <s>{money(total)}</s> {money(discounted)} ·{" "}
-            {money(discount)} tasarruf
-          </small>
-        </span>
-      </label>
+      {transferEnabled && (
+        <label className="pay-method" data-selected={selected}>
+          <input
+            type="radio"
+            name="payment_method"
+            checked={selected}
+            onChange={() => onSelect(true)}
+          />
+          <span>
+            <b>
+              Banka havalesi / EFT
+              <em className="pay-badge">%{discountPercent} indirim</em>
+            </b>
+            <small>
+              <s>{money(total)}</s> {money(discounted)} ·{" "}
+              {money(discount)} tasarruf
+            </small>
+          </span>
+        </label>
+      )}
 
-      {selected && (
+      {selected && transferEnabled && (
         <BankDetails seller={seller}>
           <p className="hint">
             Siparişinizi tamamladıktan sonra aşağıdaki hesaba havale veya
