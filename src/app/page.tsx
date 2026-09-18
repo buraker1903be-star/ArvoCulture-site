@@ -18,6 +18,8 @@ import {
   getStorefrontDeals,
 } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
+import { getSalesRules } from "@/lib/store-settings";
+import { shippingTerms } from "@/lib/order-quote";
 import { Reveal } from "@/components/reveal";
 import { RecentProducts } from "@/components/recent-products";
 import { ForYou } from "@/components/for-you";
@@ -95,6 +97,8 @@ export default async function Home() {
     sayfayla karşılaşmasın.
   */
   const searchTerms = await getPopularSearches();
+  // Düzen (layout) zaten okuyor; cache ile aynı istekte tekrar sorgu yok.
+  const shippingBadge = shippingTerms(await getSalesRules()).badge;
 
   const categories = CATEGORIES;
 
@@ -137,7 +141,7 @@ export default async function Home() {
           )}
         </div>
 
-        <Perks />
+        <Perks shippingBadge={shippingBadge} />
       </section>
 
       {/* Fiyat birinci öncelik: indirimler en üstte. */}

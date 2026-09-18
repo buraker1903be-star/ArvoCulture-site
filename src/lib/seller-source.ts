@@ -1,6 +1,8 @@
 import { cache } from "react";
 import { rpcOrEmpty } from "@/lib/arc";
 import { SELLER as FALLBACK } from "@/lib/seller";
+import { getSalesRules } from "@/lib/store-settings";
+import { shippingTerms } from "@/lib/order-quote";
 
 /**
  * Satıcı kimliği — veritabanından.
@@ -54,11 +56,21 @@ export type Seller = {
   website: string;
   kepAddress: string | null;
   etbisVerified: boolean;
+  /* Kargo ve havale: mağaza panelinden (getSalesRules). */
+  shippingFee: string;
+  freeShippingThreshold: string;
+  /** Kargo koşulunun tam cümlesi; ücret ya da eşik sıfırsa "ücretsiz". */
+  shippingSentence: string;
+  /** Ücret ya da eşik sıfır: "X TL ve üzeri" cümlesi kurulmaz. */
+  shippingAlwaysFree: boolean;
+  transferEnabled: boolean;
+  transferDiscountPercent: number;
 } & Omit<
   typeof FALLBACK,
   | "legalName" | "shortName" | "brand" | "address" | "taxOffice"
   | "taxNumber" | "mersis" | "tradeRegistry" | "email" | "phone"
   | "phoneLink" | "website"
+  | "shippingFee" | "freeShippingThreshold" | "transferDiscountPercent"
 >;
 
 /**
@@ -67,16 +79,41 @@ export type Seller = {
  */
 const TENANT = process.env.ARC_TENANT_SLUG ?? "arvoculture";
 
+/*
+  Kargo ücreti, ücretsiz kargo eşiği ve havale indirimi yasal metinlerde
+  (mesafeli satış sözleşmesi, ön bilgilendirme formu) ve teslimat
+  sayfasında geçiyor. Önceden `seller.ts`'teki sabit metinlerden
+  ("120 TL", "2.000 TL", %3) okunuyordu; mağaza panelinden tarife
+  değişince sepet yeni tutarı, sözleşme eskisini gösterecekti — müşteriye
+  sözleşmede yazandan farklı kargo ücreti alınmış olurdu. Ayarlar
+  okunamazsa getSalesRules bugünkü sabitlere düşer.
+*/
+async function salesFields() {
+  const rules = await getSalesRules();
+  const terms = shippingTerms(rules);
+  return {
+    shippingFee: terms.fee,
+    freeShippingThreshold: terms.freeOver,
+    shippingSentence: terms.sentence,
+    shippingAlwaysFree: terms.alwaysFree,
+    transferEnabled: rules.transferEnabled,
+    transferDiscountPercent: rules.transferDiscountPercent,
+  };
+}
+
 export const getSeller = cache(async (): Promise<Seller> => {
-  const rows = await rpcOrEmpty<SellerRow>(
-    "get_storefront_seller",
-    { p_tenant: TENANT },
-    { revalidate: 3600, tags: ["seller"] },
-  );
+  const [rows, sales] = await Promise.all([
+    rpcOrEmpty<SellerRow>(
+      "get_storefront_seller",
+      { p_tenant: TENANT },
+      { revalidate: 3600, tags: ["seller"] },
+    ),
+    salesFields(),
+  ]);
 
   const row = rows[0];
   if (!row?.legal_name) {
-    return { ...FALLBACK, kepAddress: null, etbisVerified: true };
+    return { ...FALLBACK, ...sales, kepAddress: null, etbisVerified: true };
   }
 
   /* Adres parçaları tek satırda birleştiriliyor: hukuki
@@ -94,6 +131,7 @@ export const getSeller = cache(async (): Promise<Seller> => {
 
   return {
     ...FALLBACK,
+    ...sales,
     legalName: row.legal_name,
     shortName: row.trade_name ?? FALLBACK.shortName,
     brand: row.trade_name ?? FALLBACK.brand,

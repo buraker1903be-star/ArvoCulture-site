@@ -6,8 +6,9 @@
   biri değişip diğeri unutulsaydı sepet ile ödeme farklı kargo
   ücreti gösterirdi.
 
-  ARC’taki sipariş fonksiyonuyla ve seller.ts’teki metinlerle
-  ("120 TL", "2.000 TL") aynı tutulmalıdır.
+  Bunlar yalnızca YEDEK: gerçek değerler ARC'taki mağaza ayarlarından
+  gelir (lib/store-settings.ts); okunamazsa bunlara düşülür. Metinler
+  shippingTerms (lib/order-quote.ts) ile bu sayılardan üretilir.
 */
 
 /** Kargo ücreti (TL). */

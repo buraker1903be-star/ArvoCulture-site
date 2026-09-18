@@ -103,3 +103,42 @@ export function amountToFreeShipping(
 export function transferDiscountFor(goods: number, percent: number): number {
   return Math.round((Math.max(toKurus(goods), 0) * percent) / 100) / 100;
 }
+
+/** "2.000 TL", "120,50 TL": tam lirada kuruş yazılmaz. */
+export function formatTl(amount: number): string {
+  const kurus = toKurus(amount);
+  const digits = kurus % 100 === 0 ? 0 : 2;
+  return (
+    new Intl.NumberFormat("tr-TR", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(kurus / 100) + " TL"
+  );
+}
+
+/**
+ * Kargo koşullarının metinleri — SSS, teslimat, ürün sayfası, yasal
+ * metinler ve llms.txt aynı cümleyi buradan alır.
+ *
+ * Önceden bu metinler "120 TL" / "2.000 TL" olarak sayfalara
+ * yazılıydı; mağaza panelinden tarife değişince sepet yeni tutarı,
+ * sayfalar ve mesafeli satış sözleşmesi eskisini gösterecekti.
+ * Ücret ya da eşik sıfırsa kargo her zaman ücretsizdir; "0 TL
+ * üzeri ücretsiz kargo" gibi anlamsız bir cümle kurulmaz.
+ */
+export function shippingTerms(rules: SalesRules = DEFAULT_SALES_RULES) {
+  const alwaysFree = toKurus(rules.shippingFee) === 0 || toKurus(rules.freeShippingOver) === 0;
+  const fee = formatTl(rules.shippingFee);
+  const freeOver = formatTl(rules.freeShippingOver);
+  return {
+    fee,
+    freeOver,
+    alwaysFree,
+    /** Güvence şeridi ve duyuru: "2.000 TL üzeri ücretsiz kargo". */
+    badge: alwaysFree ? "Ücretsiz kargo" : `${freeOver} üzeri ücretsiz kargo`,
+    /** Tam cümle: "Kargo ücreti 120 TL’dir. 2.000 TL ve üzeri …" */
+    sentence: alwaysFree
+      ? "Kargo ücretsizdir."
+      : `Kargo ücreti ${fee}’dir. ${freeOver} ve üzeri siparişlerde kargo ücretsizdir.`,
+  };
+}

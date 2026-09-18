@@ -56,9 +56,16 @@ export default async function PreInfoPage() {
           Türk Lirası cinsinden ve KDV dâhildir.
         </p>
         <p>
-          Kargo ücreti {SELLER.shippingFee}’dir.{" "}
-          {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo
-          ücretsizdir. Toplam tutar, ödeme adımında kargo ücreti ve varsa
+          {SELLER.shippingAlwaysFree ? (
+            "Kargo ücretsizdir."
+          ) : (
+            <>
+              Kargo ücreti {SELLER.shippingFee}’dir.{" "}
+              {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo
+              ücretsizdir.
+            </>
+          )}{" "}
+          Toplam tutar, ödeme adımında kargo ücreti ve varsa
           indirim düşülerek gösterilir.
         </p>
       </InfoSection>

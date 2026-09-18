@@ -42,10 +42,12 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
   ile bileşenlere taşır. Okunamazsa `lib/shipping.ts` ve `lib/seller.ts`'teki
   sabitlere düşülür — vitrin açık kalır. Hesaplarda bu sabitleri doğrudan
   kullanmayın; `salesRules` kullanın.
-  Hâlâ sabit olan yalnızca bilgilendirme metinleri: hukuki sayfalar ve SSS'deki
-  "120 TL" / "2.000 TL" yazıları (`SELLER.shippingFee`,
-  `SELLER.freeShippingThreshold`) ve `llms.txt`. Panelde tarife değişirse
-  bunlar da elle güncellenmeli.
+  Metinler de aynı kaynaktan: yasal sayfalar, teslimat, SSS, ürün sayfası,
+  ana sayfa güvence şeridi ve `llms.txt` kargo cümlesini `shippingTerms`
+  (`lib/order-quote.ts`) ile kurar; yasal sayfalar değerleri `getSeller()`
+  üzerinden alır. Sayfaya "120 TL" / "2.000 TL" yazmayın. Tek istisna
+  tema duyurusunun yedek metni (`storefront-theme.ts`); duyuru panelden
+  yönetiliyor.
 - **Önbellek yalnızca müşteriden bağımsız, yavaş değişen veriye**
   (koleksiyon, indirim tanımı). Fiyat, stok, sepet ve sipariş verisi
   önbelleğe girmez (`lib/ttl-cache.ts`).

@@ -103,9 +103,15 @@ export default async function DistanceSalesPage() {
           fiyatlar ise belirtilen süre sonuna kadar geçerlidir.
         </p>
         <p>
-          Kargo ücreti {SELLER.shippingFee}’dir.{" "}
-          {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo ücreti
-          Satıcı tarafından karşılanır.
+          {SELLER.shippingAlwaysFree ? (
+            "Kargo ücreti Satıcı tarafından karşılanır."
+          ) : (
+            <>
+              Kargo ücreti {SELLER.shippingFee}’dir.{" "}
+              {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo
+              ücreti Satıcı tarafından karşılanır.
+            </>
+          )}
         </p>
       </InfoSection>
 

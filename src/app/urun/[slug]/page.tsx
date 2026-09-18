@@ -11,6 +11,7 @@ import { getProductVariants } from "@/lib/variants";
 import { formatPrice } from "@/lib/product-types";
 import { breadcrumbSchema, productSchema } from "@/lib/seo";
 import { getSalesRules } from "@/lib/store-settings";
+import { shippingTerms } from "@/lib/order-quote";
 
 /**
  * Ürün sayfası altmış saniyeliğine saklanıyor.
@@ -112,6 +113,8 @@ export default async function ProductPage({ params }: Params) {
   if (!product) notFound();
 
   const off = discountOf(product);
+  // Güvence şeridi ve teslimat notu mağazanın gerçek tarifesiyle.
+  const shipping = shippingTerms(salesRules);
 
   // Benzer ürünler: aynı kategoriden, stokta olan, bu ürün hariç.
   const related = catalogue
@@ -171,7 +174,7 @@ export default async function ProductPage({ params }: Params) {
               altında; aşağı kaydırmaya gerek kalmıyor. */}
           <ul className="pdp-assurances">
             <li>
-              <Link href="/teslimat">2.000 TL üzeri ücretsiz kargo</Link>
+              <Link href="/teslimat">{shipping.badge}</Link>
             </li>
             <li>
               <Link href="/iptal-iade">14 gün içinde iade</Link>
@@ -239,8 +242,8 @@ export default async function ProductPage({ params }: Params) {
               </summary>
               <p>
                 Siparişiniz ödeme onayının ardından hazırlanır ve kargoya
-                verildiğinde e-posta ile bilgilendirilirsiniz. Kargo ücreti 120
-                TL’dir; 2.000 TL ve üzeri siparişlerde ücretsizdir.
+                verildiğinde e-posta ile bilgilendirilirsiniz.{" "}
+                {shipping.sentence}
               </p>
             </details>
 

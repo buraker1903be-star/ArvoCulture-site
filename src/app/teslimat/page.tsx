@@ -25,9 +25,15 @@ export default async function DeliveryPage() {
     >
       <InfoSection title="Kargo Ücreti">
         <p>
-          Kargo ücreti {SELLER.shippingFee}’dir.{" "}
-          {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo ücreti
-          tarafımızca karşılanır.
+          {SELLER.shippingAlwaysFree ? (
+            "Kargo ücreti tarafımızca karşılanır."
+          ) : (
+            <>
+              Kargo ücreti {SELLER.shippingFee}’dir.{" "}
+              {SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo
+              ücreti tarafımızca karşılanır.
+            </>
+          )}
         </p>
         <p>
           Ücret, ödeme adımında toplam tutara ayrı satır olarak eklenir;

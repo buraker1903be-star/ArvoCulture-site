@@ -3,6 +3,8 @@ import test from "node:test";
 import {
   DEFAULT_SALES_RULES,
   amountToFreeShipping,
+  formatTl,
+  shippingTerms,
   shippingFor,
   toKurus,
   toSalesRules,
@@ -133,4 +135,28 @@ test("paneldeki tarife hesaba yansır", () => {
 test("ücretsiz kargo eşiği 0 ise her sipariş kargosuz", () => {
   const kurallar = { ...DEFAULT_SALES_RULES, freeShippingOver: 0 };
   assert.equal(shippingFor(0.01, false, kurallar), 0);
+});
+
+test("formatTl: tam lirada kuruş yok, küsuratta iki hane", () => {
+  assert.equal(formatTl(2000), "2.000 TL");
+  assert.equal(formatTl(120), "120 TL");
+  assert.equal(formatTl(120.5), "120,50 TL");
+  assert.equal(formatTl(0.1 + 0.2), "0,30 TL");
+});
+
+test("shippingTerms: varsayılan tarife bugünkü metni üretir", () => {
+  const t = shippingTerms();
+  assert.equal(t.badge, "2.000 TL üzeri ücretsiz kargo");
+  assert.equal(t.sentence, "Kargo ücreti 120 TL’dir. 2.000 TL ve üzeri siparişlerde kargo ücretsizdir.");
+});
+
+test("shippingTerms: panelden değişen tarife metne yansır", () => {
+  const t = shippingTerms({ ...DEFAULT_SALES_RULES, shippingFee: 99.9, freeShippingOver: 1500 });
+  assert.equal(t.badge, "1.500 TL üzeri ücretsiz kargo");
+  assert.match(t.sentence, /^Kargo ücreti 99,90 TL’dir\. 1\.500 TL ve üzeri/);
+});
+
+test("shippingTerms: ücret ya da eşik sıfırsa kargo her zaman ücretsiz", () => {
+  assert.equal(shippingTerms({ ...DEFAULT_SALES_RULES, shippingFee: 0 }).badge, "Ücretsiz kargo");
+  assert.equal(shippingTerms({ ...DEFAULT_SALES_RULES, freeShippingOver: 0 }).sentence, "Kargo ücretsizdir.");
 });

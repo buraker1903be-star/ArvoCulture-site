@@ -1,5 +1,5 @@
 import { env } from "@/lib/env";
-import { SELLER } from "@/lib/seller";
+import { getSeller } from "@/lib/seller-source";
 import { getStorefrontCollections } from "@/lib/collections";
 
 /**
@@ -23,7 +23,12 @@ import { getStorefrontCollections } from "@/lib/collections";
 export const revalidate = 3600;
 
 export async function GET() {
-  const collections = await getStorefrontCollections();
+  /* Satıcı ve kargo/havale koşulları yasal sayfalarla aynı kaynaktan:
+     önceden seller.ts sabitleri okunuyordu (unvan ve tarife dahil). */
+  const [collections, SELLER] = await Promise.all([
+    getStorefrontCollections(),
+    getSeller(),
+  ]);
 
   const koleksiyonSatirlari = collections
     .slice(0, 40)
@@ -52,12 +57,15 @@ export async function GET() {
 
 ## Alışveriş koşulları
 
-- Kargo ücreti: ${SELLER.shippingFee}
-- ${SELLER.freeShippingThreshold} ve üzeri siparişlerde kargo ücretsiz
+- ${SELLER.shippingSentence}
 - Cayma hakkı: teslim tarihinden itibaren ${SELLER.withdrawalDays} gün
 - Azami teslim süresi: ${SELLER.deliveryDaysMax} gün
-- Ödeme: kredi/banka kartı (PayTR, 3D Secure) veya banka havalesi
-- Havale ile ödemede %${SELLER.transferDiscountPercent} indirim
+${
+  SELLER.transferEnabled
+    ? `- Ödeme: kredi/banka kartı (PayTR, 3D Secure) veya banka havalesi
+- Havale ile ödemede %${SELLER.transferDiscountPercent} indirim`
+    : "- Ödeme: kredi/banka kartı (PayTR, 3D Secure)"
+}
 
 ## Koleksiyonlar
 

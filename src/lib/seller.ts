@@ -33,8 +33,8 @@ export const SELLER = {
   iban: "TR29 0006 2001 1510 0006 2901 32",
   transferDiscountPercent: 3,
 
-  /* Teslimat ve iade koşulları. Değişirse SSS ve güvence
-     şeridiyle birlikte güncellenmelidir. */
+  /* Teslimat ve iade koşulları. Kargo alanları yalnızca yedek:
+     getSeller() bunları mağaza ayarlarından yeniden yazar. */
   shippingFee: "120 TL",
   freeShippingThreshold: "2.000 TL",
   withdrawalDays: 14,

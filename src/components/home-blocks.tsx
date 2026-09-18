@@ -66,17 +66,18 @@ export function ProductBlock({
 /** Alışveriş güvencesi. Türkiye’de ilk kez alışveriş yapılan sitede
  *  en sık sorulan sorular: kargo, iade, ödeme güvenliği. */
 const PERKS = [
-  {
-    title: "2.000 TL üzeri ücretsiz kargo",
-    note: "Türkiye geneli",
-    href: "/teslimat",
-  },
   { title: "14 gün içinde iade", note: "Kullanılmamış ürünlerde", href: "/iptal-iade" },
   { title: "3D Secure ile ödeme", note: "Kart bilgisi saklanmaz", href: "/gizlilik" },
   { title: "Orijinal ürün", note: "Yetkili tedarik", href: "/sss" },
 ];
 
-export function Perks() {
+export function Perks({ shippingBadge }: { shippingBadge: string }) {
+  /* Kargo maddesi mağazanın tarifesinden gelir (shippingTerms); önceden
+     "2.000 TL" sabitti ve panelden eşik değişince yanlış kalıyordu. */
+  const perks = [
+    { title: shippingBadge, note: "Türkiye geneli", href: "/teslimat" },
+    ...PERKS,
+  ];
   return (
     /*
       Kendi paneli yok: ana sayfada arama ve kupon panelinin alt katı
@@ -84,7 +85,7 @@ export function Perks() {
       ediyor, mobilde tek başına 224px yer kaplıyordu.
     */
     <nav className="perks" aria-label="Alışveriş güvencesi">
-      {PERKS.map((perk) => (
+      {perks.map((perk) => (
         <Link key={perk.title} href={perk.href}>
           <strong>{perk.title}</strong>
           <small>{perk.note}</small>

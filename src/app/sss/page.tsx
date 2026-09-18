@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
+import { getSalesRules } from "@/lib/store-settings";
+import { shippingTerms } from "@/lib/order-quote";
 
 export const metadata: Metadata = {
   title: "Sıkça Sorulan Sorular",
@@ -19,6 +21,11 @@ export const metadata: Metadata = {
  * sağlar.
  */
 
+/* Kargo yanıtı sabit değil: tarife ARC'ta mağaza panelinden değişiyor.
+   Önceden "120 TL / 2.000 TL" yazılıydı; tarife değişince SSS ve arama
+   motoru şeması sepetle çelişecekti. */
+const SHIPPING_ANSWER = "__kargo__";
+
 const GROUPS = [
   {
     title: "Sipariş ve kargo",
@@ -29,7 +36,8 @@ const GROUPS = [
       ],
       [
         "Kargo ücreti ne kadar?",
-        "Kargo ücreti 120 TL’dir. 2.000 TL ve üzerindeki siparişlerde kargo ücretsizdir.",
+        // Mağaza panelindeki tarifeyle doldurulur (FAQ içinde).
+        SHIPPING_ANSWER,
       ],
       [
         "Siparişimi nasıl takip ederim?",
@@ -102,11 +110,19 @@ const GROUPS = [
   },
 ];
 
-export default function FAQ() {
+export default async function FAQ() {
+  const shipping = shippingTerms(await getSalesRules()).sentence;
+  const groups = GROUPS.map((group) => ({
+    ...group,
+    items: group.items.map(([question, answer]) =>
+      [question, answer === SHIPPING_ANSWER ? shipping : answer] as const,
+    ),
+  }));
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: GROUPS.flatMap((group) =>
+    mainEntity: groups.flatMap((group) =>
       group.items.map(([question, answer]) => ({
         "@type": "Question",
         name: question,
@@ -126,7 +142,7 @@ export default function FAQ() {
         </p>
       </section>
 
-      {GROUPS.map((group) => (
+      {groups.map((group) => (
         <section key={group.title} className="panel">
           <div className="head">
             <h2>{group.title}</h2>
