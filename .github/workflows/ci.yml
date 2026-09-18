@@ -28,3 +28,8 @@ jobs:
       # Sepet ve ödeme tutarları ARC'ın sipariş hesabını aynalıyor
       # (lib/order-quote.ts); iki taraf ayrılırsa burada yakalanır.
       - run: npm test
+      # Koddaki tablo/sütun/fonksiyon adları canlı şemada var mı
+      # (supabase/schema/katalog.json). Supabase istemcisi tipsiz; yanlış
+      # sütun adı derlemede görünmez, üretimde sessizce boş veri döndürür.
+      - name: Şema sözleşmesi
+        run: npm run check:schema

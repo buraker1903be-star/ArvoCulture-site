@@ -64,3 +64,11 @@ düzeltince onu sabitleyen testi de ekleyin.
 
 `npm run typecheck`, `npm run lint`, `npm run check:css`, `npm test` — dördü
 de CI'da (`.github/workflows/ci.yml`) çalışır. Derleme CI'da yapılmaz.
+
+**Şema sözleşmesi** (`npm run check:schema`): koddaki tablo, sütun ve RPC
+adları canlı şemanın kataloğuyla (`supabase/schema/katalog.json`)
+karşılaştırılır. Supabase istemcisi tipsiz olduğu için yanlış sütun adı
+derlemede görünmez; üretimde sorgu hata verir ve çoğu yerde hata yakalanıp
+boş veri gösterilir (Platform → Ödemeler bu yüzden iki gün "sorun yok"
+gösterdi). Yeni sütun/fonksiyon kullanan kodu, migration canlıya uygulanıp
+katalog yenilendikten sonra birleştirin.
