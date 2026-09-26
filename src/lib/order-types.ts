@@ -49,7 +49,7 @@ export const STATUS_LABEL: Record<string, string> = {
 };
 
 /**
- * ARC görsel yolunu tam adrese çevirir.
+ * ArvoARC görsel yolunu tam adrese çevirir.
  *
  * Tedarikçi ürünlerinin görselleri zaten tam adres olarak
  * saklanıyor; önüne Supabase adresi eklenince bozuk bağlantı

@@ -2,7 +2,7 @@ import "server-only";
 import { env } from "@/lib/env";
 
 /**
- * ARC (arc.arvo-os.com) veri katmanına giden tek çağrı noktası.
+ * ArvoARC (arc.arvo-os.com) veri katmanına giden tek çağrı noktası.
  *
  * Bu helper hata durumunda sessizce eski veri döndürmez. Çağıran taraf
  * hatayı görür ve ne yapacağına kendisi karar verir — fiyat gösteren bir
@@ -14,7 +14,7 @@ export class ArcError extends Error {
     readonly status: number | null,
     message: string,
   ) {
-    super(`ARC ${rpc} başarısız (${status ?? "ağ hatası"}): ${message}`);
+    super(`ArvoARC ${rpc} başarısız (${status ?? "ağ hatası"}): ${message}`);
     this.name = "ArcError";
   }
 }

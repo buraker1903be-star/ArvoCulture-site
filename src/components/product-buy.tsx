@@ -14,7 +14,7 @@ import type { Variant } from "@/lib/variants";
  * yazılıyor; sipariş bu SKU üzerinden kuruluyor.
  *
  * Öncesinde sepet yalnızca ürün slug’ı taşıyordu: müşteri "L"
- * seçse bile ARC stokta olan herhangi bir varyantı alıyor ve
+ * seçse bile ArvoARC stokta olan herhangi bir varyantı alıyor ve
  * yanlış beden gönderiliyordu.
  */
 export function ProductBuy({

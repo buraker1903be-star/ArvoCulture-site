@@ -53,7 +53,7 @@ type CartValue = {
   remove: (key: string) => void;
   setQuantity: (key: string, quantity: number) => void;
   discounts: StorefrontDiscount[];
-  /** Mağazanın kargo ve havale ayarları (ARC'tan, sunucuda okunur). */
+  /** Mağazanın kargo ve havale ayarları (ArvoARC'tan, sunucuda okunur). */
   salesRules: SalesRules;
 };
 

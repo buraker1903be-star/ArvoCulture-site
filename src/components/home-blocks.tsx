@@ -17,7 +17,7 @@ export function ProductBlock({
 }: {
   title: string;
   /**
-   * Başlığın üstündeki künye etiketi. ARC panelindeki
+   * Başlığın üstündeki künye etiketi. ArvoARC panelindeki
    * `featured_eyebrow` buraya geliyor; önceden açıklama satırına
    * basılıyordu ve büyük harfli etiket, cümle boyunda duruyordu.
    */

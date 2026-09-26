@@ -49,7 +49,7 @@ type SearchRow = {
 };
 
 /**
- * Görsel yolu iki biçimde gelebilir: ARC deposundaki göreli yol ya
+ * Görsel yolu iki biçimde gelebilir: ArvoARC deposundaki göreli yol ya
  * da tedarikçi CDN’inin tam adresi.
  */
 const imageUrl = (path: string | null) => {
@@ -78,7 +78,7 @@ export const getSearchIndex = cache(async (): Promise<SearchItem[]> => {
       : undefined,
     image: imageUrl(row.image_path),
     /* Kural products.ts'teki ile aynı: tedarikçi CDN'inden gelen tam
-       adres manken fotoğrafı, ARC deposundaki yol paket çekimi. */
+       adres manken fotoğrafı, ArvoARC deposundaki yol paket çekimi. */
     artStyle: row.image_path?.startsWith("http") ? "lifestyle" : "packshot",
   }));
 });

@@ -25,7 +25,7 @@ export type StorefrontDiscount = {
  * her isteği veritabanına göndermemeye yetiyor.
  *
  * Burada saklanan şey indirimin *tanımı* — ürün fiyatı değil.
- * Müşteriye gösterilen tutarı ARC hesaplıyor.
+ * Müşteriye gösterilen tutarı ArvoARC hesaplıyor.
  */
 const yukle = ttlCache(
   () =>

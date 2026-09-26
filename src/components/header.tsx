@@ -79,14 +79,14 @@ export function Header({
   */
   useLayerBack(open, close);
   /*
-    Koleksiyonları menu_group’a göre getirir. ARC’taki gruplandırma
+    Koleksiyonları menu_group’a göre getirir. ArvoARC’taki gruplandırma
     iki farklı ekseni karıştırıyor: markalar (Aloe Via, Zeitgard)
     ile ürün tipleri (Serumlar, Nemlendiriciler) aynı grupta.
     Aşağıdaki BRANDS listesi markaları slug üzerinden ayırıp kendi
-    sütununa taşır; başlık ve ürün sayısı yine ARC’tan gelir.
+    sütununa taşır; başlık ve ürün sayısı yine ArvoARC’tan gelir.
   */
   /*
-    Menü, ARC koleksiyonlarından kuruluyor. Tedarikçi kategori
+    Menü, ArvoARC koleksiyonlarından kuruluyor. Tedarikçi kategori
     ağacı (Erkek > Üst Giyim > T-Shirt) koleksiyon üstverisine
     yazıldığı için burada elle liste tutmaya gerek yok: yeni bir
     tür geldiğinde menüde kendiliğinden beliriyor.

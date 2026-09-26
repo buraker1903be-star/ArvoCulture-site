@@ -21,7 +21,7 @@ export const metadata: Metadata = {
  * sağlar.
  */
 
-/* Kargo yanıtı sabit değil: tarife ARC'ta mağaza panelinden değişiyor.
+/* Kargo yanıtı sabit değil: tarife ArvoARC'ta mağaza panelinden değişiyor.
    Önceden "120 TL / 2.000 TL" yazılıydı; tarife değişince SSS ve arama
    motoru şeması sepetle çelişecekti. */
 const SHIPPING_ANSWER = "__kargo__";

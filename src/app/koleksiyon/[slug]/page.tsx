@@ -41,7 +41,7 @@ const menuGroups: Record<string, string[]> = {
 /**
  * Birleştirilen koleksiyonlar.
  *
- * Parfümler ARC'ta iki ayrı kaynaktan geliyor ve her cinsiyet için
+ * Parfümler ArvoARC'ta iki ayrı kaynaktan geliyor ve her cinsiyet için
  * iki koleksiyon var: LR'ninkiler ("parfumler-erkek") ve tedarikçi
  * kataloğundakiler ("kozmetik-kisisel-bakim-erkek-parfumu").
  * Müşteri için bu ayrımın bir anlamı yok — "erkek parfümü" arayan
@@ -49,9 +49,9 @@ const menuGroups: Record<string, string[]> = {
  * bilmek zorunda olmamalı. Menüde iki ayrı satır hâlinde durması
  * ise doğrudan karışıklık yaratıyordu.
  *
- * Burada uydurulan bir koleksiyon yok: ikisi de ARC'ta duran
+ * Burada uydurulan bir koleksiyon yok: ikisi de ArvoARC'ta duran
  * gerçek koleksiyonlar, yalnızca tek sayfada birleştiriliyorlar.
- * ARC tarafında bu koleksiyonlar tek çatı altında toplanırsa
+ * ArvoARC tarafında bu koleksiyonlar tek çatı altında toplanırsa
  * buradaki satır silinir ve hiçbir şey değişmez.
  */
 const MERGED_COLLECTIONS: Record<string, string[]> = {
@@ -103,7 +103,7 @@ export async function generateMetadata({
   const { slug } = await params;
 
   /*
-    Başlık ARC'taki koleksiyon adından geliyor.
+    Başlık ArvoARC'taki koleksiyon adından geliyor.
 
     Önceden yalnızca aşağıdaki altı sabit slug'a bakılıyordu ve
     geri kalan her şey "Koleksiyon" oluyordu. Site haritasındaki
@@ -138,7 +138,7 @@ export async function generateMetadata({
 
   const label = collection?.title ?? labels[slug] ?? "Koleksiyon";
 
-  /* ARC'taki açıklama varsa o kullanılıyor; arama sonucunda
+  /* ArvoARC'taki açıklama varsa o kullanılıyor; arama sonucunda
      görünen metin kategoriye özel olmalı. */
   const ownDescription = collection?.description?.trim();
   const description =

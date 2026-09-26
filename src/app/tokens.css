@@ -9,7 +9,7 @@
 :root {
   /* --- Renk --------------------------------------------- */
   /*
-    DİKKAT: `--ink` ARC panelinden <body> üzerine satır içi
+    DİKKAT: `--ink` ArvoARC panelinden <body> üzerine satır içi
     yazılıyor (theme.primary_color). Buradaki değer yalnızca
     panel bir renk vermezse geçerlidir; canlıda panel kazanır.
     Bu yüzden paletin geri kalanı --ink'e bağlı kurulmadı.

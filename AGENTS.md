@@ -1,8 +1,8 @@
 # ArvoCulture
 
 ArvoCulture markasının e-ticaret vitrini. Next.js · Vercel. Veri ve sipariş
-hesabı ARC'ta (`arc.arvo-os.com`, ayrı depo: ArvoARC); vitrin yalnızca
-gösterir ve siparişi ARC'a iletir. Kurulum için `README.md` ve
+hesabı ArvoARC'ta (`arc.arvo-os.com`, ayrı depo: ArvoARC); vitrin yalnızca
+gösterir ve siparişi ArvoARC'a iletir. Kurulum için `README.md` ve
 `.env.example`.
 
 ## Dil
@@ -13,29 +13,29 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
 
 ## Değişmezler
 
-- **Tutarı ARC hesaplar, vitrin aynalar.** PayTR'a giden tutar ARC'ın
+- **Tutarı ArvoARC hesaplar, vitrin aynalar.** PayTR'a giden tutar ArvoARC'ın
   sipariş fonksiyonundan çıkar; vitrindeki rakam yalnızca gösterimdir ama
   ödenenle aynı olmalıdır. Sepet, çekmece, ödeme formu ve SEO şeması kargo,
   ücretsiz kargo ve havale indirimini **yalnızca `lib/order-quote.ts`
-  üzerinden** hesaplar. ARC'ta kural değişirse (sipariş fonksiyonu ya da
+  üzerinden** hesaplar. ArvoARC'ta kural değişirse (sipariş fonksiyonu ya da
   `api/storefront/odeme`) bu dosya ve testi aynı gün güncellenir.
-  Bu kural bozulunca ne olduğu: 17 Eylül 2026'da ARC iki kuralı değiştirdi,
-  vitrine taşınmadı; müşteri ödemede ARC'ın tahsil ettiğinden farklı tutar
+  Bu kural bozulunca ne olduğu: 17 Eylül 2026'da ArvoARC iki kuralı değiştirdi,
+  vitrine taşınmadı; müşteri ödemede ArvoARC'ın tahsil ettiğinden farklı tutar
   gördü.
-- **ARC'ın kuralları** (hepsi kuruş tamsayısıyla):
+- **ArvoARC'ın kuralları** (hepsi kuruş tamsayısıyla):
   - ücretsiz kargo eşiği indirim **öncesi** ara toplamla karşılaştırılır;
   - "Ücretsiz Kargo" kuponu kargoyu sıfırlar;
   - havale indirimi yalnızca mal bedeline (kupon düşülmüş ara toplam)
     uygulanır, kargoya değil; kuruşta yuvarlanır.
-- **Birimler.** Vitrin içinde tutarlar **TL**; ARC'la konuşurken **kuruş**.
-  Ürün ve varyant fiyatları gelirken `/100` ile TL'ye çevrilir; ARC'a tutar
-  gönderen her çağrı `toKurus` kullanır, ARC'tan dönen tutar `/100` ile
+- **Birimler.** Vitrin içinde tutarlar **TL**; ArvoARC'la konuşurken **kuruş**.
+  Ürün ve varyant fiyatları gelirken `/100` ile TL'ye çevrilir; ArvoARC'a tutar
+  gönderen her çağrı `toKurus` kullanır, ArvoARC'tan dönen tutar `/100` ile
   okunur. Bu sınır iki kez hata üretti (ödeme yöntemlerinde 100'e bölünmüş
   tutar, sepet sayfasında kupon ucuna TL gönderilmesi).
 - **Kupon geçerliliği sunucudadır.** `evaluateCoupon` yalnızca anlık geri
   bildirim içindir; kullanım sınırı ve kişi başı sınırı vitrin bilemez.
   Ödeme formu kod indirimini bu yüzden toplamdan düşmez, notla belirtir.
-- **Mağaza ayarları ARC'tan okunur.** Kargo ücreti, ücretsiz kargo eşiği,
+- **Mağaza ayarları ArvoARC'tan okunur.** Kargo ücreti, ücretsiz kargo eşiği,
   havalenin açık olup olmadığı ve havale oranı mağaza panelinden değişir;
   vitrin bunları `get_arvoculture_storefront_settings` ile okur
   (`lib/store-settings.ts`, 30 sn önbellek) ve `CartContext.salesRules`

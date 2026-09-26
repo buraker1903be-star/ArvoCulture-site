@@ -4,7 +4,7 @@ import { toKurus } from "@/lib/order-quote";
 /**
  * Kupon değerlendirmesi — yalnızca gösterim içindir.
  *
- * Gerçek indirim ARC’ta, veritabanındaki kayıttan hesaplanır ve
+ * Gerçek indirim ArvoARC’ta, veritabanındaki kayıttan hesaplanır ve
  * PayTR’a giden tutar odur. Burada aynı kuralları uygulayıp
  * müşteriye anında geri bildirim veriyoruz; iki taraf ayrıldığında
  * sunucu kazanır.
@@ -29,7 +29,7 @@ export function evaluateCoupon(
     return { ok: false, reason: "Bu kod geçerli değil." };
   }
 
-  // Tutarlar ARC’ta kuruş cinsinden tutulur; karşılaştırma ve hesap da
+  // Tutarlar ArvoARC’ta kuruş cinsinden tutulur; karşılaştırma ve hesap da
   // kuruşta yapılır ki kayan nokta farkı sınırda sonucu değiştirmesin.
   const subtotalKurus = toKurus(subtotal);
   const minimum = (found.minimum_subtotal ?? 0) / 100;
@@ -52,7 +52,7 @@ export function evaluateCoupon(
     };
   }
 
-  // ARC sipariş fonksiyonuyla aynı: yüzde indirim kuruşta yuvarlanır,
+  // ArvoARC sipariş fonksiyonuyla aynı: yüzde indirim kuruşta yuvarlanır,
   // sabit indirim (value kuruş) ara toplamı aşamaz.
   const amountKurus =
     found.discount_type === "percentage"

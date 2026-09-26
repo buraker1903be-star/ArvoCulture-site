@@ -6,7 +6,7 @@
   biri değişip diğeri unutulsaydı sepet ile ödeme farklı kargo
   ücreti gösterirdi.
 
-  Bunlar yalnızca YEDEK: gerçek değerler ARC'taki mağaza ayarlarından
+  Bunlar yalnızca YEDEK: gerçek değerler ArvoARC'taki mağaza ayarlarından
   gelir (lib/store-settings.ts); okunamazsa bunlara düşülür. Metinler
   shippingTerms (lib/order-quote.ts) ile bu sayılardan üretilir.
 */

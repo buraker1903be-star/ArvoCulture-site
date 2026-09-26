@@ -24,7 +24,7 @@ export default async function Image({
 }) {
   const { slug } = await params;
   /*
-    ARC okunamazsa (kesinti, geçersiz anahtar) kart yine çiziliyor:
+    ArvoARC okunamazsa (kesinti, geçersiz anahtar) kart yine çiziliyor:
     marka kartına dönülüyor. Hata fırlatılsaydı rota 500 verir ve
     paylaşılan bağlantıda hiç önizleme çıkmazdı.
   */

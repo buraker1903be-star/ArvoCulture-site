@@ -15,7 +15,7 @@ import {
   writeNote,
 } from "@/lib/cart-extras";
 
-/** Kargo kuralı ARC’taki sipariş fonksiyonuyla aynı tutulmalıdır. */
+/** Kargo kuralı ArvoARC’taki sipariş fonksiyonuyla aynı tutulmalıdır. */
 
 /**
  * Sepet sayfası.
@@ -24,7 +24,7 @@ import {
  * Kupon kodu ve müşteri notu burada girilir, ödeme adımına
  * taşınır.
  *
- * Kuponun geçerliliği burada doğrulanmaz — indirim tutarını ARC
+ * Kuponun geçerliliği burada doğrulanmaz — indirim tutarını ArvoARC
  * hesaplar. Burada yalnızca kod saklanır; aksi hâlde istemcide
  * hesaplanan bir indirim gerçek tutarla çelişebilirdi.
  */
@@ -59,7 +59,7 @@ export function CartPageView() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           /*
-            ARC'ın kupon ucu ara toplamı KURUŞ bekliyor (arc_check_coupon
+            ArvoARC'ın kupon ucu ara toplamı KURUŞ bekliyor (arc_check_coupon
             onu kuruş cinsinden minimum_subtotal ile karşılaştırıyor).
             Önceden TL gönderiliyordu: 2.500 TL'lik sepet 25 TL gibi
             değerlendiriliyor, alt limitli kuponlar hak eden sepetlerde

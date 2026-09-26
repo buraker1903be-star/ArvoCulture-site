@@ -2,35 +2,35 @@ import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "./shipping";
 import { SELLER } from "./seller";
 
 /*
-  Sepet ve ödeme ekranındaki tutar hesapları — ARC'ın aynası.
+  Sepet ve ödeme ekranındaki tutar hesapları — ArvoARC'ın aynası.
 
-  Gerçek tutarı ARC hesaplar ve PayTR'a giden odur; burada yalnızca
+  Gerçek tutarı ArvoARC hesaplar ve PayTR'a giden odur; burada yalnızca
   müşteriye gösterilen rakamlar var. Ama gösterilen rakam ödenen
   rakamla aynı olmalı. Önceden bu kurallar üç bileşende ayrı ayrı
-  yazılıydı ve ARC 17 Eylül 2026'da iki kuralı değiştirdiğinde vitrine
-  taşınmadı (ARC commit d05a033 ve f74cb99; ikisi de "vitrin ayrıca
+  yazılıydı ve ArvoARC 17 Eylül 2026'da iki kuralı değiştirdiğinde vitrine
+  taşınmadı (ArvoARC commit d05a033 ve f74cb99; ikisi de "vitrin ayrıca
   güncellenmeli" diye not düşmüştü):
 
    - Ücretsiz kargo eşiği indirim ÖNCESİ ara toplamla karşılaştırılır.
      Çekmece indirim SONRASI tutara bakıyordu: 2.000 TL'lik sepette %10
-     kupon giren müşteri 120 TL kargo görüyordu, ARC kargo almıyordu.
+     kupon giren müşteri 120 TL kargo görüyordu, ArvoARC kargo almıyordu.
    - "Ücretsiz Kargo" kuponu kargoyu sıfırlar. Sepet sayfası ve ödeme
      formu bunu görmüyor, kargoyu yine gösteriyordu.
    - Havale indirimi yalnızca mal bedeline uygulanır, kargoya değil; ve
      kuruşta yuvarlanır. Ödeme formu kargo dahil toplamın %3'ünü alıp
      tam liraya yuvarlıyordu.
 
-  Hesaplar ARC gibi kuruş tamsayısıyla yapılır; bileşenler TL ile
+  Hesaplar ArvoARC gibi kuruş tamsayısıyla yapılır; bileşenler TL ile
   konuştuğu için giriş ve çıkış TL. Kaynaklar:
-   - kargo ve kupon: ARC supabase/migrations/20260917150000_free_shipping_coupon.sql
-   - havale:        ARC src/app/api/storefront/odeme/route.ts
+   - kargo ve kupon: ArvoARC supabase/migrations/20260917150000_free_shipping_coupon.sql
+   - havale:        ArvoARC src/app/api/storefront/odeme/route.ts
 */
 
 /** TL → kuruş (tamsayı). */
 export const toKurus = (lira: number) => Math.round(lira * 100);
 
 /**
- * Mağazanın satış ayarları (TL). ARC'ta mağaza panelinden değişir;
+ * Mağazanın satış ayarları (TL). ArvoARC'ta mağaza panelinden değişir;
  * vitrin get_arvoculture_storefront_settings ile okur
  * (lib/store-settings.ts). Okunamazsa varsayılan: bugünkü sabitler.
  */
@@ -66,7 +66,7 @@ export function toSalesRules(row: SalesRulesRow | undefined): SalesRules {
   return {
     shippingFee: kurus(row.shipping_fee, DEFAULT_SALES_RULES.shippingFee),
     freeShippingOver: kurus(row.free_shipping_threshold, DEFAULT_SALES_RULES.freeShippingOver),
-    // ARC ile aynı: yalnızca açık bir "false" havaleyi kapatır.
+    // ArvoARC ile aynı: yalnızca açık bir "false" havaleyi kapatır.
     transferEnabled: row.bank_transfer_enabled !== false,
     // numeric sütun metin olarak gelebilir ("2.5").
     transferDiscountPercent:
@@ -98,7 +98,7 @@ export function amountToFreeShipping(
 
 /**
  * Havale indirimi (TL). Taban yalnızca mal bedeli — kupon düşülmüş ara
- * toplam; kargo girmez. ARC'taki gibi kuruşta yuvarlanır.
+ * toplam; kargo girmez. ArvoARC'taki gibi kuruşta yuvarlanır.
  */
 export function transferDiscountFor(goods: number, percent: number): number {
   return Math.round((Math.max(toKurus(goods), 0) * percent) / 100) / 100;

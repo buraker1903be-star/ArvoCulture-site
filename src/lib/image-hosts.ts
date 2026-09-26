@@ -3,7 +3,7 @@ import { supabaseHostname } from "@/lib/env";
 /*
   next/image yalnızca next.config.ts'teki `remotePatterns`'a uyan
   adresleri optimize edebilir; uymayan bir adres verilirse sayfa hata
-  verir. Hero ve kampanya görselleri ARC panelinden geliyor ve herhangi
+  verir. Hero ve kampanya görselleri ArvoARC panelinden geliyor ve herhangi
   bir adres olabilir. Listede olanlar optimize ediliyor (telefona 1920px
   yerine ekran genişliğinde WebP gidiyor), olmayanlar eskisi gibi
   olduğu gibi gösteriliyor.

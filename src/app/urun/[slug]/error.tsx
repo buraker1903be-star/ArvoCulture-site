@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 /**
- * ARC kesintisinde devreye girer. Eskiden bu durumda 404 dönüyordu ve
+ * ArvoARC kesintisinde devreye girer. Eskiden bu durumda 404 dönüyordu ve
  * Google’a "bu ürün yok" sinyali gidiyordu; artık ürün dizinde kalıyor.
  */
 export default function ProductError({

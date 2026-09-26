@@ -27,7 +27,7 @@ export type StorefrontCollection = {
  *   - `ttlCache`: istekler arasında altmış saniye saklar.
  *
  * Altmış saniye, koleksiyonların değişme hızına göre bol. Yeni bir
- * kategori ARC'ta açıldığında menüde bir dakika içinde belirir.
+ * kategori ArvoARC'ta açıldığında menüde bir dakika içinde belirir.
  */
 const yukle = ttlCache(
   () =>

@@ -107,7 +107,7 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     : [];
   const description = plainText(row.description);
   /*
-    Görsel yolu iki biçimde gelebilir: ARC deposundaki göreli yol
+    Görsel yolu iki biçimde gelebilir: ArvoARC deposundaki göreli yol
     ya da tedarikçi CDN’inin tam adresi. Tedarikçi ürünlerinde
     görselleri kopyalamak yerine kaynağı kullanıyoruz.
   */
@@ -211,7 +211,7 @@ const CARD_COLUMNS =
   "slug,name,subtitle,vendor,product_type,price,compare_at_price,available,image_paths,sizes";
 
 /**
- * Katalog listesi. ARC ulaşılamazsa boş liste döner; sayfa "katalog
+ * Katalog listesi. ArvoARC ulaşılamazsa boş liste döner; sayfa "katalog
  * geçici olarak görüntülenemiyor" durumunu gösterir. Eski fiyat gösterilmez.
  */
 export const getStorefrontProducts = cache(
@@ -318,7 +318,7 @@ export const getStorefrontCollectionProducts = cache(
 );
 
 /**
- * Tek ürün. Burada hata bilinçli olarak yutulmuyor: ARC erişilemezse
+ * Tek ürün. Burada hata bilinçli olarak yutulmuyor: ArvoARC erişilemezse
  * istisna fırlar ve hata sınırı devreye girer. Aksi hâlde geçici bir
  * kesinti sırasında Google’a "bu ürün yok" (404) sinyali gider ve ürün
  * dizinden düşer.

@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 /**
  * Ürün galerisi.
  *
- * ARC her ürün için birden çok görsel tutuyor; sayfa yalnızca
+ * ArvoARC her ürün için birden çok görsel tutuyor; sayfa yalnızca
  * ilkini gösteriyordu. Tişörtlerde arka yüz, bakım ürünlerinde
  * içerik etiketi ikinci görselde — satın alma kararı için gerekli.
  */

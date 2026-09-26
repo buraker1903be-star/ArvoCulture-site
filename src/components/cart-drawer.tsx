@@ -75,13 +75,13 @@ export function CartDrawer({
   /*
     Kupon her tuşta yeniden değerlendirilir; müşteri kodu yazar
     yazmaz indirimi görüyor. Değerlendirme yalnızca gösterim
-    içindir — gerçek tutarı ARC hesaplar.
+    içindir — gerçek tutarı ArvoARC hesaplar.
   */
   const coupon = code.trim() ? evaluateCoupon(discounts, code, total) : null;
   const discount = coupon?.ok ? coupon.amount : 0;
   const afterDiscount = Math.max(total - discount, 0);
   const freeShipping = coupon?.ok ? coupon.freeShipping : false;
-  // Eşik indirim ÖNCESİ ara toplamla karşılaştırılır (ARC ile aynı):
+  // Eşik indirim ÖNCESİ ara toplamla karşılaştırılır (ArvoARC ile aynı):
   // kupon kullanmak ücretsiz kargoyu kaybettirmemeli.
   const shipping = shippingFor(total, freeShipping, salesRules);
   const remaining = amountToFreeShipping(total, freeShipping, salesRules);

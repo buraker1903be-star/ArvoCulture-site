@@ -31,11 +31,11 @@ export function BankTransfer({
   total: number;
   /**
    * TL cinsinden havale indirimi. Burada yeniden hesaplanmıyor: taban
-   * yalnızca mal bedeli (kargo hariç) ve kural ARC ile birebir olmalı;
+   * yalnızca mal bedeli (kargo hariç) ve kural ArvoARC ile birebir olmalı;
    * tek yer lib/order-quote.ts. Ödeme özetiyle aynı tutarı gösterir.
    */
   discount: number;
-  /** Mağaza havaleyi panelden kapattıysa seçenek gösterilmez (ARC reddeder). */
+  /** Mağaza havaleyi panelden kapattıysa seçenek gösterilmez (ArvoARC reddeder). */
   transferEnabled?: boolean;
   onSelect: (useTransfer: boolean) => void;
   selected: boolean;

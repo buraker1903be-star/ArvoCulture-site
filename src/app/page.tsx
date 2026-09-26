@@ -36,7 +36,7 @@ import {
  *   Hero → Arama + kupon + güvence (tek panel) → İNDİRİMDEKİLER → Kategoriler
  *   → Çok satanlar → Kampanya → Yeni gelenler → Yardım
  *
- * `data-arvo-section` / `data-arvo-field` nitelikleri ARC panelinin
+ * `data-arvo-section` / `data-arvo-field` nitelikleri ArvoARC panelinin
  * canlı düzenleme bağlantılarıdır; kaldırılırsa panel bölümü seçemez.
  */
 
@@ -55,7 +55,7 @@ export default async function Home() {
       getStorefrontProducts(200),
       getStorefrontDiscounts(),
       /*
-      Çok satanlar ARC’taki "Çok Satanlar" koleksiyonundan gelir.
+      Çok satanlar ArvoARC’taki "Çok Satanlar" koleksiyonundan gelir.
       Slug eski adından kalma; başlık panelden değiştirilmiş.
       Böylece hangi ürünlerin öne çıkacağına panelden siz karar
       verirsiniz. Öncesinde katalog sırasına düşüyordu ve
@@ -83,7 +83,7 @@ export default async function Home() {
   const deals = dealItems.filter((product) => product.available !== false);
 
   /*
-    Koleksiyon boşsa ARC’ta işaretlenmiş ürünlere düşülür.
+    Koleksiyon boşsa ArvoARC’ta işaretlenmiş ürünlere düşülür.
     Katalog sırasına asla düşülmez.
   */
   const curated = curatedBest.filter((product) => product.available !== false);

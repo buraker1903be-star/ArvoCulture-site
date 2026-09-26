@@ -26,7 +26,7 @@ import { shippingTerms } from "@/lib/order-quote";
  *
  * Bedeli açık: bir fiyat değişikliği müşteriye en geç bir dakika
  * gecikmeyle yansıyor. Bunu kabul edilebilir kılan şey, ödenecek
- * tutarın burada değil ARC'ta hesaplanması — vitrindeki rakam
+ * tutarın burada değil ArvoARC'ta hesaplanması — vitrindeki rakam
  * bilgilendirme, sepetteki rakam taahhüt.
  *
  * Süre kısaltılmak istenirse değiştirilecek yer burası.

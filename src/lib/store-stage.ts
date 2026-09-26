@@ -5,7 +5,7 @@ import { env } from "@/lib/env";
 /**
  * Mağazanın açık olup olmadığı.
  *
- * Arc aboneliği ArvoOS üzerinden yönetilir ve ödeme gecikince mağaza kademe
+ * ArvoARC aboneliği ArvoOS üzerinden yönetilir ve ödeme gecikince mağaza kademe
  * kademe daralır (kural tek yerde: public.arc_store_stage):
  *
  *   open          her şey açık

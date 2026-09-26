@@ -7,7 +7,7 @@ import { toSalesRules, type SalesRules, type SalesRulesRow } from "@/lib/order-q
 /**
  * Mağazanın satış ayarları: kargo ücreti, ücretsiz kargo eşiği, havale.
  *
- * Bunlar ARC'ta mağaza panelinden değişiyor ve siparişi ARC bu
+ * Bunlar ArvoARC'ta mağaza panelinden değişiyor ve siparişi ArvoARC bu
  * değerlerle hesaplıyor. Önceden vitrin 120 TL / 2.000 TL / %3'ü kodda
  * sabit tutuyordu; panelden değiştirilince sepet bir tutar, sipariş
  * başka bir tutar gösterecekti.
@@ -17,7 +17,7 @@ import { toSalesRules, type SalesRules, type SalesRulesRow } from "@/lib/order-q
  * (ttlCache), bir sonraki istekte yeniden denenir.
  *
  * Otuz saniye: indirim tanımlarıyla aynı gerekçe (lib/discounts.ts).
- * Tutarlar ARC'ta kuruş, vitrinde TL.
+ * Tutarlar ArvoARC'ta kuruş, vitrinde TL.
  */
 const yukle = ttlCache(
   () =>

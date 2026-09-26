@@ -136,7 +136,7 @@ export function AccountPanel({
 
     try {
       /*
-        Kayıt ve şifre sıfırlama e-postaları ARC üzerinden
+        Kayıt ve şifre sıfırlama e-postaları ArvoARC üzerinden
         gönderiliyor. Supabase’in kendi gönderimi proje geneli
         SMTP ayarını kullanıyor ve o ayar ArvoARC panelinden
         giden personel e-postalarını da etkiliyor; müşteriye
@@ -544,7 +544,7 @@ function translateAuthError(message: string) {
 /**
  * Kayıt ve şifre sıfırlama e-postası isteği.
  *
- * ARC’a gidiyor: bağlantıyı üretmek `service_role` yetkisi
+ * ArvoARC’a gidiyor: bağlantıyı üretmek `service_role` yetkisi
  * gerektiriyor ve o anahtar tarayıcıya konulamaz.
  */
 async function requestAuthEmail(payload: {

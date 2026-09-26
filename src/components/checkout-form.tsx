@@ -19,14 +19,14 @@ import { amountToFreeShipping, shippingFor, transferDiscountFor } from "@/lib/or
  * Ödeme sayfası.
  *
  * Buradaki tutarlar yalnızca müşteriye gösterim içindir. Gerçek
- * tutar ARC’ta, veritabanındaki fiyatlardan hesaplanır ve PayTR’a
+ * tutar ArvoARC’ta, veritabanındaki fiyatlardan hesaplanır ve PayTR’a
  * giden tutar odur. Bu sayfadan gönderilen tek bilgi hangi ürünün
  * kaç adet istendiğidir.
  */
 
 const ARC_URL = "https://arc.arvo-os.com";
 
-/** Kargo kuralı ARC’taki fonksiyonla aynı tutulmalıdır. */
+/** Kargo kuralı ArvoARC’taki fonksiyonla aynı tutulmalıdır. */
 
 export function CheckoutForm({
   supabaseUrl,
@@ -58,7 +58,7 @@ export function CheckoutForm({
   /* Banka havalesi seçilirse indirim uygulanıyor ve sipariş
      "ödeme bekliyor" durumunda oluşuyor. */
   const [transferChosen, setUseTransfer] = useState(false);
-  /* Havale panelden kapatılmışsa ARC havaleli siparişi 422 ile
+  /* Havale panelden kapatılmışsa ArvoARC havaleli siparişi 422 ile
      reddediyor; seçenek hiç gösterilmez, seçili kalmışsa yok sayılır. */
   const useTransfer = transferChosen && salesRules.transferEnabled;
   const [state, setState] = useState<"idle" | "sending" | "error" | "paying">("idle");
@@ -150,7 +150,7 @@ export function CheckoutForm({
     Sepette uygulanan kod ödeme özetinde hiç görünmüyordu: müşteri
     sepette indirimi görüp burada kodsuz bir özetle karşılaşıyor,
     kodunun düştüğünü sanıyordu. Kod gösteriliyor ama tutarı
-    hesaplanmıyor: indirimi sipariş oluşurken ARC uyguluyor ve
+    hesaplanmıyor: indirimi sipariş oluşurken ArvoARC uyguluyor ve
     kargo ile havale indirimiyle birleşme sırası orada belirleniyor.
     Burada tahmini bir tutar göstermek, ödenen tutarla çelişebilirdi.
   */
@@ -165,7 +165,7 @@ export function CheckoutForm({
   /*
     Havale indirimi. Kartlı ödemede PayTR komisyonu var,
     havalede yok; farkın bir kısmı müşteriye veriliyor.
-    ARC ile aynı kural: taban yalnızca mal bedeli (kargo girmez) ve
+    ArvoARC ile aynı kural: taban yalnızca mal bedeli (kargo girmez) ve
     kuruşta yuvarlanır. Önceden kargo dahil toplamın %3'ü alınıp tam
     liraya yuvarlanıyordu. Kod indirimi burada bilerek düşülmüyor
     (aşağıdaki not); kodsuz siparişte gösterilen tutar ödenenle birebir.
@@ -222,7 +222,7 @@ export function CheckoutForm({
           transferDiscount,
           items: items.map((item) => ({
             /*
-              Varyant SKU’su varsa o gönderilir; ARC siparişi
+              Varyant SKU’su varsa o gönderilir; ArvoARC siparişi
               doğru bedene bağlar. Yoksa ürün slug’ı yedek
               olarak kullanılır (tek varyantlı ürünler).
             */
