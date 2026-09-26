@@ -10,5 +10,7 @@ export default defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Denetimlerin örnek ağacı: kasıtlı hatalı kod içerir, lint edilmez.
+    "tests/fixtures/**",
   ]),
 ]);
