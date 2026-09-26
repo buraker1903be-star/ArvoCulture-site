@@ -25,7 +25,7 @@ jobs:
       # scripts/check-css-vars.mjs). Denetim `build`'in basinda da var ama CI
       # artik derleme yapmiyor; PR'da erken gorunsun diye burada ayrica.
       - run: npm run check:css
-      # Sepet ve ödeme tutarları ARC'ın sipariş hesabını aynalıyor
+      # Sepet ve ödeme tutarları ArvoARC'ın sipariş hesabını aynalıyor
       # (lib/order-quote.ts); iki taraf ayrılırsa burada yakalanır.
       - run: npm test
       # Koddaki tablo/sütun/fonksiyon adları canlı şemada var mı

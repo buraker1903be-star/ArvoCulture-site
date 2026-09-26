@@ -3,7 +3,7 @@ import test from "node:test";
 import { evaluateCoupon } from "@/lib/coupon";
 import type { StorefrontDiscount } from "@/lib/discounts";
 
-// Tutarlar ARC'ta kuruş: value (sabit indirimde) ve minimum_subtotal kuruş,
+// Tutarlar ArvoARC'ta kuruş: value (sabit indirimde) ve minimum_subtotal kuruş,
 // yüzde indirimde value yüzde. Sepet ara toplamı TL.
 const indirim = (over: Partial<StorefrontDiscount>): StorefrontDiscount => ({
   id: "d1",
@@ -26,7 +26,7 @@ test("kod büyük/küçük harf ve boşluk duyarsız", () => {
   assert.equal(evaluateCoupon([indirim({})], "  yaz10 ", 100).ok, true);
 });
 
-test("yüzde indirim ARC gibi kuruşta yuvarlanır", () => {
+test("yüzde indirim ArvoARC gibi kuruşta yuvarlanır", () => {
   // 33,33 TL'nin %10'u = 333,3 kuruş → 333 kuruş = 3,33 TL
   const sonuc = evaluateCoupon([indirim({})], "YAZ10", 33.33);
   assert.equal(sonuc.ok && sonuc.amount, 3.33);

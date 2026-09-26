@@ -168,7 +168,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   /* Başka alan adları: yalnızca ürün görselleri.
-     Diğer her şey (ödeme, ARC, analiz) doğrudan geçsin. */
+     Diğer her şey (ödeme, ArvoARC, analiz) doğrudan geçsin. */
   if (url.origin !== self.location.origin) {
     if (request.destination === "image") {
       event.respondWith(verVeTazele(request, GORSEL, GORSEL_SINIRI));

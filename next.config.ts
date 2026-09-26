@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
     */
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 480, 560],
     // Host artık ortam değişkeninden türetiliyor; staging ve production
-    // farklı ARC projeleri kullanabilir.
+    // farklı ArvoARC projeleri kullanabilir.
     remotePatterns: [
       {
         protocol: "https",
@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "percdn.com",
       },
-      // ARC panelindeki hero/kampanya görselleri Shopify CDN'inde
+      // ArvoARC panelindeki hero/kampanya görselleri Shopify CDN'inde
       // olabilir. Liste src/lib/image-hosts.ts ile aynı tutulmalı.
       {
         protocol: "https",
