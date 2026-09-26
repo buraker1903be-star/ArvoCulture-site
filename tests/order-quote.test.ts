@@ -12,9 +12,9 @@ import {
 } from "@/lib/order-quote";
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "@/lib/shipping";
 
-// Bu testler ARC'ın sipariş hesabını (supabase/migrations/20260917150000_
+// Bu testler ArvoARC'ın sipariş hesabını (supabase/migrations/20260917150000_
 // free_shipping_coupon.sql ve src/app/api/storefront/odeme/route.ts) aynalar.
-// Vitrin bir tutar, ARC başka bir tutar gösterirse müşteri yanıltılır.
+// Vitrin bir tutar, ArvoARC başka bir tutar gösterirse müşteri yanıltılır.
 
 test("eşiğin altında kargo alınır, eşikte ve üstünde alınmaz", () => {
   assert.equal(shippingFor(FREE_SHIPPING_OVER - 0.01), SHIPPING_FEE);
@@ -24,7 +24,7 @@ test("eşiğin altında kargo alınır, eşikte ve üstünde alınmaz", () => {
 });
 
 test("kupon kullanmak ücretsiz kargoyu kaybettirmez", () => {
-  // Gerileme (ARC d05a033): eşik indirim SONRASI tutarla karşılaştırılıyordu.
+  // Gerileme (ArvoARC d05a033): eşik indirim SONRASI tutarla karşılaştırılıyordu.
   // 2.000 TL'lik sepette %10 kupon giren müşteri 120 TL kargo ödüyordu.
   // Eşik indirim ÖNCESİ ara toplamla karşılaştırılır; çağıran taraf
   // shippingFor'a indirim öncesi toplamı verir.
@@ -35,7 +35,7 @@ test("kupon kullanmak ücretsiz kargoyu kaybettirmez", () => {
 });
 
 test("ücretsiz kargo kuponu kargoyu sıfırlar", () => {
-  // Gerileme (ARC d05a033): kupon "Kod uygulandı" diyor, kargo yine alınıyordu.
+  // Gerileme (ArvoARC d05a033): kupon "Kod uygulandı" diyor, kargo yine alınıyordu.
   assert.equal(shippingFor(100, true), 0);
   assert.equal(amountToFreeShipping(100, true), 0);
 });
@@ -54,7 +54,7 @@ test("kayan nokta sınırda sonucu değiştirmez", () => {
 });
 
 test("havale indirimi kargoya uygulanmaz", () => {
-  // Gerileme (ARC f74cb99): taban order.total idi, 120 TL kargonun da %3'ü
+  // Gerileme (ArvoARC f74cb99): taban order.total idi, 120 TL kargonun da %3'ü
   // müşteriye hediye ediliyordu. Taban yalnızca mal bedeli.
   const mal = 1000;
   assert.equal(transferDiscountFor(mal, 3), 30);
@@ -63,14 +63,14 @@ test("havale indirimi kargoya uygulanmaz", () => {
 
 test("havale indirimi kuruşta yuvarlanır, tam liraya değil", () => {
   // Ödeme formu önceden Math.round(TL * 3 / 100) ile tam liraya yuvarlıyordu:
-  // 1.617,90 TL → 49 TL. ARC kuruşta yuvarlar: 48,54 TL.
+  // 1.617,90 TL → 49 TL. ArvoARC kuruşta yuvarlar: 48,54 TL.
   assert.equal(transferDiscountFor(1617.9, 3), 48.54);
   assert.equal(transferDiscountFor(99.99, 3), 3);
   assert.equal(transferDiscountFor(0, 3), 0);
 });
 
-test("ARC'ın havale formülü ile birebir", () => {
-  // ARC: discount = Math.round((goodsAfterCoupon * percent) / 100), kuruş.
+test("ArvoARC'ın havale formülü ile birebir", () => {
+  // ArvoARC: discount = Math.round((goodsAfterCoupon * percent) / 100), kuruş.
   for (const mal of [1, 33.33, 150, 1617.9, 2000, 12345.67]) {
     for (const yuzde of [0, 3, 5, 7.5]) {
       const arc = Math.round((toKurus(mal) * yuzde) / 100) / 100;
@@ -85,7 +85,7 @@ test("TL → kuruş dönüşümü tamsayı verir", () => {
   assert.equal(toKurus(19.99), 1999);
 });
 
-// --- Mağaza ayarları (ARC: get_arvoculture_storefront_settings) ---
+// --- Mağaza ayarları (ArvoARC: get_arvoculture_storefront_settings) ---
 
 
 test("ayarlar okunamazsa bugünkü sabitlere düşülür", () => {
@@ -95,7 +95,7 @@ test("ayarlar okunamazsa bugünkü sabitlere düşülür", () => {
   assert.equal(DEFAULT_SALES_RULES.transferEnabled, true);
 });
 
-test("ARC'tan gelen kuruş değerleri TL'ye çevrilir", () => {
+test("ArvoARC'tan gelen kuruş değerleri TL'ye çevrilir", () => {
   const kurallar = toSalesRules({
     shipping_fee: 14900,
     free_shipping_threshold: 250000,
@@ -105,7 +105,7 @@ test("ARC'tan gelen kuruş değerleri TL'ye çevrilir", () => {
   assert.deepEqual(kurallar, { shippingFee: 149, freeShippingOver: 2500, transferEnabled: true, transferDiscountPercent: 2.5 });
 });
 
-test("havaleyi yalnızca açık bir false kapatır (ARC ile aynı)", () => {
+test("havaleyi yalnızca açık bir false kapatır (ArvoARC ile aynı)", () => {
   const satir = { shipping_fee: 12000, free_shipping_threshold: 200000, bank_transfer_discount_percent: 3 };
   assert.equal(toSalesRules({ ...satir, bank_transfer_enabled: false }).transferEnabled, false);
   assert.equal(toSalesRules({ ...satir, bank_transfer_enabled: null }).transferEnabled, true);
