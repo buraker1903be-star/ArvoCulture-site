@@ -2300,6 +2300,28 @@
   font-size: 0.9rem;
 }
 
+/*
+  Sorunlu pakette ne yapılacağını söyleyen satır. Rozet "Kargoda sorun
+  var" deyip bırakıyordu; müşteri destek kanalını kendi arıyordu.
+
+  Renk --sale: vitrinde dikkat çeken tek kırmızı o (.form-error de onu
+  kullanıyor); ayrı bir hata rengi tanımlamak paleti bölerdi.
+*/
+.order-shipment-note {
+  margin: 0;
+  padding: var(--s3);
+  border-left: 2px solid var(--sale);
+  background: var(--panel-2);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* Sorunlu rozet göze çarpıyor; ötekiler sakin kalıyor. */
+.order-shipments .tag[data-durum="failed"] {
+  border-color: color-mix(in srgb, var(--sale) 40%, var(--line));
+  color: var(--sale);
+}
+
 /* Takip numarası seçilip kopyalanıyor: müşteri onu kargo firmasının
    sitesine yapıştırıyor. Rakamlar eşit genişlikte daha okunaklı. */
 .order-shipment-no strong {

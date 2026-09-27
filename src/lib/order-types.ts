@@ -84,6 +84,22 @@ export const SHIPMENT_STATUS_LABEL: Record<string, string> = {
   failed: "Kargoda sorun var",
 };
 
+/*
+  SORUNLU PAKETTE MÜŞTERİ NE YAPACAK?
+
+  Durum rozeti "Kargoda sorun var" diyordu ve orada bitiyordu: açıklama
+  da yok, atılacak adım da. Müşteri takip numarasına bakıyor, bir şey
+  anlamıyor ve destek kanalına yazmak için kendi yolunu arıyor.
+
+  Metin ÖZÜR DİLEMİYOR ve suçu kargo firmasına atmıyor: ikisi de
+  müşterinin sorusunu ("paketim ne olacak?") yanıtlamıyor. Ne olduğu ve
+  ne yapılacağı yazıyor.
+*/
+export const SHIPMENT_STATUS_NOTE: Record<string, string> = {
+  failed:
+    "Kargo firması bu paketi teslim edemedi; paket bize geri dönüyor olabilir. Durumu takip ediyoruz — bize yazarsanız aynı gün dönüş yaparız.",
+};
+
 export const STATUS_LABEL: Record<string, string> = {
   pending: "Ödeme bekleniyor",
   confirmed: "Hazırlanıyor",

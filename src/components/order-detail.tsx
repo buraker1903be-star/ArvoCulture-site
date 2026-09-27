@@ -11,6 +11,7 @@ import {
   productImageUrl,
   STATUS_LABEL,
   SHIPMENT_STATUS_LABEL,
+  SHIPMENT_STATUS_NOTE,
   RETURN_STATUS,
   type ReturnRequestRow,
   initials,
@@ -177,10 +178,23 @@ export function OrderDetail({
                     {gonderiler.length > 1 ? `${gonderi.sequence}. paket` : "Paketiniz"}
                     {gonderi.carrier ? ` · ${gonderi.carrier}` : ""}
                   </b>
-                  <span className="tag tag-soft">
+                  <span className="tag tag-soft" data-durum={gonderi.status}>
                     {SHIPMENT_STATUS_LABEL[gonderi.status] ?? "Kargoya verildi"}
                   </span>
                 </div>
+
+                {/*
+                  Sorunlu pakette NE YAPILACAĞI yazıyor. Rozet "Kargoda
+                  sorun var" deyip bırakıyordu; müşteri takip
+                  numarasına bakıp bir şey anlamıyor ve destek kanalını
+                  kendi arıyordu.
+                */}
+                {SHIPMENT_STATUS_NOTE[gonderi.status] ? (
+                  <p className="order-shipment-note">
+                    {SHIPMENT_STATUS_NOTE[gonderi.status]}{" "}
+                    <Link href="/iletisim">Bize yazın</Link>
+                  </p>
+                ) : null}
 
                 {gonderi.tracking_number ? (
                   <p className="order-shipment-no">
