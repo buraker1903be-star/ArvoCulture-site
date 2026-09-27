@@ -36,13 +36,56 @@ export type Order = {
   note: string | null;
   created_at: string;
   items: OrderItem[];
+  /*
+    Gönderiler. Bir sipariş birden çok pakete bölünebiliyor (ayrı
+    depolardan çıkan kalemler) ve her paketin kendi takip numarası var.
+    ArvoARC'ın get_arvoculture_my_orders fonksiyonundan geliyor; eski
+    siparişlerde ve fonksiyon yenilenmeden önce ALAN HİÇ GELMEYEBİLİR,
+    bu yüzden isteğe bağlı.
+  */
+  shipments?: Shipment[] | null;
+};
+
+export type ShipmentItem = { name: string; quantity: number };
+
+export type Shipment = {
+  sequence: number;
+  status: string;
+  carrier: string | null;
+  tracking_number: string | null;
+  tracking_url: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
+  items: ShipmentItem[];
+};
+
+/*
+  Gönderi durumunun müşteriye gösterilen karşılığı. Panelin ayrıntılı
+  adımları (OTO'nun arrivedTerminal, outForDelivery…) burada üç şeye
+  iniyor: yola çıktı, teslim edildi, sorun var. Müşterinin kararını
+  değiştiren tek şey bu.
+*/
+export const SHIPMENT_STATUS_LABEL: Record<string, string> = {
+  created: "Kargoya verildi",
+  shipped: "Yolda",
+  in_transit: "Yolda",
+  delivered: "Teslim edildi",
+  failed: "Kargoda sorun var",
+  returned: "İade sürecinde",
 };
 
 export const STATUS_LABEL: Record<string, string> = {
   pending: "Ödeme bekleniyor",
   confirmed: "Hazırlanıyor",
   processing: "Hazırlanıyor",
-  fulfilled: "Teslim edildi",
+  /*
+    ArvoARC'ta "fulfilled" KARGOYA VERİLDİ demek, teslim edildi değil
+    (ArvoARC/src/lib/order-flow.ts). Burada "Teslim edildi" yazıyordu ve
+    sipariş kargoya verilir verilmez müşteriye paketi teslim alınmış gibi
+    gösteriyordu; artık durum gönderi oluşunca kendiliğinden değiştiği
+    için bu her siparişte olurdu.
+  */
+  fulfilled: "Kargoya verildi",
   delivered: "Teslim edildi",
   cancelled: "İptal edildi",
   refunded: "İade edildi",

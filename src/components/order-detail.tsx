@@ -10,6 +10,7 @@ import {
   formatOrderDate,
   productImageUrl,
   STATUS_LABEL,
+  SHIPMENT_STATUS_LABEL,
   initials,
   type Order,
   type OrderAddress,
@@ -107,6 +108,13 @@ export function OrderDetail({
     );
   }
 
+  /*
+    Alan eski siparişlerde ve fonksiyon yenilenmeden önce HİÇ GELMEYEBİLİR
+    (ArvoARC migration'ı uygulanana kadar); boş dizi sayılıyor, bölüm de
+    hiç görünmüyor.
+  */
+  const gonderiler = order.shipments ?? [];
+
   return (
     <>
       <section className="panel about-hero detail-hero">
@@ -125,6 +133,74 @@ export function OrderDetail({
           </time>
         </div>
       </section>
+
+      {/*
+        KARGO TAKİBİ. Numara yalnızca e-postada vardı; e-postayı silen ya
+        da bulamayan müşteri kargosunu takip edemiyor, destek kanalına
+        yazıyordu.
+
+        Her paket AYRI gösteriliyor: sipariş birden çok depodan
+        çıkabiliyor ve tek numara göstermek, gelmeyen kalemi kayıp
+        sandırırdı. Paketin İÇİNDEKİLER de yazıyor ki hangi ürünün hangi
+        kargoda olduğu belli olsun.
+      */}
+      {gonderiler.length > 0 && (
+        <section className="panel">
+          <div className="head">
+            <h2>{gonderiler.length > 1 ? `Kargo · ${gonderiler.length} paket` : "Kargo"}</h2>
+          </div>
+          <ul className="order-shipments">
+            {gonderiler.map((gonderi) => (
+              <li key={gonderi.sequence}>
+                <div className="order-shipment-head">
+                  <b>
+                    {gonderiler.length > 1 ? `${gonderi.sequence}. paket` : "Paketiniz"}
+                    {gonderi.carrier ? ` · ${gonderi.carrier}` : ""}
+                  </b>
+                  <span className="tag tag-soft">
+                    {SHIPMENT_STATUS_LABEL[gonderi.status] ?? "Kargoya verildi"}
+                  </span>
+                </div>
+
+                {gonderi.tracking_number ? (
+                  <p className="order-shipment-no">
+                    Takip numarası <strong>{gonderi.tracking_number}</strong>
+                  </p>
+                ) : (
+                  <p className="hint">Takip numarası kargo firmasından gelince burada görünecek.</p>
+                )}
+
+                {/*
+                  Bağlantı UYDURULMUYOR: adres yalnızca ArvoARC'ın
+                  kaydettiği değerden geliyor. Firma adından tahmin
+                  edilen bir adres, müşteriyi çalışmayan bir sayfaya
+                  götürürdü.
+                */}
+                {gonderi.tracking_url && (
+                  <a className="btn btn-ghost" href={gonderi.tracking_url} target="_blank" rel="noreferrer noopener">
+                    Kargomu takip et
+                  </a>
+                )}
+
+                {gonderi.items.length > 0 && (
+                  <ul className="order-shipment-items">
+                    {gonderi.items.map((kalem, sira) => (
+                      <li key={`${gonderi.sequence}-${sira}`}>
+                        {kalem.name} <small>{kalem.quantity} adet</small>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+          {gonderiler.length > 1 && (
+            <p className="hint">
+              Siparişiniz farklı depolardan gönderildiği için birden çok pakette geliyor; paketler ayrı ayrı teslim edilebilir.
+            </p>
+          )}
+        </section>
+      )}
 
       <div className="detail-grid">
         <section className="panel">

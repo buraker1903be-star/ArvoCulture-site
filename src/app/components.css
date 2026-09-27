@@ -2269,6 +2269,64 @@
 
 /* --- Sipariş kalemleri (görselli) --- */
 
+/*
+  KARGO TAKİBİ. Her paket ayrı bir kutu: sipariş birden çok depodan
+  çıkabiliyor ve paketler ayrı ayrı teslim ediliyor; tek blokta
+  göstermek hangi ürünün hangi kargoda olduğunu gizlerdi.
+*/
+.order-shipments {
+  display: grid;
+  gap: var(--s4);
+  margin-top: var(--s4);
+}
+
+.order-shipments > li {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s4);
+  border: 1px solid var(--line-soft);
+}
+
+.order-shipment-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-shipment-no {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Takip numarası seçilip kopyalanıyor: müşteri onu kargo firmasının
+   sitesine yapıştırıyor. Rakamlar eşit genişlikte daha okunaklı. */
+.order-shipment-no strong {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  user-select: all;
+}
+
+.order-shipments .btn {
+  justify-self: start;
+}
+
+.order-shipment-items {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  /* --ink-3: üçüncül metin, WCAG AA kontrastında (tokens.css). */
+  color: var(--ink-3);
+}
+
+.order-shipment-items small {
+  opacity: 0.8;
+}
+
 .order-items {
   display: grid;
   gap: var(--s3);
