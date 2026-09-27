@@ -5858,3 +5858,73 @@
     animation: none;
   }
 }
+
+
+/* ---------- Müşteri sipariş sayfası: iade talebi ---------- */
+/*
+  Talebin durumu müşteriye gösteriliyor. Önce hiçbir iz yoktu: talep
+  gönderiliyor, sipariş sayfasına dönünce form yine açık duruyor ve
+  ikinci gönderim veritabanı hatasına düşüyordu.
+*/
+.order-returns {
+  margin-top: var(--s5);
+}
+
+.order-return-card {
+  display: grid;
+  gap: var(--s2);
+  margin-top: var(--s3);
+  padding: var(--s4);
+  border: 1px solid var(--line-soft);
+}
+
+/* Reddedilen talep sessiz duruyor; müşteriyi ikinci kez üzmemek için
+   kırmızı bir uyarı kutusu değil. */
+.order-return-card[data-durum="reddedildi"] {
+  opacity: 0.8;
+}
+
+.order-return-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.order-return-head time {
+  color: var(--ink-3);
+  font-size: 0.85rem;
+}
+
+.order-return-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.order-return-items {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+
+.order-return-items small {
+  color: var(--ink-3);
+}
+
+/* Bizden gelen not: iade adresi ve kargo talimatı burada. Müşterinin
+   ürünü nereye göndereceğini söyleyen tek yer, bu yüzden ayrışıyor. */
+.order-return-note {
+  padding: var(--s3);
+  border-left: 2px solid var(--brand);
+  background: var(--panel-2);
+}
+
+.order-return-amount b {
+  font-variant-numeric: tabular-nums;
+}

@@ -125,3 +125,44 @@ export function initials(name: string) {
     .map((word) => word[0]?.toLocaleUpperCase("tr-TR") ?? "")
     .join("");
 }
+
+/*
+  İADE TALEBİ. get_arvoculture_my_returns fonksiyonu baştan beri vardı
+  ama vitrin onu hiç çağırmıyordu: müşteri talep açıyor, sonra ne
+  olduğunu yalnızca e-postadan öğreniyordu. Hesabında hiçbir iz
+  olmadığı için sipariş sayfasına dönünce form yine açık duruyor ve
+  ikinci gönderim veritabanı hatasına düşüyordu.
+*/
+export type ReturnRequestItem = { sku?: string | null; name?: string | null; quantity?: number; total?: number };
+
+export type ReturnRequestRow = {
+  id: string;
+  order_number: string;
+  items: ReturnRequestItem[] | null;
+  reason: string;
+  status: string;
+  /* Operasyoncunun notu: iade adresi ve kargo talimatı burada geliyor. */
+  status_note: string | null;
+  refund_amount: number | null;
+  created_at: string;
+  resolved_at: string | null;
+};
+
+export const RETURN_STATUS: Record<string, { label: string; detail: string }> = {
+  beklemede: {
+    label: "İnceleniyor",
+    detail: "Talebiniz bize ulaştı. Onaylandığında ürünü nasıl göndereceğinizi yazacağız.",
+  },
+  onaylandi: {
+    label: "Onaylandı",
+    detail: "Ürünü aşağıdaki talimata göre gönderin. Elimize ulaşıp kontrol edildikten sonra iadeniz yapılır.",
+  },
+  reddedildi: {
+    label: "Reddedildi",
+    detail: "Talebiniz karşılanamadı.",
+  },
+  tamamlandi: {
+    label: "Tamamlandı",
+    detail: "İadeniz yapıldı. Bankanıza yansıması birkaç iş günü sürebilir.",
+  },
+};

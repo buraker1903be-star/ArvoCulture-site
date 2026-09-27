@@ -11,6 +11,8 @@ import {
   productImageUrl,
   STATUS_LABEL,
   SHIPMENT_STATUS_LABEL,
+  RETURN_STATUS,
+  type ReturnRequestRow,
   initials,
   type Order,
   type OrderAddress,
@@ -28,6 +30,7 @@ export function OrderDetail({
   supabaseKey: string;
 }) {
   const [order, setOrder] = useState<Order | null>(null);
+  const [iadeler, setIadeler] = useState<ReturnRequestRow[]>([]);
   const [state, setState] = useState<State>("loading");
 
   useEffect(() => {
@@ -42,7 +45,21 @@ export function OrderDetail({
         return;
       }
 
-      const { data, error } = await supabase.rpc("get_arvoculture_my_orders");
+      /*
+        İADE TALEPLERİ DE ÇEKİLİYOR. Fonksiyon baştan beri vardı ama
+        vitrin onu hiç çağırmıyordu; müşteri talebinin ne olduğunu
+        yalnızca e-postadan öğreniyordu.
+
+        Hatası siparişi düşürmüyor: iade bölümü görünmese de siparişin
+        kendisi okunabilir kalmalı.
+      */
+      const [{ data, error }, { data: iadeVerisi }] = await Promise.all([
+        supabase.rpc("get_arvoculture_my_orders"),
+        supabase.rpc("get_arvoculture_my_returns").then(
+          (sonuc) => (sonuc.error ? { data: null } : sonuc),
+          () => ({ data: null }),
+        ),
+      ]);
       if (!active) return;
 
       if (error) {
@@ -60,6 +77,9 @@ export function OrderDetail({
         return;
       }
 
+      setIadeler(
+        ((iadeVerisi as ReturnRequestRow[] | null) ?? []).filter((istek) => istek.order_number === orderNumber),
+      );
       setOrder(found);
       setState("ready");
     }
@@ -245,7 +265,58 @@ export function OrderDetail({
             farklı yazılabiliyor. İptal ve iade edilmiş
             siparişlerde gösterilmiyor.
           */}
-          {!["cancelled", "refunded"].includes(order.status) && (
+          {/*
+            AÇIK TALEP VARKEN FORM GÖSTERİLMİYOR. Önce her zaman
+            açıktı: müşteri talebini gönderdikten sonra sayfaya dönünce
+            hiçbir iz göremiyor, ikinci kez gönderiyor ve veritabanı
+            "zaten açık bir talebiniz var" diye reddediyordu.
+          */}
+          {iadeler.length > 0 && (
+            <div className="order-returns">
+              <h2>İade talebiniz</h2>
+              {iadeler.map((istek) => {
+                const durum = RETURN_STATUS[istek.status] ?? { label: istek.status, detail: "" };
+                return (
+                  <article className="order-return-card" key={istek.id} data-durum={istek.status}>
+                    <div className="order-return-head">
+                      <b>{durum.label}</b>
+                      <time dateTime={istek.created_at}>{formatOrderDate(istek.created_at)}</time>
+                    </div>
+                    <p>{durum.detail}</p>
+
+                    {(istek.items ?? []).length > 0 && (
+                      <ul className="order-return-items">
+                        {(istek.items ?? []).map((kalem, sira) => (
+                          <li key={`${istek.id}-${sira}`}>
+                            {kalem.name ?? kalem.sku} <small>{kalem.quantity ?? 1} adet</small>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    <p className="order-return-reason"><b>Sebep:</b> {istek.reason}</p>
+
+                    {/*
+                      Operasyoncunun notu: iade adresi ve kargo
+                      talimatı burada geliyor. Müşterinin ürünü nereye
+                      göndereceğini söyleyen tek yer bu.
+                    */}
+                    {istek.status_note && (
+                      <p className="order-return-note"><b>Bizden:</b> {istek.status_note}</p>
+                    )}
+
+                    {istek.status === "tamamlandi" && istek.refund_amount ? (
+                      <p className="order-return-amount">
+                        İade edilen tutar <b>{formatPrice(istek.refund_amount / 100)}</b>
+                      </p>
+                    ) : null}
+                  </article>
+                );
+              })}
+            </div>
+          )}
+
+          {!["cancelled", "refunded"].includes(order.status) && !iadeler.some((i) => i.status === "beklemede" || i.status === "onaylandi") && (
             <div className="order-return">
               <ReturnRequest
                 orderNumber={order.order_number}
