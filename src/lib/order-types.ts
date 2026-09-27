@@ -65,13 +65,23 @@ export type Shipment = {
   iniyor: yola çıktı, teslim edildi, sorun var. Müşterinin kararını
   değiştiren tek şey bu.
 */
+/*
+  ANAHTARLAR ArvoARC'ın gerçek durum kümesi: draft, created, picked_up,
+  in_transit, delivered, cancelled, failed
+  (arc_shipments_status_check). Önce "shipped" ve "returned" yazılıydı;
+  ikisi de ArvoARC'ta hiç üretilmiyor (OTO'nun "returned" durumu
+  "failed"e çevriliyor) ve gerçekten olan "picked_up" eksikti — o da
+  yedek metne düşüyordu.
+
+  draft ve cancelled burada yok: o gönderiler müşteriye zaten
+  gönderilmiyor (get_arvoculture_my_orders onları eliyor).
+*/
 export const SHIPMENT_STATUS_LABEL: Record<string, string> = {
   created: "Kargoya verildi",
-  shipped: "Yolda",
+  picked_up: "Kuryeye teslim edildi",
   in_transit: "Yolda",
   delivered: "Teslim edildi",
   failed: "Kargoda sorun var",
-  returned: "İade sürecinde",
 };
 
 export const STATUS_LABEL: Record<string, string> = {
