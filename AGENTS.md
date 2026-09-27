@@ -74,3 +74,19 @@ derlemede görünmez; üretimde sorgu hata verir ve çoğu yerde hata yakalanıp
 boş veri gösterilir (Platform → Ödemeler bu yüzden iki gün "sorun yok"
 gösterdi). Yeni sütun/fonksiyon kullanan kodu, migration canlıya uygulanıp
 katalog yenilendikten sonra birleştirin.
+
+**Katalog ArvoARC'ın kataloğudur.** Vitrin ArvoARC'ın Supabase projesini
+okuyor (`obaskcdxaaezjglayash`), bu yüzden `supabase/schema/katalog.json`
+ArvoARC'takinin kopyasıdır; ArvoARC'ta migration uygulanıp katalog
+yenilendiğinde buraya da kopyalanır:
+
+```
+cp ../ArvoARC/supabase/schema/katalog.json supabase/schema/katalog.json
+```
+
+27.09.2026'ya kadar burada 19 Eylül AYRILMASINDAN ÖNCEKİ ortak projenin
+dökümü duruyordu: 91 tablo, içlerinde bu veritabanında hiç olmayan 20
+ArvoOS tablosu (`crm_*`, `hr_*`, `billing_*`) ve bugün vitrinin okumaya
+başladığı `arc_shipments` eksik. Denetim yeşil yanıyordu ama yanlış
+veritabanına bakıyordu — yani var olmayan bir tabloya yapılan sorguyu
+yakalayamazdı.
