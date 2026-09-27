@@ -6,7 +6,7 @@ import { formatPrice } from "@/lib/product-types";
 import {
   formatOrderDate,
   productImageUrl,
-  STATUS_LABEL,
+  siparisDurumEtiketi,
   initials,
   type Order,
 } from "@/lib/order-types";
@@ -37,7 +37,9 @@ export function OrderCard({
       <div className="order-card-head">
         <strong>{order.order_number}</strong>
         <span className="tag tag-soft">
-          {STATUS_LABEL[order.status] ?? order.status}
+          {/* Detay sayfasıyla AYNI türetme: liste "Kargoya verildi",
+              detay "Teslim edildi" derse ikisinden de kötü olur. */}
+          {siparisDurumEtiketi(order)}
         </span>
       </div>
 

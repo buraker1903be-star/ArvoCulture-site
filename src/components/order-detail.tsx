@@ -9,7 +9,7 @@ import { formatPrice } from "@/lib/product-types";
 import {
   formatOrderDate,
   productImageUrl,
-  STATUS_LABEL,
+  siparisDurumEtiketi,
   SHIPMENT_STATUS_LABEL,
   SHIPMENT_STATUS_NOTE,
   RETURN_STATUS,
@@ -146,9 +146,12 @@ export function OrderDetail({
         </nav>
         <h1>{order.order_number}</h1>
         <div className="detail-meta">
-          <span className="tag tag-soft">
-            {STATUS_LABEL[order.status] ?? order.status}
-          </span>
+          {/*
+            Durum GÖNDERİLERDEN türetiliyor: ArvoARC'ın sipariş durumu
+            "fulfilled"da kalıyor (orada "kargoya verildi" demek) ve
+            paketler teslim edilse bile müşteri onu görüyordu.
+          */}
+          <span className="tag tag-soft">{siparisDurumEtiketi(order)}</span>
           <time dateTime={order.created_at}>
             {formatOrderDate(order.created_at)}
           </time>

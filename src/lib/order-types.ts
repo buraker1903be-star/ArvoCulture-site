@@ -192,3 +192,27 @@ export const RETURN_STATUS: Record<string, { label: string; detail: string }> = 
     detail: "İadeniz yapıldı. Bankanıza yansıması birkaç iş günü sürebilir.",
   },
 };
+
+/*
+  SİPARİŞİN MÜŞTERİYE GÖRÜNEN DURUMU.
+
+  ArvoARC'ın sipariş durumu "fulfilled"da kalıyor — orada bu KARGOYA
+  VERİLDİ demek ve "teslim edildi" diye ayrı bir durum yok. Paketler
+  teslim edilse bile müşteri "Kargoya verildi" görüyordu; oysa gönderi
+  kayıtları teslimi biliyor (cron OTO'dan çekiyor).
+
+  Teslim sayılması için bütün paketlerin teslim edilmiş olması gerek:
+  üç paketli siparişte birinin teslimi, müşteri kalanını beklerken
+  yanlış bilgi olurdu.
+*/
+export function siparisDurumEtiketi(order: Order): string {
+  const paketler = (order.shipments ?? []).filter((paket) => paket.status !== "cancelled");
+  if (
+    order.status === "fulfilled" &&
+    paketler.length > 0 &&
+    paketler.every((paket) => paket.status === "delivered")
+  ) {
+    return "Teslim edildi";
+  }
+  return STATUS_LABEL[order.status] ?? order.status;
+}
