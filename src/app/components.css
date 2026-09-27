@@ -5325,6 +5325,37 @@
   gap: var(--s2);
 }
 
+/*
+  İADE ADEDİ. Önce kutucuk işaretlenince satırın tamamı iade talebine
+  giriyordu; 3 adet alan müşteri 1 adet iade edemiyordu. Kutu yalnızca
+  birden çok adet alınmışsa çiziliyor.
+*/
+.return-qty {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: var(--s2);
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+
+.return-qty input {
+  width: 68px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.return-qty em {
+  font-style: normal;
+  color: var(--ink-3);
+}
+
 .return-items label {
   display: flex;
   align-items: flex-start;

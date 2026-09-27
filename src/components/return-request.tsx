@@ -49,12 +49,31 @@ export function ReturnRequest({
   );
   const [message, setMessage] = useState("");
 
+  /*
+    ADET SEÇİMİ. Önce kutucuk işaretlenince satırın TAMAMI iade
+    talebine giriyordu: 3 adet alan müşteri 1 adet iade edemiyordu ve
+    talep 3 adetlik açılıyordu. Panelde iade tutarı da stok iadesi de
+    bu adetten hesaplanıyor.
+
+    Varsayılan satırın tamamı — eski davranış korunuyor, müşteri
+    azaltabiliyor.
+  */
+  const [adetler, setAdetler] = useState<Record<string, number>>({});
+  const adet = (item: Item) => adetler[item.sku] ?? item.quantity;
+
   const toggle = (sku: string) =>
     setChosen((current) =>
       current.includes(sku)
         ? current.filter((x) => x !== sku)
         : [...current, sku],
     );
+
+  const adediDegistir = (item: Item, deger: string) => {
+    const sayi = Number(deger);
+    /* 1 ile satırdaki adet arasında; boş ve geçersiz girdi 1 sayılıyor. */
+    const sinirli = Number.isFinite(sayi) ? Math.min(Math.max(Math.round(sayi), 1), item.quantity) : 1;
+    setAdetler((mevcut) => ({ ...mevcut, [item.sku]: sinirli }));
+  };
 
   async function submit() {
     if (chosen.length === 0) {
@@ -72,7 +91,15 @@ export function ReturnRequest({
         "create_arvoculture_return_request",
         {
           p_order_number: orderNumber,
-          p_items: items.filter((item) => chosen.includes(item.sku)),
+          /*
+            Yalnızca SKU ve ADET gönderiliyor. Ürün adı ve tutar
+            sunucuda siparişin kendi kaydından yazılıyor
+            (create_arvoculture_return_request); istemciden gelen tutar
+            eskiden olduğu gibi saklanıyordu.
+          */
+          p_items: items
+            .filter((item) => chosen.includes(item.sku))
+            .map((item) => ({ sku: item.sku, quantity: adet(item) })),
           p_reason: reason,
           p_note: note || null,
         },
@@ -139,6 +166,26 @@ export function ReturnRequest({
                   currency: "TRY",
                 }).format(item.total / 100)}
               </small>
+              {/*
+                Adet kutusu YALNIZCA birden çok adet alınmışsa
+                görünüyor: tek adetlik satırda "1 / 1" seçtirmek
+                gereksiz bir karar yükü.
+              */}
+              {chosen.includes(item.sku) && item.quantity > 1 ? (
+                <span className="return-qty">
+                  İade edilecek adet
+                  <input
+                    type="number"
+                    min={1}
+                    max={item.quantity}
+                    value={adet(item)}
+                    onChange={(event) => adediDegistir(item, event.target.value)}
+                    onClick={(event) => event.stopPropagation()}
+                    aria-label={`${item.name} için iade adedi`}
+                  />
+                  <em>/ {item.quantity}</em>
+                </span>
+              ) : null}
             </span>
           </label>
         ))}
