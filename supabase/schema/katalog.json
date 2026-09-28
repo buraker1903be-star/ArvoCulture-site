@@ -184,6 +184,7 @@
       "currency",
       "external_id",
       "id",
+      "image_path",
       "organization_id",
       "price",
       "product_id",
@@ -203,6 +204,7 @@
       "metadata",
       "name",
       "organization_id",
+      "publish_at",
       "slug",
       "source",
       "status",
@@ -210,6 +212,7 @@
       "supplier_product_code",
       "supplier_synced_at",
       "tax_rate",
+      "unpublish_at",
       "updated_at"
     ],
     "arc_return_requests": [
@@ -227,6 +230,16 @@
       "status_note",
       "updated_at",
       "user_id"
+    ],
+    "arc_saved_views": [
+      "ad",
+      "created_at",
+      "created_by",
+      "id",
+      "liste",
+      "organization_id",
+      "sira",
+      "sorgu"
     ],
     "arc_shipment_items": [
       "created_at",
@@ -446,6 +459,7 @@
     "arc_find_address",
     "arc_first_text",
     "arc_log_order_event",
+    "arc_medya_listesi",
     "arc_normalize_address",
     "arc_reprice_supplier",
     "arc_resolve_commerce_tenant",
