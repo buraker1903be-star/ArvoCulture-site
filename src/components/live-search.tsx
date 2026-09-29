@@ -56,10 +56,13 @@ export function LiveSearch({
     q: string;
     items: SearchItem[];
     total: number;
+    /* Tam eşleşme bulunamadı, liste yakın sonuçlardan oluşuyor. */
+    yaklasik: boolean;
   }>({
     q: "",
     items: [],
     total: 0,
+    yaklasik: false,
   });
   const [hataliSorgu, setHataliSorgu] = useState<string | null>(null);
 
@@ -88,12 +91,14 @@ export function LiveSearch({
           const data = (await response.json()) as {
             results?: SearchItem[];
             total?: number;
+            yaklasik?: boolean;
           };
           const items = Array.isArray(data.results) ? data.results : [];
           setCevap({
             q: aranan,
             items,
             total: typeof data.total === "number" ? data.total : items.length,
+            yaklasik: data.yaklasik === true,
           });
         })
         .catch((error) => {
@@ -125,6 +130,20 @@ export function LiveSearch({
     tökezliyormuş gibi hissettiriyor.
   */
   const results = cevap.items;
+
+  /*
+    YAKIN SONUÇ AÇIKÇA SÖYLENİYOR. "kadın parfümü" aramasında
+    katalogda "kadın" kelimesi hiç geçmiyor; dönen 43 parfüm
+    aradığının tam karşılığıymış gibi sunulsaydı müşteri yanlış ürünü
+    aradığını sanırdı.
+  */
+  const kesit =
+    cevap.total > results.length
+      ? `ilk ${results.length} · toplam ${cevap.total} sonuç`
+      : `${results.length} sonuç`;
+  const sayiMetni = cevap.yaklasik
+    ? `Tam eşleşme yok · yakın ${kesit}`
+    : kesit.charAt(0).toLocaleUpperCase("tr-TR") + kesit.slice(1);
 
   return (
     <div className="live-search">
@@ -160,9 +179,7 @@ export function LiveSearch({
             : durum === "yukleniyor"
               ? "Aranıyor…"
               : results.length > 0
-                ? cevap.total > results.length
-                  ? `İlk ${results.length} · toplam ${cevap.total} sonuç`
-                  : `${results.length} sonuç`
+                ? sayiMetni
                 : "Sonuç bulunamadı"}
         </p>
       )}

@@ -1,7 +1,7 @@
 import "server-only";
 import { NextResponse } from "next/server";
 import { getCachedSearchIndex } from "@/lib/search-cache";
-import { searchProducts } from "@/lib/search";
+import { aramaSonuclari } from "@/lib/search";
 
 /**
  * Arama ucu.
@@ -39,10 +39,13 @@ export async function GET(request: Request) {
       yalnızca listeden okununca 300 eşleşmeli bir arama "48 sonuç"
       diyordu.
     */
-    const matches = searchProducts(items, query);
+    const { sonuclar, yaklasik } = aramaSonuclari(items, query);
     return NextResponse.json({
-      results: matches.slice(0, limit),
-      total: matches.length,
+      results: sonuclar.slice(0, limit),
+      total: sonuclar.length,
+      /* Tam eşleşme yoksa liste "yakın sonuç"tur; arayüz bunu
+         söylemeli, aksi hâlde müşteri yanlış ürünü aradığını sanır. */
+      yaklasik,
     });
   } catch (error) {
     /*
