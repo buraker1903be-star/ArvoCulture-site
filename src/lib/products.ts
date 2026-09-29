@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { rpc, rpcOrEmpty } from "@/lib/arc";
+import { rpc, rpcOrEmpty, rpcTumSayfalar } from "@/lib/arc";
 import { env } from "@/lib/env";
 import type { Product } from "@/lib/product-types";
 
@@ -253,15 +253,16 @@ export type ProductSitemapEntry = { slug: string; updatedAt: Date | null };
 export const getStorefrontProductSlugs = cache(
   async (limit = 20000): Promise<ProductSitemapEntry[]> => {
     /*
-      TEK İSTEK: 1000 satırda kesiliyor (PostgREST sınırı, fonksiyonun
-      LIMIT'inden bağımsız), yani site haritası eksik. Range başlığıyla
-      sayfalama denendi, bu uçta yok sayılıyor ve aynı sayfa tekrar
-      geliyor; çözüm fonksiyona p_offset eklemek (30.09.2026).
+      SAYFA SAYFA: tek istek 1000 satırda kesiliyor (PostgREST sınırı,
+      fonksiyonun LIMIT'inden bağımsız) ve site haritası eksik kalıyordu.
+      `limit` artık kaç ürüne kadar gidileceğini söylüyor; sayfa boyutu
+      sunucunun sınırıyla aynı (30.09.2026).
     */
-    const rows = await rpc<{ slug: string; updated_at: string | null }>(
+    const rows = await rpcTumSayfalar<{ slug: string; updated_at: string | null }>(
       "get_arvoculture_storefront_product_slugs",
-      { p_limit: Math.max(1, limit) },
+      {},
       { revalidate: 3600, tags: ["storefront-products"] },
+      { enFazlaSayfa: Math.max(1, Math.ceil(Math.max(1, limit) / 1000)) },
     );
 
     return rows
