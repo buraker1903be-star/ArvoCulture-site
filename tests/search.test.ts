@@ -127,3 +127,28 @@ test("yakın sonuçta çok kelimesi tutan önce geliyor", () => {
   assert.equal(sonuclar[0]?.name, "LR ALOE VIA Aloe Vera Şampuan");
   assert.ok(sonuclar.length > 1, "yalnızca aloe geçenler de listede");
 });
+
+test("soyulan gövde alakasız kelimeye uymuyor", () => {
+  /*
+    CANLIDA ÖLÇÜLDÜ: ilk sürüm gövdeye serbest önek eşleşmesi
+    veriyordu ve "maske" araması 15'ten 19'a çıkmıştı — "maske" →
+    "mask", "mask" da "MASKÜLEN" parfümlere uyuyordu. Yüz maskesi
+    arayana erkek parfümü göstermek, bu değişikliğin önlemeye
+    çalıştığı hatanın ta kendisi.
+  */
+  const katalog: SearchItem[] = [
+    urun("LR ZEITGARD Gece Maskesi"),
+    urun("POLIZEI Ombre Erkek Parfüm EDP Ferah ve Maskülen Aromatik Koku"),
+  ];
+  assert.deepEqual(
+    searchProducts(katalog, "maske").map((i) => i.name),
+    ["LR ZEITGARD Gece Maskesi"],
+  );
+});
+
+test("gövde, üstüne ek almış hâline uyuyor", () => {
+  /* Daraltma yararlı eşleşmeyi kesmemeli: "kremi" → "krem",
+     "krem" de "kremleri"ne uymalı. */
+  const katalog: SearchItem[] = [urun("LR Aloe Vera El Kremleri")];
+  assert.equal(searchProducts(katalog, "el kremi").length, 1);
+});

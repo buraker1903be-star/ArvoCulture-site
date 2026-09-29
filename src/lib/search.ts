@@ -59,14 +59,39 @@ const EKLER = [
    harflik gövdeler hemen her ürüne uyar ve arama anlamsızlaşır. */
 const EN_KISA_GOVDE = 3;
 
-/** Kelimenin kendisi ve eki soyulmuş hâli. */
-export function govdeler(word: string): string[] {
+/** Eki soyulmuş gövde; kelimede tanınan bir ek yoksa null. */
+export function govdesi(word: string): string | null {
   for (const ek of EKLER) {
     if (!word.endsWith(ek)) continue;
     const govde = word.slice(0, -ek.length);
-    if (govde.length >= EN_KISA_GOVDE) return [word, govde];
+    if (govde.length >= EN_KISA_GOVDE) return govde;
   }
-  return [word];
+  return null;
+}
+
+/** Kelimenin kendisi ve (varsa) gövdesi. */
+export function govdeler(word: string): string[] {
+  const govde = govdesi(word);
+  return govde ? [word, govde] : [word];
+}
+
+/**
+ * Dizindeki kelime, gövdenin kendisi ya da gövde + tanınan bir ek mi?
+ *
+ * SOYULMUŞ GÖVDEYE SERBEST ÖNEK EŞLEŞMESİ VERİLMİYOR. İlk sürüm
+ * veriyordu ve canlıda ölçüldüğünde "maske" araması 15'ten 19'a
+ * çıkmıştı: "maske" → "mask" soyuluyor, "mask" da "MASKÜLEN"
+ * parfümlere önek olarak uyuyordu. Yüz maskesi arayan müşteriye erkek
+ * parfümü gösteriliyordu — düzeltilmeye çalışılan "şort → tişört"
+ * hatasının aynısı.
+ *
+ * Yazarken arama yine çalışıyor: kelimenin KENDİSİ hâlâ önek olarak
+ * aranıyor ("zeit" → ZEITGARD), daraltma yalnızca gövdeye uygulanıyor.
+ */
+function govdeyeUyuyor(candidate: string, govde: string) {
+  if (candidate === govde) return true;
+  if (!candidate.startsWith(govde)) return false;
+  return EKLER.includes(candidate.slice(govde.length));
 }
 
 /**
@@ -84,10 +109,12 @@ export function govdeler(word: string): string[] {
  * "parfum" yazınca parfümler. Ek soyulmuş gövde de aynı kuralla
  * aranıyor, "içinde geçiyor mu"ya dönülmüyor.
  */
-const matchesWord = (haystackWords: string[], word: string) =>
-  govdeler(word).some((aday) =>
-    haystackWords.some((candidate) => candidate.startsWith(aday)),
-  );
+const matchesWord = (haystackWords: string[], word: string) => {
+  if (haystackWords.some((candidate) => candidate.startsWith(word))) return true;
+  const govde = govdesi(word);
+  if (!govde) return false;
+  return haystackWords.some((candidate) => govdeyeUyuyor(candidate, govde));
+};
 
 /** Bir ürünün sorgu kelimelerine verdiği karşılık. */
 function puanla(item: SearchItem, words: string[]) {
