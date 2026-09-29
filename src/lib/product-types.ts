@@ -67,12 +67,21 @@ const PLACEHOLDER_VARIANT_TITLES = new Set([
 ]);
 
 export function displayVariantLabel(
-  input: { size?: string | null; title?: string | null } | undefined,
+  input: { size?: string | null; color?: string | null; title?: string | null } | undefined,
 ): string | undefined {
   if (!input) return undefined;
 
+  /*
+    RENK DE ETİKETE GİRİYOR. Önce yalnızca bedene bakılıyordu; rengi ve
+    bedeni olan bir üründe sepette "M" yazıyor, hangi renk olduğu
+    kayboluyordu. Kozmetikte beden hiç yok, orada tek ayırt edici renk
+    (30.09.2026'da renk seçici eklenince ortaya çıktı).
+  */
   const size = input.size?.trim();
+  const color = input.color?.trim();
+  if (size && color) return `${color} · ${size}`;
   if (size) return size;
+  if (color) return color;
 
   const title = input.title?.trim();
   if (!title) return undefined;

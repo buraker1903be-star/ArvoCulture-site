@@ -4,6 +4,7 @@ import { useContext, useMemo, useRef, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { flyToCart } from "@/lib/fly-to-cart";
 import { displayVariantLabel, type Product } from "@/lib/product-types";
+import { bedenSecenekleri, renkSecenekleri, varyantBul } from "@/lib/variant-select";
 import type { Variant } from "@/lib/variants";
 
 /**
@@ -25,35 +26,41 @@ export function ProductBuy({
   variants: Variant[];
 }) {
   const { add } = useContext(CartContext);
-  const [sku, setSku] = useState<string | null>(null);
+  const [renk, setRenk] = useState<string | null>(null);
+  const [beden, setBeden] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [warn, setWarn] = useState(false);
   const [done, setDone] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   /*
-    Beden seçimi yalnızca gerçekten birden çok beden varsa
-    gösterilir. Kozmetik ve parfümde tek varyant olur; orada
-    seçim istemek gereksiz sürtünme yaratır.
+    RENK SEÇİMİ. Kutu tekstil için yazılmıştı ve yalnızca bedeni
+    biliyordu; kozmetikte beden yok, renk var. LR'ın dudak kalemi ve
+    rujunun altı tonu ürün sayfasında hiç görünmüyordu (30.09.2026).
   */
-  const sizes = useMemo(
-    () => variants.filter((variant) => variant.size),
-    [variants],
-  );
-  const needsSize = sizes.length > 1;
+  const renkler = useMemo(() => renkSecenekleri(variants), [variants]);
+  const needsColor = renkler.length > 1;
 
-  const selected = useMemo(() => {
-    if (sku) return variants.find((variant) => variant.sku === sku) ?? null;
-    // Tek varyantlı üründe seçim gerekmez.
-    return variants.length === 1 ? variants[0]! : null;
-  }, [sku, variants]);
+  /*
+    Bedenler seçilen renge göre daralıyor: ikisi birden olan üründe
+    "Beyaz" yalnızca S'te varsa M gösterilmemeli.
+  */
+  const sizes = useMemo(() => bedenSecenekleri(variants, renk), [variants, renk]);
+  const needsSize = new Set(sizes.map((variant) => variant.size)).size > 1;
+
+  const selected = useMemo(
+    () => varyantBul(variants, renk, beden),
+    [variants, renk, beden],
+  );
 
   const soldOut =
     product.available === false ||
     (variants.length > 0 && variants.every((variant) => !variant.available));
 
   function handleAdd() {
-    if (needsSize && !selected) {
+    /* Seçim tamamlanmadan sepete eklenmiyor: eksik seçimde müşterinin
+       istemediği ton ya da beden gönderilirdi. */
+    if ((needsColor || needsSize) && !selected) {
       setWarn(true);
       return;
     }
@@ -87,6 +94,40 @@ export function ProductBuy({
 
   return (
     <div className="pdp-buy">
+      {needsColor && (
+        <>
+          <label className="option-label" id="renk-etiketi">
+            Renk
+          </label>
+          <div className="sizes" role="radiogroup" aria-labelledby="renk-etiketi">
+            {renkler.map((ad) => {
+              const ayniRenk = variants.filter((variant) => variant.color === ad);
+              const satilabilir = ayniRenk.some((variant) => variant.available);
+              return (
+                <button
+                  type="button"
+                  key={ad}
+                  role="radio"
+                  aria-checked={renk === ad}
+                  data-selected={renk === ad}
+                  /* Tükenen ton gizlenmiyor, seçilemiyor: müşteri hangi
+                     tonun bittiğini görmeli. */
+                  disabled={!satilabilir}
+                  title={satilabilir ? undefined : "Bu ton tükendi"}
+                  onClick={() => {
+                    setRenk(ad);
+                    setBeden(null);
+                    setWarn(false);
+                  }}
+                >
+                  {ad}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+
       {needsSize && (
         <>
           <label className="option-label" id="beden-etiketi">
@@ -102,14 +143,14 @@ export function ProductBuy({
                 type="button"
                 key={variant.sku}
                 role="radio"
-                aria-checked={selected?.sku === variant.sku}
-                data-selected={selected?.sku === variant.sku}
+                aria-checked={beden === variant.size}
+                data-selected={beden === variant.size}
                 /* Stokta olmayan beden seçilemez ama gizlenmez:
                    müşteri hangi bedenin tükendiğini görmeli. */
                 disabled={!variant.available}
                 title={variant.available ? undefined : "Bu beden tükendi"}
                 onClick={() => {
-                  setSku(variant.sku);
+                  setBeden(variant.size);
                   setWarn(false);
                 }}
               >
@@ -117,12 +158,18 @@ export function ProductBuy({
               </button>
             ))}
           </div>
-          {warn && (
-            <p className="field-warn" role="alert">
-              Sepete eklemeden önce bir beden seçin.
-            </p>
-          )}
         </>
+      )}
+
+      {/*
+        Uyarı beden bloğunun İÇİNDEYDİ: yalnızca renk seçilmesi gereken
+        bir üründe (kozmetik) hiç görünmüyordu — düğmeye basılıyor,
+        hiçbir şey olmuyordu. Artık ikisini de kapsıyor.
+      */}
+      {warn && (
+        <p className="field-warn" role="alert">
+          Sepete eklemeden önce {needsColor && needsSize ? "renk ve beden" : needsColor ? "bir renk" : "bir beden"} seçin.
+        </p>
       )}
 
       <label className="option-label" id="adet-etiketi">
