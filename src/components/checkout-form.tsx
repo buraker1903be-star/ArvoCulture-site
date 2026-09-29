@@ -254,6 +254,18 @@ export function CheckoutForm({
         return;
       }
 
+      /*
+        TAMİ ORTAK ÖDEME SAYFASI. PayTR çerçeve içinde açılıyordu;
+        Tami'de tam yönlendirme var, kart oranın sayfasında giriliyor
+        ve Masterpass da orada. Dönüşte sonuç panelde /payment/query
+        ile doğrulanıyor, yani buradaki adres bir şeyi kanıtlamıyor —
+        yalnızca müşteriyi ödeme sayfasına götürüyor.
+      */
+      if (!useTransfer && data.saglayici === "tami" && typeof data.odemeAdresi === "string") {
+        window.location.href = data.odemeAdresi;
+        return;
+      }
+
       if (!response.ok || (!useTransfer && !data.iframeUrl)) {
         setState("error");
         setMessage(
