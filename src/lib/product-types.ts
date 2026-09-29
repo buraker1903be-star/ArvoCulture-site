@@ -66,6 +66,35 @@ const PLACEHOLDER_VARIANT_TITLES = new Set([
   "standart",
 ]);
 
+/**
+ * Ton ve beden adlarının gösterim biçimi.
+ *
+ * Tedarikçi verisinde aynı üründe iki ayrı yazım dolaşıyor: dudak
+ * kaleminde "Pure Red · rosy-nude · Berry Rose", mat rujda
+ * "pure-red · Rosy Nude · Ruby Red" (30.09.2026'da ölçüldü). Müşteri
+ * ton seçicisinde bir slug görüyor.
+ *
+ * YALNIZCA SLUG GÖRÜNÜMLÜ DEĞER DÜZELTİLİYOR: tamamı küçük harf ve
+ * içinde tire olan. "Siyah/Beyaz Çizgili" gibi gerçek adlara
+ * dokunulmuyor — elle yazılmış bir adı biçimlendirmeye kalkmak
+ * kazandırdığından çok bozardı.
+ *
+ * Büyütme Türkçe yerelle DEĞİL: slug hâline gelmiş değer zaten
+ * ASCII'ye indirgenmiş oluyor ve tr-TR "indigo"yu "İndigo" yapardı.
+ *
+ * Seçim hâlâ HAM değerle yapılıyor; burada değişen yalnızca ekranda
+ * okunan metin.
+ */
+export function renkAdi(deger: string): string {
+  const sade = deger.trim();
+  if (!sade.includes("-") || sade !== sade.toLowerCase()) return sade;
+  return sade
+    .split("-")
+    .filter(Boolean)
+    .map((parca) => parca.charAt(0).toUpperCase() + parca.slice(1))
+    .join(" ");
+}
+
 export function displayVariantLabel(
   input: { size?: string | null; color?: string | null; title?: string | null } | undefined,
 ): string | undefined {
@@ -78,7 +107,7 @@ export function displayVariantLabel(
     (30.09.2026'da renk seçici eklenince ortaya çıktı).
   */
   const size = input.size?.trim();
-  const color = input.color?.trim();
+  const color = input.color ? renkAdi(input.color) : undefined;
   if (size && color) return `${color} · ${size}`;
   if (size) return size;
   if (color) return color;

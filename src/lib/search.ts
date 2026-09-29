@@ -116,11 +116,30 @@ const matchesWord = (haystackWords: string[], word: string) => {
   return haystackWords.some((candidate) => govdeyeUyuyor(candidate, govde));
 };
 
-/** Bir ürünün sorgu kelimelerine verdiği karşılık. */
+/*
+  SLUG DA ARANIYOR.
+
+  Slug ürün adının kopyası değil: adda olmayan, müşterinin gerçekten
+  yazdığı kelimeleri taşıyor. Ürünün adı "LR ALOE VIA Aloe Vera Deo
+  Roll-On" ama slug'ı "aloe-vera-roll-on-deodorant-ter-onleyici" —
+  yani "deodorant" kelimesi katalogda VAR, arama ona bakmıyordu.
+  30.09.2026'da canlı uçta ölçüldü: "deodorant" 0 sonuç veriyordu,
+  oysa satın alınabilir iki deodorant var; aynısı "makyaj",
+  "probiyotik", "mendil" için de geçerliydi.
+
+  Elle eşanlamlı tablosu yazmaktansa bu kullanılıyor: kelimeleri
+  zaten biri ürün ürün seçmiş, katalogun tamamını kapsıyor ve yeni
+  ürün eklendiğinde kendiliğinden güncelleniyor.
+
+  EN DÜŞÜK AĞIRLIK: slug'da "pratik", "nem", "yenileme" gibi dolgu
+  kelimeler de var. Ada göre eşleşen ürün her zaman önce gelmeli,
+  yoksa sıralama slug dolgusuna göre kayardı.
+*/
 function puanla(item: SearchItem, words: string[]) {
   const nameWords = toWords(item.name);
   const brandWords = toWords(item.brand);
   const categoryWords = toWords(item.category);
+  const slugWords = toWords(item.slug);
 
   let score = 0;
   let eslesen = 0;
@@ -136,6 +155,9 @@ function puanla(item: SearchItem, words: string[]) {
       score += 2;
       eslesen += 1;
     } else if (matchesWord(categoryWords, word)) {
+      score += 1;
+      eslesen += 1;
+    } else if (matchesWord(slugWords, word)) {
       score += 1;
       eslesen += 1;
     }

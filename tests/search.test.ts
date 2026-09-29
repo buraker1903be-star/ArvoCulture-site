@@ -152,3 +152,32 @@ test("gövde, üstüne ek almış hâline uyuyor", () => {
   const katalog: SearchItem[] = [urun("LR Aloe Vera El Kremleri")];
   assert.equal(searchProducts(katalog, "el kremi").length, 1);
 });
+
+test("slug'daki müşteri kelimeleri de aranıyor", () => {
+  /*
+    Slug ürün adının kopyası değil; adda olmayan kelimeleri taşıyor.
+    Canlıda "deodorant" 0 sonuç veriyordu, oysa satın alınabilir iki
+    deodorant var — adları "Deo Roll-On", slug'ları "…-deodorant-…".
+  */
+  const katalog: SearchItem[] = [
+    {
+      ...urun("LR ALOE VIA Aloe Vera Deo Roll-On"),
+      slug: "aloe-vera-roll-on-deodorant-ter-onleyici",
+    },
+  ];
+  assert.equal(searchProducts(katalog, "deodorant").length, 1);
+  assert.equal(searchProducts(katalog, "deodorantlar").length, 1);
+});
+
+test("slug eşleşmesi ada göre eşleşmeyi geçmiyor", () => {
+  /* Slug'da "pratik", "nem" gibi dolgu kelimeler de var; sıralama
+     onlara göre kaymamalı. */
+  const katalog: SearchItem[] = [
+    { ...urun("LR Nemlendirici Yüz Kremi"), slug: "lr-nemlendirici-yuz-kremi" },
+    { ...urun("LR Racine Gece Kremi"), slug: "lr-racine-gece-kremi-nem-yenileme" },
+  ];
+  assert.equal(
+    searchProducts(katalog, "nem")[0]?.name,
+    "LR Nemlendirici Yüz Kremi",
+  );
+});

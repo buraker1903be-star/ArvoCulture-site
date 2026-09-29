@@ -3,7 +3,7 @@
 import { useContext, useMemo, useRef, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { flyToCart } from "@/lib/fly-to-cart";
-import { displayVariantLabel, type Product } from "@/lib/product-types";
+import { displayVariantLabel, renkAdi, type Product } from "@/lib/product-types";
 import { bedenSecenekleri, renkSecenekleri, varyantBul } from "@/lib/variant-select";
 import type { Variant } from "@/lib/variants";
 
@@ -120,7 +120,9 @@ export function ProductBuy({
                     setWarn(false);
                   }}
                 >
-                  {ad}
+                  {/* Ekranda okunan metin düzeltiliyor, seçim ham
+                      değerle yapılıyor: aksi hâlde varyant bulunamazdı. */}
+                  {renkAdi(ad)}
                 </button>
               );
             })}

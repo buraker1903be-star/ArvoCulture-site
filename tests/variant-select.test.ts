@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { bedenSecenekleri, renkSecenekleri, varyantBul } from "@/lib/variant-select";
+import { renkAdi } from "@/lib/product-types";
 import type { Variant } from "@/lib/variants";
 
 /*
@@ -59,4 +60,20 @@ test("renk ve beden birlikte gerekiyorsa ikisi de aranıyor", () => {
 test("tek varyantlı üründe seçim istenmiyor", () => {
   const tek = [v({ sku: "TEK" })];
   assert.equal(varyantBul(tek, null, null)?.sku, "TEK");
+});
+
+test("slug görünümlü ton adı okunabilir yazılıyor", () => {
+  /* Tedarikçi verisinde aynı üründe iki yazım dolaşıyor: dudak
+     kaleminde "rosy-nude", mat rujda "pure-red" (30.09.2026). */
+  assert.equal(renkAdi("rosy-nude"), "Rosy Nude");
+  assert.equal(renkAdi("pure-red"), "Pure Red");
+});
+
+test("elle yazılmış ton adına dokunulmuyor", () => {
+  /* Gerçek adı biçimlendirmeye kalkmak kazandırdığından çok bozardı. */
+  assert.equal(renkAdi("Berry Rose"), "Berry Rose");
+  assert.equal(renkAdi("Siyah/Beyaz Çizgili"), "Siyah/Beyaz Çizgili");
+  assert.equal(renkAdi("Deep Brown"), "Deep Brown");
+  /* Büyük harf içeren tireli ad zaten elle yazılmış sayılıyor. */
+  assert.equal(renkAdi("Rose-Gold"), "Rose-Gold");
 });
