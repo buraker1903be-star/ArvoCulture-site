@@ -49,12 +49,20 @@ type RpcOptions = {
    * Verilmezse fonksiyonun tüm sütunları gelir.
    */
   columns?: string;
+  /**
+   * PostgREST satır aralığı ("0-999").
+   *
+   * Sunucu tek istekte en fazla 1000 satır döndürüyor (Supabase
+   * varsayılanı) ve bu sınır fonksiyonun kendi LIMIT'inden bağımsız.
+   * Daha fazlası gerekiyorsa sayfa sayfa istenmeli — bkz. rpcTumSayfalar.
+   */
+  range?: { from: number; to: number };
 };
 
 export async function rpc<TResult, TParams extends object = object>(
   name: string,
   params: TParams = {} as TParams,
-  { revalidate = 60, tags = [], columns }: RpcOptions = {},
+  { revalidate = 60, tags = [], columns, range }: RpcOptions = {},
 ): Promise<TResult[]> {
   const endpoint = new URL(`/rest/v1/rpc/${name}`, env.supabaseUrl);
   if (columns) endpoint.searchParams.set("select", columns);
@@ -67,6 +75,7 @@ export async function rpc<TResult, TParams extends object = object>(
         apikey: env.supabaseKey,
         Authorization: `Bearer ${env.supabaseKey}`,
         "Content-Type": "application/json",
+        ...(range ? { "Range-Unit": "items", Range: `${range.from}-${range.to}` } : {}),
       },
       body: JSON.stringify(params),
       next: { revalidate, tags: [name, ...tags] },
@@ -102,4 +111,39 @@ export async function rpcOrEmpty<TResult, TParams extends object = object>(
     console.error(error);
     return [];
   }
+}
+
+/**
+ * Bütün satırları sayfa sayfa getirir.
+ *
+ * NEDEN VAR: 29.09.2026'da arama dizini sessizce 1000 üründe
+ * kesiliyordu. Fonksiyon `limit 20000` diyordu ama PostgREST tek
+ * istekte 1000 satır döndürüyor; üstelik dizin `updated_at desc`
+ * sıralı olduğu ve tedarikçi içe aktarımı on dakikada bir 15.000
+ * varyantı güncellediği için dizin sürekli "en son dokunulan 1000
+ * ürün"e dönüşüyordu. Sonuç: müşteri satın alabildiği ürünü arayıp
+ * bulamıyordu ("aloe" 0 sonuç, oysa ürün sayfası ve koleksiyon
+ * listesi çalışıyor).
+ *
+ * Kesilme SESSİZDİ: hata yok, eksik veri var. Bu yüzden güvenlik
+ * sınırı da koyuldu; aşılırsa günlüğe yazılıyor.
+ */
+export async function rpcTumSayfalar<TResult, TParams extends object = object>(
+  name: string,
+  params: TParams = {} as TParams,
+  options: RpcOptions = {},
+  { sayfaBoyutu = 1000, enFazlaSayfa = 50 }: { sayfaBoyutu?: number; enFazlaSayfa?: number } = {},
+): Promise<TResult[]> {
+  const hepsi: TResult[] = [];
+  for (let sayfa = 0; sayfa < enFazlaSayfa; sayfa += 1) {
+    const from = sayfa * sayfaBoyutu;
+    const satirlar = await rpc<TResult, TParams>(name, params, {
+      ...options,
+      range: { from, to: from + sayfaBoyutu - 1 },
+    });
+    hepsi.push(...satirlar);
+    if (satirlar.length < sayfaBoyutu) return hepsi;
+  }
+  console.error(`${name}: sayfa sınırına takıldı (${enFazlaSayfa} sayfa); liste eksik olabilir.`);
+  return hepsi;
 }

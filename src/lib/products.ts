@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { rpc, rpcOrEmpty } from "@/lib/arc";
+import { rpc, rpcOrEmpty, rpcTumSayfalar } from "@/lib/arc";
 import { env } from "@/lib/env";
 import type { Product } from "@/lib/product-types";
 
@@ -252,7 +252,13 @@ export type ProductSitemapEntry = { slug: string; updatedAt: Date | null };
 
 export const getStorefrontProductSlugs = cache(
   async (limit = 20000): Promise<ProductSitemapEntry[]> => {
-    const rows = await rpc<{ slug: string; updated_at: string | null }>(
+    /*
+      SAYFA SAYFA: tek istek 1000 satırda kesiliyor (PostgREST sınırı,
+      fonksiyonun LIMIT'inden bağımsız). Site haritasında bu, 3.400
+      ürünün yalnızca 1000'inin Google'a bildirilmesi demekti —
+      hata da vermiyordu, eksik veri sessizce geçiyordu (29.09.2026).
+    */
+    const rows = await rpcTumSayfalar<{ slug: string; updated_at: string | null }>(
       "get_arvoculture_storefront_product_slugs",
       { p_limit: Math.max(1, limit) },
       { revalidate: 3600, tags: ["storefront-products"] },

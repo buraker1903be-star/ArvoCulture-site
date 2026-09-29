@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { rpc } from "@/lib/arc";
+import { rpcTumSayfalar } from "@/lib/arc";
 import { env } from "@/lib/env";
 import { inferCategory } from "@/lib/products";
 
@@ -60,7 +60,14 @@ const imageUrl = (path: string | null) => {
 };
 
 export const getSearchIndex = cache(async (): Promise<SearchItem[]> => {
-  const rows = await rpc<SearchRow>(
+  /*
+    SAYFA SAYFA. Tek istek 1000 satırda kesiliyordu ve fonksiyonun
+    `limit 20000` demesi bunu değiştirmiyor: sınır PostgREST'te.
+    Dizin `updated_at desc` sıralı olduğu için kesilen kısım hep en
+    az güncellenen ürünler oluyordu — LR kataloğunun tamamı aramadan
+    düşmüştü (bkz. rpcTumSayfalar).
+  */
+  const rows = await rpcTumSayfalar<SearchRow>(
     "get_arvoculture_storefront_search_index",
     { p_limit: 20000 },
     { revalidate: 300, tags: ["storefront-products"] },
