@@ -40,3 +40,19 @@ export const asciiSlug = (value: string): string =>
     .replace(/ö/g, "o")
     .replace(/ç/g, "c")
     .replace(/â/g, "a");
+
+/**
+ * ArvoARC'ta koleksiyonu olmayan, vitrinin kendi kurduğu sayfalar.
+ *
+ * Koleksiyon rotası hem gerçek ArvoARC koleksiyonlarına hem bu sabit
+ * adreslere cevap veriyor; "tanınmayan slug" kararı ikisine birden
+ * bakmak zorunda. Liste hem sayfada (başlık) hem yerleşimde (404
+ * kararı) okunuyor, bu yüzden tek yerde duruyor.
+ */
+export const SABIT_KOLEKSIYONLAR: Record<string, string> = {
+  giyim: "Giyim",
+  bakim: "Kişisel Bakım",
+  kozmetik: "Kozmetik",
+  parfum: "Parfüm",
+  tumu: "Tüm Ürünler",
+};

@@ -9,18 +9,13 @@ import {
   type Product,
 } from "@/lib/products";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
+import { SABIT_KOLEKSIYONLAR } from "@/lib/categories";
 import { breadcrumbSchema, collectionSchema } from "@/lib/seo";
 
-const labels: Record<string, string> = {
-  giyim: "Giyim",
-  bakim: "Kişisel Bakım",
-  kozmetik: "Kozmetik",
-  parfum: "Parfüm",
-  tumu: "Tüm Ürünler",
-};
+/* Aynı liste yerleşimde 404 kararı için de okunuyor; tek yerde. */
+const labels = SABIT_KOLEKSIYONLAR;
 
 const menuGroups: Record<string, string[]> = {
   giyim: ["Giyim"],
@@ -118,21 +113,8 @@ export async function generateMetadata({
   const collections = await getStorefrontCollections();
   const collection = collections.find((item) => item.slug === slug);
 
-  /*
-    Tanınmayan slug 404 veriyor.
-
-    Önceden her uydurma adres 200 dönüyordu: "Tüm Ürünler"
-    başlığıyla, sıfır ürünle ve `index, follow` ile. Yani
-    /koleksiyon/ altına yazılan her şey arama motoru için geçerli
-    bir sayfaydı — sonsuz sayıda sahte sayfa.
-
-    Kontrol üstveride yapılıyor, gövdede değil: `loading.tsx` bir
-    Suspense sınırı kurduğu için sayfa akış hâlinde gönderiliyor ve
-    durum kodu iskeletle birlikte kilitleniyor. Üstveri akıştan
-    önce çözülüyor, dolayısıyla buradaki `notFound()` gerçek 404
-    üretiyor.
-  */
-  if (!collection && !labels[slug]) notFound();
+  /* Tanınmayan slug'ın 404'ü layout.tsx'te: üstveriden çağrılan
+     notFound() durum kodunu kurmuyor (ölçüldü, gerekçe orada). */
 
   const label = collection?.title ?? labels[slug] ?? "Koleksiyon";
 
