@@ -297,8 +297,8 @@ export default async function RootLayout({
               <div className="footer-pay">
                 <div className="pay-provider">
                   <small>
-                    Ödemeler PayTR altyapısı üzerinden 3D Secure ile alınır.
-                    Kart bilgileriniz mağazamıza iletilmez.
+                    Ödemeler 3D Secure korumalı ödeme altyapısı üzerinden
+                    alınır. Kart bilgileriniz mağazamıza iletilmez.
                   </small>
                 </div>
 

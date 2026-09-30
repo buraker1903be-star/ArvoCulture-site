@@ -72,8 +72,9 @@ export default async function PreInfoPage() {
 
       <InfoSection title="Ödeme">
         <p>
-          Ödemeler PayTR altyapısı üzerinden 3D Secure ile alınır. Kredi
-          kartı, banka kartı ve ilgili kartların desteklediği taksit
+          Ödemeler, lisanslı bir ödeme kuruluşunun 3D Secure korumalı
+          altyapısı üzerinden alınır. Kredi kartı, banka kartı ve ilgili
+          kartların desteklediği taksit
           seçenekleri kullanılabilir.
         </p>
         <p>

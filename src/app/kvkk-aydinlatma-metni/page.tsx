@@ -114,7 +114,7 @@ export default async function KvkkPage() {
         <p>Kişisel verileriniz aşağıdaki taraflara aktarılmaktadır:</p>
         <ul>
           <li>
-            <strong>Ödeme kuruluşu (PayTR):</strong> ödeme işleminin
+            <strong>Ödeme kuruluşu:</strong> ödeme işleminin
             gerçekleştirilmesi amacıyla
           </li>
           <li>

@@ -120,8 +120,8 @@ export default function Contact() {
       </section>
 
       {/*
-        Satıcı bilgileri. PayTR üye iş yeri kuralları adresin
-        iletişim sayfasında yayımlanmasını istiyor. Vergi, MERSİS
+        Satıcı bilgileri. Ödeme kuruluşlarının üye iş yeri kuralları
+        adresin iletişim sayfasında yayımlanmasını istiyor. Vergi, MERSİS
         ve ticaret sicil bilgileri burada değil; mesafeli satış
         sözleşmesinde yer alıyor.
       */}

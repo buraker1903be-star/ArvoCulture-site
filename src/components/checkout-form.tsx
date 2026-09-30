@@ -338,7 +338,7 @@ export function CheckoutForm({
         <div className="head">
           <div>
             <h2>Ödeme</h2>
-            <p>Kart bilgileriniz doğrudan PayTR’a iletilir.</p>
+            <p>Kart bilgileriniz doğrudan ödeme kuruluşuna iletilir.</p>
           </div>
         </div>
 
@@ -618,7 +618,7 @@ export function CheckoutForm({
           )}
 
           <p className="hint">
-            Ödeme, 3D Secure korumalı PayTR altyapısı üzerinden alınır. Kart
+            Ödeme, 3D Secure korumalı ödeme altyapısı üzerinden alınır. Kart
             bilgileriniz bizim sunucularımıza hiçbir aşamada ulaşmaz.
           </p>
         </aside>

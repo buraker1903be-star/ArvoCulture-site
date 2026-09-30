@@ -37,8 +37,9 @@ export default async function PrivacyPage() {
 
       <InfoSection title="Ödeme Güvenliği">
         <p>
-          Ödemeler PayTR altyapısı üzerinden 3D Secure doğrulamasıyla
-          alınır. Kart numaranız, son kullanma tarihi ve güvenlik kodu
+          Ödemeler, 3D Secure doğrulaması yapan lisanslı bir ödeme
+          kuruluşunun altyapısı üzerinden alınır. Kart numaranız, son
+          kullanma tarihi ve güvenlik kodu
           doğrudan ödeme kuruluşuna iletilir; bu bilgiler tarafımıza
           ulaşmaz ve sunucularımızda saklanmaz.
         </p>
@@ -110,7 +111,7 @@ export default async function PrivacyPage() {
 
       <InfoSection title="Üçüncü Taraf Hizmetleri">
         <p>
-          Ödeme (PayTR), barındırma ve kargo hizmetleri için üçüncü taraf
+          Ödeme, barındırma ve kargo hizmetleri için üçüncü taraf
           sağlayıcılarla çalışıyoruz. Bu sağlayıcılara yalnızca hizmetin
           gerektirdiği veriler aktarılır.
         </p>

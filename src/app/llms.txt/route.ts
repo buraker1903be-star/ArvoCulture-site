@@ -62,9 +62,9 @@ export async function GET() {
 - Azami teslim süresi: ${SELLER.deliveryDaysMax} gün
 ${
   SELLER.transferEnabled
-    ? `- Ödeme: kredi/banka kartı (PayTR, 3D Secure) veya banka havalesi
+    ? `- Ödeme: kredi/banka kartı (3D Secure) veya banka havalesi
 - Havale ile ödemede %${SELLER.transferDiscountPercent} indirim`
-    : "- Ödeme: kredi/banka kartı (PayTR, 3D Secure)"
+    : "- Ödeme: kredi/banka kartı (3D Secure)"
 }
 
 ## Koleksiyonlar

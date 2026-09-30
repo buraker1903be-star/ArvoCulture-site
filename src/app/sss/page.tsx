@@ -75,11 +75,11 @@ const GROUPS = [
     items: [
       [
         "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
-        "Visa, Mastercard, Troy, Maestro ve American Express kartlarıyla ödeme yapabilirsiniz. Ödemeler PayTR altyapısı üzerinden alınır.",
+        "Visa, Mastercard, Troy, Maestro ve American Express kartlarıyla ödeme yapabilirsiniz. Ödemeler 3D Secure korumalı ödeme altyapısı üzerinden alınır.",
       ],
       [
         "Kart bilgilerim güvende mi?",
-        "Ödeme sayfası PayTR tarafından sunulur ve 3D Secure ile korunur. Kart bilgileriniz mağazamıza hiçbir aşamada iletilmez ve sunucularımızda saklanmaz.",
+        "Ödeme sayfası lisanslı ödeme kuruluşumuz tarafından sunulur ve 3D Secure ile korunur. Kart bilgileriniz mağazamıza hiçbir aşamada iletilmez ve sunucularımızda saklanmaz.",
       ],
       [
         "İndirim kodunu nerede kullanabilirim?",
