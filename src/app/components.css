@@ -4786,6 +4786,21 @@
     transform: none;
   }
 
+  /*
+    Kategori kartının "Keşfet" etiketi bu listede yoktu: görsel
+    yakınlaşması kapatılmışken etiket hâlâ parlıyor ve altındaki
+    çizgi çiziliyordu, parmak kalkınca ikisi de takılı kalıyordu.
+    Tarayıcıda ölçüldü (hover:none benzetimiyle opacity 0,75 → 1,
+    çizgi scaleX 0 → 1).
+  */
+  .cat-card:hover .cat-card-body em {
+    opacity: 0.75;
+  }
+
+  .cat-card:hover .cat-card-body em::after {
+    transform: scaleX(0);
+  }
+
   /* Dokunma geri bildirimi: basılı tutarken hafif küçülme. */
   .card:active,
   .cat-card:active,
