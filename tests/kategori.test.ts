@@ -13,6 +13,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { inferCategory } from "../src/lib/product-types";
+import { asciiSlug } from "../src/lib/categories";
 
 const kategori = (name: string, product_type = "") =>
   inferCategory({ name, product_type });
@@ -89,4 +90,20 @@ test("kaldırılan takviye kategorisi listede yok", () => {
     CATEGORIES.some((c) => /takviye/i.test(c.href) || /takviye/i.test(c.label)),
     false,
   );
+});
+
+test("Türkçe ad ASCII slug'a indirgeniyor", () => {
+  /*
+    Menüdeki cinsiyet bağlantısı addan türetiliyordu ve yalnızca
+    "Kadın" elle özel durum olarak yazılmıştı. "Çocuk" küçük harfe
+    çevrilince "çocuk" kalıyor, ArvoARC'taki slug ise "cocuk":
+    menüdeki Çocuk sekmesi 24 ürünlük koleksiyon yerine boş bir
+    sayfaya gidiyordu (30.09.2026'da canlıda ölçüldü).
+  */
+  assert.equal(asciiSlug("Çocuk"), "cocuk");
+  assert.equal(asciiSlug("Kadın"), "kadin");
+  assert.equal(asciiSlug("Erkek"), "erkek");
+  assert.equal(asciiSlug("Aksesuar"), "aksesuar");
+  assert.equal(asciiSlug("İç Giyim"), "ic giyim");
+  assert.equal(asciiSlug("Güneş Gözlüğü"), "gunes gozlugu");
 });

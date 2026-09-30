@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { asciiSlug } from "@/lib/categories";
 import { CartLink } from "./cart";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
@@ -243,11 +244,30 @@ export function Header({
         !allBrandNames.some((name) => norm(item.title).includes(norm(name))),
     );
 
+  /*
+    CİNSİYET BAĞLANTISI KOLEKSİYONUN KENDİ SLUG'INDAN GELİYOR.
+
+    Önceden addan türetiliyordu ve yalnızca "Kadın" elle özel durum
+    olarak yazılmıştı. "Çocuk" küçük harfe çevrilince "çocuk" kalıyor,
+    ArvoARC'taki slug ise "cocuk": menüdeki Çocuk sekmesi 24 ürünlük
+    koleksiyon yerine boş bir "Tüm Ürünler" sayfasına gidiyordu
+    (30.09.2026'da ölçüldü). Adres 404 da vermediği için hiçbir şey
+    uyarmıyordu — müşteri yalnızca boş bir sayfa görüyordu.
+
+    Artık tahmin yok: başlığı cinsiyetle aynı olan koleksiyonun kendi
+    slug'ı kullanılıyor. Bulunamazsa ASCII'ye indirgenmiş yedek
+    üretiliyor; "kadin" özel durumu da böylece kalktı.
+  */
+  const genderHref = (gender: string) => {
+    const own = collections.find((item) => norm(item.title) === norm(gender));
+    return `/koleksiyon/${own?.slug ?? asciiSlug(gender)}`;
+  };
+
   const navigation = [
     /* Giyim: cinsiyet başına bir sekme. */
     ...GENDERS.map((gender) => ({
       title: gender,
-      href: `/koleksiyon/${gender === "Kadın" ? "kadin" : gender.toLocaleLowerCase("tr-TR")}`,
+      href: genderHref(gender),
       sections: genderSections(gender),
     })).filter((menu) => menu.sections.length > 0),
 

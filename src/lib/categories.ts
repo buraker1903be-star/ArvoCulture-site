@@ -22,3 +22,21 @@ export const CATEGORIES: SiteCategory[] = [
 
 /** "/koleksiyon/bakim" → "bakim" */
 export const categoryKey = (href: string): string => href.split("/").pop() ?? "";
+
+/**
+ * Türkçe adı adres parçasına indirger: "Çocuk" → "cocuk".
+ *
+ * `toLocaleLowerCase("tr-TR")` tek başına yetmiyor; ç, ş, ğ, ü, ö
+ * küçük hâllerinde de Türkçe karakter olarak kalıyor ve ArvoARC'ın
+ * slug'ları ASCII.
+ */
+export const asciiSlug = (value: string): string =>
+  value
+    .toLocaleLowerCase("tr-TR")
+    .replace(/ı/g, "i")
+    .replace(/ş/g, "s")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/â/g, "a");
