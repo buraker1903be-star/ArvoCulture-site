@@ -1,9 +1,10 @@
 import { cache } from "react";
 import { rpc, rpcOrEmpty, rpcTumSayfalar } from "@/lib/arc";
 import { env } from "@/lib/env";
+import { inferCategory } from "@/lib/product-types";
 import type { Product } from "@/lib/product-types";
 
-export { formatPrice } from "@/lib/product-types";
+export { formatPrice, inferCategory } from "@/lib/product-types";
 export type { Product } from "@/lib/product-types";
 
 type StorefrontRow = {
@@ -57,47 +58,6 @@ const plainText = (value: string | null | undefined) =>
     .replace(/\s+/g, " ")
     .trim();
 
-/**
- * Ürün kategorisi ad ve tür alanından çıkarılıyor.
- *
- * Arama dizini de aynı sınıflandırmayı kullanmak zorunda; iki ayrı
- * kural kümesi olsaydı aynı ürün koleksiyonda "Giyim", aramada
- * "Kişisel Bakım" görünebilirdi.
- */
-export const inferCategory = (row: {
-  product_type?: string | null;
-  name: string;
-}) => {
-  const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase(
-    "tr-TR",
-  );
-  /*
-    Giyim anahtar kelimeleri. Tedarikçi kataloğu geldiğinden beri
-    liste genişletildi: eşofman, ceket, hırka, pantolon gibi
-    ürünler "Kişisel Bakım" olarak sınıflanıyordu.
-  */
-  if (
-    /tişört|tisort|t-shirt|sweat|hoodie|kapüşon|kapuson|giyim|oversize|regular fit|eşofman|esofman|jogger|pantolon|şort|sort|ceket|mont|hırka|hirka|yelek|gömlek|gomlek|elbise|etek|tayt|body|atlet|takım|takim|rüzgarlık|ruzgarlik|kaban|blazer|tulum|bluz|kazak|triko/.test(
-      text,
-    )
-  )
-    return "Giyim";
-  if (/parfüm|parfum|eau de parfum|eau de toilette| edp| edt/.test(text))
-    return "Parfüm";
-  if (
-    /ruj|maskara|fondöten|fondoten|highlighter|makyaj|lipgloss|dudak|eyeliner|concealer|bronzer|pudra/.test(
-      text,
-    )
-  )
-    return "Kozmetik";
-  if (
-    /vitamin|kapsül|kapsul|protein|pro balance|probalance|colostrum|drinking gel|takviye|omega|mineraller/.test(
-      text,
-    )
-  )
-    return "Takviyeler";
-  return "Kişisel Bakım";
-};
 
 const TONES = ["mint", "graphite", "ivory", "sage", "sun", "rose"];
 

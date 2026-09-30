@@ -122,3 +122,60 @@ export function displayVariantLabel(
     ? undefined
     : title;
 }
+
+/*
+  Kategori çıkarımı buraya taşındı (30.09.2026). products.ts'te
+  duruyordu ama o modül ortam değişkeni okuyan @/lib/env'i çekiyor:
+  saf bir sınıflandırma kuralını test etmek için Supabase adresi
+  tanımlamak gerekiyordu. Arama dizini de onu buradan alıyor ve
+  artık sunucuya özel modülü boşuna içeri çekmiyor.
+*/
+/**
+ * Ürün kategorisi ad ve tür alanından çıkarılıyor.
+ *
+ * Arama dizini de aynı sınıflandırmayı kullanmak zorunda; iki ayrı
+ * kural kümesi olsaydı aynı ürün koleksiyonda "Giyim", aramada
+ * "Kişisel Bakım" görünebilirdi.
+ */
+export const inferCategory = (row: {
+  product_type?: string | null;
+  name: string;
+}) => {
+  const text = `${row.product_type ?? ""} ${row.name}`.toLocaleLowerCase(
+    "tr-TR",
+  );
+  /*
+    Giyim anahtar kelimeleri. Tedarikçi kataloğu geldiğinden beri
+    liste genişletildi: eşofman, ceket, hırka, pantolon gibi
+    ürünler "Kişisel Bakım" olarak sınıflanıyordu.
+  */
+  if (
+    /tişört|tisort|t-shirt|sweat|hoodie|kapüşon|kapuson|giyim|oversize|regular fit|eşofman|esofman|jogger|pantolon|şort|sort|ceket|mont|hırka|hirka|yelek|gömlek|gomlek|elbise|etek|tayt|body|atlet|takım|takim|rüzgarlık|ruzgarlik|kaban|blazer|tulum|bluz|kazak|triko/.test(
+      text,
+    )
+  )
+    return "Giyim";
+  if (/parfüm|parfum|eau de parfum|eau de toilette| edp| edt/.test(text))
+    return "Parfüm";
+  /*
+    "serum" bu listeye 30.09.2026'da eklendi: "LR ZEITGARD Vitamin C
+    Serum" adındaki "vitamin" bir cilt bakım ürününü takviye kovasına
+    düşürüyordu. Takviye kovası artık yok ama kural kaldı: serum bir
+    kozmetiktir ve "Kişisel Bakım"a düşmesi de yanlış olurdu.
+  */
+  if (
+    /ruj|maskara|fondöten|fondoten|highlighter|makyaj|lipgloss|dudak|eyeliner|concealer|bronzer|pudra|serum/.test(
+      text,
+    )
+  )
+    return "Kozmetik";
+  /*
+    TAKVİYE KOVASI YOK (30.09.2026). Takviye edici gıda satışı
+    durduruldu; kova burada dururken katalogda hiç ürünü olmayan bir
+    kategori kalıyordu ve menüde, ana sayfada, koleksiyon adresinde
+    hâlâ görünüyordu. Kalıp listesi de silindi: yeniden eklenmesi
+    gereken gün, o günün ürünlerine göre yazılmalı; bugünün ölü
+    kalıplarını taşımanın değeri yok.
+  */
+  return "Kişisel Bakım";
+};

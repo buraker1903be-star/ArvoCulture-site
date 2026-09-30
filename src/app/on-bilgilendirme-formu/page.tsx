@@ -104,8 +104,8 @@ export default async function PreInfoPage() {
           {SELLER.email} adresine iletebilirsiniz.
         </p>
         <p>
-          Ambalajı açılmış kozmetik, kişisel bakım ve gıda takviyesi
-          ürünleri hijyen gerekçesiyle cayma hakkı kapsamı dışındadır.
+          Ambalajı açılmış kozmetik ve kişisel bakım ürünleri hijyen
+          gerekçesiyle cayma hakkı kapsamı dışındadır.
           Ayrıntılar için{" "}
           <Link href="/iptal-iade">İptal ve İade</Link> sayfasına bakınız.
         </p>
@@ -123,7 +123,6 @@ export default async function PreInfoPage() {
             ürünleri
           </li>
           <li>İç giyim, mayo, çorap gibi hijyenik ürünler</li>
-          <li>Gıda takviyeleri</li>
           <li>Kişiye özel hazırlanan ürünler</li>
         </ul>
         <p>

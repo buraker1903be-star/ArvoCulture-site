@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { rpcTumSayfalar } from "@/lib/arc";
 import { env } from "@/lib/env";
-import { inferCategory } from "@/lib/products";
+import { inferCategory } from "@/lib/product-types";
 
 /**
  * İstemciye gönderilen hafif arama dizini.

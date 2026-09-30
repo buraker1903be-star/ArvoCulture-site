@@ -45,7 +45,6 @@ const CATEGORIES = [
   { label: "Kişisel Bakım", href: "/koleksiyon/bakim" },
   { label: "Kozmetik", href: "/koleksiyon/kozmetik" },
   { label: "Parfüm", href: "/koleksiyon/parfum" },
-  { label: "Takviyeler", href: "/koleksiyon/takviyeler" },
 ];
 
 export default async function Home() {

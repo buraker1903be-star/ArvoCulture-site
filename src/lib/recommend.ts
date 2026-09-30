@@ -13,8 +13,8 @@ import { toWords } from "@/lib/search";
  *
  * Önce yalnızca kategori ve marka üzerinden puanlıyordum. Canlıda
  * denediğimde işe yaramadığı ortaya çıktı ve sebebi kataloğun
- * şeklinde: `inferCategory` yalnızca beş kova üretiyor (Giyim,
- * Parfüm, Kozmetik, Takviyeler, Kişisel Bakım) ve katalogda
+ * şeklinde: `inferCategory` yalnızca dört kova üretiyor (Giyim,
+ * Parfüm, Kozmetik, Kişisel Bakım) ve katalogda
  * topu topu iki marka var. Yani "aynı kategori" demek "Giyim"
  * demekti — binlerce ürün. Öneri pratikte "giysiye baktın, işte
  * giysiler, alfabetik" anlamına geliyordu. Kişiselleşmiş

@@ -58,7 +58,7 @@ const GROUPS = [
       ],
       [
         "Hangi ürünler iade edilemez?",
-        "Ambalajı açılmış kozmetik, kişisel bakım ve takviye ürünleri hijyen gerekçesiyle iade kapsamı dışındadır. Bu istisna ürün niteliğine göre uygulanır.",
+        "Ambalajı açılmış kozmetik ve kişisel bakım ürünleri hijyen gerekçesiyle iade kapsamı dışındadır. Bu istisna ürün niteliğine göre uygulanır.",
       ],
       [
         "İade süreci nasıl işliyor?",

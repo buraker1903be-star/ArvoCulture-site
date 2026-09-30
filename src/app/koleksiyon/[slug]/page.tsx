@@ -19,7 +19,6 @@ const labels: Record<string, string> = {
   bakim: "Kişisel Bakım",
   kozmetik: "Kozmetik",
   parfum: "Parfüm",
-  takviyeler: "Takviyeler",
   tumu: "Tüm Ürünler",
 };
 
@@ -35,7 +34,6 @@ const menuGroups: Record<string, string[]> = {
   ],
   kozmetik: ["Kozmetik"],
   parfum: ["Parfüm"],
-  takviyeler: ["Takviyeler"],
 };
 
 /**

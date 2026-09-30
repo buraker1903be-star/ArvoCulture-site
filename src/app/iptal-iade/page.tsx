@@ -64,9 +64,12 @@ export default async function ReturnsPage() {
           aşağıdaki ürünlerde cayma hakkı kullanılamaz:
         </p>
         <ul>
+          {/* Takviye edici gıda satışı durduruldu (30.09.2026); satmadığımız
+              bir kategoriyi iade politikasında saymak, okuyana hâlâ
+              sattığımızı düşündürüyor. Kozmetik ve kişisel bakım kalıyor. */}
           <li>
-            Ambalajı, bandı veya mührü açılmış kozmetik, kişisel bakım ve
-            gıda takviyesi ürünleri (hijyen gerekçesiyle)
+            Ambalajı, bandı veya mührü açılmış kozmetik ve kişisel bakım
+            ürünleri (hijyen gerekçesiyle)
           </li>
           <li>Kişiye özel hazırlanan ürünler</li>
           <li>Çabuk bozulabilen veya son kullanma tarihi geçebilecek ürünler</li>

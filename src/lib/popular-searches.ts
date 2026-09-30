@@ -24,7 +24,6 @@ const SEARCH_TERMS = [
   "Parfüm",
   "Ruj",
   "Vitamin",
-  "Kolajen",
   "Aloe vera",
   "Kapüşonlu",
   "Ceket",

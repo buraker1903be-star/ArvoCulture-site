@@ -220,7 +220,10 @@ export function Header({
       "Profesyonel Bakım",
     ],
     fragrance: ["Mood Infusion", "Iconic Elixirs"],
-    supplements: ["LifeTakt"],
+    /* LifeTakt (takviye hattı) 30.09.2026'da kaldırıldı: takviye edici
+       gıda satışı durdu, menüde o başlık yok. Marka adı burada kalsaydı
+       withoutBrands onu hâlâ eleyecek, yani olmayan bir başlık için
+       süzme yapılacaktı. */
   } as const;
 
   const norm = (value: string) => value.toLocaleLowerCase("tr-TR");
@@ -277,17 +280,6 @@ export function Header({
           items: brandItems(BRAND_NAMES.fragrance),
         },
         { title: "KİME GÖRE", items: withoutBrands(["Parfüm"]) },
-      ],
-    },
-    {
-      title: "Takviyeler",
-      href: "/koleksiyon/takviyeler",
-      sections: [
-        {
-          title: "MARKA KOLEKSİYONLARI",
-          items: brandItems(BRAND_NAMES.supplements),
-        },
-        { title: "İHTİYACA GÖRE", items: withoutBrands(["Takviyeler"]) },
       ],
     },
   ].map((menu) => ({

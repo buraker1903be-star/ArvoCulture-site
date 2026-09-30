@@ -255,7 +255,7 @@ export default async function ProductPage({ params }: Params) {
               <p>
                 Kullanılmamış ve yeniden satılabilir durumdaki ürünler
                 teslimattan itibaren 14 gün içinde iade edilebilir. Ambalajı
-                açılmış kozmetik, kişisel bakım ve takviye ürünleri hijyen
+                açılmış kozmetik ve kişisel bakım ürünleri hijyen
                 gerekçesiyle iade kapsamı dışındadır.
               </p>
             </details>

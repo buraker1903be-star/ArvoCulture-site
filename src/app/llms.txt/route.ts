@@ -40,7 +40,7 @@ export async function GET() {
 
   const body = `# ${SELLER.brand}
 
-> Giyim, kişisel bakım, kozmetik, parfüm ve takviye ürünleri satan
+> Giyim, kişisel bakım, kozmetik ve parfüm ürünleri satan
 > Türkiye merkezli çevrim içi mağaza. Ürünler ${SELLER.brand} kendi
 > seçkisi ile LR Health & Beauty ürün hattından oluşuyor.
 
