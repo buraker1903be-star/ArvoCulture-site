@@ -814,13 +814,6 @@ footer {
   max-width: 34rem;
 }
 
-.pay-provider img {
-  flex: none;
-  width: auto;
-  height: 26px;
-  object-fit: contain;
-}
-
 .pay-provider small {
   font-size: var(--t-xs);
   line-height: 1.5;

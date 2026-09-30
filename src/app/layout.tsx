@@ -285,24 +285,17 @@ export default async function RootLayout({
               </div>
 
               {/*
-              Ödeme altyapısı PayTR. Kart markalarının logoları
-              tescilli olduğu için elle çizilmiyor; PayTR panelinden
-              indirilen resmi logo bandı kullanılıyor.
-              Dosya yoksa yalnızca metin görünür, sayfa bozulmaz.
+              Sağlayıcı logosu YOK. Önceden PayTR'ın resmi logo bandı
+              duruyordu; ödeme sağlayıcısı artık siparişe göre
+              seçiliyor (checkout-form.tsx), yani alt bilgide tek bir
+              sağlayıcının markasını göstermek yanıltıcı. Kart markası
+              logoları tescilli olduğu için hâlâ elle çizilmiyor,
+              resmi dosyalardan geliyor; dosya yoksa sayfa bozulmaz.
             */}
               {/* Alt bilgi görselleri ekranın dışında: sayfa açılırken
                   CSS ve ürün görseliyle bant genişliği paylaşmasınlar. */}
               <div className="footer-pay">
                 <div className="pay-provider">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/rozet/paytr.png"
-                    loading="lazy"
-                    decoding="async"
-                    alt="PayTR"
-                    width={84}
-                    height={26}
-                  />
                   <small>
                     Ödemeler PayTR altyapısı üzerinden 3D Secure ile alınır.
                     Kart bilgileriniz mağazamıza iletilmez.
