@@ -51,3 +51,42 @@ test("eşleşmeyen ürün kişisel bakıma düşer", () => {
 test("ürün türü de ada ekleniyor", () => {
   assert.equal(kategori("Ace Vintage Beyaz", "Tişört"), "Giyim");
 });
+
+/*
+ * ANA SAYFA KATEGORİ LİSTESİ.
+ *
+ * Kart, href'in son parçasıyla aynı adlı görseli basıyor
+ * (public/kategori/<anahtar>.jpg). Dosya yoksa ana sayfada kırık
+ * görsel çıkıyor ve hiçbir şey uyarmıyor — 30.09.2026'da Takviyeler
+ * kaldırılırken görseli de silindi; tersi (kategori eklenip görselin
+ * unutulması) aynı sessizlikle olurdu.
+ */
+import { existsSync } from "node:fs";
+import { CATEGORIES, categoryKey } from "../src/lib/categories";
+
+test("her kategorinin görseli var", () => {
+  for (const item of CATEGORIES) {
+    const anahtar = categoryKey(item.href);
+    assert.ok(anahtar, `${item.label}: href'ten anahtar çıkmadı`);
+    assert.ok(
+      existsSync(new URL(`../public/kategori/${anahtar}.jpg`, import.meta.url)),
+      `${item.label}: public/kategori/${anahtar}.jpg yok`,
+    );
+  }
+});
+
+test("kategori adresleri koleksiyon rotasında ve benzersiz", () => {
+  const adresler = CATEGORIES.map((c) => c.href);
+  assert.equal(new Set(adresler).size, adresler.length, "yinelenen kategori adresi");
+  for (const item of CATEGORIES) {
+    assert.match(item.href, /^\/koleksiyon\/[a-z0-9-]+$/, item.href);
+    assert.ok(item.label.trim(), "kategori adı boş");
+  }
+});
+
+test("kaldırılan takviye kategorisi listede yok", () => {
+  assert.equal(
+    CATEGORIES.some((c) => /takviye/i.test(c.href) || /takviye/i.test(c.label)),
+    false,
+  );
+});

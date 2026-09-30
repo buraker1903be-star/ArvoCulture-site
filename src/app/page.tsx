@@ -23,6 +23,7 @@ import { shippingTerms } from "@/lib/order-quote";
 import { Reveal } from "@/components/reveal";
 import { RecentProducts } from "@/components/recent-products";
 import { ForYou } from "@/components/for-you";
+import { CATEGORIES } from "@/lib/categories";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
@@ -39,13 +40,6 @@ import {
  * `data-arvo-section` / `data-arvo-field` nitelikleri ArvoARC panelinin
  * canlı düzenleme bağlantılarıdır; kaldırılırsa panel bölümü seçemez.
  */
-
-const CATEGORIES = [
-  { label: "Giyim", href: "/koleksiyon/giyim" },
-  { label: "Kişisel Bakım", href: "/koleksiyon/bakim" },
-  { label: "Kozmetik", href: "/koleksiyon/kozmetik" },
-  { label: "Parfüm", href: "/koleksiyon/parfum" },
-];
 
 export default async function Home() {
   const [theme, products, discounts, curatedBest, dealItems] =

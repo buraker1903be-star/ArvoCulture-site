@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { Rail } from "@/components/rail";
 import type { Product } from "@/lib/product-types";
+import { categoryKey } from "@/lib/categories";
 
 /** Ürün ızgarası. Ana sayfada birden çok yerde kullanılır. */
 export function ProductBlock({
@@ -136,8 +137,7 @@ export function CategoryStrip({
 
       <div className="cat-cards" style={{ ["--cat-n" as string]: items.length }}>
         {items.map((item, index) => {
-          // "/koleksiyon/bakim" → "bakim"
-          const key = item.href.split("/").pop() ?? "";
+          const key = categoryKey(item.href);
           return (
             <Link key={item.href} href={item.href} className="cat-card">
               <span className="cat-card-art">
