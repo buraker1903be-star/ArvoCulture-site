@@ -3969,17 +3969,67 @@
 }
 
 /*
-  Gecikme sıraya göre değil sütuna göre: `5n+k` her satırı aynı
-  dalgayla getiriyor. Önceden yalnızca ilk beş öğe gecikme alıyordu;
-  ikinci satır birinci öğeyle aynı anda düşüyordu.
+  Gecikme sıraya göre değil SÜTUNA göre: her satır aynı dalgayla
+  iner, satır başı her zaman ilk fazda. Önceden yalnızca ilk beş öğe
+  gecikme alıyordu; ikinci satır birinci öğeyle aynı anda düşüyordu.
 
-  Kategori kartları bu kuralın dışında kalmıştı, beşi birden
-  beliriyordu; artık aynı dalgayla geliyorlar.
+  DALGA SÜTUN SAYISINA BAĞLI. Tek bir `5n+k` seti vardı ve yalnızca
+  ızgaranın beş sütunlu olduğu 1280px üstünde doğruydu. Dört sütunlu
+  dizüstü ekranında ikinci satır son fazda (0,28s) başlayıp satırın
+  ortasında ilk faza düşüyordu; üç ve iki sütunda büsbütün
+  karışıyordu — yani kullanıcıların çoğu bozuk dalgayı görüyordu.
+  Tarayıcıda ölçüldü (animation-delay, satır satır).
+
+  Her kırılma noktası KENDİ artık sınıflarının tamamını yazıyor
+  (`Nn+1` dahil): eksik bırakılan bir artık, üstteki kuralın değerini
+  taşımaya devam eder ve satır başı yine kayar.
+
+  .rail tek satırdır ve yatay kayar; beşte bir tekrarlayan dalga onda
+  bilinçli, gecikme sonsuza kadar büyümesin diye.
+  .cat-cards masaüstünde sütun sayısı kart sayısına eşit olduğu için
+  tek satır; yalnızca dar ekranda (iki sütun) kendi kuralına ihtiyacı
+  var.
 */
+.reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 1) { --stagger: 0; }
 .reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 2) { --stagger: 1; }
 .reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 3) { --stagger: 2; }
 .reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 4) { --stagger: 3; }
 .reveal :is(.grid, .rail, .cat-cards) > :nth-child(5n + 5) { --stagger: 4; }
+
+/* Dört sütun */
+@media (max-width: 1280px) {
+  .reveal .grid > :nth-child(4n + 1) { --stagger: 0; }
+  .reveal .grid > :nth-child(4n + 2) { --stagger: 1; }
+  .reveal .grid > :nth-child(4n + 3) { --stagger: 2; }
+  .reveal .grid > :nth-child(4n + 4) { --stagger: 3; }
+}
+
+/* Üç sütun (ızgara) · iki sütun (kategori kartları) */
+@media (max-width: 980px) {
+  .reveal .grid > :nth-child(3n + 1) { --stagger: 0; }
+  .reveal .grid > :nth-child(3n + 2) { --stagger: 1; }
+  .reveal .grid > :nth-child(3n + 3) { --stagger: 2; }
+
+  .reveal .cat-cards > :nth-child(2n + 1) { --stagger: 0; }
+  .reveal .cat-cards > :nth-child(2n + 2) { --stagger: 1; }
+
+  /*
+    Kart sayısı tekken ilk kart tam satır kaplıyor (yukarıdaki :has
+    kuralı) ve bundan sonraki satırların paritesi kayıyor: ölçümde
+    satırlar [0,04] [0,10 0,04] [0,10 0,04] çıkıyordu, yani her
+    satır ikinci karttan başlıyordu. Vitrin kartından sonrası ters
+    parite ile sayılır; vitrin kartının kendisi ilk fazda kalır.
+  */
+  .reveal .cat-cards:has(> :nth-child(odd):last-child) > :nth-child(2n) { --stagger: 0; }
+  .reveal .cat-cards:has(> :nth-child(odd):last-child) > :nth-child(2n + 1) { --stagger: 1; }
+  .reveal .cat-cards:has(> :nth-child(odd):last-child) > :first-child { --stagger: 0; }
+}
+
+/* İki sütun */
+@media (max-width: 640px) {
+  .reveal .grid > :nth-child(2n + 1) { --stagger: 0; }
+  .reveal .grid > :nth-child(2n + 2) { --stagger: 1; }
+}
 
 @keyframes card-in {
   from {
