@@ -112,6 +112,18 @@ export function CategoryStrip({
 }: {
   items: Array<{ label: string; href: string }>;
 }) {
+  /*
+    Sütun sayısı kart sayısından geliyor (--cat-n). Izgara eskiden
+    `repeat(5, …)` ile sabitti; takviye kategorisi kalkıp beş kart dörde
+    inince masaüstünde beşinci sütun boş kaldı ve şeridin sağında bir
+    delik oluştu. Sayıyı buradan vermek, kategori eklenip çıktıkça
+    CSS'e dokunmayı gereksiz kılıyor.
+
+    Telefonda kartlar ikişerli diziliyor; sayı TEKSE sonuncusu yalnız
+    kalacağı için ilk kart tam genişlikte vitrin oluyor (CSS'te :has ile).
+    `sizes` de buna bağlı: dört kartta ilk kart artık 90vw değil.
+  */
+  const tekSayi = items.length % 2 === 1;
   return (
     <section className="panel">
       <div className="head">
@@ -122,7 +134,7 @@ export function CategoryStrip({
         <Link href="/koleksiyon/tumu">Tüm katalog</Link>
       </div>
 
-      <div className="cat-cards">
+      <div className="cat-cards" style={{ ["--cat-n" as string]: items.length }}>
         {items.map((item, index) => {
           // "/koleksiyon/bakim" → "bakim"
           const key = item.href.split("/").pop() ?? "";
@@ -134,14 +146,14 @@ export function CategoryStrip({
                   alt=""
                   fill
                   /*
-                    Telefonda ilk kart tam genişlik (bkz. .cat-cards
-                    > :first-child), diğerleri ikişerli. Tek bir "45vw"
-                    ilk kartı yarı çözünürlükte, bulanık çiziyordu.
+                    Telefonda kart sayısı tekse ilk kart tam genişlik
+                    (bkz. .cat-cards:has(…)), diğerleri ikişerli. Tek bir
+                    "45vw" ilk kartı yarı çözünürlükte, bulanık çiziyordu.
                   */
                   sizes={
-                    index === 0
-                      ? "(max-width: 640px) 90vw, (max-width: 980px) 30vw, 19vw"
-                      : "(max-width: 640px) 42vw, (max-width: 980px) 30vw, 19vw"
+                    index === 0 && tekSayi
+                      ? "(max-width: 640px) 90vw, (max-width: 980px) 46vw, 24vw"
+                      : "(max-width: 640px) 42vw, (max-width: 980px) 46vw, 24vw"
                   }
                 />
               </span>

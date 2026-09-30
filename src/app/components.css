@@ -4380,9 +4380,15 @@
    Kategori kartları
    ========================================================== */
 
+/*
+  Sütun sayısı kart sayısı kadar (--cat-n, bileşenden geliyor).
+  Eskiden `repeat(5, …)` sabitti: kategori beşten dörde inince
+  beşinci sütun boş kaldı ve şeridin sağında bir delik oluştu.
+  Yedek değer 4, değişken gelmezse bugünkü düzen korunur.
+*/
 .cat-cards {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cat-n, 4), minmax(0, 1fr));
   gap: var(--s4);
 }
 
@@ -4494,24 +4500,35 @@
   }
 }
 
-@media (max-width: 980px) {
-  .cat-cards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
+/*
+  Dar ekranda ikişerli. Üçerliydi: beş kartta 3+2 duruyordu, dörde
+  inince 3+1 oldu ve ikinci satırda tek bir kart genişliğin üçte
+  birinde asılı kaldı.
 
-@media (max-width: 640px) {
+  Tek eşik: 980px. Telefon ve tablet aynı düzeni kullanıyor, ayrı bir
+  640px bloğu vardı ve aynı iki sütunu tekrar yazıyordu. Yalnız kalan
+  kart kuralı o blokta olduğu için tablette çalışmıyordu: beş kartla
+  900px'te son kart genişliğin yarısında tek başına duruyordu
+  (tarayıcıda ölçüldü, sağda 404px boşluk).
+*/
+@media (max-width: 980px) {
   .cat-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* Beş kart ikişerli dizilince sonuncusu yalnız kalıyordu; ilk
-     kart tam genişlikte vitrin oluyor, kalan dördü ikişerli. */
-  .cat-cards > :first-child {
+  /*
+    Kart sayısı TEKSE sonuncusu ikişerli dizilimde yalnız kalır; o
+    zaman ilk kart tam genişlikte vitrin olur ve kalanlar tam çift
+    hâlinde iner. Kural eskiden koşulsuzdu ve beş karta göre
+    yazılmıştı; dört kartta bu kez SONUNCUSU yalnız kalıyordu.
+    `:has` ile sayı kendiliğinden okunuyor: son çocuk tek sıradaysa
+    toplam tektir.
+  */
+  .cat-cards:has(> :nth-child(odd):last-child) > :first-child {
     grid-column: 1 / -1;
   }
 
-  .cat-cards > :first-child .cat-card-art {
+  .cat-cards:has(> :nth-child(odd):last-child) > :first-child .cat-card-art {
     aspect-ratio: 16 / 10;
   }
 }
