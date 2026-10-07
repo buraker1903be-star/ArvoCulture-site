@@ -255,14 +255,48 @@ export function CheckoutForm({
       }
 
       /*
-        TAMİ ORTAK ÖDEME SAYFASI. PayTR çerçeve içinde açılıyordu;
-        Tami'de tam yönlendirme var, kart oranın sayfasında giriliyor
-        ve Masterpass da orada. Dönüşte sonuç panelde /payment/query
-        ile doğrulanıyor, yani buradaki adres bir şeyi kanıtlamıyor —
-        yalnızca müşteriyi ödeme sayfasına götürüyor.
+        SAĞLAYICININ KENDİ ÖDEME SAYFASINA YÖNLENDİRME.
+
+        PayTR çerçeve içinde açılıyor; banka/sağlayıcı sayfasına giden
+        yollarda tam yönlendirme var, kart orada giriliyor. Dönüşte
+        sonuç panelde doğrulanıyor (imza ya da sorgulama), yani
+        buradaki adres bir şeyi KANITLAMIYOR — yalnızca müşteriyi
+        ödeme sayfasına götürüyor.
+
+        SAĞLAYICI ADINA BAKMIYORUZ. Önceki sürüm `saglayici === "tami"`
+        diyordu; Tami'nin yerine Garanti geçtiğinde bu satır sessizce
+        yanlış kaldı ve müşteri ödeme sayfası yerine hata mesajı
+        görürdü. Artık ölçüt cevabın ŞEKLİ: adres varsa yönlendir,
+        form varsa gönder.
       */
-      if (!useTransfer && data.saglayici === "tami" && typeof data.odemeAdresi === "string") {
+      if (!useTransfer && typeof data.odemeAdresi === "string") {
         window.location.href = data.odemeAdresi;
+        return;
+      }
+
+      /*
+        FORM GÖNDEREN SAĞLAYICILAR (Garanti 3D Pay Hosting). Banka
+        gidilebilir bir bağlantı değil, bir POST bekliyor: alanların
+        arasında imza var ve adres satırına sığdırmak onu kullanıcının
+        değiştirebileceği bir yere koymak olurdu.
+
+        Form gizli ve kendiliğinden gönderiliyor; müşteri doğrudan
+        bankanın 3D ekranına düşüyor.
+      */
+      if (!useTransfer && data.odemeFormu?.adres && data.odemeFormu?.alanlar) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.odemeFormu.adres;
+        form.style.display = "none";
+        for (const [ad, deger] of Object.entries(data.odemeFormu.alanlar)) {
+          const alan = document.createElement("input");
+          alan.type = "hidden";
+          alan.name = ad;
+          alan.value = String(deger);
+          form.appendChild(alan);
+        }
+        document.body.appendChild(form);
+        form.submit();
         return;
       }
 
