@@ -1,3 +1,5 @@
+import { SELLER } from "@/lib/seller";
+
 /*
   CAYMA SÜRESİ — vitrinin aynası.
 
@@ -16,8 +18,17 @@
   güncellenir (AGENTS: "ArvoARC'ta kural değişirse vitrin aynı gün").
 */
 
-/** ArvoARC'taki `v_days > 14` ile aynı sayı. */
-export const IADE_GUNU = 14;
+/*
+  GÜN SAYISI TEK KAYNAKTAN: SELLER.withdrawalDays. Burada ayrı bir 14
+  yazmıştım; oysa aynı sayı cayma hakkı sayfasında ve ürün şemasının
+  `merchantReturnDays` alanında zaten o sabitten okunuyordu. İki kopya,
+  biri değişince ötekinin sessizce eski kalması demek — müşteriye
+  politikada bir süre, düğmede başka bir süre göstermek.
+
+  ArvoARC'taki `v_days > 14` ile aynı sayı olmalı; orada da sabit
+  (mağaza ayarlarında böyle bir alan yok).
+*/
+export const IADE_GUNU: number = SELLER.withdrawalDays;
 
 const GUN = 86_400_000;
 
