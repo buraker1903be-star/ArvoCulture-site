@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ReturnRequest } from "@/components/return-request";
+import { iadeAcikMi, iadeSuresiGectiMetni } from "@/lib/iade-penceresi";
 import { getAuthClient } from "@/lib/auth-client";
 import { formatPrice } from "@/lib/product-types";
 import {
@@ -333,7 +334,20 @@ export function OrderDetail({
             </div>
           )}
 
-          {!["cancelled", "refunded"].includes(order.status) && !iadeler.some((i) => i.status === "beklemede" || i.status === "onaylandi") && (
+          {/*
+            CAYMA SÜRESİ DOLMUŞSA FORM AÇILMIYOR (16.10.2026). Kural
+            ArvoARC'ta (14 gün); vitrin onu yalnızca aynalıyor. Önce hiç
+            bakmıyordu: müşteri ürünü seçip sebebini yazıyor, ancak
+            gönderdikten sonra "İade süresi dolmuş." duvarına
+            tosluyordu. Sebebi burada, forma girmeden söylüyoruz.
+          */}
+          {!["cancelled", "refunded"].includes(order.status)
+            && !iadeler.some((i) => i.status === "beklemede" || i.status === "onaylandi")
+            && !iadeAcikMi(order.created_at) && (
+            <p className="order-return-closed">{iadeSuresiGectiMetni}</p>
+          )}
+
+          {!["cancelled", "refunded"].includes(order.status) && !iadeler.some((i) => i.status === "beklemede" || i.status === "onaylandi") && iadeAcikMi(order.created_at) && (
             <div className="order-return">
               <ReturnRequest
                 orderNumber={order.order_number}

@@ -6032,3 +6032,14 @@
 .order-return-amount b {
   font-variant-numeric: tabular-nums;
 }
+
+/* Cayma süresi dolmuş sipariş: form yerine sebebi yazan tek satır.
+   Uyarı değil bilgi — müşteri yanlış bir şey yapmadı, süre geçti. */
+.order-return-closed {
+  margin: var(--s4) 0 0;
+  padding: var(--s3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+}
