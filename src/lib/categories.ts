@@ -56,3 +56,24 @@ export const SABIT_KOLEKSIYONLAR: Record<string, string> = {
   parfum: "Parfüm",
   tumu: "Tüm Ürünler",
 };
+
+/*
+  KATEGORİ ADINDAN SAYFA ADRESİ (17.10.2026).
+
+  Ürün sayfasındaki ekmek kırıntısı "Ana sayfa / Kozmetik / <ürün>"
+  diyor ama ortadaki bağlantı /koleksiyon/tumu'ya gidiyordu: adı
+  "Kozmetik" olan bir bağlantı 3.400 ürünlük tüm kataloğu açıyordu.
+  Hem müşteri için yanıltıcı, hem BreadcrumbList şemasında adıyla
+  hedefi uyuşmayan bir basamak.
+
+  Kategorinin kendi sayfası zaten var (SABIT_KOLEKSIYONLAR); burada
+  ad → slug yönü kuruluyor. Tanınmayan ad "tumu"ya düşüyor —
+  inferCategory ileride yeni bir kova eklerse kırık bağlantı değil,
+  geniş bir liste çıkar.
+*/
+export const kategoriAdresi = (etiket: string): string => {
+  const slug = Object.entries(SABIT_KOLEKSIYONLAR).find(
+    ([, ad]) => ad.toLocaleLowerCase("tr-TR") === etiket.trim().toLocaleLowerCase("tr-TR"),
+  )?.[0];
+  return `/koleksiyon/${slug ?? "tumu"}`;
+};
