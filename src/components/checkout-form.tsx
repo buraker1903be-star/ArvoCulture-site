@@ -198,9 +198,54 @@ export function CheckoutForm({
     };
   }
 
+  /*
+    SKU'SUZ KALEM DENETİMİ (17.10.2026).
+
+    Sepet kalemi varyant SKU'su taşımıyorsa ArvoARC ürün slug'ına
+    düşüyor ve siparişi stokta olan HERHANGİ bir varyanta bağlıyor
+    (arc_create_order). Tek varyantlı üründe bu doğru; çok varyantlı
+    üründe müşteri seçmediği tonu/bedeni alıyor.
+
+    Karttan ekleme ve ürün sayfası artık SKU yazıyor
+    (lib/varyant-ozeti.ts, components/quick-add.tsx) ama müşterinin
+    TARAYICISINDA duran eski sepet düzeltmeden önce eklenmiş olabilir.
+    Bu yüzden ödeme adımı son bir kez bakıyor: çok varyantlı ve
+    SKU'suz kalem varsa sipariş GEÇMİYOR, müşteri ürün sayfasına
+    yönlendiriliyor.
+  */
+  async function secimiEksikKalem() {
+    const skusuzlar = items.filter((item) => !item.sku);
+    for (const item of skusuzlar) {
+      try {
+        const yanit = await fetch(
+          `/api/varyantlar?slug=${encodeURIComponent(item.slug)}`,
+          { cache: "no-store" },
+        );
+        if (!yanit.ok) continue;
+        const ozet = (await yanit.json()) as { adet: number; tek: unknown };
+        /* Yalnızca tek varyantlıysa slug'a güveniyoruz. */
+        if (ozet.adet !== 1) return item;
+      } catch {
+        /* Sorgu yapılamadıysa engellemiyoruz: ArvoARC kalemi
+           yine denetliyor ve yanlış tutar oluşmuyor. */
+      }
+    }
+    return null;
+  }
+
   async function submit() {
     setState("sending");
     setMessage("");
+
+    const eksik = await secimiEksikKalem();
+    if (eksik) {
+      setState("error");
+      setMessage(
+        `"${eksik.name}" için seçeneğini (ton/beden) belirtmeniz gerekiyor. ` +
+          "Ürün sayfasından seçip sepete yeniden ekleyin.",
+      );
+      return;
+    }
 
     try {
       const response = await fetch(`${ARC_URL}/api/storefront/odeme`, {

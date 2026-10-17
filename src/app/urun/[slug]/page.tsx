@@ -87,16 +87,21 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
 
-  const [product, catalogue, variants, salesRules] = await Promise.all([
+  const [product, catalogue, varyantSonucu, salesRules] = await Promise.all([
     getStorefrontProduct(slug),
     getStorefrontProducts(120),
-    // Gerçek bedenler; sepete doğru SKU yazılabilsin.
+    /* Gerçek bedenler; sepete doğru SKU yazılabilsin. Okuma
+       başarısızsa "seçenek yok" demiyor, "bilinmiyor" diyor:
+       SKU'suz sepet ArvoARC'ta rastgele varyanta bağlanıyordu
+       (lib/variants.ts). */
     getProductVariants(slug),
     // Yapısal verideki kargo ücreti mağazanın gerçek tarifesi olsun.
     getSalesRules(),
   ]);
 
   if (!product) notFound();
+
+  const { varyantlar: variants, okunamadi: varyantOkunamadi } = varyantSonucu;
 
   const off = discountOf(product);
   // Güvence şeridi ve teslimat notu mağazanın gerçek tarifesiyle.
@@ -154,7 +159,11 @@ export default async function ProductPage({ params }: Params) {
             )}
           </div>
 
-          <ProductBuy product={product} variants={variants} />
+          <ProductBuy
+            product={product}
+            variants={variants}
+            varyantOkunamadi={varyantOkunamadi}
+          />
 
           {/* Satın alma kaygısını azaltan üç madde, butonun hemen
               altında; aşağı kaydırmaya gerek kalmıyor. */}

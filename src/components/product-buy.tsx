@@ -21,9 +21,12 @@ import type { Variant } from "@/lib/variants";
 export function ProductBuy({
   product,
   variants,
+  varyantOkunamadi = false,
 }: {
   product: Product;
   variants: Variant[];
+  /** Seçenekler ArvoARC'tan okunamadı; hangi varyant olduğu bilinmiyor. */
+  varyantOkunamadi?: boolean;
 }) {
   const { add } = useContext(CartContext);
   const [renk, setRenk] = useState<string | null>(null);
@@ -79,6 +82,29 @@ export function ProductBuy({
 
     setDone(true);
     setTimeout(() => setDone(false), 1800);
+  }
+
+  /*
+    SEÇENEKLER OKUNAMADIYSA SATIŞ KAPALI (17.10.2026).
+
+    Önceden okuma hatası boş varyant listesine dönüşüyordu: kutu
+    renk/beden sormuyor, sepete SKU yazılmıyor ve ArvoARC siparişi
+    stokta olan herhangi bir varyanta bağlıyordu — müşteri seçmediği
+    tonu alıyordu. "Tükendi" demek de yanlış olurdu; ürün tükenmiş
+    değil, biz okuyamıyoruz.
+  */
+  if (varyantOkunamadi) {
+    return (
+      <div className="pdp-buy">
+        <button className="btn btn-block" type="button" disabled>
+          Seçenekler yüklenemedi
+        </button>
+        <p className="stock-line">
+          Ürün seçenekleri şu anda alınamadı. Sayfayı yenileyin; sürerse
+          bize yazın.
+        </p>
+      </div>
+    );
   }
 
   if (soldOut) {
