@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { rpcOrEmpty } from "@/lib/arc";
 import { ttlCache } from "@/lib/ttl-cache";
+import { vitrinKonagi } from "@/lib/konak";
 
 export type StorefrontDiscount = {
   id: string;
@@ -27,16 +28,17 @@ export type StorefrontDiscount = {
  * Burada saklanan şey indirimin *tanımı* — ürün fiyatı değil.
  * Müşteriye gösterilen tutarı ArvoARC hesaplıyor.
  */
+/* Anahtar mağazanın adresi: önbellek mağaza başına (lib/ttl-cache). */
 const yukle = ttlCache(
-  () =>
+  (konak: string) =>
     rpcOrEmpty<StorefrontDiscount>(
-      "get_arvoculture_storefront_discounts",
-      {},
+      "arc_storefront_discounts",
+      { p_host: konak },
       { revalidate: 30, tags: ["storefront-discounts"] },
     ),
   30_000,
 );
 
 export const getStorefrontDiscounts = cache(
-  async (): Promise<StorefrontDiscount[]> => yukle(),
+  async (): Promise<StorefrontDiscount[]> => yukle(await vitrinKonagi()),
 );

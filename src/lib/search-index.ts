@@ -2,6 +2,7 @@ import { cache } from "react";
 import { rpcTumSayfalar } from "@/lib/arc";
 import { env } from "@/lib/env";
 import { inferCategory } from "@/lib/product-types";
+import { vitrinKonagi } from "@/lib/konak";
 
 /**
  * İstemciye gönderilen hafif arama dizini.
@@ -68,8 +69,8 @@ export const getSearchIndex = cache(async (): Promise<SearchItem[]> => {
     fonksiyona p_offset eklendi (30.09.2026).
   */
   const rows = await rpcTumSayfalar<SearchRow>(
-    "get_arvoculture_storefront_search_index",
-    {},
+    "arc_storefront_search_index",
+    { p_host: await vitrinKonagi() },
     { revalidate: 300, tags: ["storefront-products"] },
   );
 

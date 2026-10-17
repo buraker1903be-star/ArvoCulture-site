@@ -32,8 +32,22 @@ import "server-only";
 
 type Kayit<T> = { at: number; deger: T };
 
+/*
+  ANAHTAR ZORUNLU: ÖNBELLEK MAĞAZA BAŞINA.
+
+  İlk sürüm tek bir değer saklıyordu ve bu, vitrin tek mağazalıyken
+  doğruydu. Çok mağazalı kipte aynı süreç birden çok mağazaya hizmet
+  ediyor: anahtarsız bir önbellek, A mağazasının koleksiyonlarını ve
+  SATIŞ KURALLARINI (kargo ücreti, havale indirimi) B mağazasının
+  müşterisine gösterirdi. Hata vermeyen, yanlış fiyat gösteren bir
+  sızıntı.
+
+  Anahtar çağıranın verdiği metin; vitrinde mağazanın adresi.
+*/
+const AZAMI_ANAHTAR = 50;
+
 export function ttlCache<T>(
-  yukle: () => Promise<T>,
+  yukle: (anahtar: string) => Promise<T>,
   ttlMs: number,
   /**
    * Sonucu saklamaya değer mi? Boş liste genelde geçici bir
@@ -42,24 +56,40 @@ export function ttlCache<T>(
    */
   saklanir: (deger: T) => boolean = (deger) =>
     !Array.isArray(deger) || deger.length > 0,
-): () => Promise<T> {
-  let kayit: Kayit<T> | null = null;
+): (anahtar: string) => Promise<T> {
+  const kayitlar = new Map<string, Kayit<T>>();
   /* Aynı anda gelen isteklerin hepsi ayrı ayrı veritabanına gitmesin. */
-  let ucusta: Promise<T> | null = null;
+  const ucustakiler = new Map<string, Promise<T>>();
 
-  return async () => {
+  return async (anahtar: string) => {
+    const kayit = kayitlar.get(anahtar);
     if (kayit && Date.now() - kayit.at < ttlMs) return kayit.deger;
+
+    const ucusta = ucustakiler.get(anahtar);
     if (ucusta) return ucusta;
 
-    ucusta = yukle()
+    const istek = yukle(anahtar)
       .then((deger) => {
-        if (saklanir(deger)) kayit = { at: Date.now(), deger };
+        if (saklanir(deger)) {
+          /*
+            Süresi geçmiş kayıtlar temizleniyor ve tavan var: adresi
+            bize yönlenen her konak (yanlış yapılandırılmış bir DNS
+            de olabilir) bellekte kalıcı bir satır açmasın.
+          */
+          if (kayitlar.size >= AZAMI_ANAHTAR) {
+            const simdi = Date.now();
+            for (const [k, v] of kayitlar) if (simdi - v.at >= ttlMs) kayitlar.delete(k);
+            if (kayitlar.size >= AZAMI_ANAHTAR) kayitlar.clear();
+          }
+          kayitlar.set(anahtar, { at: Date.now(), deger });
+        }
         return deger;
       })
       .finally(() => {
-        ucusta = null;
+        ucustakiler.delete(anahtar);
       });
 
-    return ucusta;
+    ucustakiler.set(anahtar, istek);
+    return istek;
   };
 }

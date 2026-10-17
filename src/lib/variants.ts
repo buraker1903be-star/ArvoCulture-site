@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { rpc } from "@/lib/arc";
+import { vitrinKonagi } from "@/lib/konak";
 
 /**
  * Ürün varyantları.
@@ -55,8 +56,8 @@ export const getProductVariants = cache(
     let rows: Variant[];
     try {
       rows = await rpc<Variant>(
-        "get_arvoculture_storefront_variants",
-        { p_slug: slug },
+        "arc_storefront_variants",
+        { p_host: await vitrinKonagi(), p_slug: slug },
         /* Ürün sayfasıyla aynı pencere: rota 60 saniye saklanıyor,
            bu çağrıyı tazelemek çelişki üretiyor ve sayfayı hiç
            çizdirmiyordu (lib/products.ts'teki uzun not). */

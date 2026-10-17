@@ -3,6 +3,7 @@ import { rpc, rpcOrEmpty, rpcTumSayfalar } from "@/lib/arc";
 import { env } from "@/lib/env";
 import { inferCategory } from "@/lib/product-types";
 import type { Product } from "@/lib/product-types";
+import { vitrinKonagi } from "@/lib/konak";
 
 export { formatPrice, inferCategory } from "@/lib/product-types";
 export type { Product } from "@/lib/product-types";
@@ -42,8 +43,8 @@ const badgeTones = new Set(["green", "navy", "gold", "red"]);
 const getProductBadges = cache(
   async (): Promise<Map<string, ProductBadgeRow>> => {
     const rows = await rpcOrEmpty<ProductBadgeRow>(
-      "get_arvoculture_storefront_product_badges",
-      {},
+      "arc_storefront_product_badges",
+      { p_host: await vitrinKonagi() },
       { revalidate: 60, tags: ["storefront-product-badges"] },
     );
     return new Map(rows.map((row) => [row.slug, row]));
@@ -178,8 +179,8 @@ export const getStorefrontProducts = cache(
   async (limit = 24): Promise<Product[]> => {
     const [rows, badges] = await Promise.all([
       rpcOrEmpty<StorefrontRow>(
-        "get_arvoculture_storefront_products",
-        { p_limit: Math.min(CATALOG_LIMIT, Math.max(1, limit)) },
+        "arc_storefront_products",
+        { p_host: await vitrinKonagi(), p_limit: Math.min(CATALOG_LIMIT, Math.max(1, limit)) },
         {
           revalidate: 60,
           tags: ["storefront-products"],
@@ -219,8 +220,8 @@ export const getStorefrontProductSlugs = cache(
       sunucunun sınırıyla aynı (30.09.2026).
     */
     const rows = await rpcTumSayfalar<{ slug: string; updated_at: string | null }>(
-      "get_arvoculture_storefront_product_slugs",
-      {},
+      "arc_storefront_product_slugs",
+      { p_host: await vitrinKonagi() },
       /*
         ÖNBELLEKSİZ. Site haritası arama motoruna "bu adresleri
         indeksle" diyor; satılamaz ürünün sayfası aynı anda
@@ -252,8 +253,8 @@ export const getStorefrontProductSlugs = cache(
  */
 export const getStorefrontDeals = cache(async (limit = 12) => {
   const rows = await rpcOrEmpty<StorefrontRow>(
-    "get_arvoculture_storefront_deals",
-    { p_limit: limit },
+    "arc_storefront_deals",
+    { p_host: await vitrinKonagi(), p_limit: limit },
     { revalidate: 60, tags: ["storefront-deals"] },
   );
   return rows.map((row, index) => mapProduct(row, index));
@@ -273,8 +274,8 @@ export const getStorefrontCollectionProducts = cache(
 
     const [rows, badges] = await Promise.all([
       rpcOrEmpty<StorefrontRow>(
-        "get_arvoculture_storefront_collection_products",
-        {
+        "arc_storefront_collection_products",
+        { p_host: await vitrinKonagi(),
           p_collection_slug: collectionSlug ?? null,
           p_menu_groups: menuGroups ?? null,
           p_limit: Math.min(200, Math.max(1, limit)),
@@ -304,8 +305,8 @@ export const getStorefrontProduct = cache(
 
     const [rows, badges] = await Promise.all([
       rpc<StorefrontRow>(
-        "get_arvoculture_storefront_product",
-        { p_slug: slug },
+        "arc_storefront_product",
+        { p_host: await vitrinKonagi(), p_slug: slug },
         /*
           ÖNBELLEKSİZ DEĞİL — VE OLAMAZ (17.10.2026, iki kez düşünüldü).
 
@@ -385,8 +386,8 @@ export const getStorefrontProductsPage = cache(
 
     const [rows, badges] = await Promise.all([
       rpcOrEmpty<CatalogPageRow>(
-        "get_arvoculture_storefront_products_page",
-        {
+        "arc_storefront_products_page",
+        { p_host: await vitrinKonagi(),
           p_limit: size,
           p_offset: (safePage - 1) * size,
           p_brand: filters.brand || null,
@@ -443,8 +444,8 @@ type FacetRow = {
  */
 export const getStorefrontFacets = cache(async (): Promise<CatalogFacets> => {
   const rows = await rpcOrEmpty<FacetRow>(
-    "get_arvoculture_storefront_facets",
-    {},
+    "arc_storefront_facets",
+    { p_host: await vitrinKonagi() },
     { revalidate: 300, tags: ["storefront-facets"] },
   );
 
@@ -526,8 +527,8 @@ export const getStorefrontCollectionProductsPage = cache(
     */
     const [sonuc, badges] = await Promise.all([
       rpc<CollectionPageRow>(
-        "get_arvoculture_storefront_collection_products_page",
-        {
+        "arc_storefront_collection_products_page",
+        { p_host: await vitrinKonagi(),
           p_collection_slugs: slugs.length ? slugs : null,
           p_menu_groups: menuGroups?.length ? menuGroups : null,
           p_limit: size,
@@ -589,8 +590,8 @@ export const getStorefrontCollectionFacets = cache(
   async ({ collectionSlugs, menuGroups }: CollectionScope): Promise<CatalogFacets> => {
     const slugs = (collectionSlugs ?? []).filter((slug) => SLUG_PATTERN.test(slug));
     const rows = await rpcOrEmpty<FacetRow>(
-      "get_arvoculture_storefront_collection_facets",
-      {
+      "arc_storefront_collection_facets",
+      { p_host: await vitrinKonagi(),
         p_collection_slugs: slugs.length ? slugs : null,
         p_menu_groups: menuGroups?.length ? menuGroups : null,
       },

@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { rpcOrEmpty } from "@/lib/arc";
 import { ttlCache } from "@/lib/ttl-cache";
+import { vitrinKonagi } from "@/lib/konak";
 
 export type StorefrontCollection = {
   title: string;
@@ -29,16 +30,17 @@ export type StorefrontCollection = {
  * Altmış saniye, koleksiyonların değişme hızına göre bol. Yeni bir
  * kategori ArvoARC'ta açıldığında menüde bir dakika içinde belirir.
  */
+/* Anahtar mağazanın adresi: önbellek mağaza başına (lib/ttl-cache). */
 const yukle = ttlCache(
-  () =>
+  (konak: string) =>
     rpcOrEmpty<StorefrontCollection>(
-      "get_arvoculture_storefront_collections",
-      {},
+      "arc_storefront_collections",
+      { p_host: konak },
       { revalidate: 60, tags: ["storefront-collections"] },
     ),
   60_000,
 );
 
 export const getStorefrontCollections = cache(
-  async (): Promise<StorefrontCollection[]> => yukle(),
+  async (): Promise<StorefrontCollection[]> => yukle(await vitrinKonagi()),
 );

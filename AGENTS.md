@@ -93,6 +93,22 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
   hesaplıyor ve sepet/ödeme sayfaları (rota önbelleği olmayan
   dinamik sayfalar) o hesabı okuyor.
 
+- **Vitrin ÇOK MAĞAZALI; mağaza adresten çözülür.** Veri katmanı
+  `arc_storefront_*` ailesini çağırır ve ilk parametre olarak konağı
+  verir (`lib/konak.ts`). ArvoCulture'a özel `get_arvoculture_*`
+  aile artık kullanılmıyor — tek mağazaya sabitlenmiş bir vitrin,
+  ikinci müşteri alan adını bağladığı gün ona BAŞKASININ mağazasını
+  gösterirdi ve hata vermezdi.
+  **İki kip var ve ayrımın sebebi önbellek:** `VITRIN_KONAGI`
+  tanımlıysa adres ortam değişkeninden gelir ve `headers()` hiç
+  çağrılmaz (ürün sayfasının ISR önbelleği korunur); boşsa adres
+  istekten okunur ve o sayfalar dinamikleşir.
+  **Süreç içi önbellek (`ttlCache`) ANAHTAR İSTER** ve anahtar
+  mağazanın adresidir: anahtarsız bir önbellek A'nın satış
+  kurallarını (kargo ücreti, havale indirimi) B'nin müşterisine
+  gösterirdi — hata vermeyen, yanlış fiyat gösteren bir sızıntı
+  (`tests/ttl-cache.test.ts`).
+
 ## Testler
 
 ```bash

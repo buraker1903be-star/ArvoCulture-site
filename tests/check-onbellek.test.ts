@@ -24,7 +24,7 @@ test("önbellekli çağrı yakalanıyor", () => {
   const { cikis, cikti } = denetim("tests/fixtures/onbellek/src");
   assert.equal(cikis, 1);
   assert.match(cikti, /kotu\.ts/);
-  assert.match(cikti, /get_arvoculture_storefront_product_slugs önbelleksiz çağrılmalı/);
+  assert.match(cikti, /arc_storefront_product_slugs önbelleksiz çağrılmalı/);
 });
 
 test("doğru çağrı sorun sayılmıyor", () => {

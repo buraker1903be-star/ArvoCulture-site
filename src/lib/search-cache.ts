@@ -1,6 +1,7 @@
 import "server-only";
 import { getSearchIndex, type SearchItem } from "@/lib/search-index";
 import { ttlCache } from "@/lib/ttl-cache";
+import { vitrinKonagi } from "@/lib/konak";
 
 /**
  * Arama dizininin süreç belleğindeki kopyası.
@@ -23,7 +24,8 @@ import { ttlCache } from "@/lib/ttl-cache";
  */
 const TTL_MS = 5 * 60 * 1000;
 
-export const getCachedSearchIndex: () => Promise<SearchItem[]> = ttlCache(
-  getSearchIndex,
-  TTL_MS,
-);
+/* Anahtar mağazanın adresi: arama dizini mağaza başına. */
+const dizin = ttlCache(getSearchIndex, TTL_MS);
+
+export const getCachedSearchIndex = async (): Promise<SearchItem[]> =>
+  dizin(await vitrinKonagi());
