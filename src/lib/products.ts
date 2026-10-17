@@ -461,6 +461,15 @@ export type CollectionPage = CatalogPage & {
   sizes: string[];
   /** TL cinsinden. */
   maxPrice: number;
+  /**
+   * Çağrı başarısız oldu: raf BOŞ DEĞİL, okunamadı.
+   *
+   * 17.10.2026'da bu ayrım olmadığı için mağaza kırıldı. Fonksiyon
+   * ağır koleksiyonlarda anon rolünün süre sınırını aşıyordu
+   * (57014), hata yutuluyordu ve /koleksiyon/erkek "0 ürün"
+   * gösteriyordu. Çağıran taraf artık eski uca düşüyor.
+   */
+  okunamadi: boolean;
 };
 
 type CollectionPageRow = CatalogPageRow & {
@@ -487,8 +496,12 @@ export const getStorefrontCollectionProductsPage = cache(
        atmanın anlamı yok. */
     const slugs = (collectionSlugs ?? []).filter((slug) => SLUG_PATTERN.test(slug));
 
-    const [rows, badges] = await Promise.all([
-      rpcOrEmpty<CollectionPageRow>(
+    /*
+      Burada `rpcOrEmpty` KULLANILMIYOR: boş liste ile okunamamış
+      liste aynı şey değil. Hata yutulduğunda raf boş görünüyordu.
+    */
+    const [sonuc, badges] = await Promise.all([
+      rpc<CollectionPageRow>(
         "get_arvoculture_storefront_collection_products_page",
         {
           p_collection_slugs: slugs.length ? slugs : null,
@@ -509,10 +522,17 @@ export const getStorefrontCollectionProductsPage = cache(
           revalidate: 60,
           tags: [`storefront-collection-${slugs[0] ?? menuGroups?.[0] ?? "all"}`],
         },
+      ).then(
+        (satirlar) => ({ satirlar, okunamadi: false }),
+        (hata: unknown) => {
+          console.error(hata);
+          return { satirlar: [] as CollectionPageRow[], okunamadi: true };
+        },
       ),
       getProductBadges(),
     ]);
 
+    const rows = sonuc.satirlar;
     const row = rows[0];
     const total = row ? Number(row.total_count) : 0;
     const strings = (value: unknown) =>
@@ -531,6 +551,7 @@ export const getStorefrontCollectionProductsPage = cache(
       brands: strings(row?.facet_brands),
       sizes: strings(row?.facet_sizes),
       maxPrice: row?.facet_max_price ? Number(row.facet_max_price) / 100 : 0,
+      okunamadi: sonuc.okunamadi,
     };
   },
 );

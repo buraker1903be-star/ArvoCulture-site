@@ -1,10 +1,12 @@
-import { ProductCard } from "@/components/product-card";
+import { ProductCard, discountOf } from "@/components/product-card";
 import { CollectionFilters } from "@/components/collection-filters";
 import { getStorefrontCollections } from "@/lib/collections";
 import {
+  getStorefrontCollectionProducts,
   getStorefrontCollectionProductsPage,
   getStorefrontProductsPage,
   getStorefrontFacets,
+  CATALOG_PAGE_SIZE,
   type Product,
 } from "@/lib/products";
 import Link from "next/link";
@@ -17,32 +19,35 @@ import { breadcrumbSchema, collectionSchema } from "@/lib/seo";
 const labels = SABIT_KOLEKSIYONLAR;
 
 /*
-  SABİT KATEGORİ SAYFALARININ KAPSAMI (17.10.2026 düzeltmesi).
+  SABİT KATEGORİ SAYFALARININ KAPSAMI.
 
   Dört kategori sayfası (/koleksiyon/giyim, /bakim, /kozmetik,
   /parfum) ArvoARC'ta karşılığı olan koleksiyon DEĞİL; menü
-  gruplarından toplanıyor. Buradaki grup adları ArvoARC'ta
-  koleksiyon üstverisindeki `menu_group` değerleriyle BİREBİR
-  eşleşmek zorunda — eşleşmeyen ad sessizce hiçbir şey getirmiyor.
-
-  Eski liste uydurma adlar taşıyordu ve kapsam çok dardı. Canlıda
-  ölçüldü: /koleksiyon/giyim 32 ürün gösteriyordu, oysa giyim
-  koleksiyonları "Üst Giyim", "Alt Giyim", "Dış Giyim", "Alt Üst
-  Takım", "İç Giyim" ve "Çocuk" gruplarında duruyor ve binlerce
-  ürün içeriyor. "Sorununa Göre" diye bir grup hiç yok; gerçek adı
-  "İhtiyaca Göre". Kozmetiğin grubu "Makyaj", parfümün bir kısmı
-  "Kime Göre" altında.
-
-  "MARKA KOLEKSİYONLARI" BİLEREK YOK: bu ad hem bakım hem parfüm
-  tarafında kullanılıyor (ArvoARC'ta ayrımı `parent` yapıyor, bu
-  fonksiyon ise yalnızca menu_group'a bakıyor). Listeye eklenirse
-  bakım sayfasına parfüm koleksiyonları, parfüm sayfasına bakım
-  koleksiyonları düşerdi.
-
-  Aksesuar burada yok: kendi sayfası var (/koleksiyon/aksesuar) ve
-  kemer ile gözlük "giyim" değil.
+  gruplarından toplanıyor.
 */
 const menuGroups: Record<string, string[]> = {
+  /*
+    GRUP ADLARI ÖLÇÜMDEN (17.10.2026).
+
+    Bu adlar ArvoARC'ta koleksiyon üstverisindeki `menu_group`
+    değerleriyle BİREBİR eşleşmek zorunda; eşleşmeyen ad sessizce
+    hiçbir şey getiriyor. Önce adları menünün ekrandaki
+    başlıklarından çıkarmaya çalıştım ve üçü de yanlış çıktı:
+    "Makyaj" ve "İhtiyaca Göre" diye grup YOK, "Kime Göre" ise
+    parfüm grubu değil — 3.264 ürünle bütün kataloğu kapsayan
+    çapraz bir grup. Doğru liste veritabanından sayıldı:
+
+      Üst Giyim 2228 · Çocuk 383 · Dış Giyim 232 · Alt Giyim 222 ·
+      Alt Üst Takım 111 · Giyim 45 · Aksesuar 37 · İç Giyim 27 ·
+      Kime Göre 3264 · Kişisel Bakım 90 · Parfüm 43 ·
+      Sorununa Göre 43 · Cilt Bakımı 35 · Diğer Bakımlar 24 ·
+      Vücut Bakımı 19 · Kampanyalar 17 · Kozmetik 13 · Saç Bakımı 3
+
+    Değişen tek şey "giyim": yalnızca "Giyim" grubunu (45 ürün)
+    arıyordu, oysa giyim kataloğu altı grupta duruyor ve ~3.250
+    ürün. Aksesuar burada yok: kendi sayfası var ve kemer ile gözlük
+    "giyim" değil.
+  */
   giyim: [
     "Giyim",
     "Üst Giyim",
@@ -58,10 +63,10 @@ const menuGroups: Record<string, string[]> = {
     "Saç Bakımı",
     "Vücut Bakımı",
     "Diğer Bakımlar",
-    "İhtiyaca Göre",
+    "Sorununa Göre",
   ],
-  kozmetik: ["Kozmetik", "Makyaj"],
-  parfum: ["Parfüm", "Kime Göre"],
+  kozmetik: ["Kozmetik"],
+  parfum: ["Parfüm"],
 };
 
 /**
@@ -286,14 +291,89 @@ export default async function Collection({
       sort: sirala,
     });
 
-    visibleProducts = result.products;
-    pageCount = result.pageCount;
-    currentPage = Math.min(result.page, result.pageCount);
-    shownCount = result.total;
-    totalCount = result.collectionTotal;
-    sizes = [...result.sizes].sort(bySizeOrder);
-    brands = result.brands.slice(0, 12);
-    maxPrice = result.maxPrice;
+    if (result.okunamadi) {
+      /*
+        RAF OKUNAMADIYSA ESKİ UCA DÜŞÜLÜYOR (17.10.2026).
+
+        Sayfalayan fonksiyon ağır koleksiyonlarda anon rolünün süre
+        sınırını aşabiliyor (canlıda 57014 ile düştü). O gün bu
+        geri çekilme yolu yoktu: hata yutuldu, /koleksiyon/erkek
+        "0 ürün" gösterdi ve mağaza kırıldı.
+
+        Eski uç en çok 200 ürün veriyor ve süzgeci bellekte
+        uyguluyor — yani kesik bir liste. Ama kesik liste, boş
+        raftan iyidir: müşteri alışverişe devam edebiliyor.
+      */
+      const list = kaynaklar.length
+        ? Object.values(
+            Object.fromEntries(
+              (
+                await Promise.all(
+                  kaynaklar.map((kaynak) =>
+                    getStorefrontCollectionProducts({ collectionSlug: kaynak }),
+                  ),
+                )
+              )
+                .flat()
+                .map((product) => [product.slug, product] as const),
+            ),
+          )
+        : await getStorefrontCollectionProducts({ menuGroups: menuGroups[slug] });
+
+      sizes = [...new Set(list.flatMap((product) => product.sizes))].sort(bySizeOrder);
+      brands = [...new Set(list.map((product) => product.eyebrow))]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b, "tr"))
+        .slice(0, 12);
+      maxPrice = list.reduce((top, product) => Math.max(top, product.price), 0);
+
+      const filtered = list
+        .filter((product) => {
+          if (marka && product.eyebrow !== marka) return false;
+          if (ust > 0 && product.price > ust) return false;
+          if (indirimli && discountOf(product) <= 0) return false;
+          if (stokta && product.available === false) return false;
+          if (beden && !product.sizes.includes(beden.toUpperCase())) return false;
+          return true;
+        })
+        .sort((a, b) => {
+          switch (sirala) {
+            case "ucuz":
+              return a.price - b.price;
+            case "pahali":
+              return b.price - a.price;
+            case "indirim":
+              return discountOf(b) - discountOf(a);
+            case "yeni":
+              // Katalog zaten son güncellenene göre sıralı geliyor.
+              return 0;
+            default:
+              // Önerilen: stokta olanlar önce, sonra indirimliler.
+              if ((a.available === false) !== (b.available === false)) {
+                return a.available === false ? 1 : -1;
+              }
+              return discountOf(b) - discountOf(a);
+          }
+        });
+
+      pageCount = Math.max(1, Math.ceil(filtered.length / CATALOG_PAGE_SIZE));
+      currentPage = Math.min(page, pageCount);
+      visibleProducts = filtered.slice(
+        (currentPage - 1) * CATALOG_PAGE_SIZE,
+        currentPage * CATALOG_PAGE_SIZE,
+      );
+      shownCount = filtered.length;
+      totalCount = list.length;
+    } else {
+      visibleProducts = result.products;
+      pageCount = result.pageCount;
+      currentPage = Math.min(result.page, result.pageCount);
+      shownCount = result.total;
+      totalCount = result.collectionTotal;
+      sizes = [...result.sizes].sort(bySizeOrder);
+      brands = result.brands.slice(0, 12);
+      maxPrice = result.maxPrice;
+    }
   }
 
   return (
