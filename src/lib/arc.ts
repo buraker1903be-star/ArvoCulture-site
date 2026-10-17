@@ -85,11 +85,20 @@ type RpcOptions = {
   columns?: string;
 };
 
-export async function rpc<TResult, TParams extends object = object>(
+/**
+ * Çağrının kendisi. `rpc` ve `rpcDeger` bunu paylaşıyor.
+ *
+ * İkiye ayrıldı çünkü PostgREST, fonksiyonun DÖNÜŞ TİPİNE göre farklı
+ * şekilde yanıtlıyor: tablo döndüren bir fonksiyon dizi, skaler
+ * döndüren (örneğin `returns jsonb`) ise değerin KENDİSİNİ veriyor.
+ * Tek bir `rpc` ikisini de "dizi" diye tiplerse, skaler çağıran taraf
+ * derlemede doğru görünüp çalışma anında `undefined` okur.
+ */
+async function istek<TParams extends object>(
   name: string,
-  params: TParams = {} as TParams,
+  params: TParams,
   { revalidate = 60, tags = [], columns, onbelleksiz = false }: RpcOptions = {},
-): Promise<TResult[]> {
+): Promise<unknown> {
   const endpoint = new URL(`/rest/v1/rpc/${name}`, env.supabaseUrl);
   if (columns) endpoint.searchParams.set("select", columns);
 
@@ -119,7 +128,30 @@ export async function rpc<TResult, TParams extends object = object>(
     );
   }
 
-  return (await response.json()) as TResult[];
+  return await response.json();
+}
+
+export async function rpc<TResult, TParams extends object = object>(
+  name: string,
+  params: TParams = {} as TParams,
+  options: RpcOptions = {},
+): Promise<TResult[]> {
+  return (await istek(name, params, options)) as TResult[];
+}
+
+/**
+ * Skaler döndüren fonksiyonlar için (`returns jsonb` gibi).
+ *
+ * Kayıt bulunamadığında fonksiyon `null` döndürüyor; burada da `null`
+ * geliyor. Çağıran taraf "bulunamadı" ile "okunamadı"yı ayırabilsin
+ * diye hata YUTULMUYOR — okunamama `ArcError` olarak fırlıyor.
+ */
+export async function rpcDeger<TResult, TParams extends object = object>(
+  name: string,
+  params: TParams = {} as TParams,
+  options: RpcOptions = {},
+): Promise<TResult | null> {
+  return ((await istek(name, params, options)) ?? null) as TResult | null;
 }
 
 /**

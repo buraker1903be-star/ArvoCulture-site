@@ -35,5 +35,15 @@ test("doğru çağrı sorun sayılmıyor", () => {
 test("gerçek kaynak ağacı denetimden geçiyor", () => {
   const { cikis, cikti } = denetim("src");
   assert.equal(cikis, 0, cikti);
-  assert.match(cikti, /1 fonksiyon önbelleksiz çağrılıyor/);
+  /*
+    SAYI SABİTLENMİYOR, yalnızca "en az bir tane" aranıyor. Önceden
+    "1 fonksiyon" yazıyordu ve listeye ikinci bir fonksiyon eklendiği
+    gün (sipariş durumu sayfası) test kırıldı — oysa denetim doğru
+    çalışıyordu. Sayıyı sabitlemek, listeyi büyütmeyi cezalandırır.
+    Önemli olan listenin BOŞ OLMAMASI: boşalırsa denetim hiçbir şey
+    ölçmeyen bir teste dönüşür.
+  */
+  const eslesme = cikti.match(/zorunlu (\d+) fonksiyon önbelleksiz çağrılıyor/);
+  assert.ok(eslesme, `beklenen özet satırı yok: ${cikti}`);
+  assert.ok(Number(eslesme[1]) >= 1, "taze okunması zorunlu çağrı listesi boş");
 });

@@ -24,6 +24,10 @@ import path from "node:path";
 /** Bayat gelmesi kabul edilemeyen ArvoARC fonksiyonları ve gerekçeleri. */
 const TAZE_OLMALI = new Map([
   ["get_arvoculture_storefront_product_slugs", "site haritası; sayfa noindex derken listelememeli"],
+  [
+    "arc_storefront_order_status",
+    "sipariş durumu; 'kargoya verildi' mesajını alıp bağlantıya basan müşteriye saklanmış durum göstermek bildirimi yalanlar",
+  ],
 ]);
 
 /*

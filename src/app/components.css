@@ -6084,3 +6084,117 @@
   color: var(--ink-3);
   font-size: var(--t-sm);
 }
+
+/*
+  SİPARİŞ DURUM SAYFASI (/siparis/[anahtar]).
+
+  Müşteriye WhatsApp'tan giden bağlantı buraya düşüyor; oturum
+  istemiyor. Bildirim mesajı kısa kalsın, ayrıntı burada dursun diye
+  yapıldı: Meta şablon parametrelerinde satır sonu yasak, ürünler
+  mesajın içinde alt alta listelenemiyordu.
+
+  Telefonda açılacak: tek sütun, dokunulabilir hedefler, yan yana
+  dizilen hiçbir şey yok.
+*/
+.order-status h2 {
+  margin: var(--s6) 0 var(--s3);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.order-status-meta,
+.order-status-toplam {
+  margin: 0;
+  display: grid;
+  gap: var(--s2);
+}
+
+.order-status-meta > div,
+.order-status-toplam > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s4);
+}
+
+.order-status-meta dt,
+.order-status-toplam dt {
+  color: var(--ink-3);
+  font-size: 0.875rem;
+}
+
+.order-status-meta dd,
+.order-status-toplam dd {
+  margin: 0;
+  text-align: right;
+}
+
+.order-status-toplam {
+  margin-top: var(--s4);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line);
+}
+
+.order-status-toplam .buyuk {
+  margin-top: var(--s2);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--line);
+  font-weight: 600;
+  font-size: 1.0625rem;
+}
+
+.order-status-kargo {
+  margin-top: var(--s5);
+  padding: var(--s4);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.order-status-kargo h2 {
+  margin-top: 0;
+}
+
+.order-status-kargo p {
+  margin: 0 0 var(--s2);
+}
+
+.order-status-kargo p:last-child {
+  margin-bottom: 0;
+}
+
+.order-status-kalemler {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--s3);
+}
+
+.order-status-kalemler li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.order-status-kalemler li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.order-status-kalemler .ad small {
+  color: var(--ink-3);
+}
+
+.order-status-kalemler .tutar {
+  white-space: nowrap;
+}
+
+.order-status-not {
+  margin: var(--s6) 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ink-3);
+}
