@@ -10,7 +10,6 @@ import { getStorefrontProduct, getStorefrontProducts } from "@/lib/products";
 import { getProductVariants } from "@/lib/variants";
 import { formatPrice } from "@/lib/product-types";
 import { breadcrumbSchema, productSchema } from "@/lib/seo";
-import { kategoriAdresi } from "@/lib/categories";
 import { getSalesRules } from "@/lib/store-settings";
 import { shippingTerms } from "@/lib/order-quote";
 
@@ -131,8 +130,7 @@ export default async function ProductPage({ params }: Params) {
           <nav className="crumbs" aria-label="Konum">
             <Link href="/">Ana sayfa</Link>
             <span aria-hidden="true">/</span>
-            {/* Görünen kırıntı da şemayla aynı adrese gidiyor. */}
-            <Link href={kategoriAdresi(product.category)}>{product.category}</Link>
+            <Link href="/koleksiyon/tumu">{product.category}</Link>
             <span aria-hidden="true">/</span>
             <span aria-current="page">{product.name}</span>
           </nav>
@@ -288,9 +286,7 @@ export default async function ProductPage({ params }: Params) {
       <JsonLd
         data={breadcrumbSchema([
           { name: "Ana sayfa", path: "/" },
-          /* Basamağın adı ile gittiği yer aynı olmalı: "Kozmetik"
-             yazıp tüm kataloğu açmak yanıltıcıydı (lib/categories). */
-          { name: product.category, path: kategoriAdresi(product.category) },
+          { name: product.category, path: "/koleksiyon/tumu" },
           { name: product.name, path: `/urun/${product.slug}` },
         ])}
       />

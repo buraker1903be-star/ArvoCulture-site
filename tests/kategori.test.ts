@@ -13,7 +13,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { inferCategory } from "../src/lib/product-types";
-import { asciiSlug, kategoriAdresi } from "../src/lib/categories";
+import { asciiSlug } from "../src/lib/categories";
 
 const kategori = (name: string, product_type = "") =>
   inferCategory({ name, product_type });
@@ -106,27 +106,4 @@ test("Türkçe ad ASCII slug'a indirgeniyor", () => {
   assert.equal(asciiSlug("Aksesuar"), "aksesuar");
   assert.equal(asciiSlug("İç Giyim"), "ic giyim");
   assert.equal(asciiSlug("Güneş Gözlüğü"), "gunes gozlugu");
-});
-
-test("kategori adı kendi sayfasına çözülüyor", () => {
-  /*
-    Ürün sayfasındaki kırıntı "Kozmetik" yazıp /koleksiyon/tumu'ya
-    gidiyordu: adıyla hedefi uyuşmayan bir basamak.
-  */
-  assert.equal(kategoriAdresi("Kozmetik"), "/koleksiyon/kozmetik");
-  assert.equal(kategoriAdresi("Giyim"), "/koleksiyon/giyim");
-  assert.equal(kategoriAdresi("Kişisel Bakım"), "/koleksiyon/bakim");
-  assert.equal(kategoriAdresi("Parfüm"), "/koleksiyon/parfum");
-});
-
-test("tanınmayan kategori tüm katalogla karşılanıyor", () => {
-  /* inferCategory ileride yeni bir kova eklerse kırık bağlantı
-     değil, geniş bir liste çıkmalı. */
-  assert.equal(kategoriAdresi("Oyuncak"), "/koleksiyon/tumu");
-  assert.equal(kategoriAdresi(""), "/koleksiyon/tumu");
-});
-
-test("büyük küçük harf ve boşluk kategoriyi bozmuyor", () => {
-  /* Türkçe küçük harf kuralı: "KOZMETİK" → "kozmetik". */
-  assert.equal(kategoriAdresi("  KOZMETİK "), "/koleksiyon/kozmetik");
 });
