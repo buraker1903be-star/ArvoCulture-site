@@ -100,9 +100,38 @@ export async function vitrinKurumu(): Promise<string | null> {
   Tek mağaza kipinde değer yine ortam değişkeninden gelir ve
   headers() çağrılmaz; o kipte bu fonksiyon yalnızca şemayı ekler.
 */
+const birincilAdresler = ttlCache(
+  (konak: string) =>
+    rpcDeger<string>("arc_storefront_primary_host", { p_host: konak }, { revalidate: 300 }),
+  5 * 60 * 1000,
+  (deger) => Boolean(deger),
+);
+
 export async function vitrinAdresi(): Promise<string> {
   const konak = await vitrinKonagi();
-  if (konak) return `https://${konak}`;
-  /* Ne konak ne ayar: yerel geliştirme. */
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  if (!konak) {
+    /* Ne konak ne ayar: yerel geliştirme. */
+    return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  }
+
+  /*
+    İSTEĞİN GELDİĞİ ADRES DEĞİL, MAĞAZANIN BİRİNCİL ADRESİ.
+
+    Bir mağaza iki adresten açılabiliyor: kendi alan adı ve platform
+    alt alan adı. İkisi de aynı sayfaları veriyor. Kanonik adresi
+    isteğin konağından kursaydık her ikisi de kendini kanonik ilan
+    ederdi — arama motoru için yinelenen içerik; aynı sorun site
+    haritasında ve robots'ta da çıkardı.
+
+    Okunamazsa isteğin konağına düşülüyor: kanonik adres kurulamadı
+    diye sayfayı hiç çizmemek, görünür bir kusuru görünmez bir
+    kusurla değiştirmek olurdu.
+  */
+  try {
+    const birincil = await birincilAdresler(konak);
+    if (birincil) return `https://${birincil}`;
+  } catch (hata) {
+    console.error("Birincil adres çözülemedi, isteğin konağı kullanıldı:", hata);
+  }
+  return `https://${konak}`;
 }
