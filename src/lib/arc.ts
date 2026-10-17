@@ -45,6 +45,23 @@ type RpcOptions = {
   revalidate?: number;
   tags?: string[];
   /**
+   * Önbelleğe HİÇ girmesin.
+   *
+   * 17.10.2026'da site haritası bir saatten uzun süre eski listeyi
+   * verdi: ArvoARC'ta satılamaz ürünleri dışarıda bırakan migration
+   * uygulandı (veritabanı 2.899 ürün diyor) ama sitemap 3.407
+   * vermeye devam etti. Sayfanın kendisi tazeydi — statik
+   * adreslerin `lastmod` değeri isteğin saatiydi — yani eski olan
+   * yanıt değil, FETCH'in kendisiydi. Yukarıdaki not "POST
+   * önbelleğe alınmıyor, bu süre yok sayılıyor" diyor; en azından
+   * bu çağrı için doğru değil.
+   *
+   * Bayatlığın kabul edilemez olduğu yerlerde (site haritası arama
+   * motoruna "bu adresi indeksle" diyor; sayfa aynı anda
+   * "indekslemeyin" diyorsa çelişki üretir) bu seçenek açılır.
+   */
+  onbelleksiz?: boolean;
+  /**
    * İstenen sütunlar, virgülle ayrılmış.
    *
    * PostgREST, tablo döndüren fonksiyonlarda da dikey süzmeyi
@@ -61,7 +78,7 @@ type RpcOptions = {
 export async function rpc<TResult, TParams extends object = object>(
   name: string,
   params: TParams = {} as TParams,
-  { revalidate = 60, tags = [], columns }: RpcOptions = {},
+  { revalidate = 60, tags = [], columns, onbelleksiz = false }: RpcOptions = {},
 ): Promise<TResult[]> {
   const endpoint = new URL(`/rest/v1/rpc/${name}`, env.supabaseUrl);
   if (columns) endpoint.searchParams.set("select", columns);
@@ -76,7 +93,9 @@ export async function rpc<TResult, TParams extends object = object>(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(params),
-      next: { revalidate, tags: [name, ...tags] },
+      ...(onbelleksiz
+        ? { cache: "no-store" as const }
+        : { next: { revalidate, tags: [name, ...tags] } }),
     });
   } catch (cause) {
     throw new ArcError(name, null, (cause as Error).message);

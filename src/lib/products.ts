@@ -221,7 +221,15 @@ export const getStorefrontProductSlugs = cache(
     const rows = await rpcTumSayfalar<{ slug: string; updated_at: string | null }>(
       "get_arvoculture_storefront_product_slugs",
       {},
-      { revalidate: 3600, tags: ["storefront-products"] },
+      /*
+        ÖNBELLEKSİZ. Site haritası arama motoruna "bu adresleri
+        indeksle" diyor; satılamaz ürünün sayfası aynı anda
+        "indekslemeyin" diyor. İkisinin ayrışmaması gerekiyor ve
+        17.10.2026'da bir saatten uzun süre ayrıştı: fonksiyon
+        canlıda satılamaz ürünleri çıkarmaya başladı (2.899), site
+        haritası eski listeyi (3.407) vermeye devam etti.
+      */
+      { revalidate: 0, onbelleksiz: true, tags: ["storefront-products"] },
       { enFazlaSayfa: Math.max(1, Math.ceil(Math.max(1, limit) / 1000)) },
     );
 
