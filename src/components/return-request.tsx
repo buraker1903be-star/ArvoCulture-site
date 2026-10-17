@@ -1,5 +1,6 @@
 "use client";
 
+import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -88,13 +89,15 @@ export function ReturnRequest({
     try {
       const supabase = createClient(supabaseUrl, supabaseKey);
       const { error } = await supabase.rpc(
-        "create_arvoculture_return_request",
+        "arc_storefront_return_request",
         {
+          /* Hangi mağazanın vitrinindeyiz; fonksiyon kurumu bundan çözüyor. */
+          p_host: tarayiciKonagi(),
           p_order_number: orderNumber,
           /*
             Yalnızca SKU ve ADET gönderiliyor. Ürün adı ve tutar
             sunucuda siparişin kendi kaydından yazılıyor
-            (create_arvoculture_return_request); istemciden gelen tutar
+            (arc_storefront_return_request); istemciden gelen tutar
             eskiden olduğu gibi saklanıyordu.
           */
           p_items: items

@@ -1,5 +1,6 @@
 "use client";
 
+import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -70,8 +71,8 @@ export function OrderDetail({
         kendisi okunabilir kalmalı.
       */
       const [{ data, error }, { data: iadeVerisi }] = await Promise.all([
-        supabase.rpc("get_arvoculture_my_orders"),
-        supabase.rpc("get_arvoculture_my_returns").then(
+        supabase.rpc("arc_storefront_my_orders", { p_host: tarayiciKonagi() }),
+        supabase.rpc("arc_storefront_my_returns", { p_host: tarayiciKonagi() }).then(
           (sonuc) => (sonuc.error ? { data: null } : sonuc),
           () => ({ data: null }),
         ),

@@ -1,5 +1,6 @@
 "use client";
 
+import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getAuthClient } from "@/lib/auth-client";
@@ -113,7 +114,7 @@ export function AccountPanel({
     // Kayıt öncesi misafir siparişleri varsa hesaba bağlanır.
     await supabase.rpc("claim_arvoculture_orders");
 
-    const { data, error } = await supabase.rpc("get_arvoculture_my_orders");
+    const { data, error } = await supabase.rpc("arc_storefront_my_orders", { p_host: tarayiciKonagi() });
     if (error) {
       console.error(error);
       setSiparisOkunamadi(true);
