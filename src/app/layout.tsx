@@ -94,7 +94,7 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const adres = await vitrinAdresi();
   const theme = await getStorefrontTheme();
-  const name = theme.store_name ?? "ArvoCulture";
+  const name = theme.store_name ?? "Mağaza";
   return {
     // metadataBase olmadan canonical ve OG adresleri göreli kalır;
     // sosyal paylaşımlarda önizleme kırık gelir.
@@ -202,7 +202,7 @@ export default async function RootLayout({
                   <Image
                     className="footer-logo"
                     src="/arvoculture-logo-transparent.png"
-                    alt={theme.store_name ?? "ArvoCulture"}
+                    alt={theme.store_name ?? "Mağaza"}
                     width={320}
                     height={39}
                   />
@@ -251,7 +251,10 @@ export default async function RootLayout({
 
                 <div className="footer-links">
                   <div className="footer-link-group">
-                    <strong>ArvoCulture</strong>
+                    {/* Mağazanın kendi adı: sabit marka, çok mağazalı
+                        vitrinde başka bir mağazanın altbilgisine
+                        ArvoCulture yazıyordu. */}
+                    <strong>{theme.store_name ?? "Mağaza"}</strong>
                     <Link href="/hakkimizda">Hakkımızda</Link>
                     <Link href="/iletisim">İletişim</Link>
                     <Link href="/sss">Sık Sorulan Sorular</Link>
@@ -327,10 +330,15 @@ export default async function RootLayout({
 
               <div className="footer-legal">
                 <small>
-                  © 2026 {theme.store_name ?? "ArvoCulture"}. Tüm hakları
+                  © 2026 {theme.store_name ?? "Mağaza"}. Tüm hakları
                   saklıdır.
                 </small>
-                <small>Bir ArvoCulture Group markasıdır.</small>
+                {/* Grup künyesi yalnızca ArvoCulture'ın kendi
+                    mağazasında: başka bir kiracının altbilgisinde
+                    yabancı bir grup adı görünmemeli. */}
+                {theme.store_name === "ArvoCulture" && (
+                  <small>Bir ArvoCulture Group markasıdır.</small>
+                )}
 
                 {/*
                   Tasarım künyesi. Logo dosyası kaynağındaki

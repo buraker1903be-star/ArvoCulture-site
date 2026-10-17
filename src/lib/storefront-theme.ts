@@ -115,7 +115,14 @@ export const defaultTheme: StorefrontTheme = {
   trust_four: "Kolay iade",
   footer_tagline:
     "Giyim, bakım ve gündelik ritüeller için seçilmiş bir yaşam kültürü.",
-  store_name: "ArvoCulture",
+  /*
+    VARSAYILAN AD YANSIZ. Önceden "ArvoCulture" yazıyordu ve tek
+    mağazalıyken doğruydu. Çok mağazalı vitrinde tema okunamadığında
+    ya da adres hiçbir mağazaya ait olmadığında bu ad YABANCI BİR
+    ADRESTE görünüyor: başka bir markanın sayfasına ArvoCulture'ın
+    adı düşüyordu (17.10.2026, deneme.shop.arvo-os.com).
+  */
+  store_name: "Mağaza",
 };
 const str = (v: unknown, f: string, max = 360) =>
   typeof v === "string" && v.trim() ? v.trim().slice(0, max) : f;
@@ -256,7 +263,7 @@ export const getStorefrontTheme = cache(async (): Promise<StorefrontTheme> => {
       logo_url: typeof c.logo_url === "string" ? c.logo_url : undefined,
       favicon_url:
         typeof c.favicon_url === "string" ? c.favicon_url : undefined,
-      store_name: str(c.store_name, d.store_name ?? "ArvoCulture", 160),
+      store_name: str(c.store_name, d.store_name ?? "Mağaza", 160),
     };
   } catch {
     return defaultTheme;
