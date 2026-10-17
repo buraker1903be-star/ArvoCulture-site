@@ -6198,3 +6198,15 @@
   line-height: 1.6;
   color: var(--ink-3);
 }
+
+/*
+  Fiyatlara dahil KDV: toplamın ALTINDA ve soluk. Toplama eklenen bir
+  kalem değil (ArvoARC'ta `tax` fiyatın içinden çıkarılıyor), o yüzden
+  öteki satırlarla aynı ağırlıkta görünmemeli — bir sürüm boyunca
+  toplama katılmış gibi gösterildi ve indirim satırını şişirdi.
+*/
+.order-status-toplam .dahil {
+  margin-top: var(--s2);
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}

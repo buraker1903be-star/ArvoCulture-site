@@ -59,23 +59,31 @@ export const anahtarGecerli = (anahtar: string) => /^[0-9a-f]{32}$/.test(anahtar
 /**
  * Toplamdan düşülmüş indirim.
  *
- * HESAPLANIYOR, OKUNMUYOR: ArvoARC indirimi ayrı bir sütunda
- * tutmuyor; kupon da havale indirimi de doğrudan toplamdan
+ * HESAPLANIYOR, OKUNMUYOR: ArvoARC siparişte indirimi ayrı bir
+ * sütunda tutmuyor; kupon da havale indirimi de doğrudan toplamdan
  * düşülüyor. İlk sürüm indirim satırını hiç göstermiyordu ve ilk
  * gerçek siparişte rakamlar TUTMUYORDU — 470,90 + 120,00 = 590,90
  * ama toplam 576,77 (havale indirimi, mal bedelinin %3'ü, kargoya
  * uygulanmıyor). Müşteri topladığında tutmayan bir hesap görünce
  * "benden fazla mı alındı" diye arar.
  *
- * Farkı hesaplamak indirimin KAYNAĞINI bilmeyi gerektirmiyor: kupon,
+ * VERGİ BU HESABA GİRMEZ. İkinci sürüm `tax` alanını da toplayıp
+ * indirimi 14,13 yerine 75,44 gösterdi: toplam yine tutuyordu ama
+ * iki satır birden uyduruk olmuştu. ArvoARC'ta `tax`, fiyatın
+ * ÜZERİNE EKLENEN bir kalem değil, fiyatın İÇİNDEN ÇIKARILAN KDV —
+ * hesaplayan fonksiyonun adı bunu söylüyor: `arc_extract_vat`.
+ * Türkiye'de fiyatlar KDV dahil; vergi bilgi olarak gösterilir,
+ * toplama eklenmez.
+ *
+ * Farkı almak indirimin KAYNAĞINI bilmeyi gerektirmiyor: kupon,
  * havale ya da ileride eklenecek başka bir indirim, hepsi buraya
- * düşüyor. Eksi çıkması beklenmiyor; çıkarsa 0 dönüyor, çünkü
- * uydurma bir "indirim" yazmaktansa satırı hiç yazmamak doğru.
+ * düşüyor. Eksi çıkarsa 0 dönüyor; uydurma bir "indirim" yazmaktansa
+ * satırı hiç yazmamak doğru.
  */
 export function indirimTutari(
-  s: Pick<SiparisDurumu, "ara_toplam" | "kargo" | "vergi" | "toplam">,
+  s: Pick<SiparisDurumu, "ara_toplam" | "kargo" | "toplam">,
 ): number {
-  const fark = (s.ara_toplam ?? 0) + (s.kargo ?? 0) + (s.vergi ?? 0) - (s.toplam ?? 0);
+  const fark = (s.ara_toplam ?? 0) + (s.kargo ?? 0) - (s.toplam ?? 0);
   return fark > 0 ? fark : 0;
 }
 

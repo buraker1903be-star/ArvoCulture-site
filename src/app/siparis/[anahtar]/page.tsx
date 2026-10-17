@@ -130,12 +130,6 @@ export default async function SiparisDurumSayfasi({
             <dt>Kargo</dt>
             <dd>{siparis.kargo > 0 ? liraYazisi(siparis.kargo) : "Ücretsiz"}</dd>
           </div>
-          {siparis.vergi > 0 && (
-            <div>
-              <dt>Vergi</dt>
-              <dd>{liraYazisi(siparis.vergi)}</dd>
-            </div>
-          )}
           {indirim > 0 && (
             <div>
               <dt>İndirim</dt>
@@ -146,6 +140,18 @@ export default async function SiparisDurumSayfasi({
             <dt>Toplam</dt>
             <dd>{liraYazisi(siparis.toplam)}</dd>
           </div>
+          {/*
+            KDV TOPLAMA EKLENMİYOR, bilgi olarak yazılıyor: ArvoARC'ta
+            `tax` fiyatın içinden çıkarılan vergi (arc_extract_vat),
+            üzerine eklenen bir kalem değil. Toplamın ALTINDA ve soluk
+            duruyor ki satırlar toplanırken sayılmasın.
+          */}
+          {siparis.vergi > 0 && (
+            <div className="dahil">
+              <dt>Fiyatlara dahil KDV</dt>
+              <dd>{liraYazisi(siparis.vergi)}</dd>
+            </div>
+          )}
         </dl>
 
         <p className="order-status-not">
