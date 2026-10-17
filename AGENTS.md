@@ -95,8 +95,17 @@ düzeltince onu sabitleyen testi de ekleyin.
 
 ## Kontroller
 
-`npm run typecheck`, `npm run lint`, `npm run check:css`, `npm test` — dördü
-de CI'da (`.github/workflows/ci.yml`) çalışır. Derleme CI'da yapılmaz.
+`npm run typecheck`, `npm run lint`, `npm run check:css`, `npm test`,
+`npm run check:schema`, `npm run check:onbellek` — hepsi CI'da
+(`.github/workflows/ci.yml`) çalışır. Derleme CI'da yapılmaz.
+
+**Önbellek denetimi** (`npm run check:onbellek`): fiyat, stok ve site
+haritası okuyan ArvoARC fonksiyonları `onbelleksiz: true` ile
+çağrılmak zorunda. `rpc`'ye verilen `revalidate` gerçekten önbelleğe
+alıyor; dosyadaki eski not "POST önbelleğe alınmıyor" diyordu ve
+yanlış olduğu bir yıl sonra ortaya çıktı (site haritası bir saatten
+uzun süre eski listeyi verdi). Kural yalnızca yorumda yazdığı için
+fark edilmedi; artık denetimde.
 
 **Şema sözleşmesi** (`npm run check:schema`): koddaki tablo, sütun ve RPC
 adları canlı şemanın kataloğuyla (`supabase/schema/katalog.json`)

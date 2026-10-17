@@ -33,3 +33,8 @@ jobs:
       # sütun adı derlemede görünmez, üretimde sessizce boş veri döndürür.
       - name: Şema sözleşmesi
         run: npm run check:schema
+      # Fiyat, stok ve site haritası taze okunmak zorunda. `revalidate`
+      # GERÇEKTEN önbelleğe alıyor (lib/arc.ts'teki eski not aksini
+      # söylüyordu ve bir yıl fark edilmedi); kural artık yorumda değil.
+      - name: Önbellek denetimi
+        run: npm run check:onbellek
