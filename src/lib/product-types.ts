@@ -95,8 +95,46 @@ export function renkAdi(deger: string): string {
     .join(" ");
 }
 
+/*
+  ETİKET OLMAYAN DEĞERLER (17.10.2026).
+
+  Yer tutucu denetimi yalnızca BAŞLIĞA uygulanıyordu. Oysa ArvoARC'ın
+  varyant fonksiyonu renk bulamazsa başlığın ilk parçasına düşüyor
+  (`split_part(title, '/', 1)`) ve başlık yoksa SKU'ya düşüyor. Yani
+  tek varyantlı tedarikçi ürününde renk alanı "Default Title" ya da
+  "28244-301" olarak geliyor, denetim de atlanıyordu:
+
+    - sepette ürün adının altında "Default Title" yazıyor, CSS büyük
+      harfe çevirirken Türkçe kuralla "DEFAULT TİTLE" oluyordu;
+    - SKU'dan gelen değer "28244 301" diye bir "ton adı"na dönüşüyordu.
+
+  Artık üç alanın hepsi aynı süzgeçten geçiyor. Harf içermeyen değer
+  de etiket sayılmıyor: hiçbir ton adı yalnızca rakamdan oluşmaz.
+*/
+const KIYAS = (deger: string) => deger.replace(/[\s\-_./]+/g, "").toLowerCase();
+const HARF = /[a-zçğıiöşü]/i;
+
+function anlamliEtiket(
+  deger: string | null | undefined,
+  sku?: string | null,
+): string | undefined {
+  const temiz = deger?.trim();
+  if (!temiz) return undefined;
+  /* Karşılaştırma ASCII küçük harfle: yer tutucular İngilizce
+     geliyor ve Türkçe küçük harf kuralı "Title" kelimesini
+     "tıtle" yapıp eşleşmeyi kaçırırdı. */
+  if (PLACEHOLDER_VARIANT_TITLES.has(temiz.toLowerCase())) return undefined;
+  if (!HARF.test(temiz)) return undefined;
+  /* SKU'nun kendisi ton adı değil; ayırıcılar yüzünden birebir
+     eşleşmiyor ("28244 301" ↔ "28244-301"). */
+  if (sku && KIYAS(temiz) === KIYAS(sku)) return undefined;
+  return temiz;
+}
+
 export function displayVariantLabel(
-  input: { size?: string | null; color?: string | null; title?: string | null } | undefined,
+  input:
+    | { size?: string | null; color?: string | null; title?: string | null; sku?: string | null }
+    | undefined,
 ): string | undefined {
   if (!input) return undefined;
 
@@ -106,21 +144,14 @@ export function displayVariantLabel(
     kayboluyordu. Kozmetikte beden hiç yok, orada tek ayırt edici renk
     (30.09.2026'da renk seçici eklenince ortaya çıktı).
   */
-  const size = input.size?.trim();
-  const color = input.color ? renkAdi(input.color) : undefined;
+  const size = anlamliEtiket(input.size, input.sku);
+  const ham = anlamliEtiket(input.color, input.sku);
+  const color = ham ? renkAdi(ham) : undefined;
   if (size && color) return `${color} · ${size}`;
   if (size) return size;
   if (color) return color;
 
-  const title = input.title?.trim();
-  if (!title) return undefined;
-
-  /* Karşılaştırma ASCII küçük harfle: yer tutucular İngilizce
-     geliyor ve Türkçe küçük harf kuralı "Title" kelimesini
-     "tıtle" yapıp eşleşmeyi kaçırırdı. */
-  return PLACEHOLDER_VARIANT_TITLES.has(title.toLowerCase())
-    ? undefined
-    : title;
+  return anlamliEtiket(input.title, input.sku);
 }
 
 /*
