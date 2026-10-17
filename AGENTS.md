@@ -32,6 +32,28 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
   gönderen her çağrı `toKurus` kullanır, ArvoARC'tan dönen tutar `/100` ile
   okunur. Bu sınır iki kez hata üretti (ödeme yöntemlerinde 100'e bölünmüş
   tutar, sepet sayfasında kupon ucuna TL gönderilmesi).
+- **Sepete her zaman varyant SKU'su yazılır.** ArvoARC SKU yerine ürün
+  slug'ı görürse siparişi stokta olan HERHANGİ bir varyanta bağlıyor
+  (`arc_create_order`: `order by (v.stock > 0) desc`) — müşteri seçmediği
+  tonu/bedeni alır. Bu yüzden:
+  - varyant okuması başarısızsa "seçenek yok" sayılmaz; `getProductVariants`
+    `okunamadi` döndürür ve satın alma kutusu kapanır (`lib/variants.ts`).
+    Boş liste de arızadır: ürün ve katalog fonksiyonları varyant tablosuna
+    INNER JOIN ile bağlı;
+  - karttan hızlı ekleme KATEGORİYE değil varyant sayısına bakar
+    (`/api/varyantlar`, `lib/varyant-ozeti.ts`). "Giyim değilse doğrudan
+    ekle" kuralı, kozmetikte renk varyantı çıkınca altı tonlu rujun
+    rastgele tonunu sepete yazıyordu;
+  - ödeme adımı SKU'suz ve çok varyantlı kalemde siparişi geçirmez
+    (eski sepetler müşterinin tarayıcısında duruyor).
+
+- **Stok uygunluğu tek fonksiyondan.** "Satılabilir mi" sorusunu
+  ArvoARC'ta yalnızca `arc_variant_available(stock, allow_backorder,
+  supplier)` yanıtlar; tedarikçi tamponunu bilen tek yer orası. Ham
+  `stock > 0 or allow_backorder` ifadesi altı vitrin fonksiyonunda
+  duruyordu: kart "Sepete ekle" derken sipariş "Insufficient stock"
+  diyordu (ArvoARC migration 20261017120705).
+
 - **Kupon geçerliliği sunucudadır.** `evaluateCoupon` yalnızca anlık geri
   bildirim içindir; kullanım sınırı ve kişi başı sınırı vitrin bilemez.
   Ödeme formu kod indirimini bu yüzden toplamdan düşmez, notla belirtir.
