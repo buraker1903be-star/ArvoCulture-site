@@ -1,8 +1,12 @@
-import "server-only";
-import { rpcDeger } from "@/lib/arc";
 
 /*
-  SİPARİŞ DURUM SAYFASININ VERİSİ.
+  SİPARİŞ DURUM SAYFASININ TİPLERİ VE BİÇİMLENDİRMESİ.
+
+  SUNUCUYA BAĞLI HİÇBİR ŞEY YOK ve bu bilinçli: okuma
+  lib/siparis-durumu-oku.ts'te duruyor. Aynı dosyada olduğunda
+  testler `@/lib/arc` üzerinden `@/lib/env`'e ulaşıyor ve ortam
+  değişkeni eksik diye düşüyordu — depoda yazılı kural bunu
+  söylüyor: test edilemeyen mantık parçasını ayırın.
 
   Müşteriye WhatsApp'tan giden bağlantı buraya düşüyor. Oturum
   istemiyor: siparişi bulan şey bağlantıdaki 32 haneli anahtar
@@ -53,26 +57,26 @@ export type SiparisDurumu = {
 export const anahtarGecerli = (anahtar: string) => /^[0-9a-f]{32}$/.test(anahtar);
 
 /**
- * Siparişi anahtarıyla okur.
+ * Toplamdan düşülmüş indirim.
  *
- * `null` = böyle bir sipariş yok (sayfa 404 verir).
- * Okuma başarısız olursa `ArcError` fırlar — çağıran taraf "sipariş
- * yok" ile "okuyamadım"ı ayırmalı; ikisini aynı göstermek müşteriye
- * "siparişiniz bulunamadı" dedirtir ve destek çağrısı üretir.
+ * HESAPLANIYOR, OKUNMUYOR: ArvoARC indirimi ayrı bir sütunda
+ * tutmuyor; kupon da havale indirimi de doğrudan toplamdan
+ * düşülüyor. İlk sürüm indirim satırını hiç göstermiyordu ve ilk
+ * gerçek siparişte rakamlar TUTMUYORDU — 470,90 + 120,00 = 590,90
+ * ama toplam 576,77 (havale indirimi, mal bedelinin %3'ü, kargoya
+ * uygulanmıyor). Müşteri topladığında tutmayan bir hesap görünce
+ * "benden fazla mı alındı" diye arar.
+ *
+ * Farkı hesaplamak indirimin KAYNAĞINI bilmeyi gerektirmiyor: kupon,
+ * havale ya da ileride eklenecek başka bir indirim, hepsi buraya
+ * düşüyor. Eksi çıkması beklenmiyor; çıkarsa 0 dönüyor, çünkü
+ * uydurma bir "indirim" yazmaktansa satırı hiç yazmamak doğru.
  */
-export async function getSiparisDurumu(anahtar: string): Promise<SiparisDurumu | null> {
-  if (!anahtarGecerli(anahtar)) return null;
-  /*
-    ÖNBELLEĞE GİRMEZ. Sipariş durumu müşteri sayfayı açtığı anda
-    doğru olmalı: "kargoya verildi" mesajını alıp bağlantıya basan
-    müşteriye altmış saniye önceki "hazırlanıyor" durumunu göstermek,
-    bildirimin kendisini yalanlar.
-  */
-  return await rpcDeger<SiparisDurumu>(
-    "arc_storefront_order_status",
-    { p_token: anahtar },
-    { onbelleksiz: true },
-  );
+export function indirimTutari(
+  s: Pick<SiparisDurumu, "ara_toplam" | "kargo" | "vergi" | "toplam">,
+): number {
+  const fark = (s.ara_toplam ?? 0) + (s.kargo ?? 0) + (s.vergi ?? 0) - (s.toplam ?? 0);
+  return fark > 0 ? fark : 0;
 }
 
 /** Panelin durum kodları; müşteri "processing" okumamalı. */

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArcError } from "@/lib/arc";
+import { getSiparisDurumu } from "@/lib/siparis-durumu-oku";
 import {
   durumMetni,
-  getSiparisDurumu,
+  indirimTutari,
   liraYazisi,
   odemeMetni,
   tarihYazisi,
@@ -49,6 +50,8 @@ export default async function SiparisDurumSayfasi({
   const durum = durumMetni(siparis.durum);
   const odeme = odemeMetni(siparis.odeme_durumu);
   const gonderiler = siparis.gonderiler.filter((g) => g.takip_no || g.firma);
+
+  const indirim = indirimTutari(siparis);
 
   return (
     <main className="shell">
@@ -127,6 +130,18 @@ export default async function SiparisDurumSayfasi({
             <dt>Kargo</dt>
             <dd>{siparis.kargo > 0 ? liraYazisi(siparis.kargo) : "Ücretsiz"}</dd>
           </div>
+          {siparis.vergi > 0 && (
+            <div>
+              <dt>Vergi</dt>
+              <dd>{liraYazisi(siparis.vergi)}</dd>
+            </div>
+          )}
+          {indirim > 0 && (
+            <div>
+              <dt>İndirim</dt>
+              <dd>−{liraYazisi(indirim)}</dd>
+            </div>
+          )}
           <div className="buyuk">
             <dt>Toplam</dt>
             <dd>{liraYazisi(siparis.toplam)}</dd>
