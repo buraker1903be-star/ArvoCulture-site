@@ -20,7 +20,16 @@ import {
   type OrderAddress,
 } from "@/lib/order-types";
 
-type State = "loading" | "ready" | "missing" | "signed-out";
+/*
+  "okunamadi" AYRI BİR HÂL (17.10.2026).
+
+  Okuma hatası da "missing" sayılıyordu: geçici bir arızada,
+  siparişini yeni vermiş müşteri "Sipariş bulunamadı. Bu sipariş
+  hesabınıza bağlı değil ya da numara hatalı olabilir." cümlesini
+  okuyordu. Yani bilmediğimiz bir şeyi kesin biçimde söylüyorduk ve
+  söylediğimiz şey müşteriyi siparişinin kaybolduğuna inandırıyordu.
+*/
+type State = "loading" | "ready" | "missing" | "signed-out" | "okunamadi";
 
 export function OrderDetail({
   orderNumber,
@@ -34,11 +43,16 @@ export function OrderDetail({
   const [order, setOrder] = useState<Order | null>(null);
   const [iadeler, setIadeler] = useState<ReturnRequestRow[]>([]);
   const [state, setState] = useState<State>("loading");
+  /* "Tekrar dene" düğmesi bu sayacı artırıyor ve etkiyi yeniden
+     çalıştırıyor; sayfayı yenilemek müşteriyi oturumdan koparmıyor
+     ama gereksiz bir tam yükleme olurdu. */
+  const [deneme, setDeneme] = useState(0);
 
   useEffect(() => {
     let active = true;
 
     async function load() {
+      setState("loading");
       const supabase = getAuthClient(supabaseUrl, supabaseKey);
       const { data: sessionData } = await supabase.auth.getSession();
 
@@ -66,7 +80,7 @@ export function OrderDetail({
 
       if (error) {
         console.error(error);
-        setState("missing");
+        setState("okunamadi");
         return;
       }
 
@@ -90,7 +104,7 @@ export function OrderDetail({
     return () => {
       active = false;
     };
-  }, [orderNumber, supabaseUrl, supabaseKey]);
+  }, [orderNumber, supabaseUrl, supabaseKey, deneme]);
 
   if (state === "loading") {
     return (
@@ -111,6 +125,25 @@ export function OrderDetail({
         <Link className="btn" href="/hesap">
           Hesabıma git
         </Link>
+      </section>
+    );
+  }
+
+  if (state === "okunamadi") {
+    return (
+      <section className="panel about-hero order-result">
+        <p className="about-eyebrow">Sipariş detayı</p>
+        <h1>Sipariş bilgisi alınamadı.</h1>
+        <p className="about-lede">
+          Siparişiniz yerinde; şu anda okuyamıyoruz. Birkaç saniye sonra
+          tekrar deneyin.
+        </p>
+        <div className="order-actions">
+          <button className="btn" type="button" onClick={() => setDeneme((n) => n + 1)}>
+            Tekrar dene
+          </button>
+          <Link href="/hesap">Siparişlerime dön</Link>
+        </div>
       </section>
     );
   }

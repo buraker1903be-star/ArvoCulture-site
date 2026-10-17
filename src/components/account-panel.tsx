@@ -32,6 +32,16 @@ export function AccountPanel({
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [orders, setOrders] = useState<Order[] | null>(null);
+  /*
+    SİPARİŞLER OKUNAMADI, "SİPARİŞ YOK" DEĞİL (17.10.2026).
+
+    Okuma hatasında liste boş diziye çekiliyordu ve ekran "Henüz
+    siparişiniz görünmüyor" diyordu. Geçici bir arızada, siparişi
+    olan müşteriye siparişi olmadığını söylemek demekti bu — hem
+    yanlış hem telaş verici. Boş liste ile okunamamış liste ayrı
+    tutuluyor.
+  */
+  const [siparisOkunamadi, setSiparisOkunamadi] = useState(false);
 
   const [profileName, setProfileName] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
@@ -106,9 +116,11 @@ export function AccountPanel({
     const { data, error } = await supabase.rpc("get_arvoculture_my_orders");
     if (error) {
       console.error(error);
-      setOrders([]);
+      setSiparisOkunamadi(true);
+      setOrders(null);
       return;
     }
+    setSiparisOkunamadi(false);
     setOrders((data as Order[]) ?? []);
   }, [supabaseUrl, supabaseKey]);
 
@@ -376,7 +388,18 @@ export function AccountPanel({
             </div>
           </div>
 
-          {orders === null && <p className="hint">Siparişler yükleniyor…</p>}
+          {orders === null && !siparisOkunamadi && (
+            <p className="hint">Siparişler yükleniyor…</p>
+          )}
+
+          {siparisOkunamadi && (
+            <p className="form-error" role="alert">
+              Siparişleriniz şu anda alınamadı; yerinde duruyorlar.{" "}
+              <button type="button" className="link-button" onClick={() => void loadOrders()}>
+                Tekrar dene
+              </button>
+            </p>
+          )}
 
           {orders?.length === 0 && (
             <p className="hint">
