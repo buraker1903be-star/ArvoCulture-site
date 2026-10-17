@@ -78,10 +78,20 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
   yanlıştı (17.10.2026'da ölçüldü: site haritası bir saatten uzun
   süre eski listeyi verdi). Yani o süre, verinin ne kadar BAYAT
   olabileceğidir ve fiyat/stok okuyan çağrılarda bilinçli bir karar
-  olmalı. Ürün sayfası (fiyat, stok, sepete yazılan SKU) ve site
-  haritası `onbelleksiz: true` okuyor; liste sayfaları 60 saniyeyi
-  kabul ediyor çünkü oradaki rakam karttaki "en düşük fiyat"tır ve
-  müşteri ürün sayfasında taze fiyatı görür.
+  olmalı. Site haritası `onbelleksiz: true` okuyor (`force-dynamic`
+  bir rota, çelişki yok).
+
+  **Ürün sayfası ÖNBELLEKSİZ OKUYAMAZ** ve bu denendi: rota
+  `export const revalidate = 60` ile saklanıyor, Next saklanacak bir
+  sayfanın içinde `cache: "no-store"` görünce rotayı hiç çizemiyor
+  ve BÜTÜN ürün sayfaları 500 verdi (17.10.2026). Asıl ders: o sayfa
+  zaten altmış saniye bayat ve bayatlığı belirleyen fetch değil ROTA
+  önbelleği; fetch'i tazelemek hiçbir şey kazandırmıyor. Fiyatı
+  gerçekten taze göstermek rota önbelleğinden vazgeçmek demek —
+  3.400 ürün sayfasını her istekte yeniden çizmek, yani bir başarım
+  kararı. Taahhüt eden rakam zaten orada değil: tutarı ArvoARC
+  hesaplıyor ve sepet/ödeme sayfaları (rota önbelleği olmayan
+  dinamik sayfalar) o hesabı okuyor.
 
 ## Testler
 

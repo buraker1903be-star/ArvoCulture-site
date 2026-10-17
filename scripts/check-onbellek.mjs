@@ -23,10 +23,21 @@ import path from "node:path";
 
 /** Bayat gelmesi kabul edilemeyen ArvoARC fonksiyonları ve gerekçeleri. */
 const TAZE_OLMALI = new Map([
-  ["get_arvoculture_storefront_product", "ürün sayfasının fiyatı ve satılabilirliği"],
-  ["get_arvoculture_storefront_variants", "sepete yazılan SKU, fiyat ve stok"],
   ["get_arvoculture_storefront_product_slugs", "site haritası; sayfa noindex derken listelememeli"],
 ]);
+
+/*
+  ÜRÜN SAYFASI VE VARYANT LİSTESİ BU LİSTEDE DEĞİL — denendi ve
+  OLMUYOR. İkisi de `onbelleksiz: true` yapıldığında bütün ürün
+  sayfaları 500 verdi: rota `export const revalidate = 60` ile
+  saklanıyor ve Next, saklanacak bir sayfanın içinde
+  `cache: "no-store"` görünce rotayı hiç çizemiyor.
+
+  Ders şu: o sayfa zaten altmış saniye bayat; bayatlığı belirleyen
+  fetch değil ROTA önbelleği. Fiyatı gerçekten taze göstermek
+  isteyen, rota önbelleğinden vazgeçmek zorunda — bu bir başarım
+  kararı. Site haritası ise `force-dynamic`, orada çelişki yok.
+*/
 
 const kok = process.argv[2] ?? "src";
 

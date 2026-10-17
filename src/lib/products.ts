@@ -307,15 +307,27 @@ export const getStorefrontProduct = cache(
         "get_arvoculture_storefront_product",
         { p_slug: slug },
         /*
-          ÖNBELLEKSİZ: bu çağrı ürünün fiyatını ve satılabilirliğini
-          veriyor. `revalidate` gerçekten önbelleğe alıyor
-          (17.10.2026'da ölçüldü, lib/arc.ts) ve AGENTS.md'deki
-          değişmez bunu yasaklıyor: "Fiyat, stok, sepet ve sipariş
-          verisi önbelleğe girmez." 60 saniyelik bayat fiyat, ödeme
-          adımında ArvoARC'ın tahsil ettiğinden farklı tutar
-          göstermek demek.
+          ÖNBELLEKSİZ DEĞİL — VE OLAMAZ (17.10.2026, iki kez düşünüldü).
+
+          Fiyat ve stok taze gelsin diye bu çağrı `onbelleksiz: true`
+          yapıldı ve BÜTÜN ÜRÜN SAYFALARI 500 verdi: rota
+          `export const revalidate = 60` ile saklanıyor
+          (urun/[slug]/page.tsx) ve Next, saklanacak bir sayfanın
+          içinde `cache: "no-store"` görünce rotayı hiç
+          çizemiyor — olmayan ürün bile 404 yerine 500 veriyordu.
+
+          Asıl ders: bu sayfa ZATEN altmış saniye bayat. Rota
+          önbelleği onu saklıyor, yani fetch'i tazelemek hiçbir şey
+          kazandırmıyordu; yalnızca çelişki üretti. Fiyatı gerçekten
+          taze göstermenin yolu rota önbelleğinden vazgeçmek, yani
+          3.400 ürün sayfasını her istekte yeniden çizmek — bu bir
+          başarım kararı, mağaza sahibinin kararı.
+
+          Taahhüt eden rakam zaten burada değil: tutarı ArvoARC
+          hesaplıyor ve sepet/ödeme yüzeyleri (rota önbelleği
+          olmayan, dinamik sayfalar) o hesabı okuyor.
         */
-        { revalidate: 0, onbelleksiz: true, tags: [`storefront-product-${slug}`] },
+        { revalidate: 60, tags: [`storefront-product-${slug}`] },
       ),
       getProductBadges(),
     ]);
