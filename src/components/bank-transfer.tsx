@@ -21,13 +21,19 @@ export function BankTransfer({
   onSelect,
   selected,
 }: {
+  /*
+    HESAP BİLGİSİ YOKSA null. Mağaza ayarında IBAN yazılı değilse
+    havale seçeneği hiç gösterilmiyor: yanlış ya da eksik hesapla
+    "havaleyle öde" demek, müşteriye nereye ödeyeceğini söylemeden
+    siparişi "ödeme bekliyor"da bırakmak olurdu. Önceden kodda bir
+    yedek IBAN vardı ve o yedek paneldekinden BAŞKA bir hesaptı.
+  */
   seller: {
-    legalName: string;
     bankName: string;
     iban: string;
-    accountHolder?: string;
+    accountHolder: string;
     transferInstructions?: string;
-  };
+  } | null;
   discountPercent: number;
   /**
    * TL cinsinden sipariş toplamı (kargo dahil). Önceden kuruş
@@ -90,7 +96,7 @@ export function BankTransfer({
         </label>
       )}
 
-      {selected && transferEnabled && (
+      {selected && transferEnabled && seller && (
         <BankDetails seller={seller}>
           <p className="hint">
             Siparişinizi tamamladıktan sonra aşağıdaki hesaba havale veya

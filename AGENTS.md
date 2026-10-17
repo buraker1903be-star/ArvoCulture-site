@@ -133,6 +133,24 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
   zorunda; biri değişirse diğeri aynı gün değişir
   (`tests/magaza-sayfasi.test.ts`).
 
+- **Havale hesabı kodda tutulmaz ve önbelleğe girmez.** Banka adı, IBAN
+  ve hesap sahibi yalnızca `getSellerBank()` ile okunur
+  (`arc_storefront_seller`, `onbelleksiz: true`) ve **yedeği yoktur**:
+  hesap bilgisi gelmezse havale seçeneği hiç gösterilmez
+  (`BankTransfer seller={null}` → `transferEnabled` kapanır).
+  Önceden `lib/seller.ts` içinde yedek bir `bankName`/`iban` vardı ve
+  ödeme formu — bir İSTEMCİ bileşeni — o sabiti doğrudan okuyordu.
+  17.10.2026'da görüldü ki o sabit ile mağaza panelindeki IBAN AYRI
+  HESAPLARDI; müşteriye aylarca paneldekinden başka bir hesap
+  gösterilmiş. Yanlış IBAN, IBAN göstermemekten kötüdür: müşteri
+  parayı gönderir, sipariş "ödeme bekliyor"da kalır, hiçbir yerde
+  hata görünmez.
+  `getSeller()` (unvan, adres, vergi bilgileri) bir saat önbellekli
+  kalıyor ve banka alanlarını DÖNDÜRMÜYOR — tipten çıkarıldı ki
+  yeniden oraya bağlanmasın. Ödeme ve sipariş onay sayfaları rota
+  önbelleği olmayan dinamik sayfalar, `onbelleksiz` orada güvenli;
+  hukuki sayfalarda aynı şey rotayı çizilemez yapardı.
+
 ## Testler
 
 ```bash

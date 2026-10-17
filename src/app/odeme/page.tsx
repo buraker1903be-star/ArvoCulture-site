@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { CheckoutForm } from "@/components/checkout-form";
 import { env } from "@/lib/env";
-import { getSeller } from "@/lib/seller-source";
+import { getSellerBank } from "@/lib/seller-source";
 
 export const metadata: Metadata = {
   title: "Ödeme",
@@ -19,19 +19,15 @@ export const metadata: Metadata = {
  * görür ve parayı oraya gönderirdi.
  */
 export default async function CheckoutPage() {
-  const seller = await getSeller();
+  /* Hesap bilgisi yoksa null geliyor ve havale seçeneği hiç
+     gösterilmiyor; yanlış hesap göstermektense seçeneği kapatmak. */
+  const havale = await getSellerBank();
 
   return (
     <CheckoutForm
       supabaseUrl={env.supabaseUrl}
       supabaseKey={env.supabaseKey}
-      seller={{
-        legalName: seller.legalName,
-        bankName: seller.bankName,
-        iban: seller.iban,
-        accountHolder: seller.bankAccountHolder,
-        transferInstructions: seller.bankTransferInstructions,
-      }}
+      havale={havale}
     />
   );
 }

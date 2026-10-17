@@ -48,8 +48,6 @@ type SellerRow = {
 */
 export type Seller = {
   legalName: string;
-  bankName: string;
-  iban: string;
   shortName: string;
   brand: string;
   address: string;
@@ -63,10 +61,6 @@ export type Seller = {
   website: string;
   kepAddress: string | null;
   etbisVerified: boolean;
-  /** Havalede paranın gideceği hesabın sahibi; unvandan farklı olabilir. */
-  bankAccountHolder: string;
-  /** Mağazanın havale için eklediği serbest açıklama; yoksa boş. */
-  bankTransferInstructions: string;
   /* Kargo ve havale: mağaza panelinden (getSalesRules). */
   shippingFee: string;
   freeShippingThreshold: string;
@@ -82,7 +76,6 @@ export type Seller = {
   | "taxNumber" | "mersis" | "tradeRegistry" | "email" | "phone"
   | "phoneLink" | "website"
   | "shippingFee" | "freeShippingThreshold" | "transferDiscountPercent"
-  | "bankName" | "iban"
 >;
 
 /*
@@ -155,8 +148,6 @@ export const getSeller = cache(async (): Promise<Seller> => {
       ...sales,
       kepAddress: null,
       etbisVerified: true,
-      bankAccountHolder: FALLBACK.legalName,
-      bankTransferInstructions: "",
     };
   }
 
@@ -190,13 +181,64 @@ export const getSeller = cache(async (): Promise<Seller> => {
     website: row.storefront_url ?? FALLBACK.website,
     kepAddress: row.kep_address,
     etbisVerified: row.etbis_verified ?? false,
-    bankName: row.bank_name ?? FALLBACK.bankName,
-    /* IBAN veritabanında BOŞLUKSUZ duruyor (kısıt: ^TR[0-9]{24}$);
-       okunurluk için dörtlü gruplanıyor. Kopyala düğmesi boşlukları
-       zaten kaldırıyor (components/bank-details.tsx). */
-    iban: ibanBicimi(row.bank_iban) || FALLBACK.iban,
-    bankAccountHolder:
-      row.bank_account_holder?.trim() || row.legal_name || FALLBACK.legalName,
-    bankTransferInstructions: row.bank_transfer_instructions?.trim() ?? "",
+  };
+});
+
+/*
+  HAVALE HESABI: AYRI VE ÖNBELLEKSİZ OKUNUYOR.
+
+  Üç karar var ve üçü de aynı olaydan çıkıyor (17.10.2026).
+
+  1. YEDEK YOK. Eskiden hesap bilgisi okunamazsa `seller.ts`'teki
+     sabite düşülüyordu. O sabit ile paneldeki IBAN AYRI HESAPLARDI
+     ve ödeme formu (istemci bileşeni) sabiti doğrudan okuduğu için
+     müşteriye aylarca yanlış hesap gösterildi. Yanlış IBAN, IBAN
+     göstermemekten kötü: müşteri parayı gönderir, sipariş "ödeme
+     bekliyor"da kalır, kimse hata görmez. Hesap bilgisi yoksa
+     `null` dönüyor ve havale seçeneği hiç gösterilmiyor.
+
+  2. ÖNBELLEKSİZ. `getSeller()` bir saat saklanıyor; unvan ve adres
+     için doğru, hesap bilgisi için değil. Panelden IBAN'ı düzelten
+     mağaza, bir saat boyunca müşterisine eski hesabı göstermeye
+     devam ederdi — tam bu dosyanın düzelttiği hatanın küçük hâli.
+     AGENTS.md'deki kural zaten bunu söylüyor: para verisi önbelleğe
+     girmez.
+
+     Bu çağrıyı barındıran iki sayfa (ödeme, sipariş onayı) rota
+     önbelleği olmayan dinamik sayfalar, yani `cache: "no-store"`
+     burada güvenli. Ürün sayfasında aynı şey rotayı çizilemez
+     yapıyordu; o yüzden hukuki sayfalar `getSeller()` ile devam
+     ediyor.
+
+  3. IBAN BİÇİMİ BURADA. Veritabanı boşluksuz tutuyor
+     (kısıt: ^TR[0-9]{24}$); ekranda dörtlü gruplanıyor, kopyala
+     düğmesi boşlukları yine kaldırıyor.
+*/
+export type HavaleHesabi = {
+  bankName: string;
+  iban: string;
+  accountHolder: string;
+  transferInstructions: string;
+};
+
+export const getSellerBank = cache(async (): Promise<HavaleHesabi | null> => {
+  const rows = await rpcOrEmpty<SellerRow>(
+    "arc_storefront_seller",
+    { p_host: await vitrinKonagi() },
+    { onbelleksiz: true },
+  );
+
+  const row = rows[0];
+  const iban = ibanBicimi(row?.bank_iban ?? null);
+  /* IBAN yoksa hesap bilgisi yok sayılıyor: banka adı tek başına
+     müşteriye ödeme yaptırmaz. */
+  if (!iban) return null;
+
+  return {
+    bankName: row.bank_name?.trim() ?? "",
+    iban,
+    accountHolder:
+      row.bank_account_holder?.trim() || row.legal_name?.trim() || "",
+    transferInstructions: row.bank_transfer_instructions?.trim() ?? "",
   };
 });

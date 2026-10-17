@@ -39,21 +39,21 @@ const ARC_URL = "https://arc.arvo-os.com";
   ödeme sayfasından prop olarak iniyor.
 */
 export type HavaleBilgisi = {
-  legalName: string;
   bankName: string;
   iban: string;
-  accountHolder?: string;
+  accountHolder: string;
   transferInstructions?: string;
 };
 
 export function CheckoutForm({
   supabaseUrl,
   supabaseKey,
-  seller,
+  havale,
 }: {
   supabaseUrl?: string;
   supabaseKey?: string;
-  seller: HavaleBilgisi;
+  /** Hesap bilgisi yoksa null; havale seçeneği hiç gösterilmiyor. */
+  havale: HavaleBilgisi | null;
 }) {
   const { items, total, discounts, salesRules } = useContext(CartContext);
   const router = useRouter();
@@ -660,11 +660,14 @@ export function CheckoutForm({
           <h2>Ödeme yöntemi</h2>
 
           <BankTransfer
-            seller={seller}
+            seller={havale}
             discountPercent={salesRules.transferDiscountPercent}
             total={grand}
             discount={availableTransferDiscount}
-            transferEnabled={salesRules.transferEnabled}
+            /* Hesap bilgisi gelmediyse havale KAPALI sayılıyor:
+               ayar açık olsa da müşteriye ödeyeceği hesabı
+               gösteremiyoruz. */
+            transferEnabled={salesRules.transferEnabled && havale !== null}
             selected={useTransfer}
             onSelect={setUseTransfer}
           />

@@ -18,20 +18,19 @@ export function BankDetails({
     ALICI UNVANI DEĞİL HESAP SAHİBİ. Önceden ticaret unvanı
     yazılıyordu; hesap başka bir unvana (şahıs şirketi, eski unvan)
     açılmış olabilir ve IBAN'ın sahibi tutmazsa banka havaleyi iade
-    eder. `accountHolder` verilmezse unvana düşülüyor.
+    eder. Değer mağaza ayarından geliyor, kodda yedeği YOK: yanlış
+    hesap göstermek, hesap göstermemekten kötü.
   */
   seller: {
-    legalName: string;
     bankName: string;
     iban: string;
-    accountHolder?: string;
+    accountHolder: string;
     transferInstructions?: string;
   };
   /** Bloğun başındaki açıklama. */
   children?: React.ReactNode;
 }) {
   const [copied, setCopied] = useState<string | null>(null);
-  const alici = seller.accountHolder?.trim() || seller.legalName;
 
   async function copy(label: string, value: string) {
     try {
@@ -51,12 +50,12 @@ export function BankDetails({
       <div className="pay-bank-row">
         <div>
           <small>ALICI UNVANI</small>
-          <b>{alici}</b>
+          <b>{seller.accountHolder}</b>
         </div>
         <button
           type="button"
           className="linklike"
-          onClick={() => copy("unvan", alici)}
+          onClick={() => copy("unvan", seller.accountHolder)}
         >
           {copied === "unvan" ? "Kopyalandı ✓" : "Kopyala"}
         </button>

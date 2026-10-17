@@ -27,10 +27,23 @@ export const SELLER = {
 
   website: "https://arvoculture.com",
 
-  /* Banka havalesi bilgileri. Havalede PayTR komisyonu
-     olmadığı için müşteriye indirim veriliyor. */
-  bankName: "TÜRKİYE GARANTİ BANKASI A.Ş.",
-  iban: "TR29 0006 2001 1510 0006 2901 32",
+  /*
+    BANKA BİLGİSİ BURADA YOK VE OLMAMALI.
+
+    Burada `bankName` ve `iban` duruyordu ve bir YEDEK olarak
+    kullanılıyordu: veritabanı okunamazsa bu değerler gösteriliyordu.
+    17.10.2026'da görüldü ki paneldeki IBAN ile buradaki sabit AYRI
+    HESAPLARDI ve ödeme formu (bir istemci bileşeni) sabiti doğrudan
+    okuduğu için müşteriye aylarca buradaki hesap gösterildi.
+
+    Yanlış IBAN göstermek, IBAN göstermemekten KÖTÜ: müşteri parayı
+    gönderir, sipariş "ödeme bekliyor"da kalır ve kimse hata görmez.
+    O yüzden yedek yok — hesap bilgisi yoksa havale seçeneği hiç
+    gösterilmiyor (lib/seller-source → getSellerBank).
+
+    Havale İNDİRİMİ burada kalıyor: o bir kural, hesap bilgisi değil;
+    yanlış olması kimseyi yanlış hesaba yöneltmez.
+  */
   transferDiscountPercent: 3,
 
   /* Teslimat ve iade koşulları. Kargo alanları yalnızca yedek:

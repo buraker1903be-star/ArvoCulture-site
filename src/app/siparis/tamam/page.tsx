@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BankDetails } from "@/components/bank-details";
 import { OrderCleanup } from "@/components/order-cleanup";
-import { getSeller } from "@/lib/seller-source";
+import { getSellerBank } from "@/lib/seller-source";
 
 export const metadata = {
   title: "Siparişiniz alındı",
@@ -28,14 +28,7 @@ export default async function OrderDone({
     sabitinden geliyordu ve ortak dağıtımda her kiracının onay
     sayfası ArvoCulture'ın IBAN'ını gösterirdi.
   */
-  const seller = await getSeller();
-  const havale = {
-    legalName: seller.legalName,
-    bankName: seller.bankName,
-    iban: seller.iban,
-    accountHolder: seller.bankAccountHolder,
-    transferInstructions: seller.bankTransferInstructions,
-  };
+  const havale = await getSellerBank();
 
   return (
     <main className="shell">
@@ -63,7 +56,7 @@ export default async function OrderDone({
           Havale siparişinde banka bilgileri onay sayfasında da
           gösteriliyor: müşteri e-postayı beklemeden ödeyebilsin.
         */}
-        {yontem === "havale" && (
+        {yontem === "havale" && havale && (
           <BankDetails seller={havale}>
             <p className="hint">
               Aşağıdaki hesaba havale veya EFT yaptığınızda siparişiniz
