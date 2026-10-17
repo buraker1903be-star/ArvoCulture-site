@@ -35,6 +35,10 @@ type SellerRow = {
   kep_address: string | null;
   etbis_verified: boolean | null;
   storefront_url: string | null;
+  bank_name: string | null;
+  bank_iban: string | null;
+  bank_account_holder: string | null;
+  bank_transfer_instructions: string | null;
 };
 
 /*
@@ -44,6 +48,8 @@ type SellerRow = {
 */
 export type Seller = {
   legalName: string;
+  bankName: string;
+  iban: string;
   shortName: string;
   brand: string;
   address: string;
@@ -57,6 +63,10 @@ export type Seller = {
   website: string;
   kepAddress: string | null;
   etbisVerified: boolean;
+  /** Havalede paranın gideceği hesabın sahibi; unvandan farklı olabilir. */
+  bankAccountHolder: string;
+  /** Mağazanın havale için eklediği serbest açıklama; yoksa boş. */
+  bankTransferInstructions: string;
   /* Kargo ve havale: mağaza panelinden (getSalesRules). */
   shippingFee: string;
   freeShippingThreshold: string;
@@ -72,6 +82,7 @@ export type Seller = {
   | "taxNumber" | "mersis" | "tradeRegistry" | "email" | "phone"
   | "phoneLink" | "website"
   | "shippingFee" | "freeShippingThreshold" | "transferDiscountPercent"
+  | "bankName" | "iban"
 >;
 
 /*
@@ -102,6 +113,18 @@ export type Seller = {
   sözleşmede yazandan farklı kargo ücreti alınmış olurdu. Ayarlar
   okunamazsa getSalesRules bugünkü sabitlere düşer.
 */
+/*
+  IBAN GÖSTERİM BİÇİMİ. Veritabanı boşluksuz tutuyor; ekranda
+  dörtlü gruplar hem okunur hem de müşterinin elle karşılaştırmasını
+  kolaylaştırıyor. Boş değer boş metin döner ki çağıran taraf
+  yedeğe düşebilsin.
+*/
+function ibanBicimi(ham: string | null): string {
+  const temiz = (ham ?? "").replace(/\s/g, "").toUpperCase();
+  if (!temiz) return "";
+  return temiz.replace(/(.{4})/g, "$1 ").trim();
+}
+
 async function salesFields() {
   const rules = await getSalesRules();
   const terms = shippingTerms(rules);
@@ -127,7 +150,14 @@ export const getSeller = cache(async (): Promise<Seller> => {
 
   const row = rows[0];
   if (!row?.legal_name) {
-    return { ...FALLBACK, ...sales, kepAddress: null, etbisVerified: true };
+    return {
+      ...FALLBACK,
+      ...sales,
+      kepAddress: null,
+      etbisVerified: true,
+      bankAccountHolder: FALLBACK.legalName,
+      bankTransferInstructions: "",
+    };
   }
 
   /* Adres parçaları tek satırda birleştiriliyor: hukuki
@@ -160,5 +190,13 @@ export const getSeller = cache(async (): Promise<Seller> => {
     website: row.storefront_url ?? FALLBACK.website,
     kepAddress: row.kep_address,
     etbisVerified: row.etbis_verified ?? false,
+    bankName: row.bank_name ?? FALLBACK.bankName,
+    /* IBAN veritabanında BOŞLUKSUZ duruyor (kısıt: ^TR[0-9]{24}$);
+       okunurluk için dörtlü gruplanıyor. Kopyala düğmesi boşlukları
+       zaten kaldırıyor (components/bank-details.tsx). */
+    iban: ibanBicimi(row.bank_iban) || FALLBACK.iban,
+    bankAccountHolder:
+      row.bank_account_holder?.trim() || row.legal_name || FALLBACK.legalName,
+    bankTransferInstructions: row.bank_transfer_instructions?.trim() ?? "",
   };
 });

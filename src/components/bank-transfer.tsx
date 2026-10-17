@@ -21,7 +21,13 @@ export function BankTransfer({
   onSelect,
   selected,
 }: {
-  seller: { legalName: string; bankName: string; iban: string };
+  seller: {
+    legalName: string;
+    bankName: string;
+    iban: string;
+    accountHolder?: string;
+    transferInstructions?: string;
+  };
   discountPercent: number;
   /**
    * TL cinsinden sipariş toplamı (kargo dahil). Önceden kuruş

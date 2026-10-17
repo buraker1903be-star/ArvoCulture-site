@@ -14,11 +14,24 @@ export function BankDetails({
   seller,
   children,
 }: {
-  seller: { legalName: string; bankName: string; iban: string };
+  /*
+    ALICI UNVANI DEĞİL HESAP SAHİBİ. Önceden ticaret unvanı
+    yazılıyordu; hesap başka bir unvana (şahıs şirketi, eski unvan)
+    açılmış olabilir ve IBAN'ın sahibi tutmazsa banka havaleyi iade
+    eder. `accountHolder` verilmezse unvana düşülüyor.
+  */
+  seller: {
+    legalName: string;
+    bankName: string;
+    iban: string;
+    accountHolder?: string;
+    transferInstructions?: string;
+  };
   /** Bloğun başındaki açıklama. */
   children?: React.ReactNode;
 }) {
   const [copied, setCopied] = useState<string | null>(null);
+  const alici = seller.accountHolder?.trim() || seller.legalName;
 
   async function copy(label: string, value: string) {
     try {
@@ -38,12 +51,12 @@ export function BankDetails({
       <div className="pay-bank-row">
         <div>
           <small>ALICI UNVANI</small>
-          <b>{seller.legalName}</b>
+          <b>{alici}</b>
         </div>
         <button
           type="button"
           className="linklike"
-          onClick={() => copy("unvan", seller.legalName)}
+          onClick={() => copy("unvan", alici)}
         >
           {copied === "unvan" ? "Kopyalandı ✓" : "Kopyala"}
         </button>
@@ -69,6 +82,13 @@ export function BankDetails({
           {copied === "iban" ? "Kopyalandı ✓" : "Kopyala"}
         </button>
       </div>
+
+      {/* Mağazanın kendi havale açıklaması (panelden); varsa
+          standart notun ÜSTÜNDE duruyor çünkü mağazaya özel bilgi
+          genel nottan önce okunmalı. */}
+      {seller.transferInstructions?.trim() && (
+        <p className="hint">{seller.transferInstructions.trim()}</p>
+      )}
 
       <p className="hint">
         IBAN kopyalandığında boşluklar kaldırılır. Havale ücreti bankanıza

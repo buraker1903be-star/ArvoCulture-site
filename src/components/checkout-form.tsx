@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { BankTransfer } from "@/components/bank-transfer";
-import { SELLER } from "@/lib/seller";
 import { formatPrice } from "@/lib/product-types";
 import { readCoupon, readNote } from "@/lib/cart-extras";
 import { getAuthClient } from "@/lib/auth-client";
@@ -28,12 +27,33 @@ const ARC_URL = "https://arc.arvo-os.com";
 
 /** Kargo kuralı ArvoARC’taki fonksiyonla aynı tutulmalıdır. */
 
+/*
+  HAVALE BİLGİSİ SUNUCUDAN GELİYOR, KODDAN DEĞİL.
+
+  Burada `SELLER.bankName` / `SELLER.iban` okunuyordu ve bu dosya bir
+  İSTEMCİ bileşeni: ArvoCulture'ın IBAN'ı tarayıcı paketinin
+  içindeydi. Ortak dağıtımda ikinci bir kiracının havale ekranında
+  o IBAN görünür, müşteri parayı BAŞKA bir mağazanın hesabına
+  gönderirdi — sipariş "ödeme bekliyor"da kalır, hiçbir yerde hata
+  görünmez. Değer artık `arc_storefront_seller(p_host)`'tan gelip
+  ödeme sayfasından prop olarak iniyor.
+*/
+export type HavaleBilgisi = {
+  legalName: string;
+  bankName: string;
+  iban: string;
+  accountHolder?: string;
+  transferInstructions?: string;
+};
+
 export function CheckoutForm({
   supabaseUrl,
   supabaseKey,
+  seller,
 }: {
   supabaseUrl?: string;
   supabaseKey?: string;
+  seller: HavaleBilgisi;
 }) {
   const { items, total, discounts, salesRules } = useContext(CartContext);
   const router = useRouter();
@@ -640,11 +660,7 @@ export function CheckoutForm({
           <h2>Ödeme yöntemi</h2>
 
           <BankTransfer
-            seller={{
-              legalName: SELLER.legalName,
-              bankName: SELLER.bankName,
-              iban: SELLER.iban,
-            }}
+            seller={seller}
             discountPercent={salesRules.transferDiscountPercent}
             total={grand}
             discount={availableTransferDiscount}

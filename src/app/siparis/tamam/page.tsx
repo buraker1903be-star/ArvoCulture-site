@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BankDetails } from "@/components/bank-details";
 import { OrderCleanup } from "@/components/order-cleanup";
-import { SELLER } from "@/lib/seller";
+import { getSeller } from "@/lib/seller-source";
 
 export const metadata = {
   title: "Siparişiniz alındı",
@@ -22,6 +22,20 @@ export default async function OrderDone({
   searchParams: Promise<{ no?: string; yontem?: string }>;
 }) {
   const { no, yontem } = await searchParams;
+
+  /*
+    Havale bilgisi satıcı kaydından. Önceden `lib/seller.ts`
+    sabitinden geliyordu ve ortak dağıtımda her kiracının onay
+    sayfası ArvoCulture'ın IBAN'ını gösterirdi.
+  */
+  const seller = await getSeller();
+  const havale = {
+    legalName: seller.legalName,
+    bankName: seller.bankName,
+    iban: seller.iban,
+    accountHolder: seller.bankAccountHolder,
+    transferInstructions: seller.bankTransferInstructions,
+  };
 
   return (
     <main className="shell">
@@ -50,7 +64,7 @@ export default async function OrderDone({
           gösteriliyor: müşteri e-postayı beklemeden ödeyebilsin.
         */}
         {yontem === "havale" && (
-          <BankDetails seller={SELLER}>
+          <BankDetails seller={havale}>
             <p className="hint">
               Aşağıdaki hesaba havale veya EFT yaptığınızda siparişiniz
               hazırlanmaya başlanacak. Açıklama kısmına sipariş numaranızı

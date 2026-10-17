@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AccountPanel } from "@/components/account-panel";
 import { env } from "@/lib/env";
-import { SELLER } from "@/lib/seller";
+import { getSeller } from "@/lib/seller-source";
 
 export const metadata: Metadata = {
   title: "Hesabım",
   description:
-    "ArvoCulture sipariş takibi ve hesap işlemleri. Üye olmadan da sipariş verebilir, siparişinizi numarasıyla takip edebilirsiniz.",
+    /* Marka adı çıkarıldı: sayfa indekslenmiyor (robots: index false)
+       ve ortak dağıtımda her kiracıya ArvoCulture'ı yazardı. */
+    "Sipariş takibi ve hesap işlemleri. Üye olmadan da sipariş verebilir, siparişinizi numarasıyla takip edebilirsiniz.",
   alternates: { canonical: "/hesap" },
   robots: { index: false, follow: true },
 };
@@ -20,7 +22,9 @@ export const metadata: Metadata = {
  * sipariş geçmişi ve hızlı ödeme için bir kolaylıktır.
  */
 
-export default function Account() {
+export default async function Account() {
+  const { phoneLink: whatsapp } = await getSeller();
+
   return (
     <main className="shell">
       {/* Künye ile başlık aynı kelimeyi tekrarlıyordu; başlık artık
@@ -57,12 +61,16 @@ export default function Account() {
             <Link href="/iletisim">İletişim</Link>
           </li>
           {/* Sipariş sorusu olan müşteri için en hızlı yol. Numara
-              tanımlıydı ama listeye hiç eklenmemişti. */}
-          <li>
-            <a href={SELLER.phoneLink} rel="noopener">
-              WhatsApp
-            </a>
-          </li>
+              tanımlıydı ama listeye hiç eklenmemişti. Bağlantı satıcı
+              kaydından: önceden ArvoCulture'ın hattı koda yazılıydı ve
+              hattı olmayan mağazada çalışmayan bir bağlantı olurdu. */}
+          {whatsapp && (
+            <li>
+              <a href={whatsapp} rel="noopener">
+                WhatsApp
+              </a>
+            </li>
+          )}
         </ul>
       </section>
     </main>
