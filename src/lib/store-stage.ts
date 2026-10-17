@@ -1,6 +1,7 @@
 import "server-only";
 import { rpc } from "@/lib/arc";
 import { env } from "@/lib/env";
+import { vitrinKurumu } from "@/lib/konak";
 
 /**
  * Mağazanın açık olup olmadığı.
@@ -21,10 +22,18 @@ export type StoreStage = "open" | "panel_closed" | "sales_closed" | "closed";
 
 export async function getStoreStage(): Promise<StoreStage> {
   try {
+    /* Kurum artık ADRESTEN çözülüyor: sabit kimlik, ikinci
+       müşterinin vitrininde ArvoCulture'ın mağaza durumunu
+       gösterirdi. */
+    const kurum = await vitrinKurumu();
+    /* Adres hiçbir mağazaya ait değilse vitrin açık sayılmıyor:
+       kapalı bir mağazayı açık göstermek, açık bir mağazayı kapalı
+       göstermekten pahalı (yukarıdaki not). */
+    if (!kurum) return "closed";
     // Skaler dönen fonksiyonda PostgREST diziyi değil doğrudan değeri verir.
     const result = (await rpc<StoreStage>(
       "arc_store_stage",
-      { p_organization_id: env.organizationId },
+      { p_organization_id: kurum },
       { revalidate: 300 },
     )) as unknown as StoreStage | StoreStage[] | null;
 

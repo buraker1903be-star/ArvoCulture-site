@@ -1,6 +1,7 @@
 import { env } from "@/lib/env";
 import { getSeller } from "@/lib/seller-source";
 import { getStorefrontCollections } from "@/lib/collections";
+import { vitrinAdresi } from "@/lib/konak";
 
 /**
  * llms.txt
@@ -23,6 +24,7 @@ import { getStorefrontCollections } from "@/lib/collections";
 export const revalidate = 3600;
 
 export async function GET() {
+  const adres = await vitrinAdresi();
   /* Satıcı ve kargo/havale koşulları yasal sayfalarla aynı kaynaktan:
      önceden seller.ts sabitleri okunuyordu (unvan ve tarife dahil). */
   const [collections, SELLER] = await Promise.all([
@@ -34,7 +36,7 @@ export async function GET() {
     .slice(0, 40)
     .map(
       (collection) =>
-        `- [${collection.title}](${env.siteUrl}/koleksiyon/${collection.slug})`,
+        `- [${collection.title}](${adres}/koleksiyon/${collection.slug})`,
     )
     .join("\n");
 
@@ -73,20 +75,20 @@ ${koleksiyonSatirlari}
 
 ## Bilgi sayfaları
 
-- [Hakkımızda](${env.siteUrl}/hakkimizda)
-- [Sıkça Sorulan Sorular](${env.siteUrl}/sss)
-- [İletişim](${env.siteUrl}/iletisim)
-- [Teslimat Politikası](${env.siteUrl}/teslimat)
-- [İptal ve İade](${env.siteUrl}/iptal-iade)
-- [Ön Bilgilendirme Formu](${env.siteUrl}/on-bilgilendirme-formu)
-- [Mesafeli Satış Sözleşmesi](${env.siteUrl}/mesafeli-satis-sozlesmesi)
-- [KVKK Aydınlatma Metni](${env.siteUrl}/kvkk-aydinlatma-metni)
-- [Gizlilik ve Çerez Politikası](${env.siteUrl}/gizlilik)
+- [Hakkımızda](${adres}/hakkimizda)
+- [Sıkça Sorulan Sorular](${adres}/sss)
+- [İletişim](${adres}/iletisim)
+- [Teslimat Politikası](${adres}/teslimat)
+- [İptal ve İade](${adres}/iptal-iade)
+- [Ön Bilgilendirme Formu](${adres}/on-bilgilendirme-formu)
+- [Mesafeli Satış Sözleşmesi](${adres}/mesafeli-satis-sozlesmesi)
+- [KVKK Aydınlatma Metni](${adres}/kvkk-aydinlatma-metni)
+- [Gizlilik ve Çerez Politikası](${adres}/gizlilik)
 
 ## Notlar
 
-- Ürün adresleri: ${env.siteUrl}/urun/<slug>
-- Tam ürün listesi: ${env.siteUrl}/sitemap.xml
+- Ürün adresleri: ${adres}/urun/<slug>
+- Tam ürün listesi: ${adres}/sitemap.xml
 - Sepet, ödeme ve hesap sayfaları kişiye özeldir; taranmaya kapalıdır.
 `;
 

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { env } from "@/lib/env";
 import { getStorefrontProductSlugs } from "@/lib/products";
 import { getStorefrontCollections } from "@/lib/collections";
+import { vitrinAdresi } from "@/lib/konak";
 
 const staticPaths = [
   "",
@@ -32,6 +33,7 @@ const staticPaths = [
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const adres = await vitrinAdresi();
   const now = new Date();
 
   const [products, collections] = await Promise.all([
@@ -56,19 +58,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticPaths.map((path) => ({
-      url: `${env.siteUrl}${path}`,
+      url: `${adres}${path}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: path === "" ? 1 : 0.4,
     })),
     ...collections.map((collection) => ({
-      url: `${env.siteUrl}/koleksiyon/${collection.slug}`,
+      url: `${adres}/koleksiyon/${collection.slug}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.8,
     })),
     ...products.map((product) => ({
-      url: `${env.siteUrl}/urun/${product.slug}`,
+      url: `${adres}/urun/${product.slug}`,
       /* Ürünün kendi güncellenme tarihi. Hepsine üretim zamanını
          yazmak, her sayfanın her gün değiştiği anlamına gelirdi ve
          arama motoru için işe yaramaz bir sinyaldir. */

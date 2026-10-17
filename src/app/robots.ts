@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { env } from "@/lib/env";
+import { vitrinAdresi } from "@/lib/konak";
 
 /*
   Sepet, ödeme, hesap ve arama sayfalarının dizine girmesi hem
@@ -54,7 +55,8 @@ const AI_AGENTS = [
   "cohere-ai",
 ];
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const adres = await vitrinAdresi();
   return {
     rules: [
       {
@@ -74,7 +76,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: PRIVATE_PATHS,
       })),
     ],
-    sitemap: `${env.siteUrl}/sitemap.xml`,
-    host: env.siteUrl,
+    sitemap: `${adres}/sitemap.xml`,
+    host: adres,
   };
 }

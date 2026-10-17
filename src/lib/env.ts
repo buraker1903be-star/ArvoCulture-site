@@ -24,10 +24,14 @@ export const env = {
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   ),
 
-  organizationId: required(
-    "ARC_ORGANIZATION_ID",
-    process.env.ARC_ORGANIZATION_ID ?? process.env.ARVO_ORGANIZATION_ID,
-  ),
+  /*
+    SABİT KURUM KİMLİĞİ KALDIRILDI (17.10.2026). Vitrin çok mağazalı:
+    kurum artık adresten çözülüyor (lib/konak → vitrinKurumu).
+    Zorunlu bir ARC_ORGANIZATION_ID, ortak dağıtımda her mağazaya
+    ArvoCulture'ın temasını ve mağaza durumunu giydirirdi — üstelik
+    değişkeni unutan bir kurulum derlemede değil, ilk istekte
+    patlardı.
+  */
 
   siteUrl: (
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://arvoculture.com"

@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { env } from "@/lib/env";
+import { vitrinKurumu } from "@/lib/konak";
 export type StorefrontTheme = {
   announcement: string;
   hero_eyebrow: string;
@@ -136,7 +137,11 @@ const path = (v: unknown, f: string) =>
 export const getStorefrontTheme = cache(async (): Promise<StorefrontTheme> => {
   const url = env.supabaseUrl;
   const key = env.supabaseKey;
-  const id = env.organizationId;
+  /* Kurum ADRESTEN: sabit kimlik, her mağazaya ArvoCulture'ın
+     temasını giydirirdi. Çözülemezse varsayılan tema — renk hatası
+     satış hatası değil. */
+  const id = await vitrinKurumu();
+  if (!id) return defaultTheme;
   try {
     const endpoint = new URL("/rest/v1/arc_store_themes", url);
     endpoint.searchParams.set("organization_id", `eq.${id}`);

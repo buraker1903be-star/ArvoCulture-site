@@ -20,6 +20,7 @@ import { getStorefrontCollections } from "@/lib/collections";
 import { JsonLd } from "@/components/json-ld";
 import { storeSchema, websiteSchema } from "@/lib/seo";
 import { env } from "@/lib/env";
+import { vitrinAdresi } from "@/lib/konak";
 
 /**
  * İki font, iki iş.
@@ -91,12 +92,13 @@ export const viewport: Viewport = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
+  const adres = await vitrinAdresi();
   const theme = await getStorefrontTheme();
   const name = theme.store_name ?? "ArvoCulture";
   return {
     // metadataBase olmadan canonical ve OG adresleri göreli kalır;
     // sosyal paylaşımlarda önizleme kırık gelir.
-    metadataBase: new URL(env.siteUrl),
+    metadataBase: new URL(adres),
     title: {
       default: `${name} — Seçtiğin Şey Sensin`,
       template: `%s | ${name}`,
@@ -107,7 +109,7 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: "tr_TR",
       siteName: name,
-      url: env.siteUrl,
+      url: adres,
       title: `${name} — Seçtiğin Şey Sensin`,
       description: theme.hero_description,
     },

@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { env } from "@/lib/env";
 import { canOptimizeImage } from "@/lib/image-hosts";
+import { vitrinAdresi } from "@/lib/konak";
 
 /*
   Paylaşım kartlarının malzemesi: fontlar, logo ve ürün görseli.
@@ -50,13 +51,14 @@ export async function ogLogo(): Promise<string | null> {
  * görsel atlanıyor; kart yine çiziliyor.
  */
 export async function ogProductImage(url?: string): Promise<string | null> {
+  const adres = await vitrinAdresi();
   if (!url) return null;
 
-  const absolute = url.startsWith("/") ? `${env.siteUrl}${url}` : url;
+  const absolute = url.startsWith("/") ? `${adres}${url}` : url;
   const candidates =
     canOptimizeImage(url) && !url.startsWith("/")
       ? [
-          `${env.siteUrl}/_next/image?url=${encodeURIComponent(url)}&w=640&q=75`,
+          `${adres}/_next/image?url=${encodeURIComponent(url)}&w=640&q=75`,
           absolute,
         ]
       : [absolute];
