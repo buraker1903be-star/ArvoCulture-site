@@ -455,12 +455,6 @@ export const getStorefrontFacets = cache(async (): Promise<CatalogFacets> => {
    ═══════════════════════════════════════════════════════════ */
 
 export type CollectionPage = CatalogPage & {
-  /** Süzgeçsiz koleksiyon toplamı. */
-  collectionTotal: number;
-  brands: string[];
-  sizes: string[];
-  /** TL cinsinden. */
-  maxPrice: number;
   /**
    * Çağrı başarısız oldu: raf BOŞ DEĞİL, okunamadı.
    *
@@ -472,11 +466,12 @@ export type CollectionPage = CatalogPage & {
   okunamadi: boolean;
 };
 
-type CollectionPageRow = CatalogPageRow & {
-  facet_brands: unknown;
-  facet_sizes: unknown;
-  facet_max_price: number;
-  collection_total: number;
+type CollectionPageRow = CatalogPageRow;
+
+/** Koleksiyon kısıtı: tek koleksiyon, birleştirilmiş kaynaklar ya da menü grubu. */
+export type CollectionScope = {
+  collectionSlugs?: string[];
+  menuGroups?: string[];
 };
 
 export const getStorefrontCollectionProductsPage = cache(
@@ -486,7 +481,7 @@ export const getStorefrontCollectionProductsPage = cache(
       collectionSlugs,
       menuGroups,
       ...filters
-    }: CatalogFilters & { collectionSlugs?: string[]; menuGroups?: string[] },
+    }: CatalogFilters & CollectionScope,
     pageSize: number = CATALOG_PAGE_SIZE,
   ): Promise<CollectionPage> => {
     const safePage = Number.isInteger(page) && page > 0 ? page : 1;
@@ -535,10 +530,6 @@ export const getStorefrontCollectionProductsPage = cache(
     const rows = sonuc.satirlar;
     const row = rows[0];
     const total = row ? Number(row.total_count) : 0;
-    const strings = (value: unknown) =>
-      Array.isArray(value)
-        ? value.filter((item): item is string => typeof item === "string")
-        : [];
 
     return {
       products: rows.map((satir, index) =>
@@ -547,11 +538,50 @@ export const getStorefrontCollectionProductsPage = cache(
       total,
       page: safePage,
       pageCount: Math.max(1, Math.ceil(total / size)),
-      collectionTotal: row ? Number(row.collection_total) : 0,
-      brands: strings(row?.facet_brands),
-      sizes: strings(row?.facet_sizes),
-      maxPrice: row?.facet_max_price ? Number(row.facet_max_price) / 100 : 0,
       okunamadi: sonuc.okunamadi,
+    };
+  },
+);
+
+/**
+ * Koleksiyonun süzgeç seçenekleri: marka listesi, beden listesi, en
+ * yüksek fiyat ve süzgeçsiz toplam.
+ *
+ * Sayfa sorgusunun İÇİNDE duruyordu ve her görüntülemede
+ * koleksiyonun bütün varyantları üzerinde yeniden hesaplanıyordu;
+ * ağır kümede (giyim ~3.250 ürün) anon rolünün süre sınırını aşıp
+ * rafı boş bırakıyordu. Katalog sayfasındaki düzene geçti: ayrı
+ * çağrı ve beş dakika önbellek.
+ *
+ * Seçenekler süzgeçten ÖNCEKİ kümeden gelir; "Beden: XL"
+ * seçildiğinde marka listesi daralmaz.
+ */
+export const getStorefrontCollectionFacets = cache(
+  async ({ collectionSlugs, menuGroups }: CollectionScope): Promise<CatalogFacets> => {
+    const slugs = (collectionSlugs ?? []).filter((slug) => SLUG_PATTERN.test(slug));
+    const rows = await rpcOrEmpty<FacetRow>(
+      "get_arvoculture_storefront_collection_facets",
+      {
+        p_collection_slugs: slugs.length ? slugs : null,
+        p_menu_groups: menuGroups?.length ? menuGroups : null,
+      },
+      {
+        revalidate: 300,
+        tags: [`storefront-collection-facets-${slugs[0] ?? menuGroups?.[0] ?? "all"}`],
+      },
+    );
+
+    const row = rows[0];
+    const strings = (value: unknown) =>
+      Array.isArray(value)
+        ? value.filter((item): item is string => typeof item === "string")
+        : [];
+
+    return {
+      brands: strings(row?.brands),
+      sizes: strings(row?.sizes),
+      maxPrice: row?.max_price ? Number(row.max_price) / 100 : 0,
+      total: row?.total_count ? Number(row.total_count) : 0,
     };
   },
 );

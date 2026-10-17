@@ -4,6 +4,7 @@ import { getStorefrontCollections } from "@/lib/collections";
 import {
   getStorefrontCollectionProducts,
   getStorefrontCollectionProductsPage,
+  getStorefrontCollectionFacets,
   getStorefrontProductsPage,
   getStorefrontFacets,
   CATALOG_PAGE_SIZE,
@@ -280,16 +281,25 @@ export default async function Collection({
       ayrı sorgu atılıp sonuçlar bellekte birleştiriliyordu.
     */
     const kaynaklar = MERGED_COLLECTIONS[slug] ?? (exactCollection ? [exactCollection.slug] : []);
-    const result = await getStorefrontCollectionProductsPage(page, {
+    const kapsam = {
       collectionSlugs: kaynaklar,
       menuGroups: kaynaklar.length ? undefined : menuGroups[slug],
-      brand: marka,
-      size: beden,
-      maxPrice: ust,
-      onlyDiscounted: indirimli,
-      onlyAvailable: stokta,
-      sort: sirala,
-    });
+    };
+    /* Süzgeç seçenekleri ayrı ve beş dakika önbellekli çağrıda:
+       sayfa sorgusunun içindeyken ağır koleksiyonlarda süre
+       sınırını aşıyordu (lib/products.ts). */
+    const [result, facets] = await Promise.all([
+      getStorefrontCollectionProductsPage(page, {
+        ...kapsam,
+        brand: marka,
+        size: beden,
+        maxPrice: ust,
+        onlyDiscounted: indirimli,
+        onlyAvailable: stokta,
+        sort: sirala,
+      }),
+      getStorefrontCollectionFacets(kapsam),
+    ]);
 
     if (result.okunamadi) {
       /*
@@ -369,10 +379,10 @@ export default async function Collection({
       pageCount = result.pageCount;
       currentPage = Math.min(result.page, result.pageCount);
       shownCount = result.total;
-      totalCount = result.collectionTotal;
-      sizes = [...result.sizes].sort(bySizeOrder);
-      brands = result.brands.slice(0, 12);
-      maxPrice = result.maxPrice;
+      totalCount = facets.total || result.total;
+      sizes = [...facets.sizes].sort(bySizeOrder);
+      brands = facets.brands.slice(0, 12);
+      maxPrice = facets.maxPrice;
     }
   }
 
