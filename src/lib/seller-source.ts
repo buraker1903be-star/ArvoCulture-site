@@ -2,6 +2,7 @@ import { cache } from "react";
 import { rpcOrEmpty } from "@/lib/arc";
 import { SELLER as FALLBACK } from "@/lib/seller";
 import { getSalesRules } from "@/lib/store-settings";
+import { vitrinKonagi } from "@/lib/konak";
 import { shippingTerms } from "@/lib/order-quote";
 
 /**
@@ -73,11 +74,24 @@ export type Seller = {
   | "shippingFee" | "freeShippingThreshold" | "transferDiscountPercent"
 >;
 
-/**
- * Kiracı adı şu an sabit. Vitrin çok kiracılı hâle geldiğinde
- * alan adından çözülecek; fonksiyon zaten parametre alıyor.
- */
-const TENANT = process.env.ARC_TENANT_SLUG ?? "arvoculture";
+/*
+  SATICI ADRESTEN ÇÖZÜLÜYOR.
+
+  Burada şu duruyordu: `const TENANT = process.env.ARC_TENANT_SLUG ??
+  "arvoculture"` ve okuma `get_storefront_seller(p_tenant)` ile
+  yapılıyordu — yani KİRACI ADI SABİT. Ortak dağıtımda ikinci bir
+  kiracının /iletisim sayfasında, mesafeli satış sözleşmesinde ve ön
+  bilgilendirme formunda ArvoCulture'ın ticaret unvanı, adresi, vergi
+  numarası, MERSİS'i ve IBAN'ı görünüyordu.
+
+  Sessiz bir kusurdu: fonksiyon hata vermiyor, bir satır döndürüyor —
+  yalnızca BAŞKA mağazanın satırını. Mesafeli Sözleşmeler Yönetmeliği
+  satıcı bilgilerinin doğru olmasını arıyor; yanlış olan bir dizgi
+  değil, sözleşmenin tarafıydı.
+
+  Yeni okuma `arc_storefront_seller(p_host)`: kurumu adresten
+  çözüyor, yani doğrulanmamış alan adı da kendiliğinden eleniyor.
+*/
 
 /*
   Kargo ücreti, ücretsiz kargo eşiği ve havale indirimi yasal metinlerde
@@ -104,8 +118,8 @@ async function salesFields() {
 export const getSeller = cache(async (): Promise<Seller> => {
   const [rows, sales] = await Promise.all([
     rpcOrEmpty<SellerRow>(
-      "get_storefront_seller",
-      { p_tenant: TENANT },
+      "arc_storefront_seller",
+      { p_host: await vitrinKonagi() },
       { revalidate: 3600, tags: ["seller"] },
     ),
     salesFields(),

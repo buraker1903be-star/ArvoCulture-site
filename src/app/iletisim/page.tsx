@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "İletişim",
-  description:
-    "ArvoCulture müşteri desteği, satıcı bilgileri ve sıkça sorulan sorulara hızlı erişim.",
-  alternates: { canonical: "/iletisim" },
-};
+import { getSeller } from "@/lib/seller-source";
+import { magazaSayfasi } from "@/lib/magaza-sayfasi-oku";
+import { paragraflar } from "@/lib/magaza-sayfasi";
 
 /**
  * İletişim sayfası.
@@ -15,35 +11,36 @@ export const metadata: Metadata = {
  * satış mevzuatının aradığı satıcı bilgilerini erişilebilir kılar.
  * Footer’dan ticaret unvanı kaldırıldığı için o bilgi burada
  * bulunmak zorunda.
+ *
+ * BİLGİLER SATICI KAYDINDAN. Önceden ticaret unvanı, adres, e-posta
+ * ve WhatsApp numarası bu dosyada yazılıydı; ikinci bir kiracının
+ * iletişim sayfası ARVOCULTURE'IN şirketini ve hattını gösterirdi.
+ * Mevzuat açısından ciddi: müşteri satıcının kim olduğunu buradan
+ * öğreniyor.
+ *
+ * Giriş metni panelden yazılabiliyor (ArvoARC → Ayarlar →
+ * Sayfalar); kanallar ve satıcı bilgileri yazılamıyor, çünkü onlar
+ * metin değil KAYIT — serbest metne çevirmek, iletişim kanalını
+ * yazım hatasıyla bozulabilir hâle getirirdi.
  */
 
-const WHATSAPP = "+90 507 437 05 07";
-/* wa.me biçimi: yalnızca rakamlar, ülke kodu dahil, artı yok. */
-const WHATSAPP_LINK = "https://wa.me/905074370507";
+const VARSAYILAN_BASLIK = "Nasıl yardımcı olabiliriz?";
 
-const CHANNELS = [
-  {
-    title: "WhatsApp",
-    value: WHATSAPP,
-    href: WHATSAPP_LINK,
-    note: "Kurumsal hat — en hızlı yanıt",
-    action: "WhatsApp’tan yaz",
-  },
-  {
-    title: "E-posta",
-    value: "info@arvoculture.com",
-    href: "mailto:info@arvoculture.com",
-    note: "Sipariş, ürün ve iade soruları",
-    action: "E-posta gönder",
-  },
-  {
-    title: "Sipariş takibi",
-    value: "Sipariş numaranızla",
-    href: "mailto:info@arvoculture.com?subject=Sipari%C5%9F%20takibi",
-    note: "Sipariş numaranızı yazmanız yeterli",
-    action: "Takip talebi oluştur",
-  },
-];
+export async function generateMetadata(): Promise<Metadata> {
+  const [sayfa, seller] = await Promise.all([
+    magazaSayfasi("iletisim"),
+    getSeller(),
+  ]);
+  const girisi = sayfa ? paragraflar(sayfa.govde)[0] : undefined;
+
+  return {
+    title: sayfa?.baslik || "İletişim",
+    description:
+      girisi?.slice(0, 300) ??
+      `${seller.brand} müşteri desteği, satıcı bilgileri ve sıkça sorulan sorulara hızlı erişim.`,
+    alternates: { canonical: "/iletisim" },
+  };
+}
 
 const QUICK = [
   {
@@ -68,17 +65,64 @@ const QUICK = [
   },
 ];
 
-export default function Contact() {
+export default async function Contact() {
+  const [seller, sayfa] = await Promise.all([
+    getSeller(),
+    magazaSayfasi("iletisim"),
+  ]);
+
+  const kiraciMetni = sayfa ? paragraflar(sayfa.govde) : [];
+  const takipKonusu = encodeURIComponent("Sipariş takibi");
+
+  /*
+    Kanal listesi kayıttan kuruluyor. WhatsApp hattı olmayan mağazada
+    o kutu HİÇ çizilmiyor: çalışmayan bir "WhatsApp'tan yaz" düğmesi,
+    müşteriyi boş bir sayfaya göndermek olurdu.
+  */
+  const channels = [
+    seller.phoneLink
+      ? {
+          title: "WhatsApp",
+          value: seller.phone,
+          href: seller.phoneLink,
+          note: "Kurumsal hat — en hızlı yanıt",
+          action: "WhatsApp’tan yaz",
+        }
+      : null,
+    {
+      title: "E-posta",
+      value: seller.email,
+      href: `mailto:${seller.email}`,
+      note: "Sipariş, ürün ve iade soruları",
+      action: "E-posta gönder",
+    },
+    {
+      title: "Sipariş takibi",
+      value: "Sipariş numaranızla",
+      href: `mailto:${seller.email}?subject=${takipKonusu}`,
+      note: "Sipariş numaranızı yazmanız yeterli",
+      action: "Takip talebi oluştur",
+    },
+  ].filter((kanal): kanal is NonNullable<typeof kanal> => kanal !== null);
+
   return (
     <main className="shell">
       <section className="panel about-hero">
         <p className="about-eyebrow">Bize ulaşın</p>
-        <h1>Nasıl yardımcı olabiliriz?</h1>
-        <p className="about-lede">
-          Ürün, sipariş, teslimat ve iade sorularınız için buradayız.
-          Mesajınıza sipariş numaranızı eklerseniz çok daha hızlı dönüş
-          yaparız.
-        </p>
+        <h1>{sayfa?.baslik || VARSAYILAN_BASLIK}</h1>
+        {kiraciMetni.length > 0 ? (
+          kiraciMetni.map((paragraf, sira) => (
+            <p key={sira} className={sira === 0 ? "about-lede" : undefined}>
+              {paragraf}
+            </p>
+          ))
+        ) : (
+          <p className="about-lede">
+            Ürün, sipariş, teslimat ve iade sorularınız için buradayız.
+            Mesajınıza sipariş numaranızı eklerseniz çok daha hızlı dönüş
+            yaparız.
+          </p>
+        )}
       </section>
 
       <section className="panel">
@@ -89,7 +133,7 @@ export default function Contact() {
           </div>
         </div>
         <div className="channel-grid">
-          {CHANNELS.map((channel) => (
+          {channels.map((channel) => (
             <article key={channel.title}>
               <p className="about-eyebrow">{channel.title}</p>
               <strong>{channel.value}</strong>
@@ -135,32 +179,28 @@ export default function Contact() {
         <dl>
           <div>
             <dt>Ticaret unvanı</dt>
-            <dd>
-              ArvoCulture Group Teknoloji Sanayi ve Ticaret Limited Şirketi
-            </dd>
+            <dd>{seller.legalName}</dd>
           </div>
           <div>
             <dt>Adres</dt>
-            <dd>
-              Yakuplu Mah. Hürriyet Bulvarı, Skyport Residence No:1 D:113
-              <br />
-              34524 Beylikdüzü / İstanbul, Türkiye
-            </dd>
+            <dd>{seller.address}</dd>
           </div>
           <div>
             <dt>E-posta</dt>
             <dd>
-              <a href="mailto:info@arvoculture.com">info@arvoculture.com</a>
+              <a href={`mailto:${seller.email}`}>{seller.email}</a>
             </dd>
           </div>
-          <div>
-            <dt>WhatsApp</dt>
-            <dd>
-              <a href={WHATSAPP_LINK} rel="noopener">
-                {WHATSAPP}
-              </a>
-            </dd>
-          </div>
+          {seller.phoneLink && (
+            <div>
+              <dt>WhatsApp</dt>
+              <dd>
+                <a href={seller.phoneLink} rel="noopener">
+                  {seller.phone}
+                </a>
+              </dd>
+            </div>
+          )}
         </dl>
       </section>
     </main>

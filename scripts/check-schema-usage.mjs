@@ -204,7 +204,20 @@ export function dosyaSorunlari(kaynak, { tables, functions, etiket = "" }) {
     }
   });
 
-  for (const m of kaynak.matchAll(/(?:\.rpc|\brpc(?:OrEmpty|OrNull)?(?:<[^>()]*>)?)\(\s*"([a-z_0-9]+)"|\/rest\/v1\/rpc\/([a-z_0-9]+)/g)) {
+  /*
+    SARMALAYICILARIN HEPSİ TARANMALI. Desen önceden yalnızca `rpc`,
+    `rpcOrEmpty` ve `rpcOrNull` biliyordu; `rpcDeger` (skaler
+    döndüren fonksiyonlar için, lib/arc.ts) listede YOKTU ve o
+    çağrılar denetimin dışında kalıyordu — yani vitrinin mağazayı
+    adresten çözen, kanonik adresi kuran ve sipariş durumunu okuyan
+    fonksiyonları hiç kontrol edilmiyordu. Denetim "kod ile uyumlu"
+    diyordu ama o adları hiç görmemişti; şema denetiminin var olma
+    sebebi tam olarak buydu (18.10.2026'da fark edildi).
+
+    Ek listesi yerine "rpc" + harf: yeni bir sarmalayıcı eklendiğinde
+    deseni güncellemeyi hatırlamak gerekmesin.
+  */
+  for (const m of kaynak.matchAll(/(?:\.rpc|\brpc[A-Za-z]*(?:<[^>()]*>)?)\(\s*"([a-z_0-9]+)"|\/rest\/v1\/rpc\/([a-z_0-9]+)/g)) {
     const name = m[1] ?? m[2];
     /*
       Alıcı denetimi tablolarda vardı, RPC'de yoktu: lab.rpc("…") bu

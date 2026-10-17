@@ -1521,7 +1521,12 @@
 
 .about-figures {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* Kutu sayısı SABİT DEĞİL. Önceden repeat(4, 1fr) yazıyordu ve
+     sayfada tam dört rakam vardı; dördüncüsü "2026 — Kuruluş"tu,
+     yani ArvoCulture'a özel bir bilgi. Kiracının kendi metni
+     geldiğinde gösterilecek rakam sayısı değişiyor ve sabit dört
+     kolon, boş bir hücreyi çizgi renginde bırakıyordu. */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1px;
   padding: 0;
   background: var(--line);

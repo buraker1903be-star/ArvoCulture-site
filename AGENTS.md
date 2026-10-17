@@ -109,6 +109,30 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
   gösterirdi — hata vermeyen, yanlış fiyat gösteren bir sızıntı
   (`tests/ttl-cache.test.ts`).
 
+- **Tanıtım sayfalarının metni KİRACININ.** Hakkımızda, SSS ve iletişim
+  sayfaları metni `arc_store_pages`'ten okuyor
+  (`arc_storefront_pages(p_host)` → `lib/magaza-sayfasi-oku.ts`); satır
+  yoksa sayfa kendi YANSIZ varsayılanını çiziyor. Bu sayfalara marka
+  anlatısı, telefon, e-posta ya da şirket unvanı YAZILMAZ:
+  - iletişim bilgileri ve ticaret unvanı `getSeller()`'dan gelir
+    (`lib/seller-source.ts`);
+  - kargo cümlesi `shippingTerms()`'ten gelir.
+  Önceden üçü de kodda sabitti ve ArvoCulture'ın kendi metniydi
+  ("ArvoCulture; giyim, kişisel bakım ve koku dünyasını…",
+  `info@arvoculture.com`, `wa.me/905074370507`, şirketin unvanı ve
+  adresi). İkinci bir kiracı bu sayfalarla yayına giremezdi: müşterisine
+  BAŞKA bir şirketin unvanını ve bizim WhatsApp hattımızı gösterirdi —
+  mesafeli satış mevzuatı açısından da hatalı.
+  **Kiracı yazdıysa bizim sesimiz çekilir.** Hakkımızda'daki "nasıl
+  çalışıyoruz"/"söz" blokları ve SSS'teki varsayılan liste, kiracının
+  kendi metni olduğunda çizilmiyor. Birleştirmek, kiracının ağzından
+  bizim verdiğimiz sözleri ya da çelişen iki yanıtı aynı sayfada
+  gösterirdi.
+  Düz metin biçimlendirme kuralları (paragraf, soru-cevap bloğu)
+  `lib/magaza-sayfasi.ts`'te ve ArvoARC'taki **ikiziyle aynı** olmak
+  zorunda; biri değişirse diğeri aynı gün değişir
+  (`tests/magaza-sayfasi.test.ts`).
+
 ## Testler
 
 ```bash
