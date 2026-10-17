@@ -306,7 +306,16 @@ export const getStorefrontProduct = cache(
       rpc<StorefrontRow>(
         "get_arvoculture_storefront_product",
         { p_slug: slug },
-        { revalidate: 60, tags: [`storefront-product-${slug}`] },
+        /*
+          ÖNBELLEKSİZ: bu çağrı ürünün fiyatını ve satılabilirliğini
+          veriyor. `revalidate` gerçekten önbelleğe alıyor
+          (17.10.2026'da ölçüldü, lib/arc.ts) ve AGENTS.md'deki
+          değişmez bunu yasaklıyor: "Fiyat, stok, sepet ve sipariş
+          verisi önbelleğe girmez." 60 saniyelik bayat fiyat, ödeme
+          adımında ArvoARC'ın tahsil ettiğinden farklı tutar
+          göstermek demek.
+        */
+        { revalidate: 0, onbelleksiz: true, tags: [`storefront-product-${slug}`] },
       ),
       getProductBadges(),
     ]);

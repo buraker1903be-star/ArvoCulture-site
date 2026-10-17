@@ -28,16 +28,26 @@ export class ArcError extends Error {
 
 type RpcOptions = {
   /**
-   * DİKKAT: Bu değer tek başına bir şey yapmıyor.
+   * DİKKAT: BU DEĞER GERÇEKTEN ÖNBELLEĞE ALIYOR (17.10.2026'da
+   * ölçüldü).
    *
-   * PostgREST'te fonksiyon çağrısı POST ile yapılıyor; Next'in veri
-   * önbelleği ise yalnızca GET isteklerini saklıyor. Yani buradaki
-   * süre sessizce yok sayılıyor ve her çağrı veritabanına gidiyor.
+   * Burada yıl boyunca şu not duruyordu: "PostgREST'te fonksiyon
+   * çağrısı POST ile yapılıyor; Next'in veri önbelleği yalnızca GET
+   * saklıyor, yani buradaki süre sessizce yok sayılıyor ve her çağrı
+   * veritabanına gidiyor." YANLIŞ.
    *
-   * Değer yine de veriliyor: niyeti belgeliyor ve Next'in ileride
-   * POST önbelleklemesi gelirse yerinde duruyor. Ama gerçekten
-   * önbelleğe alınması gereken çağrılar `ttlCache` ile sarılmalı —
-   * koleksiyonlar, indirimler ve arama dizini öyle yapıyor.
+   * Kanıt: ArvoARC'ta satılamaz ürünleri site haritasından çıkaran
+   * migration uygulandı ve veritabanı 2.899 ürün vermeye başladı.
+   * Canlı site haritası bir saatten uzun süre 3.407 verdi. Sayfanın
+   * kendisi tazeydi — statik adreslerin lastmod değeri isteğin
+   * saatiydi — yani eski olan yanıt değil, fetch'in kendisiydi.
+   * Çağrıya `onbelleksiz` eklenince aynı dakika 2.899'a düştü.
+   *
+   * SONUÇ: buradaki süre, verinin ne kadar BAYAT olabileceğidir.
+   * Fiyat ve stok okuyan çağrılarda bu bilinçli bir karar olmalı;
+   * "nasılsa yok sayılıyor" diye bırakılamaz. Ürün sayfası
+   * (fiyat, stok, sepete yazılan SKU) bu yüzden `onbelleksiz`
+   * okunuyor; liste sayfaları 60 saniyeyi kabul ediyor.
    *
    * Tema bunun istisnası: o `GET` ile çekiliyor ve Next tarafından
    * gerçekten önbelleğe alınıyor.

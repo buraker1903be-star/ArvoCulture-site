@@ -73,6 +73,15 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
 - **Önbellek yalnızca müşteriden bağımsız, yavaş değişen veriye**
   (koleksiyon, indirim tanımı). Fiyat, stok, sepet ve sipariş verisi
   önbelleğe girmez (`lib/ttl-cache.ts`).
+  `rpc`'ye verilen `revalidate` GERÇEKTEN önbelleğe alıyor — dosyadaki
+  eski not "POST önbelleğe alınmıyor, süre yok sayılıyor" diyordu ve
+  yanlıştı (17.10.2026'da ölçüldü: site haritası bir saatten uzun
+  süre eski listeyi verdi). Yani o süre, verinin ne kadar BAYAT
+  olabileceğidir ve fiyat/stok okuyan çağrılarda bilinçli bir karar
+  olmalı. Ürün sayfası (fiyat, stok, sepete yazılan SKU) ve site
+  haritası `onbelleksiz: true` okuyor; liste sayfaları 60 saniyeyi
+  kabul ediyor çünkü oradaki rakam karttaki "en düşük fiyat"tır ve
+  müşteri ürün sayfasında taze fiyatı görür.
 
 ## Testler
 

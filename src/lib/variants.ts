@@ -57,7 +57,10 @@ export const getProductVariants = cache(
       rows = await rpc<Variant>(
         "get_arvoculture_storefront_variants",
         { p_slug: slug },
-        { revalidate: 60, tags: ["storefront-variants"] },
+        /* Önbelleksiz: sepete yazılan SKU ve fiyat buradan geliyor,
+           stok rozeti de. Bayat varyant listesi tükenmiş bedeni
+           satılabilir göstermek demek (lib/arc.ts). */
+        { revalidate: 0, onbelleksiz: true, tags: ["storefront-variants"] },
       );
     } catch (error) {
       console.error(error);
