@@ -278,7 +278,11 @@ export default async function ProductPage({ params }: Params) {
       {/* Son gezilenler: bu ürünü listeye ekler, diğerlerini gösterir. */}
       <RecentProducts currentSlug={product.slug} />
 
-      <JsonLd data={productSchema(product, salesRules)} />
+      {/* Varyantlar şemaya da giriyor: tek varyantlıda gerçek SKU ve
+          kesin fiyat, çok varyantlıda fiyat aralığı (AggregateOffer).
+          Önceden SKU olarak ürün slug'ı, fiyat olarak kataloğun en
+          düşük fiyatı yazılıyordu. */}
+      <JsonLd data={productSchema(product, salesRules, variants)} />
       <JsonLd
         data={breadcrumbSchema([
           { name: "Ana sayfa", path: "/" },

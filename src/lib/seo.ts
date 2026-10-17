@@ -25,7 +25,23 @@ export const WEBSITE_ID = `${env.siteUrl}/#website`;
  * işaretlemeye bağlıdır; fiyat, para birimi ve stok durumu eksiksiz
  * olmalıdır.
  */
-export function productSchema(product: Product, rules: SalesRules = DEFAULT_SALES_RULES) {
+/**
+ * Şemadaki varyant bilgisi.
+ *
+ * Yalnızca gereken alanlar: lib/variants.ts sunucuya özel modülleri
+ * (env, arc) çekiyor ve bu dosya istemci tarafında da derleniyor.
+ */
+export type SchemaVariant = {
+  sku: string;
+  price: number;
+  available: boolean;
+};
+
+export function productSchema(
+  product: Product,
+  rules: SalesRules = DEFAULT_SALES_RULES,
+  variants: SchemaVariant[] = [],
+) {
   const url = `${env.siteUrl}/urun/${product.slug}`;
 
   /*
@@ -36,13 +52,42 @@ export function productSchema(product: Product, rules: SalesRules = DEFAULT_SALE
   const priceValidUntil = new Date();
   priceValidUntil.setFullYear(priceValidUntil.getFullYear() + 1);
 
+  /*
+    ÇOK VARYANTLI ÜRÜNDE FİYAT ARALIĞI (17.10.2026).
+
+    Şema tek bir Offer veriyor ve fiyatı kataloğun verdiği EN DÜŞÜK
+    fiyat (ArvoARC: min(v.price)). Tonları farklı fiyatlı bir üründe
+    bu, arama sonucunda görünen fiyatla sepette ödenen fiyatın
+    ayrışması demek — Google'ın ürün listelemelerinde fiyat
+    uyuşmazlığı ürünü listeden düşürüyor.
+
+    Tek varyantlı üründe Offer aynı kalıyor (fiyat kesin). Çok
+    varyantlıda AggregateOffer veriliyor: alt ve üst fiyat,
+    varyant sayısı. Varyant başına ayrı Offer listelemek de
+    doğru olurdu ama 60 bedenli bir üründe sayfaya kilobaytlarca
+    yineleme eklerdi.
+  */
+  const tekVaryant = variants.length === 1 ? variants[0] : undefined;
+  const fiyatlar = variants.map((varyant) => varyant.price).filter((fiyat) => fiyat > 0);
+  const altFiyat = fiyatlar.length ? Math.min(...fiyatlar) : product.price;
+  const ustFiyat = fiyatlar.length ? Math.max(...fiyatlar) : product.price;
+  const aralikVar = variants.length > 1;
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     "@id": `${url}#product`,
     name: product.name,
     description: product.description || product.subtitle,
-    sku: product.slug,
+    /*
+      SKU GERÇEK SKU OLMALI (17.10.2026). Burada ürün slug'ı
+      yazılıyordu: Google'ın ürün listelemelerinde satıcı kimliği
+      olarak kullanılan alan, mağazanın hiçbir yerinde geçmeyen bir
+      değer taşıyordu. Tek varyantlı üründe varyantın SKU'su
+      yazılıyor; çok varyantlı üründe tek bir SKU yoktur, o yüzden
+      alan hiç verilmiyor (uydurmaktansa boş bırakmak doğru).
+    */
+    ...(tekVaryant ? { sku: tekVaryant.sku } : {}),
     url,
     inLanguage: LANGUAGE,
     /* Galerinin tamamı veriliyor; tek görsel zengin sonuçlarda
@@ -56,14 +101,29 @@ export function productSchema(product: Product, rules: SalesRules = DEFAULT_SALE
     ...(product.category ? { category: product.category } : {}),
     itemCondition: "https://schema.org/NewCondition",
     offers: {
-      "@type": "Offer",
+      ...(aralikVar
+        ? {
+            "@type": "AggregateOffer",
+            offerCount: variants.length,
+            lowPrice: altFiyat.toFixed(2),
+            highPrice: ustFiyat.toFixed(2),
+          }
+        : {
+            "@type": "Offer",
+            price: (tekVaryant?.price ?? product.price).toFixed(2),
+          }),
       url,
       priceCurrency: CURRENCY,
-      price: product.price.toFixed(2),
       priceValidUntil: priceValidUntil.toISOString().slice(0, 10),
       itemCondition: "https://schema.org/NewCondition",
+      /*
+        Varyant bilgisi varsa ondan okunuyor: ürünün "satılabilir"
+        olması, varyantlarından EN AZ BİRİNİN satılabilir olması
+        demek (ArvoARC: bool_or(arc_variant_available)). Varyant
+        listesi gelmediyse ürünün kendi alanına düşülüyor.
+      */
       availability:
-        product.available === false
+        (variants.length ? !variants.some((varyant) => varyant.available) : product.available === false)
           ? "https://schema.org/OutOfStock"
           : "https://schema.org/InStock",
       seller: { "@id": STORE_ID },
@@ -77,7 +137,9 @@ export function productSchema(product: Product, rules: SalesRules = DEFAULT_SALE
         "@type": "OfferShippingDetails",
         shippingRate: {
           "@type": "MonetaryAmount",
-          value: shippingFor(product.price, false, rules).toFixed(2),
+          /* Eşik tek ürünlük sepete göre: en düşük varyant fiyatı
+             eşiği geçmiyorsa kargo ücretli görünür. */
+          value: shippingFor(altFiyat, false, rules).toFixed(2),
           currency: CURRENCY,
         },
         shippingDestination: {
