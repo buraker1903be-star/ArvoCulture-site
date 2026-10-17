@@ -53,6 +53,17 @@ export function CheckoutForm({
     distance: false,
     preInfo: false,
     privacy: false,
+    /*
+      WhatsApp bildirimi İSTEĞE BAĞLI ve İŞARETSİZ başlıyor.
+
+      Ötekiler siparişin verilebilmesi için zorunlu (mesafeli satış
+      mevzuatı); bu değil. İşaretli başlatmak teknik olarak mümkün
+      ama WhatsApp'ın kendi politikası işletmenin başlattığı mesaj
+      için açık onay istiyor ve Meta hesabının risk puanı buna
+      bakıyor — müşterinin işaretlemediği bir kutucuktan gelen
+      "şikâyet" bildirimleri numarayı kısıtlatabiliyor.
+    */
+    whatsapp: false,
   });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   /* Banka havalesi seçilirse indirim uygulanıyor ve sipariş
@@ -279,6 +290,10 @@ export function CheckoutForm({
           })),
           couponCode: coupon || null,
           note: note || null,
+          /* Sipariş durumu bildirimleri için açık onay; ArvoARC
+             siparişin kaydına yazıyor ve bildirim gönderirken
+             oradan okuyor. */
+          whatsappOnay: consents.whatsapp,
         }),
       });
 
@@ -606,6 +621,25 @@ export function CheckoutForm({
                   KVKK Aydınlatma Metni
                 </Link>
                 ’ni okudum.
+              </span>
+            </label>
+            {/*
+              İSTEĞE BAĞLI: siparişin verilmesini engellemiyor,
+              `ready` koşuluna girmiyor. Ötekiler mevzuat gereği
+              zorunlu; bu bir tercih ve işaretsiz başlıyor.
+            */}
+            <label className="consent-optional">
+              <input
+                type="checkbox"
+                checked={consents.whatsapp}
+                onChange={(event) =>
+                  setConsents({ ...consents, whatsapp: event.target.checked })
+                }
+              />
+              <span>
+                Sipariş durumumu <strong>WhatsApp</strong>’tan bildirin. Yalnızca
+                siparişinizle ilgili bildirimler gönderilir; tanıtım mesajı
+                gönderilmez.
               </span>
             </label>
           </div>

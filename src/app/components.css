@@ -1134,6 +1134,17 @@
   margin-top: var(--s4);
 }
 
+/*
+  İsteğe bağlı onay: ötekiler mevzuat gereği zorunlu, bu bir tercih.
+  Üstündeki ince çizgi ikisini ayırıyor — müşteri "bunu da
+  işaretlemem mi gerekiyor" diye düşünmesin.
+*/
+.consent-optional {
+  margin-top: var(--s2);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--line);
+}
+
 .consents label {
   display: grid;
   grid-template-columns: auto 1fr;
