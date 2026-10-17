@@ -53,17 +53,6 @@ export function CheckoutForm({
     distance: false,
     preInfo: false,
     privacy: false,
-    /*
-      WhatsApp bildirimi İSTEĞE BAĞLI ve İŞARETSİZ başlıyor.
-
-      Ötekiler siparişin verilebilmesi için zorunlu (mesafeli satış
-      mevzuatı); bu değil. İşaretli başlatmak teknik olarak mümkün
-      ama WhatsApp'ın kendi politikası işletmenin başlattığı mesaj
-      için açık onay istiyor ve Meta hesabının risk puanı buna
-      bakıyor — müşterinin işaretlemediği bir kutucuktan gelen
-      "şikâyet" bildirimleri numarayı kısıtlatabiliyor.
-    */
-    whatsapp: false,
   });
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   /* Banka havalesi seçilirse indirim uygulanıyor ve sipariş
@@ -293,7 +282,6 @@ export function CheckoutForm({
           /* Sipariş durumu bildirimleri için açık onay; ArvoARC
              siparişin kaydına yazıyor ve bildirim gönderirken
              oradan okuyor. */
-          whatsappOnay: consents.whatsapp,
         }),
       });
 
@@ -624,24 +612,27 @@ export function CheckoutForm({
               </span>
             </label>
             {/*
-              İSTEĞE BAĞLI: siparişin verilmesini engellemiyor,
-              `ready` koşuluna girmiyor. Ötekiler mevzuat gereği
-              zorunlu; bu bir tercih ve işaretsiz başlıyor.
+              WHATSAPP İÇİN KUTUCUK YOK, BİLGİ NOTU VAR.
+
+              Önceden burada isteğe bağlı bir onay kutusu duruyordu ve
+              işaretsiz başlıyordu; sonuç olarak hiçbir siparişe
+              bildirim gitmiyordu (17.10.2026, AC261017-F93525).
+
+              Sipariş durumu bildirimi sözleşmenin İFASI, pazarlama
+              değil: aynı bilgi zaten e-postayla ayrı bir onay
+              istenmeden gönderiliyor. Müşteriye ikinci bir kutucuk
+              işaretletmek, verdiği siparişle zaten kurduğu ilişkiyi
+              yeniden imzalatmak olurdu.
+
+              Kutucuk gitti ama SESSİZLİK DE DOĞRU DEĞİL: müşteri
+              numarasının ne için kullanılacağını görmeli. Tek satır,
+              işaret istemiyor.
             */}
-            <label className="consent-optional">
-              <input
-                type="checkbox"
-                checked={consents.whatsapp}
-                onChange={(event) =>
-                  setConsents({ ...consents, whatsapp: event.target.checked })
-                }
-              />
-              <span>
-                Sipariş durumumu <strong>WhatsApp</strong>’tan bildirin. Yalnızca
-                siparişinizle ilgili bildirimler gönderilir; tanıtım mesajı
-                gönderilmez.
-              </span>
-            </label>
+            <p className="consent-note">
+              Siparişinizin durumunu <strong>WhatsApp</strong> ve e-posta ile
+              bildiririz. Yalnızca siparişinizle ilgili bildirimler gönderilir;
+              tanıtım mesajı gönderilmez.
+            </p>
           </div>
         </section>
 

@@ -1135,14 +1135,22 @@
 }
 
 /*
-  İsteğe bağlı onay: ötekiler mevzuat gereği zorunlu, bu bir tercih.
-  Üstündeki ince çizgi ikisini ayırıyor — müşteri "bunu da
-  işaretlemem mi gerekiyor" diye düşünmesin.
+  Bildirim notu: onay kutusu DEĞİL, bilgi. Zorunlu onayların altında,
+  ince bir çizgiyle ayrılmış — müşteri "bunu da işaretlemem mi
+  gerekiyor" diye düşünmesin diye kutucuk hiç yok.
+
+  Önceden burada isteğe bağlı bir WhatsApp onay kutusu vardı
+  (.consent-optional). İşaretsiz başlıyordu ve kimse işaretlemediği
+  için hiçbir siparişe bildirim gitmiyordu; sipariş durumu bildirimi
+  sözleşmenin ifası sayıldığı için kutucuk kaldırıldı.
 */
-.consent-optional {
-  margin-top: var(--s2);
+.consent-note {
+  margin: var(--s2) 0 0;
   padding-top: var(--s3);
   border-top: 1px solid var(--line);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ink-3);
 }
 
 .consents label {
