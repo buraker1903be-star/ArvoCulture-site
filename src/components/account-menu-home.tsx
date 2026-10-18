@@ -52,14 +52,8 @@ type Satir = {
   simge: ReactNode;
 };
 
-/* Simgeler satır içinde: küçük çizimler için ayrı bir istek
-   yapmak, menünün açılmasını yavaşlatırdı.
-
-   "Hediye çeklerim" karosu BURAYA EKLENECEK ama şimdi değil:
-   ekranın okuduğu `arc_storefront_my_gift_cards` fonksiyonu
-   ArvoARC'ta yazıldı, canlıya HENÜZ UYGULANMADI. Uygulanmadan
-   konan karo, müşteriyi çalışmayan bir sayfaya göndermek
-   olurdu. */
+/* Simgeler satır içinde: altı küçük çizim için ayrı bir istek
+   yapmak, menünün açılmasını yavaşlatırdı. */
 const CIZGI = {
   fill: "none",
   stroke: "currentColor",
@@ -126,6 +120,20 @@ const SATIRLAR: Satir[] = [
           {...CIZGI}
         />
         <path d="M9.6 9.6v4.8" {...CIZGI} strokeDasharray="1.6 2.4" />
+      </svg>
+    ),
+  },
+  {
+    href: "/hesap/hediye-ceklerim",
+    baslik: "Hediye çeklerim",
+    alt: "Bakiye",
+    simge: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3.9 10.6h16.2v9.1H3.9zM3 7.2h18v3.4H3zM12 7.2v12.5" {...CIZGI} />
+        <path
+          d="M12 7.2S10.6 3.6 8.5 3.6a2 2 0 0 0 0 3.6ZM12 7.2s1.4-3.6 3.5-3.6a2 2 0 0 1 0 3.6Z"
+          {...CIZGI}
+        />
       </svg>
     ),
   },

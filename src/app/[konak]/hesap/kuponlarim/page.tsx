@@ -113,6 +113,9 @@ export default async function Kuponlarim({
             <Link href="/hesap">Hesabım</Link>
           </li>
           <li>
+            <Link href="/hesap/hediye-ceklerim">Hediye çeklerim</Link>
+          </li>
+          <li>
             <Link href="/favoriler">Favorilerim</Link>
           </li>
           <li>
