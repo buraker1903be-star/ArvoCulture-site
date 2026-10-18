@@ -24,6 +24,7 @@ import {
   type OrderAddress,
 } from "@/lib/order-types";
 import { toplamFarki } from "@/lib/siparis-durumu";
+import { SiparisTekrarla } from "@/components/siparis-tekrarla";
 import type { HavaleHesabi } from "@/lib/seller-source";
 
 /*
@@ -185,6 +186,24 @@ export function OrderDetail({
   );
 
   /*
+    İADE TALEBİ AÇILABİLİR Mİ?
+
+    Koşul üç yerde kullanılıyordu ve her biri AYRI yazılmıştı;
+    dahası hiçbiri ÖDEME DURUMUNA bakmıyordu. Ödenmemiş bir
+    siparişte müşteriye iade teklif ediyorduk — iade edilecek bir
+    para yok ve form gönderilirse ArvoARC'ta anlamsız bir talep
+    açılıyor. Kural artık tek yerde ve ödemeyi de soruyor.
+  */
+  const acikIadeVar = iadeler.some(
+    (i) => i.status === "beklemede" || i.status === "onaylandi",
+  );
+  const iadeEdilebilir =
+    odendi &&
+    !["cancelled", "refunded"].includes(order.status) &&
+    !acikIadeVar;
+  const iadeTalebiAcilabilir = iadeEdilebilir && iadeAcikMi(order.created_at);
+
+  /*
     İNDİRİM ARVOARC'IN `discount` ALANINDAN OKUNAMIYOR.
 
     O alan havale indirimini taşımıyor ve canlıda sonucu şuydu
@@ -237,8 +256,29 @@ export function OrderDetail({
             </time>
             {/* Tutar başlıkta: sipariş sayfasını açan müşterinin ilk iki
                 sorusu "nerede" ve "ne kadardı". */}
-            <b className="detail-tutar">{formatPrice(order.total / 100)}</b>
-        </div>
+              <b className="detail-tutar">{formatPrice(order.total / 100)}</b>
+          </div>
+
+          {/*
+            EYLEMLER BAŞLIKTA.
+
+            "İade talebi oluştur" ürün listesinin DİBİNDEydi ve
+            sipariş uzunsa görünmüyordu; "siparişi tekrarla" diye
+            bir şey hiç yoktu — müşteri aynı ürünleri yeniden almak
+            için katalogda tek tek aramak zorundaydı.
+
+            İade düğmesi yalnızca talep GERÇEKTEN açılabiliyorsa
+            çiziliyor; forma indiriyor, çünkü hangi kalemin iade
+            edileceği orada seçiliyor.
+          */}
+          <div className="detail-eylemler">
+            {iadeTalebiAcilabilir && (
+              <a className="btn btn-ghost" href="#iade-talebi">
+                İade talebi oluştur
+              </a>
+            )}
+            <SiparisTekrarla order={order} />
+          </div>
         </div>
 
         {/*
@@ -552,14 +592,12 @@ export function OrderDetail({
             gönderdikten sonra "İade süresi dolmuş." duvarına
             tosluyordu. Sebebi burada, forma girmeden söylüyoruz.
           */}
-          {!["cancelled", "refunded"].includes(order.status)
-            && !iadeler.some((i) => i.status === "beklemede" || i.status === "onaylandi")
-            && !iadeAcikMi(order.created_at) && (
+          {iadeEdilebilir && !iadeAcikMi(order.created_at) && (
             <p className="order-return-closed">{iadeSuresiGectiMetni}</p>
           )}
 
-          {!["cancelled", "refunded"].includes(order.status) && !iadeler.some((i) => i.status === "beklemede" || i.status === "onaylandi") && iadeAcikMi(order.created_at) && (
-            <div className="order-return">
+          {iadeTalebiAcilabilir && (
+            <div className="order-return" id="iade-talebi">
               <ReturnRequest
                 orderNumber={order.order_number}
                 items={order.items.map((item) => ({

@@ -10585,3 +10585,21 @@ body.theme-modern .auth-alt .linklike:hover {
     gap: var(--s5);
   }
 }
+
+/* Başlık kartındaki eylemler. "İade talebi oluştur" ürün
+   listesinin DİBİNDEydi ve sipariş uzunsa görünmüyordu;
+   "siparişi tekrarla" diye bir şey hiç yoktu — müşteri aynı
+   ürünleri yeniden almak için katalogda tek tek arıyordu. */
+.detail-eylemler {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+  margin-top: var(--s2);
+}
+
+.detail-eylemler .form-note,
+.detail-eylemler .form-error {
+  flex-basis: 100%;
+  margin: 0;
+}

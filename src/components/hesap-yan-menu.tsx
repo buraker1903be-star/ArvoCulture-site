@@ -37,6 +37,13 @@ const BOLUMLER = [
     olduğunu kaybediyordu.
   */
   { href: "/hesap/siparislerim", ad: "Siparişlerim", onek: "/hesap/siparis" },
+  /*
+    İade talepleri ArvoARC'ta baştan beri okunabiliyordu
+    (`arc_storefront_my_returns`) ama yalnızca tek bir siparişin
+    detayından: müşteri "kaç talebim var, hangisi ne durumda"
+    sorusunu siparişleri tek tek açarak yanıtlıyordu.
+  */
+  { href: "/hesap/iade-taleplerim", ad: "İade taleplerim" },
   { href: "/hesap/kuponlarim", ad: "Kuponlarım" },
   { href: "/hesap/hediye-ceklerim", ad: "Hediye çeklerim" },
 ];
