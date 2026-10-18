@@ -64,47 +64,44 @@ export function ProductCard({
         */}
         {(product.available === false || off > 0 || cokSatan) && (
           <span className="card-flags">
+            {/*
+              SIRA: ÖNCE "ÇOK SATAN", SONRA İNDİRİM.
+
+              Haplar yukarıdan aşağıya diziliyor ve ikisi birden
+              çıktığında üstteki önce okunuyor. Üstte kanıt, altta
+              fiyat: müşteri önce ürünün tercih edildiğini görüyor,
+              indirimi onun üstüne biniyor. Ters sırada indirim tek
+              başına okunuyordu ve "ucuz olduğu için mi" sorusu
+              kanıttan önce geliyordu.
+            */}
+            {cokSatan && <b className="tag tag-best">Çok satan</b>}
+
+            {/*
+              İNDİRİM ROZETİ GÖRSELE GERİ DÖNDÜ (18.10.2026).
+
+              Rozet buradan alınıp fiyatın yanına taşınmıştı ve
+              gerekçesi doğruydu: dört DOYGUN KIRMIZI DİKDÖRTGEN
+              yan yana gelince sayfanın en gürültülü öğesi onlar
+              oluyor, göz ürünlerden önce rozetlere gidiyordu.
+
+              Sorun rozetin yeri değil BİÇİMİYDİ. Bu sefer cam
+              bir hap: beyaz yarı saydam zemin, indirim rengiyle
+              yazı, küçük. Göz önce ürünü görüyor, oranı hemen
+              sonra — ama kaydırırken fırsatı kaçırmıyor.
+
+              Metin "−%25" değil "%25 İNDİRİM": tek başına bir
+              eksi işareti ve sayı, ne olduğunu söylemiyordu.
+              Kelimeyi yazmak rozeti bir fiyat etiketinden
+              FIRSAT bildirimine çeviriyor.
+
+              Fiyatın yanındaki ikinci oran kaldırıldı: aynı
+              bilgiyi iki kez göstermek karta gürültü ekliyordu.
+            */}
             {product.available === false ? (
               <b className="tag tag-out">Tükendi</b>
             ) : (
-              /*
-                İNDİRİM ROZETİ GÖRSELE GERİ DÖNDÜ (18.10.2026).
-
-                Rozet buradan alınıp fiyatın yanına taşınmıştı ve
-                gerekçesi doğruydu: dört DOYGUN KIRMIZI DİKDÖRTGEN
-                yan yana gelince sayfanın en gürültülü öğesi onlar
-                oluyor, göz ürünlerden önce rozetlere gidiyordu.
-
-                Sorun rozetin yeri değil BİÇİMİYDİ. Bu sefer cam
-                bir hap: beyaz yarı saydam zemin, indirim rengiyle
-                yazı, küçük. Göz önce ürünü görüyor, oranı hemen
-                sonra — ama kaydırırken fırsatı kaçırmıyor.
-
-                Metin "−%25" değil "%25 İNDİRİM": tek başına bir
-                eksi işareti ve sayı, ne olduğunu söylemiyordu.
-                Kelimeyi yazmak rozeti bir fiyat etiketinden
-                FIRSAT bildirimine çeviriyor.
-
-                Fiyatın yanındaki ikinci oran kaldırıldı: aynı
-                bilgiyi iki kez göstermek karta gürültü ekliyordu.
-              */
               off > 0 && <b className="tag tag-off">%{off} İNDİRİM</b>
             )}
-            {/*
-              "ÇOK SATAN" DA ROZET OLDU (18.10.2026).
-
-              İndirim rozeti görselden alınıp künye satırına
-              taşınmış, sonra cam hap olarak görsele dönmüştü; "çok
-              satan" o taşımada künye satırında kalmıştı ve markanın
-              yanında, 10 punto soluk büyük harfle duruyordu —
-              kaydırırken kimse görmüyordu. İkisi de aynı köşede,
-              aynı hapta: biri fırsatı, diğeri KANITI söylüyor.
-
-              Rengi ayrı: indirim kırmızı, çok satan mürekkep. İki
-              kırmızı hap üst üste gelince hangisinin fiyatla ilgili
-              olduğu kayboluyordu.
-            */}
-            {cokSatan && <b className="tag tag-best">Çok satan</b>}
           </span>
         )}
         {/*
