@@ -25,8 +25,8 @@ import { shippingTerms } from "@/lib/order-quote";
 import { Reveal } from "@/components/reveal";
 import { RecentProducts } from "@/components/recent-products";
 import { ForYou } from "@/components/for-you";
-import { CATEGORIES, kategoriSayilariyla } from "@/lib/categories";
-import { getStorefrontCollections } from "@/lib/collections";
+import { CATEGORIES } from "@/lib/categories";
+import { getKategoriVitrinleri } from "@/lib/kategori-vitrini";
 import { vitrinAdresi } from "@/lib/konak";
 import {
   getStorefrontTheme,
@@ -112,19 +112,19 @@ export default async function Home({
   const shippingBadge = shippingTerms(await getSalesRules()).badge;
 
   /*
-    Kategori kartlarındaki ürün sayısı GERÇEK: koleksiyon listesinin
-    `product_count` alanından geliyor. O liste menü için zaten her
-    istekte okunuyor ve `cache` ile aynı istekte tek sorgu — kartlar
-    sayıyı bedavaya alıyor. Okunamazsa kart sayısız çiziliyor.
+    Kategori kartları artık kendi verisini taşıyor: ürün sayısı ve
+    içeriden üç gerçek ürün (lib/kategori-vitrini). Dört çağrı
+    paralel ve rota önbellekli; kategori sayfasının kullandığı
+    sorgunun aynısı, yani karttaki sayı ile sayfadaki sayı
+    birbirini tutuyor.
 
     `siteUrl` kategori şemasının tam adresleri için; ana sayfanın
     `ItemList`i yoktu (bkz. lib/seo → kategoriListesiSchema).
   */
-  const [koleksiyonlar, siteUrl] = await Promise.all([
-    getStorefrontCollections(),
+  const [categories, siteUrl] = await Promise.all([
+    getKategoriVitrinleri(),
     vitrinAdresi(),
   ]);
-  const categories = kategoriSayilariyla(CATEGORIES, koleksiyonlar);
 
   return (
     <main className="shell">

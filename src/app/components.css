@@ -6862,26 +6862,31 @@ body.theme-modern .tag-out {
 }
 
 /* ==========================================================
-   KATEGORİ ŞERİDİ — CANLI SÜRÜM (18.10.2026)
+   KATEGORİ ŞERİDİ — KATEGORİNİN KENDİ VİTRİNİ (18.10.2026)
 
-   Dört eşit kart, 3px köşe, dibe kadar koyu bir karartma ve
-   altında "KEŞFET" yazan ince bir çizgi vardı. Dört sorun
-   ölçüldü:
+   Önceki hâli: dört eşit kart, 3px köşe, dibe kadar koyu bir
+   karartma, her kartta aynı "KEŞFET" ve altında açılan ince bir
+   çizgi. Ekranda dört stok fotoğrafı duruyordu ve hiçbiri ne
+   sattığını söylemiyordu.
 
-   * köşe yarıçapı sayfanın geri kalanıyla çelişiyordu — panel ve
-     ürün kartı 18px, kategori kartı 3px (globals.css'teki modern
-     listede `.cat-card` yoktu);
-   * karartma 0,82'ye çıkıyor ve fotoğrafı öldürüyordu: beyaz
-     sayfada yan yana dört koyu dikdörtgen duruyordu;
-   * kartlar BİLGİ TAŞIMIYORDU, her birinde aynı "KEŞFET" yazıyordu;
-   * altı çizili büyük harfli bağlantı, düğmelerin hap olduğu bir
-     sayfada eski bir dil.
+   Bu bölümün ilk denemesi de yeterli bulunmadı (yalnızca köşe,
+   karartma ve ok değişmişti). Asıl eksik BİÇİM DEĞİL İÇERİKTİ:
 
-   Asimetri keyfi değil: katalogun büyük çoğunluğu ilk bölümde ve
-   kartın genişliği bunu söylüyor. Yükseklik farkı yok — satır
-   yüksekliğini ilk kart belirliyor, kalanlar ona uzuyor; hepsine
-   `aspect-ratio` verilseydi geniş kart daha uzun olur ve şerit
-   basamaklanırdı.
+   * kartta kategorinin büyüklüğü yok — "3.225 ürün" tek başına
+     girme sebebi;
+   * kartta tek bir ürün yok — müşteri ne satıldığını ancak
+     tıklayınca görüyor;
+   * kart hiçbir şeye karşılık vermiyor.
+
+   Şimdi: cam hap rozette gerçek ürün sayısı, altında kategorinin
+   içinden üç gerçek ürün ve masaüstünde ÜZERİNE GELİNEN KART
+   GENİŞLİYOR (komşular daralıyor, toplam yükseklik sabit).
+
+   Genişleme flex ile, grid ile değil: `flex-grow` geçişli bir
+   özellik ve kaç kart olduğundan bağımsız çalışıyor. Grid'de aynı
+   etki için her kart sırası (1., 2., 3., …) için ayrı bir
+   `grid-template-columns` yazmak gerekiyordu; kategori sayısı
+   değişince sessizce bozulurdu.
    ========================================================== */
 
 /*
@@ -6891,8 +6896,8 @@ body.theme-modern .tag-out {
 .cat-card-flag {
   position: absolute;
   z-index: 2;
-  top: var(--s2);
-  left: var(--s2);
+  top: var(--s3);
+  left: var(--s3);
   padding: 5px 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.92);
@@ -6907,11 +6912,26 @@ body.theme-modern .tag-out {
   box-shadow: 0 1px 2px rgba(16, 18, 15, 0.08);
 }
 
-body.theme-modern .cat-cards {
-  grid-template-columns: 1.55fr repeat(
-      calc(var(--cat-n, 4) - 1),
-      minmax(0, 1fr)
-    );
+/*
+  Kanıt sırası: kategorinin içinden üç gerçek ürün. Beyaz zemin
+  bilinçli — ürün çekimlerinin çoğu beyaz fonlu ve kare, koyu
+  fotoğrafın üstünde küçük beyaz kareler "ürün" olarak okunuyor.
+*/
+.cat-card-thumbs {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.cat-card-thumbs img {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #fff;
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.26),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45);
 }
 
 body.theme-modern .cat-card {
@@ -6922,47 +6942,31 @@ body.theme-modern .cat-card {
 }
 
 /*
-  Geniş kartın oranı HESAPLANMIŞ: 1,55fr genişliğindeki kart,
-  3/4 oranındaki komşularıyla aynı yükseklikte dursun diye
-  1,55 ÷ (4/3) = 1,1625. Oran fr birimleri üzerinden kurulduğu
-  için boşluk (gap) ne olursa olsun yükseklikler eşit kalıyor.
-
-  Denenen ve BIRAKILAN yol: komşulara `height: 100%` verip satır
-  yüksekliğini ilk karta bıraktırmak. Çalışıyor ama yüzdelik
-  yükseklik ızgara satırı kesinleşmeden çözülmek zorunda ve
-  içindeki fotoğraf `position: absolute` — tek bir tarayıcı
-  farkında kartlar yüksekliğini kaybeder ve fotoğraflar yok olur.
-  Oran hesabı aynı sonucu veriyor ve hiçbir şeye bağlı değil.
-*/
-body.theme-modern .cat-cards > :first-child .cat-card-art {
-  aspect-ratio: 1.1625;
-}
-
-/*
-  Karartma hafifledi ve daha yukarıdan başlıyor: yazının arkası
-  okunur kalıyor, fotoğrafın üst üçte ikisi açık duruyor.
+  Karartma hafifledi ve kademelendi: alt üçte bir yazıyı taşıyacak
+  kadar koyu, üstü açık. Eskiden 0,82'ye çıkıyor ve fotoğrafı
+  öldürüyordu — beyaz sayfada yan yana dört koyu dikdörtgen vardı.
 */
 body.theme-modern .cat-card-art::after {
   background: linear-gradient(
     to top,
-    rgba(12, 13, 12, 0.74) 0%,
-    rgba(12, 13, 12, 0.34) 26%,
-    rgba(12, 13, 12, 0.08) 50%,
-    transparent 72%
+    rgba(12, 13, 12, 0.8) 0%,
+    rgba(12, 13, 12, 0.5) 22%,
+    rgba(12, 13, 12, 0.12) 48%,
+    transparent 74%
   );
 }
 
 body.theme-modern .cat-card-body {
-  gap: 6px;
+  gap: 8px;
   padding: var(--s4) var(--s4) calc(var(--s4) + 2px);
 }
 
 body.theme-modern .cat-card-body strong {
-  font-size: clamp(20px, 1.7vw, 28px);
+  font-size: clamp(21px, 1.7vw, 29px);
   font-weight: 700;
   letter-spacing: -0.022em;
   /* Açık fotoğraflarda beyaz yazı kenarını kaybediyordu. */
-  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.32);
 }
 
 body.theme-modern .cat-card-body em {
@@ -6994,31 +6998,74 @@ body.theme-modern .cat-card:hover .cat-card-body em::after {
   transform: translateX(5px);
 }
 
+/* ---------- Masaüstü: genişleyen kartlar ----------------- */
+
+@media (min-width: 981px) {
+  /*
+    Yükseklik SABİT ve burada veriliyor. Kart genişliği değiştiği
+    için `aspect-ratio` kullanılamaz: genişleyen kart aynı anda
+    uzar, şerit zıplardı. Sabit yükseklikte yalnızca genişlik
+    değişiyor.
+  */
+  body.theme-modern .cat-cards {
+    display: flex;
+    height: clamp(360px, 29vw, 440px);
+  }
+
+  body.theme-modern .cat-card {
+    flex: 1 1 0;
+    min-width: 0;
+    transition: flex-grow 620ms var(--ease-out);
+  }
+
+  /* Açılıştaki vurgu ilk kartta: katalogun büyük çoğunluğu orada. */
+  body.theme-modern .cat-cards > :first-child {
+    flex-grow: 1.35;
+  }
+
+  body.theme-modern .cat-card-art {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+}
+
 /*
-  Dar ekranda asimetri yok: 1,55fr'lik kart telefonda iki sütunun
-  birini yiyip diğerini ezerdi. Geniş kartın oranı da geri
-  alınıyor, yoksa ilk kart yatık kalırdı.
+  Üzerine gelinen kart genişliyor, komşuları daralıyor. `hover:
+  hover` şart: dokunmatikte "üzerine gelme" diye bir şey yok ve
+  dokunulan kart açık kalır, kullanıcı başka yere basana kadar
+  şerit çarpık durur.
+*/
+@media (hover: hover) and (min-width: 981px) {
+  body.theme-modern .cat-cards:hover > * {
+    flex-grow: 0.86;
+  }
+
+  body.theme-modern .cat-cards > :hover {
+    flex-grow: 2.1;
+  }
+}
+
+/* ---------- Dar ekran ------------------------------------ */
+
+/*
+  Telefon ve tablette genişleme yok, ızgara duruyor (temel kurallar
+  ikişerli diziyor). Kanıt kareleri küçülüyor: 52px üç kare, 45vw
+  genişliğindeki kartta taşıyordu.
 */
 @media (max-width: 980px) {
-  body.theme-modern .cat-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  body.theme-modern .cat-card-body strong {
+    font-size: clamp(18px, 5vw, 23px);
   }
 
-  body.theme-modern .cat-cards > :first-child .cat-card-art {
-    aspect-ratio: 3 / 4;
-  }
-
-  /* Tek sayıda kartta ilk kart yine tam genişlik vitrin (bkz.
-     yukarıdaki `:has` kuralı); modern seçici onu da ezdiği için
-     burada tekrar yazılıyor. */
-  body.theme-modern .cat-cards:has(> :nth-child(odd):last-child)
-    > :first-child
-    .cat-card-art {
-    aspect-ratio: 16 / 10;
+  .cat-card-thumbs img {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  body.theme-modern .cat-card,
   body.theme-modern .cat-card-body em::after {
     transition: none;
   }

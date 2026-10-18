@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/product-card";
 import { Rail } from "@/components/rail";
 import type { Product } from "@/lib/product-types";
 import { categoryKey, urunSayisiYazisi } from "@/lib/categories";
-import type { KategoriKarti } from "@/lib/categories";
+import type { KategoriVitrini } from "@/lib/kategori-vitrini";
 import { JsonLd } from "@/components/json-ld";
 import { kategoriListesiSchema } from "@/lib/seo";
 
@@ -135,19 +135,13 @@ export function CategoryStrip({
   items,
   siteUrl,
 }: {
-  items: KategoriKarti[];
+  items: KategoriVitrini[];
   /* Şemadaki adresler TAM olmalı; göreli adres `ItemList` içinde
      çözümlenmiyor. Okunamazsa şema hiç basılmıyor — yarım bir
      işaretleme, işaretleme olmamasından kötü. */
   siteUrl?: string;
 }) {
   /*
-    Sütun sayısı kart sayısından geliyor (--cat-n). Izgara eskiden
-    `repeat(5, …)` ile sabitti; takviye kategorisi kalkıp beş kart dörde
-    inince masaüstünde beşinci sütun boş kaldı ve şeridin sağında bir
-    delik oluştu. Sayıyı buradan vermek, kategori eklenip çıktıkça
-    CSS'e dokunmayı gereksiz kılıyor.
-
     Telefonda kartlar ikişerli diziliyor; sayı TEKSE sonuncusu yalnız
     kalacağı için ilk kart tam genişlikte vitrin oluyor (CSS'te :has ile).
     `sizes` de buna bağlı: dört kartta ilk kart artık 90vw değil.
@@ -177,27 +171,60 @@ export function CategoryStrip({
                     Telefonda kart sayısı tekse ilk kart tam genişlik
                     (bkz. .cat-cards:has(…)), diğerleri ikişerli. Tek bir
                     "45vw" ilk kartı yarı çözünürlükte, bulanık çiziyordu.
+                    Masaüstünde kart üzerine gelince genişlediği için üst
+                    sınır genişleyen hâline göre verildi (~40vw).
                   */
                   sizes={
                     index === 0 && tekSayi
-                      ? "(max-width: 640px) 90vw, (max-width: 980px) 46vw, 24vw"
-                      : "(max-width: 640px) 42vw, (max-width: 980px) 46vw, 24vw"
+                      ? "(max-width: 640px) 90vw, (max-width: 980px) 46vw, 40vw"
+                      : "(max-width: 640px) 42vw, (max-width: 980px) 46vw, 40vw"
                   }
                 />
               </span>
+
               {/*
                 Ürün sayısı rozeti ürün kartlarıyla AYNI cam hap
                 (bkz. .tag-off): sayfada iki ayrı rozet biçimi
                 olursa kart kendi içinde çelişir. Sayı yoksa rozet
-                hiç çizilmiyor.
+                hiç çizilmiyor — "0 ürün" yazan bir kart müşteriyi
+                boş sayfaya çağırır.
               */}
               {item.urunSayisi ? (
                 <span className="cat-card-flag">
                   {urunSayisiYazisi(item.urunSayisi)}
                 </span>
               ) : null}
+
               <span className="cat-card-body">
                 <strong>{item.label}</strong>
+
+                {/*
+                  KATEGORİNİN İÇİNDEN ÜÇ GERÇEK ÜRÜN.
+
+                  Kart böylece "bir fotoğraf ve bir ad" olmaktan
+                  çıkıp kategorinin kendi vitrini oluyor; müşteri
+                  tıklamadan önce ne satıldığını görüyor. Görseller
+                  ürün kartlarındakiyle aynı kaynaktan.
+
+                  Ayrı bağlantı DEĞİL: kartın tamamı zaten bir
+                  bağlantı ve içine ikinci bir <a> koymak geçersiz
+                  HTML olurdu. Küçük kareler yalnızca kanıt.
+                */}
+                {item.urunler.length > 0 && (
+                  <span className="cat-card-thumbs" aria-hidden="true">
+                    {item.urunler.map((urun) => (
+                      <Image
+                        key={urun.slug}
+                        src={urun.gorsel}
+                        alt=""
+                        width={52}
+                        height={52}
+                        sizes="52px"
+                      />
+                    ))}
+                  </span>
+                )}
+
                 <em>Keşfet</em>
               </span>
             </Link>
@@ -211,7 +238,6 @@ export function CategoryStrip({
     </section>
   );
 }
-
 
 const HELP = [
   { label: "Kargom ne zaman çıkar?", href: "/teslimat" },

@@ -16,7 +16,7 @@ import { inferCategory } from "../src/lib/product-types";
 import {
   asciiSlug,
   kategoriAdresi,
-  kategoriSayilariyla,
+  KATEGORI_MENU_GRUPLARI,
   urunSayisiYazisi,
 } from "../src/lib/categories";
 
@@ -143,32 +143,26 @@ test("büyük küçük harf ve boşluk kategoriyi bozmuyor", () => {
  * kuruluyor. Eşleşmeyen ya da sıfır olan kategori SAYISIZ çizilmeli:
  * "0 ürün" yazan bir kart müşteriyi boş bir sayfaya çağırır.
  */
-test("kategori sayıları slug üzerinden bağlanıyor", () => {
-  const kartlar = kategoriSayilariyla(
-    [
-      { label: "Giyim", href: "/koleksiyon/giyim" },
-      { label: "Parfüm", href: "/koleksiyon/parfum" },
-    ],
-    [
-      { slug: "giyim", product_count: 3225 },
-      { slug: "parfum", product_count: 43 },
-      { slug: "baska", product_count: 9 },
-    ],
-  );
-  assert.equal(kartlar[0].urunSayisi, 3225);
-  assert.equal(kartlar[1].urunSayisi, 43);
+/*
+ * Kategori sayfalarının kapsamı menü GRUPLARINDAN geliyor; grup
+ * adları ArvoARC'taki `menu_group` değerleriyle birebir eşleşmek
+ * zorunda ve eşleşmeyen ad sessizce hiçbir şey getiriyor. Liste
+ * koleksiyon sayfasından buraya taşındı (ana sayfadaki kartlar da
+ * aynı grupları sayıyor); iki kopya ayrışırsa kart ile sayfa farklı
+ * sayı gösterirdi.
+ */
+test("dört kategorinin de menü grubu tanımlı", () => {
+  for (const kategori of ["giyim", "bakim", "kozmetik", "parfum"]) {
+    const gruplar = KATEGORI_MENU_GRUPLARI[kategori];
+    assert.ok(gruplar && gruplar.length > 0, kategori);
+  }
 });
 
-test("eşleşmeyen ve sıfır sayılı kategori sayısız kalıyor", () => {
-  const kartlar = kategoriSayilariyla(
-    [
-      { label: "Kozmetik", href: "/koleksiyon/kozmetik" },
-      { label: "Bakım", href: "/koleksiyon/bakim" },
-    ],
-    [{ slug: "kozmetik", product_count: 0 }],
-  );
-  assert.equal(kartlar[0].urunSayisi, undefined);
-  assert.equal(kartlar[1].urunSayisi, undefined);
+test("giyim tek bir gruba indirgenmiyor", () => {
+  /* Yalnızca "Giyim" grubunu arayınca 45 ürün geliyordu; giyim
+     kataloğu altı grupta duruyor ve ~3.250 ürün. */
+  assert.ok(KATEGORI_MENU_GRUPLARI.giyim.length >= 6);
+  assert.ok(KATEGORI_MENU_GRUPLARI.giyim.includes("Üst Giyim"));
 });
 
 test("sayı Türkçe binlik ayırıcıyla yazılıyor", () => {

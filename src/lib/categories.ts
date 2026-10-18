@@ -80,41 +80,69 @@ export const kategoriAdresi = (etiket: string): string => {
 
 
 /*
-  KATEGORİ KARTINDAKİ ÜRÜN SAYISI.
+  KARTTAKİ ÜRÜN SAYISININ YAZIMI.
 
   Kartlarda her kategorinin altında aynı "Keşfet" yazıyordu: dört
-  kart dört ayrı fotoğraftan başka hiçbir şey söylemiyordu. Müşteri
-  bölümün büyüklüğünü ancak içine girince görüyordu — oysa "3.225
-  ürün" tek başına girme sebebi.
-
-  Sayı ArvoARC'tan geliyor (`arc_storefront_collections.product_count`,
-  menünün de kullandığı çağrı: aynı istekte `cache` ile bir kez
-  okunuyor, ek sorgu YOK). Koda "binlerce ürün" yazmak gerçeğe
-  bağlanmayan bir pazarlama cümlesi olurdu; katalog her gün
-  değişiyor.
-
-  Eşleşme kategori anahtarı ile koleksiyon slug'ı üzerinden: anahtar
-  `/koleksiyon/<slug>` adresinin son parçası, yani zaten aynı şey.
-  Eşleşme yoksa ya da sayı sıfırsa alan BOŞ kalıyor — "0 ürün" yazan
-  bir kart, kategoriyi hiç göstermemekten kötü.
+  kart dört ayrı fotoğraftan başka hiçbir şey söylemiyordu. Sayının
+  kendisi `lib/kategori-vitrini`den geliyor; koda "binlerce ürün"
+  yazmak gerçeğe bağlanmayan bir pazarlama cümlesi olurdu.
 */
-export type KategoriKarti = SiteCategory & { urunSayisi?: number };
-
-export function kategoriSayilariyla(
-  items: SiteCategory[],
-  koleksiyonlar: Array<{ slug: string; product_count: number }>,
-): KategoriKarti[] {
-  const sayilar = new Map(
-    koleksiyonlar.map((koleksiyon) => [koleksiyon.slug, koleksiyon.product_count]),
-  );
-  return items.map((item) => {
-    const sayi = sayilar.get(categoryKey(item.href));
-    return Number.isFinite(sayi) && (sayi ?? 0) > 0
-      ? { ...item, urunSayisi: sayi }
-      : item;
-  });
-}
-
 /** 3225 → "3.225 ürün". */
 export const urunSayisiYazisi = (sayi: number): string =>
   `${sayi.toLocaleString("tr-TR")} ürün`;
+
+
+/*
+  SABİT KATEGORİ SAYFALARININ KAPSAMI.
+
+  Koleksiyon sayfasında duruyordu; ana sayfadaki kategori
+  kartları da aynı grupları sayınca iki kopya olurdu ve biri
+  güncellenmediğinde kart ile sayfa FARKLI sayı gösterirdi.
+
+  Dört kategori sayfası (/koleksiyon/giyim, /bakim, /kozmetik,
+  /parfum) ArvoARC'ta karşılığı olan koleksiyon DEĞİL; menü
+  gruplarından toplanıyor.
+*/
+export const KATEGORI_MENU_GRUPLARI: Record<string, string[]> = {
+  /*
+    GRUP ADLARI ÖLÇÜMDEN (17.10.2026).
+
+    Bu adlar ArvoARC'ta koleksiyon üstverisindeki `menu_group`
+    değerleriyle BİREBİR eşleşmek zorunda; eşleşmeyen ad sessizce
+    hiçbir şey getiriyor. Önce adları menünün ekrandaki
+    başlıklarından çıkarmaya çalıştım ve üçü de yanlış çıktı:
+    "Makyaj" ve "İhtiyaca Göre" diye grup YOK, "Kime Göre" ise
+    parfüm grubu değil — 3.264 ürünle bütün kataloğu kapsayan
+    çapraz bir grup. Doğru liste veritabanından sayıldı:
+
+      Üst Giyim 2228 · Çocuk 383 · Dış Giyim 232 · Alt Giyim 222 ·
+      Alt Üst Takım 111 · Giyim 45 · Aksesuar 37 · İç Giyim 27 ·
+      Kime Göre 3264 · Kişisel Bakım 90 · Parfüm 43 ·
+      Sorununa Göre 43 · Cilt Bakımı 35 · Diğer Bakımlar 24 ·
+      Vücut Bakımı 19 · Kampanyalar 17 · Kozmetik 13 · Saç Bakımı 3
+
+    Değişen tek şey "giyim": yalnızca "Giyim" grubunu (45 ürün)
+    arıyordu, oysa giyim kataloğu altı grupta duruyor ve ~3.250
+    ürün. Aksesuar burada yok: kendi sayfası var ve kemer ile gözlük
+    "giyim" değil.
+  */
+  giyim: [
+    "Giyim",
+    "Üst Giyim",
+    "Alt Giyim",
+    "Dış Giyim",
+    "Alt Üst Takım",
+    "İç Giyim",
+    "Çocuk",
+  ],
+  bakim: [
+    "Kişisel Bakım",
+    "Cilt Bakımı",
+    "Saç Bakımı",
+    "Vücut Bakımı",
+    "Diğer Bakımlar",
+    "Sorununa Göre",
+  ],
+  kozmetik: ["Kozmetik"],
+  parfum: ["Parfüm"],
+};

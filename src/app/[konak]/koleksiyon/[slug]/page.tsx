@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
-import { SABIT_KOLEKSIYONLAR } from "@/lib/categories";
+import { KATEGORI_MENU_GRUPLARI, SABIT_KOLEKSIYONLAR } from "@/lib/categories";
 import { breadcrumbSchema, collectionSchema } from "@/lib/seo";
 import { konagiAyarla, vitrinAdresi } from "@/lib/konak";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
@@ -21,56 +21,10 @@ import { getStorefrontTheme } from "@/lib/storefront-theme";
 /* Aynı liste yerleşimde 404 kararı için de okunuyor; tek yerde. */
 const labels = SABIT_KOLEKSIYONLAR;
 
-/*
-  SABİT KATEGORİ SAYFALARININ KAPSAMI.
-
-  Dört kategori sayfası (/koleksiyon/giyim, /bakim, /kozmetik,
-  /parfum) ArvoARC'ta karşılığı olan koleksiyon DEĞİL; menü
-  gruplarından toplanıyor.
-*/
-const menuGroups: Record<string, string[]> = {
-  /*
-    GRUP ADLARI ÖLÇÜMDEN (17.10.2026).
-
-    Bu adlar ArvoARC'ta koleksiyon üstverisindeki `menu_group`
-    değerleriyle BİREBİR eşleşmek zorunda; eşleşmeyen ad sessizce
-    hiçbir şey getiriyor. Önce adları menünün ekrandaki
-    başlıklarından çıkarmaya çalıştım ve üçü de yanlış çıktı:
-    "Makyaj" ve "İhtiyaca Göre" diye grup YOK, "Kime Göre" ise
-    parfüm grubu değil — 3.264 ürünle bütün kataloğu kapsayan
-    çapraz bir grup. Doğru liste veritabanından sayıldı:
-
-      Üst Giyim 2228 · Çocuk 383 · Dış Giyim 232 · Alt Giyim 222 ·
-      Alt Üst Takım 111 · Giyim 45 · Aksesuar 37 · İç Giyim 27 ·
-      Kime Göre 3264 · Kişisel Bakım 90 · Parfüm 43 ·
-      Sorununa Göre 43 · Cilt Bakımı 35 · Diğer Bakımlar 24 ·
-      Vücut Bakımı 19 · Kampanyalar 17 · Kozmetik 13 · Saç Bakımı 3
-
-    Değişen tek şey "giyim": yalnızca "Giyim" grubunu (45 ürün)
-    arıyordu, oysa giyim kataloğu altı grupta duruyor ve ~3.250
-    ürün. Aksesuar burada yok: kendi sayfası var ve kemer ile gözlük
-    "giyim" değil.
-  */
-  giyim: [
-    "Giyim",
-    "Üst Giyim",
-    "Alt Giyim",
-    "Dış Giyim",
-    "Alt Üst Takım",
-    "İç Giyim",
-    "Çocuk",
-  ],
-  bakim: [
-    "Kişisel Bakım",
-    "Cilt Bakımı",
-    "Saç Bakımı",
-    "Vücut Bakımı",
-    "Diğer Bakımlar",
-    "Sorununa Göre",
-  ],
-  kozmetik: ["Kozmetik"],
-  parfum: ["Parfüm"],
-};
+/* Kapsam listesi `lib/categories` içinde: ana sayfadaki kategori
+   kartları da aynı grupları sayıyor ve iki kopya ilk eklenen
+   grupta sessizce ayrışırdı. */
+const menuGroups = KATEGORI_MENU_GRUPLARI;
 
 /**
  * Birleştirilen koleksiyonlar.
