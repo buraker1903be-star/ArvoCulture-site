@@ -36,7 +36,7 @@ body {
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--backdrop-1);
+  background: var(--zemin-1);
   color: var(--ink);
   /*
     Font ailesi burada doğrudan yazılır, --font gibi bir ara
@@ -70,7 +70,7 @@ body::before {
       rgba(61, 74, 51, 0.016) 0 1px,
       transparent 1px 3px
     ),
-    linear-gradient(155deg, var(--backdrop-1) 0%, var(--backdrop-2) 100%);
+    linear-gradient(155deg, var(--zemin-1) 0%, var(--zemin-2) 100%);
 }
 
 /*
@@ -254,7 +254,9 @@ p {
 .panel {
   /* Dikey boşluk yataydan ayrı: bölümler nefes alsın (bkz. --pad-y). */
   padding: var(--pad-y) var(--pad);
-  border: 1px solid var(--line-soft);
+  /* Kenar zeminden türüyor: beyaz zeminde sabit kıl payı çizgi
+     kayboluyordu ve bölümler birbirine yapışıyordu. */
+  border: 1px solid var(--panel-kenar);
   border-radius: var(--r);
   background: var(--panel);
   box-shadow: var(--float);
