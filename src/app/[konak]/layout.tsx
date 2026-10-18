@@ -436,6 +436,21 @@ export default async function RootLayout({
                 </ul>
               </div>
 
+              {/*
+                KAPANIŞ İMZASI.
+
+                Altbilginin en altında, mağazanın adı çok büyük ve
+                çok soluk. Hiçbir bilgi taşımıyor — süs değil,
+                NOKTA: sayfanın bittiğini söyleyen şey. Altbilgi
+                bunsuz bir bağlantı listesi gibi bitiyordu.
+
+                Ekran okuyucudan gizli; ad zaten logoda ve telif
+                satırında var, üçüncü kez okunması gerekmiyor.
+              */}
+              <span className="footer-mark" aria-hidden="true">
+                {theme.store_name ?? "Mağaza"}
+              </span>
+
               <div className="footer-legal">
                 <small>
                   © 2026 {theme.store_name ?? "Mağaza"}. Tüm hakları

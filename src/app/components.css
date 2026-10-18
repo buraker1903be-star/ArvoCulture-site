@@ -8122,3 +8122,137 @@ body.theme-modern .footer-link-group a {
     grid-auto-flow: row;
   }
 }
+
+/* ==========================================================
+   ALTBİLGİ KOYU (18.10.2026)
+
+   Dört sütuna geçmek düzeni düzeltti ama altbilgi hâlâ SOLUK BİR
+   BANTTI: beyaz üstüne açık gri, her şey aynı ağırlıkta, sayfanın
+   bittiğini söyleyen hiçbir şey yok. Beyaz bir sayfa beyaz bir
+   altbilgiyle bitince sayfa bitmiyor, SÖNÜYOR.
+
+   Koyu altbilgi sayfayı kapatıyor ve kapakla birlikte sayfayı iki
+   ucundan çerçeveliyor: üstte koyu kapak fotoğrafı, ortada beyaz
+   içerik, altta mürekkep. Renk kampanya bandının aynısı — sayfada
+   tek bir koyu dil var, iki ayrı koyu değil.
+
+   İÇERİK BEYAZ KALIYOR: kural yalnızca altbilgiye bağlı ve "site
+   arka planı beyaz" kararını bozmuyor.
+   ========================================================== */
+
+body.theme-modern footer {
+  position: relative;
+  border-top: 0;
+  background:
+    radial-gradient(120% 140% at 12% 0%, rgba(169, 134, 52, 0.1) 0%, transparent 58%),
+    linear-gradient(180deg, #17181b 0%, #0c0d0f 100%);
+  color: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Üst kenarda altın saç teli: koyu yüzeyin beyaz sayfadan
+   koptuğu çizgi (kampanya bandındakiyle aynı). */
+body.theme-modern footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--rail);
+  width: clamp(60px, 14vw, 180px);
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+/* Logo koyu zeminde beyaza dönüyor; yeşil wordmark mürekkebin
+   üstünde okunmuyordu. */
+body.theme-modern .footer-logo {
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+
+body.theme-modern .footer-brand > p {
+  color: rgba(255, 255, 255, 0.64);
+}
+
+body.theme-modern .footer-contact a {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+body.theme-modern .footer-contact a:hover {
+  border-color: #fff;
+}
+
+body.theme-modern .footer-link-group strong {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.theme-modern .footer-link-group a {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (hover: hover) {
+  body.theme-modern .footer-link-group a:hover {
+    color: #fff;
+  }
+}
+
+/*
+  Rozet kartları AÇIK kalıyor: içlerindeki ETBİS ve LR logoları
+  beyaz fonlu resmî dosyalar, koyu zeminde kenarları görünür ve
+  "kesilmiş gibi" duruyorlar.
+*/
+body.theme-modern .badge-card {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+body.theme-modern .badge-card small {
+  color: var(--ink-2);
+}
+
+body.theme-modern .footer-pay,
+body.theme-modern .footer-legal {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.theme-modern .footer-pay small,
+body.theme-modern .footer-legal small {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+body.theme-modern .footer-credit {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+body.theme-modern .footer-credit img {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
+/* ---------- Kapanış imzası ------------------------------- */
+
+/*
+  Mağazanın adı çok büyük ve çok soluk, altbilginin tabanında.
+  Hiçbir bilgi taşımıyor; sayfanın bittiğini söyleyen NOKTA.
+  Taşan harfler kırpılıyor: kelimenin bantla birlikte devam
+  ettiğini söylüyor.
+*/
+body.theme-modern .footer-mark {
+  display: block;
+  margin: var(--s6) 0 calc(var(--s5) * -1);
+  overflow: hidden;
+  font-size: clamp(56px, 13vw, 190px);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.82;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.055);
+  user-select: none;
+}
+
+@media (max-width: 640px) {
+  body.theme-modern .footer-mark {
+    margin-bottom: calc(var(--s4) * -1);
+  }
+}
