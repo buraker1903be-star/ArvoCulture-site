@@ -43,7 +43,7 @@ export function ProductBuy({
   yurtdisiEngelli?: boolean;
 }) {
   /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
-  const { yaz, paraBirimi } = useParaBirimi();
+  const { yaz, paraBirimi, t } = useParaBirimi();
   const { add } = useContext(CartContext);
   const [renk, setRenk] = useState<string | null>(null);
   const [beden, setBeden] = useState<string | null>(null);
@@ -166,12 +166,9 @@ export function ProductBuy({
     return (
       <div className="pdp-buy">
         <button className="btn btn-block" type="button" disabled>
-          Seçenekler yüklenemedi
+          {t("secenekYuklenemedi")}
         </button>
-        <p className="stock-line">
-          Ürün seçenekleri şu anda alınamadı. Sayfayı yenileyin; sürerse
-          bize yazın.
-        </p>
+        <p className="stock-line">{t("secenekYuklenemediAciklama")}</p>
       </div>
     );
   }
@@ -197,12 +194,9 @@ export function ProductBuy({
     return (
       <div className="pdp-buy">
         <button className="btn btn-block" type="button" disabled>
-          Not available for international shipping
+          {t("yurtdisinaGonderilemez")}
         </button>
-        <p className="stock-line">
-          This product can only be shipped within Türkiye. Switch to ₺ if
-          your delivery address is in Türkiye.
-        </p>
+        <p className="stock-line">{t("yurtdisinaGonderilemezAciklama")}</p>
       </div>
     );
   }
@@ -211,9 +205,9 @@ export function ProductBuy({
     return (
       <div className="pdp-buy">
         <button className="btn btn-block" type="button" disabled>
-          Tükendi
+          {t("tukendi")}
         </button>
-        <p className="stock-line">Şu anda stokta yok</p>
+        <p className="stock-line">{t("stoktaYok")}</p>
       </div>
     );
   }
@@ -225,7 +219,7 @@ export function ProductBuy({
       {needsColor && (
         <>
           <label className="option-label" id="renk-etiketi">
-            Renk
+            {t("renk")}
           </label>
           <div className="sizes" role="radiogroup" aria-labelledby="renk-etiketi">
             {renkler.map((ad) => {
@@ -241,7 +235,7 @@ export function ProductBuy({
                   /* Tükenen ton gizlenmiyor, seçilemiyor: müşteri hangi
                      tonun bittiğini görmeli. */
                   disabled={!satilabilir}
-                  title={satilabilir ? undefined : "Bu ton tükendi"}
+                  title={satilabilir ? undefined : t("tonTukendi")}
                   onClick={() => {
                     setRenk(ad);
                     setBeden(null);
@@ -261,7 +255,7 @@ export function ProductBuy({
       {needsSize && (
         <>
           <label className="option-label" id="beden-etiketi">
-            Beden
+            {t("beden")}
           </label>
           <div
             className="sizes"
@@ -278,7 +272,7 @@ export function ProductBuy({
                 /* Stokta olmayan beden seçilemez ama gizlenmez:
                    müşteri hangi bedenin tükendiğini görmeli. */
                 disabled={!variant.available}
-                title={variant.available ? undefined : "Bu beden tükendi"}
+                title={variant.available ? undefined : t("bedenTukendi")}
                 onClick={() => {
                   setBeden(variant.size);
                   setWarn(false);
@@ -298,19 +292,23 @@ export function ProductBuy({
       */}
       {warn && (
         <p className="field-warn" role="alert">
-          Sepete eklemeden önce {needsColor && needsSize ? "renk ve beden" : needsColor ? "bir renk" : "bir beden"} seçin.
+          {needsColor && needsSize
+            ? t("renkBedenSec")
+            : needsColor
+              ? t("renkSec")
+              : t("bedenSec")}
         </p>
       )}
 
       <label className="option-label" id="adet-etiketi">
-        Adet
+        {t("adet")}
       </label>
 
       <div className="pdp-actions">
         <span className="quantity" aria-labelledby="adet-etiketi">
           <button
             type="button"
-            aria-label="Azalt"
+            aria-label={t("azalt")}
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
           >
             −
@@ -318,7 +316,7 @@ export function ProductBuy({
           <b>{quantity}</b>
           <button
             type="button"
-            aria-label="Artır"
+            aria-label={t("artir")}
             onClick={() => setQuantity(Math.min(20, quantity + 1))}
           >
             +
@@ -331,14 +329,14 @@ export function ProductBuy({
           className="btn"
           onClick={handleAdd}
         >
-          {done ? "Sepete eklendi ✓" : "Sepete ekle"}
+          {done ? `${t("sepeteEklendi")} ✓` : t("sepeteEkle")}
         </button>
       </div>
 
       <p className="stock-line" data-in-stock="true">
         {selected && selected.stock > 0 && selected.stock <= 5
-          ? `Son ${selected.stock} adet`
-          : "Stokta"}
+          ? t("sonAdet").replace("{n}", String(selected.stock))
+          : t("stokta")}
       </p>
 
       {/*
@@ -349,7 +347,7 @@ export function ProductBuy({
       */}
       <div className="pdp-sticky" data-acik={cubuk ? "evet" : "hayir"} aria-hidden={!cubuk}>
         <span className="pdp-sticky-fiyat">
-          <small>{selected ? displayVariantLabel(selected) : "Fiyat"}</small>
+          <small>{selected ? displayVariantLabel(selected) : t("fiyat")}</small>
           <b>{yaz(fiyat)}</b>
         </span>
         <button
@@ -358,7 +356,7 @@ export function ProductBuy({
           onClick={handleAdd}
           tabIndex={cubuk ? 0 : -1}
         >
-          {done ? "Eklendi ✓" : "Sepete ekle"}
+          {done ? t("eklendi") : t("sepeteEkle")}
         </button>
       </div>
     </div>

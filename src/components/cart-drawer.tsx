@@ -29,7 +29,7 @@ export function CartDrawer({
   onClose: () => void;
 }) {
   /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
-  const { yaz, paraBirimi } = useParaBirimi();
+  const { yaz, paraBirimi, t } = useParaBirimi();
   const { items, total, remove, setQuantity, discounts, salesRules } =
     useContext(CartContext);
   const [code, setCode] = useState("");
@@ -123,12 +123,12 @@ export function CartDrawer({
       className={`drawer-layer${closing ? " is-closing" : ""}`}
       role="dialog"
       aria-modal="true"
-      aria-label="Sepet"
+      aria-label={t("sepet")}
     >
       <button
         type="button"
         className="drawer-veil"
-        aria-label="Sepeti kapat"
+        aria-label={t("sepetiKapat")}
         onClick={close}
       />
 
@@ -137,21 +137,26 @@ export function CartDrawer({
           {/* Sayı başlıkta: müşteri kaç kalemi olduğunu listeyi
               saymadan görüyor. */}
           <h2>
-            Sepetim
+            {t("sepetim")}
             {items.length > 0 && (
-              <span className="drawer-sayi">{adet} ürün</span>
+              <span className="drawer-sayi">
+                {t(adet === 1 ? "urunSayisiTek" : "urunSayisi").replace(
+                  "{n}",
+                  String(adet),
+                )}
+              </span>
             )}
           </h2>
           <button type="button" onClick={close}>
-            Kapat
+            {t("kapat")}
           </button>
         </header>
 
         {items.length === 0 ? (
           <div className="drawer-empty">
-            <p>Sepetiniz boş.</p>
+            <p>{t("sepetBos")}</p>
             <Link className="btn" href="/koleksiyon/tumu" onClick={close}>
-              Alışverişe başla
+              {t("alisverisBasla")}
             </Link>
           </div>
         ) : (
@@ -171,7 +176,7 @@ export function CartDrawer({
             >
               <p>
                 {shipping === 0 ? (
-                  "Kargonuz ücretsiz."
+                  t("kargonuzUcretsiz")
                 ) : (
                   <>
                     <b>{yaz(remaining)}</b> daha ekleyin, kargo
@@ -213,7 +218,7 @@ export function CartDrawer({
                     <span className="quantity">
                       <button
                         type="button"
-                        aria-label="Azalt"
+                        aria-label={t("azalt")}
                         onClick={() =>
                           setQuantity(cartKey(item), item.quantity - 1)
                         }
@@ -223,7 +228,7 @@ export function CartDrawer({
                       <b>{item.quantity}</b>
                       <button
                         type="button"
-                        aria-label="Artır"
+                        aria-label={t("artir")}
                         onClick={() =>
                           setQuantity(cartKey(item), item.quantity + 1)
                         }
@@ -250,7 +255,7 @@ export function CartDrawer({
                       className="remove-item"
                       onClick={() => remove(cartKey(item))}
                     >
-                      Kaldır
+                      {t("kaldir")}
                     </button>
                   </div>
                 </li>
@@ -262,8 +267,8 @@ export function CartDrawer({
               <div className="coupon-form">
                 <input
                   type="text"
-                  placeholder="İndirim kodu"
-                  aria-label="İndirim kodu"
+                  placeholder={t("indirimKodu")}
+                  aria-label={t("indirimKodu")}
                   value={code}
                   onChange={(event) => {
                     const next = event.target.value.toUpperCase();
@@ -281,7 +286,7 @@ export function CartDrawer({
                       clearCoupon();
                     }}
                   >
-                    Sil
+                    {t("sil")}
                   </button>
                 )}
               </div>
@@ -290,7 +295,7 @@ export function CartDrawer({
                 <p className="coupon-warn">{coupon.reason}</p>
               )}
               {coupon?.ok && (
-                <p className="cart-saving">{coupon.label} uygulandı.</p>
+                <p className="cart-saving">{t("kuponUygulandi").replace("{kod}", coupon.label)}</p>
               )}
 
               {/*
@@ -304,42 +309,41 @@ export function CartDrawer({
               */}
               {coupon?.ok && kuponaTabi < total && (
                 <p className="coupon-note">
-                  İndirimdeki ürünler kupona dahil değil; kupon{" "}
-                  {yaz(kuponaTabi)} üzerinden uygulandı.
+                  {t("kuponHaricTutuldu").replace("{tutar}", yaz(kuponaTabi))}
                 </p>
               )}
 
               <dl className="summary-totals">
                 <div>
-                  <dt>Ara toplam</dt>
+                  <dt>{t("araToplam")}</dt>
                   <dd>{yaz(total)}</dd>
                 </div>
                 {discount > 0 && (
                   <div className="is-discount">
-                    <dt>İndirim</dt>
+                    <dt>{t("indirim")}</dt>
                     <dd>−{yaz(discount)}</dd>
                   </div>
                 )}
                 <div>
-                  <dt>Kargo</dt>
+                  <dt>{t("kargo")}</dt>
                   <dd>
                     {kargoSonra
-                      ? "Ödeme adımında"
+                      ? t("odemeAdiminda")
                       : shipping === 0
-                        ? "Ücretsiz"
+                        ? t("ucretsiz")
                         : yaz(shipping)}
                   </dd>
                 </div>
                 <div className="grand">
-                  <dt>Toplam</dt>
+                  <dt>{t("toplam")}</dt>
                   <dd>{yaz(afterDiscount + (kargoSonra ? 0 : shipping))}</dd>
                 </div>
               </dl>
               <Link className="btn btn-block" href="/odeme" onClick={close}>
-                Ödemeye geç
+                {t("odemeyeGec")}
               </Link>
               <Link className="drawer-link" href="/sepet" onClick={close}>
-                Sepet detayına git
+                {t("sepetDetayi")}
               </Link>
             </footer>
           </>

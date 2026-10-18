@@ -16,7 +16,7 @@ import {
   isValidPhone,
   phoneDigits,
 } from "@/lib/phone";
-import { eksikAlanlar, eksikMetni } from "@/lib/odeme-eksikleri";
+import { eksikAlanlar, eksikMetni, type EksikAlan } from "@/lib/odeme-eksikleri";
 import { evaluateCoupon, kuponaTabiToplam } from "@/lib/coupon";
 import type { Address } from "@/components/address-book";
 import { CheckoutSteps } from "@/components/checkout-steps";
@@ -52,15 +52,31 @@ const ARC_URL = "https://arc.arvo-os.com";
   yapacağını söylememek olurdu — başka bir ülke mi seçecek, Türkçe
   vitrine mi dönecek, bizimle mi iletişime geçecek?
 */
-const KARGO_ENGEL_METNI: Record<"mod" | "kur" | "bolge", string> = {
-  mod: "Şu anda yalnızca Türkiye'ye gönderim yapıyoruz.",
-  kur:
-    "Yurtdışı gönderim ücreti şu anda hesaplanamıyor. " +
-    "Kısa süre sonra tekrar deneyin ya da bizimle iletişime geçin.",
-  bolge:
-    "Seçtiğiniz ülkeye henüz gönderim yapamıyoruz. " +
-    "Başka bir ülke seçebilir ya da bizimle iletişime geçebilirsiniz.",
-};
+/*
+  EKSİK ALAN ADLARI DA ÇEVRİLİYOR.
+
+  `lib/odeme-eksikleri` Türkçe adlar döndürüyor ve o modül saf
+  kalmalı (testi var, sözlüğü tanımıyor). Eşleme burada: alanın
+  `data-alan` değeri → sözlük anahtarı. Listede olmayan bir alan
+  Türkçe adıyla kalıyor — eksik bir çeviri, hiç mesaj görmemekten
+  iyi.
+*/
+const EKSIK_ANAHTARI = {
+  name: "adSoyad",
+  email: "gecerliEposta",
+  phone: "gecerliTelefon",
+  city: "il",
+  district: "ilce",
+  line: "acikAdres",
+  onaylar: "sozlesmeOnaylari",
+  sepet: "sepetteUrunYok",
+} as const;
+
+const KARGO_ENGEL_ANAHTARI = {
+  mod: "engelMod",
+  kur: "engelKur",
+  bolge: "engelBolge",
+} as const;
 
 /** Kargo kuralı ArvoARC’taki fonksiyonla aynı tutulmalıdır. */
 
@@ -102,7 +118,7 @@ export function CheckoutForm({
   const { items, total, discounts, salesRules } = useContext(CartContext);
   /* Seçili para birimi: dolar seçiliyse tutarın dolar karşılığı da
      yazılıyor — ama ASIL rakam lira, çünkü tahsilat lira (aşağıda). */
-  const { paraBirimi } = useParaBirimi();
+  const { paraBirimi, t, dil } = useParaBirimi();
   const router = useRouter();
   const [saved, setSaved] = useState<Address[]>([]);
   const [selected, setSelected] = useState<string | "manual">("manual");
@@ -271,6 +287,15 @@ export function CheckoutForm({
   /* Ülke seçeneği yalnızca tarife tanımlıysa açılıyor: seçilince
      "bu ülkeye gönderim yapılmıyor" diyen bir liste, olmayan
      listeden kötü. */
+  /* Yurtdışında "İl" yerine "Şehir" yazıyor; eksik alan mesajı da
+     ekrandaki etiketi kullanmalı, yoksa müşteri aramadığı bir alan
+     adı okur. */
+  const etiketi = (alan: EksikAlan) => {
+    if (alan.alan === "city") return t(yurtDisi ? "sehir" : "il");
+    const anahtar = EKSIK_ANAHTARI[alan.alan as keyof typeof EKSIK_ANAHTARI];
+    return anahtar ? t(anahtar) : alan.mesaj;
+  };
+
   const ulkeler = teslimatUlkeleri(bolgeler);
   const ulkeSecilebilir = salesRules.internationalEnabled && ulkeler.length > 1;
 
@@ -371,7 +396,7 @@ export function CheckoutForm({
     const eksikler = eksikAlanlar(form, consents, items.length, telefonGecerli, yurtDisi);
     if (eksikler.length > 0) {
       setState("error");
-      setMessage(eksikMetni(eksikler));
+      setMessage(eksikMetni(eksikler, dil, etiketi));
       eksigeGotur(eksikler[0].alan);
       return;
     }
@@ -384,7 +409,7 @@ export function CheckoutForm({
     */
     if (kargoEngeli) {
       setState("error");
-      setMessage(KARGO_ENGEL_METNI[kargoEngeli]);
+      setMessage(t(KARGO_ENGEL_ANAHTARI[kargoEngeli]));
       eksigeGotur("country");
       return;
     }
@@ -396,8 +421,7 @@ export function CheckoutForm({
     if (eksik) {
       setState("error");
       setMessage(
-        `"${eksik.name}" için seçeneğini (ton/beden) belirtmeniz gerekiyor. ` +
-          "Ürün sayfasından seçip sepete yeniden ekleyin.",
+        t("secenekEksik").replace("{urun}", eksik.name),
       );
       return;
     }
@@ -461,7 +485,7 @@ export function CheckoutForm({
         setMessage(
           typeof data.couponRejected === "string"
             ? data.couponRejected
-            : "İndirim kodunuz artık geçerli değil. Sepetinizi kontrol edin.",
+            : t("kuponGecersizOldu"),
         );
         return;
       }
@@ -516,7 +540,7 @@ export function CheckoutForm({
         setState("error");
         setMessage(
           data.message ??
-            "Ödeme başlatılamadı. Lütfen birkaç dakika sonra tekrar deneyin.",
+            t("odemeBaslatilamadi"),
         );
         return;
       }
@@ -544,7 +568,7 @@ export function CheckoutForm({
       setState("paying");
     } catch {
       setState("error");
-      setMessage("Bağlantı kurulamadı. İnternet bağlantınızı kontrol edin.");
+      setMessage(t("baglantiKurulamadi"));
     }
   }
 
@@ -554,16 +578,14 @@ export function CheckoutForm({
         {/* Sepet sayfasının boş hâliyle aynı panel dili. Önceden
             paneli yoktu; başlık ekranın kenarına yapışıyordu. */}
         <section className="panel about-hero order-result">
-          <p className="about-eyebrow">Ödeme</p>
-          <h1>Sepetiniz boş.</h1>
-          <p className="about-lede">
-            Ödeme adımına geçmek için sepetinize ürün ekleyin.
-          </p>
+          <p className="about-eyebrow">{t("odeme")}</p>
+          <h1>{t("sepetBosBaslik")}</h1>
+          <p className="about-lede">{t("odemeBosSepet")}</p>
           <div className="order-actions">
             <Link className="btn" href="/koleksiyon/tumu">
-              Alışverişe başla
+              {t("alisverisBasla")}
             </Link>
-            <Link href="/koleksiyon/firsatlar">İndirimdeki ürünler</Link>
+            <Link href="/koleksiyon/firsatlar">{t("indirimdekiUrunler")}</Link>
           </div>
         </section>
       </main>
@@ -583,25 +605,25 @@ export function CheckoutForm({
       <section className="panel checkout-frame">
         <div className="head">
           <div>
-            <h2>Ödeme</h2>
-            <p>Kart bilgileriniz doğrudan ödeme kuruluşuna iletilir.</p>
+            <h2>{t("odeme")}</h2>
+            <p>{t("kartBilgileri")}</p>
           </div>
         </div>
 
         <iframe
           src={iframeUrl}
-          title="Güvenli ödeme"
+          title={t("guvenliOdeme")}
           allow="payment"
           /* PayTR 3D Secure için üst pencereye çıkabilmeli. */
           sandbox="allow-forms allow-scripts allow-same-origin allow-top-navigation allow-popups"
         />
 
         <p className="hint">
-          Ödeme sayfası yüklenmezse{" "}
+          {t("odemeYuklenmezse")}{" "}
           <a href={iframeUrl} rel="noreferrer">
-            bu bağlantıdan
+            {t("buBaglantidan")}
           </a>{" "}
-          devam edebilirsiniz.
+          {t("devamEdebilirsiniz")}
         </p>
       </section>
     );
@@ -612,16 +634,13 @@ export function CheckoutForm({
       {/* Sepet sayfasıyla aynı başlık: adımlar ve sayfanın adı. */}
       <section className="panel about-hero detail-hero">
         <CheckoutSteps current="teslimat" />
-        <h1>Teslimat ve ödeme</h1>
+        <h1>{t("teslimatVeOdeme")}</h1>
       </section>
 
       <div className="checkout">
         <section className="panel">
-          <h2>Teslimat bilgileri</h2>
-          <p className="hint">
-            Üye olmadan devam edebilirsiniz. Sipariş takibi, e-posta adresinize
-            gönderilen sipariş numarasıyla yapılır.
-          </p>
+          <h2>{t("teslimatBilgileri")}</h2>
+          <p className="hint">{t("uyeOlmadan")}</p>
 
           {saved.length > 0 && (
             <div className="address-picker">
@@ -638,7 +657,7 @@ export function CheckoutForm({
                   <strong>
                     {address.title}
                     {(address.tax_number ?? address.company_name) && (
-                      <em> / Kurumsal fatura</em>
+                      <em> / {t("kurumsalFatura")}</em>
                     )}
                   </strong>
                   <small>
@@ -660,23 +679,23 @@ export function CheckoutForm({
                   });
                 }}
               >
-                <strong>Yeni adres</strong>
-                <small>Elle girmek istiyorum</small>
+                <strong>{t("yeniAdres")}</strong>
+                <small>{t("elleGir")}</small>
               </button>
             </div>
           )}
 
           <div className="fields">
             <label>
-              Ad soyad
+              {t("adSoyad")}
               <input type="text" data-alan="name" autoComplete="name" {...field("name")} />
             </label>
             <label>
-              E-posta
+              {t("eposta")}
               <input type="email" data-alan="email" autoComplete="email" {...field("email")} />
             </label>
             <label>
-              Telefon
+              {t("telefon")}
               <input
                 type="tel"
                 data-alan="phone"
@@ -691,13 +710,13 @@ export function CheckoutForm({
               {form.phone && !telefonGecerli(form.phone) && (
                 <small className="field-warn">
                   {yurtDisi
-                    ? "Numarayı ülke koduyla yazın (örn. +49 171 1234567)."
-                    : "Cep telefonu 5 ile başlayan 10 haneli olmalı."}
+                    ? t("telefonYurtdisiUyari")
+                    : t("telefonTrUyari")}
                 </small>
               )}
             </label>
             <label>
-              Posta kodu
+              {t("postaKodu")}
               <input
                 type="text"
                 inputMode="numeric"
@@ -708,7 +727,7 @@ export function CheckoutForm({
             </label>
             {ulkeSecilebilir && (
               <label>
-                Ülke
+                {t("ulke")}
                 <select
                   data-alan="country"
                   autoComplete="country"
@@ -740,7 +759,7 @@ export function CheckoutForm({
               </label>
             )}
             <label>
-              {yurtDisi ? "Şehir" : "İl"}
+              {t(yurtDisi ? "sehir" : "il")}
               <input
                 type="text"
                 data-alan="city"
@@ -752,7 +771,7 @@ export function CheckoutForm({
               {/* Yurtdışında ilçe zorunlu değil: pek çok ülkede
                   ikinci bir idari kademe adreste yazılmıyor
                   (lib/odeme-eksikleri). */}
-              {yurtDisi ? "Eyalet / bölge (varsa)" : "İlçe"}
+              {t(yurtDisi ? "eyalet" : "ilce")}
               <input
                 type="text"
                 data-alan="district"
@@ -761,7 +780,7 @@ export function CheckoutForm({
               />
             </label>
             <label className="wide">
-              Açık adres
+              {t("acikAdres")}
               <textarea
                 rows={3}
                 data-alan="line"
@@ -771,7 +790,7 @@ export function CheckoutForm({
             </label>
           </div>
 
-          <h2>Onaylar</h2>
+          <h2>{t("onaylar")}</h2>
           <div className="consents" data-alan="onaylar">
             <label>
               <input
@@ -783,9 +802,9 @@ export function CheckoutForm({
               />
               <span>
                 <Link href="/on-bilgilendirme-formu" target="_blank">
-                  Ön Bilgilendirme Formu
+                  {t("onBilgilendirme")}
                 </Link>
-                ’nu okudum ve onaylıyorum.
+                {t("okudumOnayliyorum")}
               </span>
             </label>
             <label>
@@ -798,9 +817,9 @@ export function CheckoutForm({
               />
               <span>
                 <Link href="/mesafeli-satis-sozlesmesi" target="_blank">
-                  Mesafeli Satış Sözleşmesi
+                  {t("mesafeliSatis")}
                 </Link>
-                ’ni okudum ve kabul ediyorum.
+                {t("okudumKabul")}
               </span>
             </label>
             <label>
@@ -813,9 +832,9 @@ export function CheckoutForm({
               />
               <span>
                 <Link href="/kvkk-aydinlatma-metni" target="_blank">
-                  KVKK Aydınlatma Metni
+                  {t("kvkk")}
                 </Link>
-                ’ni okudum.
+                {t("okudum")}
               </span>
             </label>
             {/*
@@ -835,16 +854,12 @@ export function CheckoutForm({
               numarasının ne için kullanılacağını görmeli. Tek satır,
               işaret istemiyor.
             */}
-            <p className="consent-note">
-              Siparişinizin durumunu <strong>WhatsApp</strong> ve e-posta ile
-              bildiririz. Yalnızca siparişinizle ilgili bildirimler gönderilir;
-              tanıtım mesajı gönderilmez.
-            </p>
+            <p className="consent-note">{t("bildirimNotu")}</p>
           </div>
         </section>
 
         <aside className="panel summary">
-          <h2>Ödeme yöntemi</h2>
+          <h2>{t("odemeYontemi")}</h2>
 
           <BankTransfer
             seller={havale}
@@ -873,7 +888,7 @@ export function CheckoutForm({
             secildi={setHediyeCeki}
           />
 
-          <h2 style={{ marginTop: "var(--s5)" }}>Sipariş özeti</h2>
+          <h2 style={{ marginTop: "var(--s5)" }}>{t("siparisOzeti")}</h2>
 
           <ul className="summary-items">
             {items.map((item) => (
@@ -888,16 +903,16 @@ export function CheckoutForm({
 
           <dl className="summary-totals">
             <div>
-              <dt>Ara toplam</dt>
+              <dt>{t("araToplam")}</dt>
               <dd>{formatPrice(total)}</dd>
             </div>
             <div>
-              <dt>Kargo</dt>
+              <dt>{t("kargo")}</dt>
               <dd>
                 {kargoEngeli
                   ? "—"
                   : shipping === 0
-                    ? "Ücretsiz"
+                    ? t("ucretsiz")
                     : formatPrice(shipping)}
               </dd>
             </div>
@@ -924,11 +939,11 @@ export function CheckoutForm({
             {hediyeCeki && (
               <div>
                 <dt>Hediye çeki · {hediyeCeki}</dt>
-                <dd>Toplamdan düşülecek</dd>
+                <dd>{t("toplamdanDusulecek")}</dd>
               </div>
             )}
             <div className="grand">
-              <dt>Toplam</dt>
+              <dt>{t("toplam")}</dt>
               <dd>{formatPrice(payable)}</dd>
             </div>
           </dl>
@@ -954,14 +969,12 @@ export function CheckoutForm({
 
           {kargoEngeli && (
             <p className="field-warn" role="status">
-              {KARGO_ENGEL_METNI[kargoEngeli]}
+              {t(KARGO_ENGEL_ANAHTARI[kargoEngeli])}
             </p>
           )}
 
           {appliedCoupon?.ok && (
-            <p className="hint">
-              Kod indirimi, siparişiniz oluşturulurken toplamdan düşülür.
-            </p>
+            <p className="hint">{t("kodIndirimiNotu")}</p>
           )}
 
           {/* TL EŞİĞİ YURTDIŞINDA GEÇMİYOR: "şu kadar daha ekleyin,
@@ -984,7 +997,7 @@ export function CheckoutForm({
             aria-describedby={state === "error" ? "odeme-hatasi" : undefined}
             onClick={submit}
           >
-            {state === "sending" ? "Yönlendiriliyor…" : "Ödemeye geç"}
+            {state === "sending" ? t("yonlendiriliyor") : t("odemeyeGec")}
           </button>
 
           {state === "error" && (

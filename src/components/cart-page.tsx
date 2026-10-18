@@ -31,7 +31,7 @@ import {
  */
 export function CartPageView() {
   /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
-  const { yaz, paraBirimi } = useParaBirimi();
+  const { yaz, paraBirimi, t } = useParaBirimi();
   const { items, total, remove, setQuantity, salesRules } = useContext(CartContext);
 
   const [coupon, setCoupon] = useState("");
@@ -81,7 +81,7 @@ export function CartPageView() {
 
       if (!data.valid) {
         setCouponState("error");
-        setCouponMessage(data.message ?? "Bu kod geçerli değil.");
+        setCouponMessage(data.message ?? t("kodGecersiz"));
         return;
       }
 
@@ -91,10 +91,10 @@ export function CartPageView() {
       setCouponDiscount(Number(data.discountAmount ?? 0) / 100);
       setCouponFreeShipping(Boolean(data.freeShipping));
       setCouponState("idle");
-      setCouponMessage(data.message ?? "Kod uygulandı.");
+      setCouponMessage(data.message ?? t("kodUygulandi"));
     } catch {
       setCouponState("error");
-      setCouponMessage("Kod şu anda doğrulanamıyor. Tekrar deneyin.");
+      setCouponMessage(t("kodDogrulanamadi"));
     }
   }
   const [note, setNote] = useState("");
@@ -122,17 +122,14 @@ export function CartPageView() {
   if (items.length === 0) {
     return (
       <section className="panel order-result">
-        <p className="about-eyebrow">Sepetim</p>
-        <h1>Sepetiniz boş.</h1>
-        <p>
-          Seçkimize göz atın; beğendiğiniz ürünleri buradan
-          tamamlayabilirsiniz.
-        </p>
+        <p className="about-eyebrow">{t("sepetim")}</p>
+        <h1>{t("sepetBosBaslik")}</h1>
+        <p>{t("sepetBosAciklama")}</p>
         <div className="order-actions">
           <Link className="btn" href="/koleksiyon/tumu">
-            Alışverişe başla
+            {t("alisverisBasla")}
           </Link>
-          <Link href="/koleksiyon/firsatlar">İndirimdeki ürünler</Link>
+          <Link href="/koleksiyon/firsatlar">{t("indirimdekiUrunler")}</Link>
         </div>
       </section>
     );
@@ -142,7 +139,7 @@ export function CartPageView() {
     <>
       <section className="panel about-hero detail-hero">
         <CheckoutSteps current="sepet" />
-        <h1>Seçimlerinizi tamamlayın.</h1>
+        <h1>{t("secimleriTamamla")}</h1>
       </section>
 
       <div className="cart-layout">
@@ -150,10 +147,14 @@ export function CartPageView() {
           <section className="panel">
             <div className="head">
               <div>
-                <h2>Ürünler</h2>
+                <h2>{t("urunler")}</h2>
                 <p>
-                  {items.length} çeşit ·{" "}
-                  {items.reduce((sum, item) => sum + item.quantity, 0)} adet
+                  {t("cesitAdet")
+                    .replace("{c}", String(items.length))
+                    .replace(
+                      "{a}",
+                      String(items.reduce((sum, item) => sum + item.quantity, 0)),
+                    )}
                 </p>
               </div>
             </div>
@@ -183,7 +184,7 @@ export function CartPageView() {
                     <span className="quantity">
                       <button
                         type="button"
-                        aria-label="Azalt"
+                        aria-label={t("azalt")}
                         onClick={() => setQuantity(cartKey(item), item.quantity - 1)}
                       >
                         −
@@ -191,7 +192,7 @@ export function CartPageView() {
                       <b>{item.quantity}</b>
                       <button
                         type="button"
-                        aria-label="Artır"
+                        aria-label={t("artir")}
                         onClick={() => setQuantity(cartKey(item), item.quantity + 1)}
                       >
                         +
@@ -201,13 +202,15 @@ export function CartPageView() {
 
                   <div className="cart-item-price">
                     <b>{yaz(item.price * item.quantity)}</b>
-                    <small>{yaz(item.price)} / adet</small>
+                    <small>
+                      {yaz(item.price)} {t("birimFiyat")}
+                    </small>
                     <button
                       type="button"
                       className="remove-item"
                       onClick={() => remove(cartKey(item))}
                     >
-                      Kaldır
+                      {t("kaldir")}
                     </button>
                   </div>
                 </li>
@@ -218,17 +221,17 @@ export function CartPageView() {
           <section className="panel">
             <div className="head">
               <div>
-                <h2>Sipariş notu</h2>
-                <p>Teslimatla ilgili iletmek istediğiniz bir şey var mı?</p>
+                <h2>{t("siparisNotu")}</h2>
+                <p>{t("siparisNotuAciklama")}</p>
               </div>
             </div>
 
             <textarea
               className="cart-note"
-              aria-label="Sipariş notu"
+              aria-label={t("siparisNotu")}
               rows={3}
               maxLength={500}
-              placeholder="Örneğin: Kapıcıya teslim edilebilir, öğleden sonra evdeyim…"
+              placeholder={t("siparisNotuOrnek")}
               value={note}
               onChange={(event) => {
                 setNote(event.target.value);
@@ -246,7 +249,7 @@ export function CartPageView() {
                   setNoteSaved(true);
                 }}
               >
-                {noteSaved ? "Not kaydedildi ✓" : "Notu kaydet"}
+                {noteSaved ? t("notKaydedildi") : t("notuKaydet")}
               </button>
             </div>
           </section>
@@ -254,7 +257,7 @@ export function CartPageView() {
 
         <aside className="panel cart-summary">
           <div className="head">
-            <h2>Özet</h2>
+            <h2>{t("ozet")}</h2>
           </div>
 
           {/* İndirim kodu. Geçerliliği ödeme adımında sunucuda
@@ -262,8 +265,8 @@ export function CartPageView() {
           <div className="coupon-form">
             <input
               type="text"
-              placeholder="İndirim kodu"
-              aria-label="İndirim kodu"
+              placeholder={t("indirimKodu")}
+              aria-label={t("indirimKodu")}
               value={coupon}
               onChange={(event) => {
                 setCoupon(event.target.value.toUpperCase());
@@ -280,7 +283,7 @@ export function CartPageView() {
                   setCouponSaved(false);
                 }}
               >
-                Kaldır
+                {t("kaldir")}
               </button>
             ) : (
               <button
@@ -289,7 +292,7 @@ export function CartPageView() {
                 disabled={!coupon.trim() || couponState === "checking"}
                 onClick={applyCoupon}
               >
-                {couponState === "checking" ? "Kontrol ediliyor…" : "Uygula"}
+                {couponState === "checking" ? t("kontrolEdiliyor") : t("uygula")}
               </button>
             )}
           </div>
@@ -303,28 +306,28 @@ export function CartPageView() {
           {couponSaved && couponState !== "error" && (
             <p className="cart-saving">
               {couponDiscount > 0
-                ? `Kod uygulandı · ${yaz(couponDiscount)} indirim`
-                : "Kod uygulandı."}
+                ? t("kodUygulandiIndirim").replace("{tutar}", yaz(couponDiscount))
+                : t("kodUygulandi")}
             </p>
           )}
 
           <dl className="summary-totals">
             <div>
-              <dt>Ara toplam</dt>
+              <dt>{t("araToplam")}</dt>
               <dd>{yaz(total)}</dd>
             </div>
             <div>
-              <dt>Kargo</dt>
+              <dt>{t("kargo")}</dt>
               <dd>
                 {kargoSonra
-                  ? "Ödeme adımında"
+                  ? t("odemeAdiminda")
                   : shipping === 0
-                    ? "Ücretsiz"
+                    ? t("ucretsiz")
                     : yaz(shipping)}
               </dd>
             </div>
             <div className="grand">
-              <dt>Toplam</dt>
+              <dt>{t("toplam")}</dt>
               <dd>{yaz(total + (kargoSonra ? 0 : shipping))}</dd>
             </div>
           </dl>
@@ -336,7 +339,7 @@ export function CartPageView() {
           )}
 
           <Link className="btn btn-block" href="/odeme">
-            Ödemeye geç
+            {t("odemeyeGec")}
           </Link>
 
           <Link className="drawer-link" href="/koleksiyon/tumu">

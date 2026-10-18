@@ -95,11 +95,32 @@ export function eksikAlanlar(
   return eksik;
 }
 
-/** Müşteriye gösterilecek tek cümle. */
-export function eksikMetni(eksik: EksikAlan[]): string {
+/**
+ * Müşteriye gösterilecek tek cümle.
+ *
+ * ETİKETLER DIŞARIDAN VERİLEBİLİYOR: yurtdışı vitrini aynı alanları
+ * İngilizce adlandırıyor ("Province" / "İl") ve alan adlarını burada
+ * ikinci kez yazmak, iki listenin zamanla ayrışması demekti. Varsayılan
+ * davranış değişmedi — çağıran bir şey vermezse Türkçe metin.
+ *
+ * İNGİLİZCEDE CÜMLE KALIBI AYRI. Türkçe "A, B ve c eksik." kalıbı
+ * sondaki sözcüğü küçük harfe çeviriyor; İngilizcede bu hem yanlış
+ * ("... and street address are missing") hem de tekil/çoğul uyumu
+ * gerektiriyordu. "Please complete: …" kalıbı her sayıda alan için
+ * doğru ve kısa.
+ */
+export function eksikMetni(
+  eksik: EksikAlan[],
+  dil: "tr" | "en" = "tr",
+  etiket: (alan: EksikAlan) => string = (alan) => alan.mesaj,
+): string {
   if (eksik.length === 0) return "";
-  if (eksik.length === 1) return `${eksik[0].mesaj} eksik.`;
-  const sonuncu = eksik[eksik.length - 1].mesaj;
-  const oncekiler = eksik.slice(0, -1).map((e) => e.mesaj).join(", ");
+  const adlar = eksik.map(etiket);
+
+  if (dil === "en") return `Please complete: ${adlar.join(", ")}.`;
+
+  if (adlar.length === 1) return `${adlar[0]} eksik.`;
+  const sonuncu = adlar[adlar.length - 1];
+  const oncekiler = adlar.slice(0, -1).join(", ");
   return `${oncekiler} ve ${sonuncu.toLocaleLowerCase("tr-TR")} eksik.`;
 }

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { dolara, dolarYazisi } from "@/lib/dolar";
+import { ceviri, type Dil, type SozlukAnahtari } from "@/lib/sozluk";
 import { formatPrice } from "@/lib/product-types";
 import type { SalesRules } from "@/lib/order-quote";
 
@@ -41,6 +42,14 @@ type Deger = {
   secildi: (birim: ParaBirimi) => void;
   /** Lira tutarını seçili para biriminde yazar. */
   yaz: (lira: number) => string;
+  /*
+    DİL PARA BİRİMİNE BAĞLI. Başlıktaki düğme "TR ₺ / EN $" diyor;
+    iki ayrı seçim dört bileşim üretirdi (İngilizce + lira gibi) ve
+    ikisinin de müşterisi yok (lib/sozluk).
+  */
+  dil: Dil;
+  /** Arayüz metni, seçili dilde. */
+  t: (anahtar: SozlukAnahtari) => string;
 };
 
 const Baglam = createContext<Deger | null>(null);
@@ -97,10 +106,13 @@ export function ParaBirimiSaglayici({
 
   const deger = useMemo<Deger>(() => {
     const dolarda = paraBirimi === "USD" && dolarVar;
+    const dil: Dil = dolarda ? "en" : "tr";
     return {
       paraBirimi: dolarda ? "USD" : "TRY",
       dolarVar,
       secildi,
+      dil,
+      t: (anahtar: SozlukAnahtari) => ceviri(anahtar, dil),
       yaz: (lira: number) => {
         if (!dolarda) return formatPrice(lira);
         const usd = dolara(lira, salesRules.usdRate, salesRules.usdMarginPercent);
@@ -129,6 +141,11 @@ export function useParaBirimi(): Deger {
       dolarVar: false,
       secildi: () => {},
       yaz: (lira: number) => formatPrice(lira),
+      /* Sağlayıcı yoksa Türkçe: vitrinin asıl dili Türkçe ve bir
+         sayfada sağlayıcı unutulursa metnin İngilizce çıkması
+         sessiz bir hata olurdu. */
+      dil: "tr" as const,
+      t: (anahtar: SozlukAnahtari) => ceviri(anahtar, "tr"),
     }
   );
 }

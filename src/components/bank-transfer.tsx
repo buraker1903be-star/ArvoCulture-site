@@ -1,6 +1,7 @@
 "use client";
 
 import { BankDetails } from "@/components/bank-details";
+import { useParaBirimi } from "@/components/para-birimi";
 
 /**
  * Banka havalesi ile ödeme.
@@ -52,6 +53,12 @@ export function BankTransfer({
   onSelect: (useTransfer: boolean) => void;
   selected: boolean;
 }) {
+  /* Tutarlar LİRA kalıyor: tahsilat lira ve havale hesabı Türk
+     bankasında (bkz. checkout-form, "Tahsilat Türk lirası olarak
+     yapılır"). Burada dolar yazmak, müşteriye göndereceği tutarı
+     yanlış söylemek olurdu. */
+  const { t } = useParaBirimi();
+
   const money = (lira: number) =>
     new Intl.NumberFormat("tr-TR", {
       style: "currency",
@@ -70,8 +77,10 @@ export function BankTransfer({
           onChange={() => onSelect(false)}
         />
         <span>
-          <b>Kredi / banka kartı</b>
-          <small>3D Secure ile güvenli ödeme · {money(total)}</small>
+          <b>{t("kartOdemesi")}</b>
+          <small>
+            {t("kartGuvence")} · {money(total)}
+          </small>
         </span>
       </label>
 
@@ -85,12 +94,14 @@ export function BankTransfer({
           />
           <span>
             <b>
-              Banka havalesi / EFT
-              <em className="pay-badge">%{discountPercent} indirim</em>
+              {t("havale")}
+              <em className="pay-badge">
+                {t("havaleIndirimi").replace("{oran}", String(discountPercent))}
+              </em>
             </b>
             <small>
               <s>{money(total)}</s> {money(discounted)} ·{" "}
-              {money(discount)} tasarruf
+              {money(discount)} {t("tasarruf")}
             </small>
           </span>
         </label>
@@ -98,11 +109,7 @@ export function BankTransfer({
 
       {selected && transferEnabled && seller && (
         <BankDetails seller={seller}>
-          <p className="hint">
-            Siparişinizi tamamladıktan sonra aşağıdaki hesaba havale veya
-            EFT yapın. Açıklama kısmına sipariş numaranızı yazın; ödemeniz
-            onaylandığında siparişiniz hazırlanmaya başlar.
-          </p>
+          <p className="hint">{t("havaleAciklama")}</p>
         </BankDetails>
       )}
     </div>

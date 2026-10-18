@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useParaBirimi } from "@/components/para-birimi";
 
 /*
   Sipariş adımları: sepet, teslimat, ödeme.
@@ -7,10 +10,16 @@ import Link from "next/link";
   nerede olduğunu ve kaç adım kaldığını göremiyordu. Künye dilinde
   tek satır — geçilmiş adım geri dönüş bağlantısı oluyor.
 */
+/*
+  "use client" EKLENDİ: adım adları da çevriliyor ve çeviri seçimi
+  tarayıcıda. Bileşen zaten yalnızca istemci bileşenlerinin içinde
+  (sepet ve ödeme sayfaları) çiziliyordu, yani paket boyutu
+  değişmiyor — eklenen tek şey açıklık.
+*/
 const STEPS = [
-  { key: "sepet", label: "Sepet", href: "/sepet" },
-  { key: "teslimat", label: "Teslimat", href: null },
-  { key: "odeme", label: "Ödeme", href: null },
+  { key: "sepet", etiket: "adimSepet", href: "/sepet" },
+  { key: "teslimat", etiket: "adimTeslimat", href: null },
+  { key: "odeme", etiket: "adimOdeme", href: null },
 ] as const;
 
 export function CheckoutSteps({
@@ -18,19 +27,20 @@ export function CheckoutSteps({
 }: {
   current: (typeof STEPS)[number]["key"];
 }) {
+  const { t } = useParaBirimi();
   const currentIndex = STEPS.findIndex((step) => step.key === current);
 
   return (
-    <ol className="steps" aria-label="Sipariş adımları">
+    <ol className="steps" aria-label={t("siparisAdimlari")}>
       {STEPS.map((step, index) => (
         <li
           key={step.key}
           aria-current={index === currentIndex ? "step" : undefined}
         >
           {index < currentIndex && step.href ? (
-            <Link href={step.href}>{step.label}</Link>
+            <Link href={step.href}>{t(step.etiket)}</Link>
           ) : (
-            step.label
+            t(step.etiket)
           )}
         </li>
       ))}

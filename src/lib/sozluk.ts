@@ -1,0 +1,287 @@
+/**
+ * İki dilli arayüz metinleri.
+ *
+ * DİL PARA BİRİMİNE BAĞLI, ayrı bir seçeneğe değil: başlıktaki düğme
+ * "TR ₺ / EN $" diyor ve bu bilinçli. İki ayrı seçim (dil ve para
+ * birimi) dört bileşim üretirdi — İngilizce + lira, Türkçe + dolar —
+ * ve ikisinin de müşterisi yok; karşılığı iki kat metin ve iki kat
+ * sınanmamış hâl.
+ *
+ * KAPSAM TİCARİ YÜZEYLER: satın alma kutusu, sepet, ödeme ve sipariş
+ * onayı. Buraya girmeyen metinler VERİTABANI İÇERİĞİ (ürün adı,
+ * açıklama, koleksiyon başlığı) ya da uzun hukuki metinler. İkisi de
+ * çeviriyle değil, içerikle çözülür: ürün adını kodda çevirmek,
+ * panelden girilen adın yanında ikinci bir gerçek üretirdi.
+ *
+ * ÇEVİRİ YOKSA TÜRKÇE BASILIYOR (aşağıdaki `ceviri`): eksik bir
+ * anahtar boş metin bırakmıyor. Boş bir düğme, yabancı dildeki bir
+ * düğmeden kötü.
+ */
+
+export type Dil = "tr" | "en";
+
+/*
+  Anahtarlar ANLAMA göre, Türkçe metne göre değil: "Sepete ekle"
+  metnini anahtar yapmak, metni düzelten her değişikliğin çeviriyi
+  sessizce düşürmesi demekti.
+*/
+export const SOZLUK = {
+  /* --- Satın alma kutusu --- */
+  sepeteEkle: ["Sepete ekle", "Add to cart"],
+  sepeteEklendi: ["Sepete eklendi", "Added to cart"],
+  tukendi: ["Tükendi", "Sold out"],
+  stoktaYok: ["Şu anda stokta yok", "Currently out of stock"],
+  secenekYuklenemedi: ["Seçenekler yüklenemedi", "Options unavailable"],
+  secenekYuklenemediAciklama: [
+    "Ürün seçenekleri şu anda alınamadı. Sayfayı yenileyin; sürerse bize yazın.",
+    "Product options could not be loaded. Refresh the page; if it persists, contact us.",
+  ],
+  adet: ["Adet", "Quantity"],
+  renk: ["Renk", "Colour"],
+  beden: ["Beden", "Size"],
+  /*
+    ÜÇ AYRI CÜMLE, PARÇA BİRLEŞTİRMESİ DEĞİL. Önce "Sepete eklemeden
+    önce {ne} seçin" diye tek kalıp düşünüldü ama İngilizcede özne
+    ve sayı uyumu değişiyor ("a colour" / "a colour and a size") ve
+    kalıp doldurmak Türkçeye uyan, İngilizceye uymayan cümleler
+    üretirdi.
+  */
+  renkSec: [
+    "Sepete eklemeden önce bir renk seçin.",
+    "Please choose a colour before adding to cart.",
+  ],
+  bedenSec: [
+    "Sepete eklemeden önce bir beden seçin.",
+    "Please choose a size before adding to cart.",
+  ],
+  renkBedenSec: [
+    "Sepete eklemeden önce renk ve beden seçin.",
+    "Please choose a colour and a size before adding to cart.",
+  ],
+  bedenTukendi: ["Bu beden tükendi", "This size is sold out"],
+  tonTukendi: ["Bu ton tükendi", "This colour is sold out"],
+  stokta: ["Stokta", "In stock"],
+  /* {n} yerine sayı giriyor: dilde sayının yeri değişiyor
+     ("Son 3 adet" / "Only 3 left") ve cümleyi parçalara bölmek
+     İngilizcede ters sıraya düşerdi. */
+  sonAdet: ["Son {n} adet", "Only {n} left"],
+  fiyat: ["Fiyat", "Price"],
+  artir: ["Artır", "Increase"],
+  azalt: ["Azalt", "Decrease"],
+  eklendi: ["Eklendi ✓", "Added ✓"],
+  yurtdisinaGonderilemez: [
+    "Yurtdışına gönderilemiyor",
+    "Not available for international shipping",
+  ],
+  yurtdisinaGonderilemezAciklama: [
+    "Bu ürün yalnızca Türkiye içine gönderilebiliyor. Teslimat adresiniz Türkiye'deyse ₺ seçeneğine geçin.",
+    "This product can only be shipped within Türkiye. Switch to ₺ if your delivery address is in Türkiye.",
+  ],
+
+  /* --- Sepet --- */
+  sepet: ["Sepet", "Cart"],
+  sepetBos: ["Sepetiniz boş", "Your cart is empty"],
+  araToplam: ["Ara toplam", "Subtotal"],
+  kargo: ["Kargo", "Shipping"],
+  ucretsiz: ["Ücretsiz", "Free"],
+  odemeAdiminda: ["Ödeme adımında", "Calculated at checkout"],
+  toplam: ["Toplam", "Total"],
+  indirim: ["İndirim", "Discount"],
+  odemeyeGec: ["Ödemeye geç", "Checkout"],
+  sepetDetayi: ["Sepet detayına git", "View cart"],
+  sepetBosBaslik: ["Sepetiniz boş.", "Your cart is empty."],
+  sepetBosAciklama: [
+    "Seçkimize göz atın; beğendiğiniz ürünleri buradan tamamlayabilirsiniz.",
+    "Browse our selection; you can complete your order from here.",
+  ],
+  indirimdekiUrunler: ["İndirimdeki ürünler", "On sale"],
+  secimleriTamamla: ["Seçimlerinizi tamamlayın.", "Review your selection."],
+  urunler: ["Ürünler", "Items"],
+  /* "{c} çeşit · {a} adet": İngilizcede "line" ve "item" ayrımı
+     anlaşılmıyor, "products" ve "items" daha okunur. */
+  cesitAdet: ["{c} çeşit · {a} adet", "{c} products · {a} items"],
+  siparisNotu: ["Sipariş notu", "Order note"],
+  siparisNotuAciklama: [
+    "Teslimatla ilgili iletmek istediğiniz bir şey var mı?",
+    "Anything you would like us to know about the delivery?",
+  ],
+  siparisNotuOrnek: [
+    "Örneğin: Kapıcıya teslim edilebilir, öğleden sonra evdeyim…",
+    "For example: leave with the concierge, I am home in the afternoon…",
+  ],
+  notuKaydet: ["Notu kaydet", "Save note"],
+  notKaydedildi: ["Not kaydedildi ✓", "Note saved ✓"],
+  ozet: ["Özet", "Summary"],
+  uygula: ["Uygula", "Apply"],
+  kontrolEdiliyor: ["Kontrol ediliyor…", "Checking…"],
+  kodUygulandi: ["Kod uygulandı.", "Code applied."],
+  kodUygulandiIndirim: [
+    "Kod uygulandı · {tutar} indirim",
+    "Code applied · {tutar} off",
+  ],
+  kodGecersiz: ["Bu kod geçerli değil.", "This code is not valid."],
+  kodDogrulanamadi: [
+    "Kod şu anda doğrulanamıyor. Tekrar deneyin.",
+    "The code cannot be verified right now. Please try again.",
+  ],
+  kuponHaricTutuldu: [
+    "İndirimdeki ürünler kupona dahil değil; kupon {tutar} üzerinden uygulandı.",
+    "Discounted items are excluded; the code applied to {tutar}.",
+  ],
+  alisverisiSurdur: ["Alışverişe devam et", "Continue shopping"],
+  kaldir: ["Kaldır", "Remove"],
+  birimFiyat: ["/ adet", "each"],
+  kargonuzUcretsiz: ["Kargonuz ücretsiz.", "Your shipping is free."],
+  sepetim: ["Sepetim", "My cart"],
+  kapat: ["Kapat", "Close"],
+  sepetiKapat: ["Sepeti kapat", "Close cart"],
+  alisverisBasla: ["Alışverişe başla", "Start shopping"],
+  /* {n} ürün: İngilizcede tekil/çoğul ayrı ("1 item" / "2 items"),
+     bu yüzden iki anahtar. Tek bir kalıpla "1 items" yazmak,
+     çevirinin makineyle yapıldığını söyleyen en kısa cümle olurdu. */
+  urunSayisi: ["{n} ürün", "{n} items"],
+  urunSayisiTek: ["{n} ürün", "{n} item"],
+  indirimKodu: ["İndirim kodu", "Discount code"],
+  sil: ["Sil", "Clear"],
+  kuponUygulandi: ["{kod} uygulandı.", "{kod} applied."],
+
+  /* --- Ödeme --- */
+  teslimatBilgileri: ["Teslimat bilgileri", "Delivery details"],
+  adSoyad: ["Ad soyad", "Full name"],
+  eposta: ["E-posta", "Email"],
+  telefon: ["Telefon", "Phone"],
+  ulke: ["Ülke", "Country"],
+  sehir: ["Şehir", "City"],
+  il: ["İl", "Province"],
+  ilce: ["İlçe", "District"],
+  eyalet: ["Eyalet / bölge (varsa)", "State / region (if any)"],
+  postaKodu: ["Posta kodu", "Postal code"],
+  acikAdres: ["Açık adres", "Street address"],
+  siparisOzeti: ["Sipariş özeti", "Order summary"],
+  tahsilatLira: [
+    "Tahsilat Türk lirası olarak yapılır.",
+    "You will be charged in Turkish lira.",
+  ],
+  yaklasik: ["Yaklaşık", "Approximately"],
+  odeme: ["Ödeme", "Payment"],
+  odemeBosSepet: [
+    "Ödeme adımına geçmek için sepetinize ürün ekleyin.",
+    "Add an item to your cart to continue to checkout.",
+  ],
+  kartBilgileri: [
+    "Kart bilgileriniz doğrudan ödeme kuruluşuna iletilir.",
+    "Your card details go directly to the payment provider.",
+  ],
+  guvenliOdeme: ["Güvenli ödeme", "Secure payment"],
+  /* Bağlantı cümlenin İÇİNDE: "bu bağlantıdan" ve "this link" cümlede
+     ayrı yerlere düşüyor, bu yüzden iki parça halinde. */
+  odemeYuklenmezse: ["Ödeme sayfası yüklenmezse", "If the payment page does not load,"],
+  buBaglantidan: ["bu bağlantıdan", "use this link"],
+  devamEdebilirsiniz: ["devam edebilirsiniz.", "to continue."],
+  teslimatVeOdeme: ["Teslimat ve ödeme", "Delivery and payment"],
+  uyeOlmadan: [
+    "Üye olmadan devam edebilirsiniz. Sipariş takibi, e-posta adresinize gönderilen sipariş numarasıyla yapılır.",
+    "You can continue without an account. Track your order with the order number sent to your email.",
+  ],
+  kurumsalFatura: ["Kurumsal fatura", "Company invoice"],
+  yeniAdres: ["Yeni adres", "New address"],
+  elleGir: ["Elle girmek istiyorum", "I will enter it manually"],
+  telefonYurtdisiUyari: [
+    "Numarayı ülke koduyla yazın (örn. +49 171 1234567).",
+    "Enter the number with its country code (e.g. +49 171 1234567).",
+  ],
+  telefonTrUyari: [
+    "Cep telefonu 5 ile başlayan 10 haneli olmalı.",
+    "A Turkish mobile number has 10 digits and starts with 5.",
+  ],
+  onaylar: ["Onaylar", "Consents"],
+  sozlesmeOnaylari: ["Sözleşme onayları", "Consents"],
+  sepetteUrunYok: ["Sepetinizde ürün yok", "Your cart is empty"],
+  gecerliEposta: ["Geçerli bir e-posta adresi", "A valid email address"],
+  gecerliTelefon: ["Geçerli bir telefon numarası", "A valid phone number"],
+  /*
+    HUKUKİ METİNLER TÜRKÇE KALIYOR ve bu cümlede SÖYLENİYOR.
+    Sözleşmeyi makineyle çevirip "okudum ve kabul ediyorum"
+    dedirtmek, müşteriye okumadığı bir metni onaylatmak olurdu;
+    hukuki metnin çevirisi kod işi değil.
+  */
+  onBilgilendirme: ["Ön Bilgilendirme Formu", "Pre-Information Form"],
+  mesafeliSatis: ["Mesafeli Satış Sözleşmesi", "Distance Sales Agreement"],
+  kvkk: ["KVKK Aydınlatma Metni", "Privacy Notice"],
+  okudumOnayliyorum: [
+    "’nu okudum ve onaylıyorum.",
+    " (in Turkish) — I have read and approve it.",
+  ],
+  okudumKabul: [
+    "’ni okudum ve kabul ediyorum.",
+    " (in Turkish) — I have read and accept it.",
+  ],
+  okudum: ["’ni okudum.", " (in Turkish) — I have read it."],
+  bildirimNotu: [
+    "Siparişinizin durumunu WhatsApp ve e-posta ile bildiririz. Yalnızca siparişinizle ilgili bildirimler gönderilir; tanıtım mesajı gönderilmez.",
+    "We will notify you about your order by WhatsApp and email. Only order-related messages are sent; no marketing.",
+  ],
+  odemeYontemi: ["Ödeme yöntemi", "Payment method"],
+  kartOdemesi: ["Kredi / banka kartı", "Credit / debit card"],
+  kartGuvence: ["3D Secure ile güvenli ödeme", "Secure payment with 3D Secure"],
+  havale: ["Banka havalesi / EFT", "Bank transfer"],
+  havaleIndirimi: ["%{oran} indirim", "{oran}% off"],
+  tasarruf: ["tasarruf", "saved"],
+  havaleAciklama: [
+    "Siparişinizi tamamladıktan sonra aşağıdaki hesaba havale veya EFT yapın. Açıklama kısmına sipariş numaranızı yazın; ödemeniz onaylandığında siparişiniz hazırlanmaya başlar.",
+    "After completing your order, transfer the amount to the account below. Write your order number in the reference field; we start preparing your order once the payment is confirmed.",
+  ],
+  /* --- Adımlar --- */
+  adimSepet: ["Sepet", "Cart"],
+  adimTeslimat: ["Teslimat", "Delivery"],
+  adimOdeme: ["Ödeme", "Payment"],
+  siparisAdimlari: ["Sipariş adımları", "Checkout steps"],
+  toplamdanDusulecek: ["Toplamdan düşülecek", "Will be deducted from the total"],
+  yonlendiriliyor: ["Yönlendiriliyor…", "Redirecting…"],
+  kuponGecersizOldu: [
+    "İndirim kodunuz artık geçerli değil. Sepetinizi kontrol edin.",
+    "Your discount code is no longer valid. Please check your cart.",
+  ],
+  odemeBaslatilamadi: [
+    "Ödeme başlatılamadı. Lütfen birkaç dakika sonra tekrar deneyin.",
+    "Payment could not be started. Please try again in a few minutes.",
+  ],
+  baglantiKurulamadi: [
+    "Bağlantı kurulamadı. İnternet bağlantınızı kontrol edin.",
+    "Could not connect. Please check your internet connection.",
+  ],
+  secenekEksik: [
+    "\"{urun}\" için seçeneğini (ton/beden) belirtmeniz gerekiyor. Ürün sayfasından seçip sepete yeniden ekleyin.",
+    "Please choose an option (colour/size) for \"{urun}\". Select it on the product page and add it to your cart again.",
+  ],
+  kodIndirimiNotu: [
+    "Kod indirimi, siparişiniz oluşturulurken toplamdan düşülür.",
+    "The code discount is applied to the total when your order is created.",
+  ],
+  /* --- Yurtdışı kargo engelleri --- */
+  engelMod: [
+    "Şu anda yalnızca Türkiye'ye gönderim yapıyoruz.",
+    "We currently ship within Türkiye only.",
+  ],
+  engelKur: [
+    "Yurtdışı gönderim ücreti şu anda hesaplanamıyor. Kısa süre sonra tekrar deneyin ya da bizimle iletişime geçin.",
+    "International shipping cannot be calculated right now. Please try again shortly or contact us.",
+  ],
+  engelBolge: [
+    "Seçtiğiniz ülkeye henüz gönderim yapamıyoruz. Başka bir ülke seçebilir ya da bizimle iletişime geçebilirsiniz.",
+    "We cannot ship to the country you selected yet. You can choose another country or contact us.",
+  ],
+} as const;
+
+export type SozlukAnahtari = keyof typeof SOZLUK;
+
+/**
+ * Çeviri. Anahtar yoksa anahtarın kendisi DEĞİL Türkçe karşılığı
+ * dönüyor; tip denetimi zaten olmayan anahtarı yakalıyor, bu yalnızca
+ * çalışma anındaki son çare.
+ */
+export function ceviri(anahtar: SozlukAnahtari, dil: Dil): string {
+  const satir = SOZLUK[anahtar];
+  if (!satir) return anahtar;
+  return (dil === "en" ? satir[1] : satir[0]) || satir[0];
+}

@@ -110,3 +110,30 @@ test("yurtdışında şehir ve açık adres yine zorunlu", () => {
   ).map((e) => e.alan);
   assert.deepEqual(eksikler, ["city", "line"]);
 });
+
+/*
+  İNGİLİZCE CÜMLE KALIBI AYRI.
+
+  Türkçe "A, B ve c eksik." kalıbı sondaki sözcüğü küçük harfe
+  çeviriyor; İngilizcede bu hem yanlış hem tekil/çoğul uyumu
+  gerektiriyordu ("... and street address are missing").
+*/
+test("İngilizcede eksikler 'Please complete' kalıbıyla yazılıyor", () => {
+  const eksik = eksikAlanlar({ ...TAM, name: "", city: "" }, ONAYLI, 1, telefonGecerli);
+  assert.equal(
+    eksikMetni(eksik, "en", (alan) => (alan.alan === "name" ? "Full name" : "City")),
+    "Please complete: Full name, City.",
+  );
+  /* Tek alanda da aynı kalıp: İngilizcede "Full name is missing"
+     ile "... are missing" ayrımı gerekmiyor. */
+  assert.equal(
+    eksikMetni([eksik[0]], "en", () => "Full name"),
+    "Please complete: Full name.",
+  );
+});
+
+test("etiket verilmezse Türkçe davranış değişmiyor", () => {
+  /* Varsayılanı korumak önemli: çağıranların çoğu etiket vermiyor. */
+  const eksik = eksikAlanlar({ ...TAM, name: "" }, ONAYLI, 1, telefonGecerli);
+  assert.equal(eksikMetni(eksik), "Ad soyad eksik.");
+});
