@@ -300,7 +300,10 @@ export function LiveSearch({
                   {item.oldPrice && item.oldPrice > item.price && (
                     <del>{formatPrice(item.oldPrice)}</del>
                   )}
-                  {off > 0 && <span className="price-off">−%{off}</span>}
+                  {/* Metin ürün kartındaki rozetle aynı: tek başına
+                      bir eksi işareti ve sayı ne olduğunu
+                      söylemiyordu (18.10.2026). */}
+                  {off > 0 && <span className="price-off">%{off} indirim</span>}
                 </div>
               </article>
             );

@@ -7750,3 +7750,141 @@ body.vendor-off .card-brand {
     transform: none;
   }
 }
+
+/* ==========================================================
+   ARAMA KATMANI — MODERN SÜRÜM (18.10.2026)
+
+   Katmanın İŞİ zaten çalışıyordu: ilk harften itibaren sonuç
+   geliyor, sonuçta görsel, ad ve fiyat var. Sorun DİLİYDİ ve
+   sayfanın geri kalanı modern tipografiye geçerken burası
+   editoryal dilde kalmıştı:
+
+   * yer tutucu İTALİK SERİF ("Ürün, marka veya kategori ara") —
+     `--font-display-italic` modern temada bilerek serif kalıyor
+     (vurgulu başlık için) ve yer tutucu onu çağırıyordu;
+   * "KAPAT" ve "TEMİZLE" geniş aralıklı büyük harf;
+   * sık aranan terimler 20px serif ve alt çizgili — rozetlerin,
+     düğmelerin ve kategori haplarının hap olduğu bir sitede tek
+     alt çizgili metin grubu;
+   * sayfa 18px köşeye geçmişken katman 4px'te kalmıştı.
+
+   Terimlerin hap olması aynı zamanda DOKUNMA HEDEFİ kazandırıyor:
+   alt çizgili metnin tıklanabilir alanı yazının kendisi kadardı.
+   ========================================================== */
+
+body.theme-modern .search-sheet {
+  border-radius: 20px;
+}
+
+body.theme-modern .live-field input {
+  font-size: clamp(22px, 2.3vw, 30px);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+
+/* Yer tutucu da sans ve dik: italik serif, yazılan sorgunun
+   kendisinden başka bir yazı ailesindeydi. */
+body.theme-modern .live-field input::placeholder {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+}
+
+/* "Kapat" ve "Temizle" hap düğme: sayfadaki her eylem hap. */
+body.theme-modern .search-close,
+body.theme-modern .live-field button {
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--ink-2);
+  transition:
+    background-color 200ms var(--ease),
+    color 200ms var(--ease);
+}
+
+body.theme-modern .search-close {
+  margin-left: var(--s4);
+}
+
+body.theme-modern .search-close:hover,
+body.theme-modern .live-field button:hover {
+  background: color-mix(in srgb, var(--panel-2) 72%, var(--ink));
+  color: var(--panel);
+}
+
+body.theme-modern .search-heading {
+  letter-spacing: 0.08em;
+}
+
+/* --- Sık aranan terimler: hap --- */
+
+body.theme-modern .search-terms {
+  gap: var(--s2);
+}
+
+body.theme-modern .search-terms a,
+body.theme-modern .search-terms button {
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  transition:
+    background-color 200ms var(--ease),
+    border-color 200ms var(--ease),
+    transform 200ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  body.theme-modern .search-terms a:hover,
+  body.theme-modern .search-terms button:hover {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--panel);
+    transform: translateY(-1px);
+  }
+}
+
+/* --- Sonuç satırları --- */
+
+/*
+  Satırın tamamı vurgulanıyor. Önceden yalnızca ürün adı renk
+  değiştiriyordu: imlecin hangi satırda olduğu 56 piksellik
+  görselden ve 13 puntoluk addan anlaşılıyordu.
+*/
+body.theme-modern .live-results a {
+  padding: var(--s3) var(--s3);
+  border-radius: 14px;
+  transition: background-color 200ms var(--ease);
+}
+
+@media (hover: hover) {
+  body.theme-modern .live-results a:hover {
+    background: var(--panel-2);
+  }
+}
+
+body.theme-modern .live-thumb {
+  border-radius: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-modern .search-terms a,
+  body.theme-modern .search-terms button,
+  body.theme-modern .live-results a {
+    transition: none;
+  }
+  body.theme-modern .search-terms a:hover,
+  body.theme-modern .search-terms button:hover {
+    transform: none;
+  }
+}
