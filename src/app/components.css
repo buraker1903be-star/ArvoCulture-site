@@ -6724,3 +6724,71 @@ body.hero-editorial-orbs .hero-cta .btn:hover {
 body.hero-editorial-orbs .shell > .hero:first-child {
   margin-top: calc(var(--gap) * -1);
 }
+
+/* ==========================================================
+   ARAMA VE GÜVENCE PANELİ — MODERN DİL (18.10.2026)
+
+   Kapağın hemen altındaki panel editoryal dilde kalmıştı:
+   arama daveti İTALİK SERİF, "ARA" minik büyük harf, güvence
+   maddeleri ince. Kalın sans başlıkların ve hap düğmelerin
+   yanında iki ayrı siteden alınmış gibi duruyordu.
+
+   Arama en çok dönüşen yol: arayan müşteri ne istediğini biliyor.
+   O yüzden burada sessiz bir davet değil, görünür bir alan olmalı.
+   ========================================================== */
+
+body.theme-modern .search-box {
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-bottom-color: var(--line);
+  /* Hap: sayfadaki düğme diliyle aynı. */
+  border-radius: 999px;
+  background: var(--panel-2);
+  transition:
+    border-color 240ms var(--ease),
+    background-color 240ms var(--ease);
+}
+
+body.theme-modern .search-box:hover {
+  border-color: var(--ink-3);
+  background: var(--panel);
+}
+
+/* Davet metni sans ve düz: italik serif modern dille çelişiyordu. */
+body.theme-modern .search-box span {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-size: clamp(15px, 1.2vw, 17px);
+  font-style: normal;
+  letter-spacing: -0.01em;
+}
+
+/*
+  "ARA" künye yazısıydı ve tıklanabilir görünmüyordu; artık koyu
+  bir hap. Aramanın kendisi zaten tüm kutuya basınca açılıyor —
+  bu düğme niyeti GÖRÜNÜR kılıyor.
+*/
+body.theme-modern .search-box small,
+body.theme-modern .search-box b {
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/*
+  Güvence maddeleri: başlık koyu ve kalın, not sessiz. Beş madde
+  olabiliyor (katalog büyüklüğü eklenince), o yüzden sabit dört
+  sütun yerine akışkan.
+*/
+body.theme-modern .perks {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+body.theme-modern .perks strong {
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}

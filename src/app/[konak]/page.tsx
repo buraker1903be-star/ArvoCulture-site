@@ -116,7 +116,7 @@ export default async function Home({
     <main className="shell">
       <ThemePreviewBridge />
 
-      <Hero theme={theme} urunSayisi={facets.total || products.length} />
+      <Hero theme={theme} />
 
       {/*
         Arama, kupon ve güvence tek panelde. Önceden iki ayrı bant
@@ -151,7 +151,7 @@ export default async function Home({
           )}
         </div>
 
-        <Perks shippingBadge={shippingBadge} />
+        <Perks shippingBadge={shippingBadge} urunSayisi={facets.total} />
       </section>
 
       {/* Fiyat birinci öncelik: indirimler en üstte. */}
@@ -271,15 +271,7 @@ export default async function Home({
   );
 }
 
-function Hero({
-  theme,
-  urunSayisi,
-}: {
-  theme: StorefrontTheme;
-  /* Kapaktaki kanıt satırı için: katalogdan gelen gerçek sayı.
-     Yuvarlanmış bir pazarlama rakamı yazmıyoruz. */
-  urunSayisi: number;
-}) {
+function Hero({ theme }: { theme: StorefrontTheme }) {
   return (
     <section data-arvo-section="hero" className="panel hero">
       {theme.hero_image_url && (
@@ -344,34 +336,19 @@ function Hero({
         </div>
 
         {/*
-          KANIT SATIRI (18.10.2026).
+          KANIT SATIRI BURADAN KALDIRILDI (18.10.2026).
 
-          Kapakta yalnızca slogan ve iki düğme vardı: ne kadar ürün
-          olduğu, kargonun ne zaman ücretsiz olduğu, iadenin kaç gün
-          olduğu ilk ekranda hiç görünmüyordu — müşteri "bu mağaza
-          ciddi mi" sorusunu yanıtsız geçiyordu.
+          Kapağa üç rakam konmuştu ama hemen altındaki panelde
+          aynı şeyler zaten yazıyordu: "14 gün iade" ve "3D
+          Secure" iki kez, aralarında yüz piksel. Bir ekranda aynı
+          şeyi iki kez söylemek güven vermiyor, dikkat dağıtıyor.
 
-          Rakamlar GERÇEK: ürün sayısı katalogdan, kargo eşiği ve
-          iade süresi satış kurallarından (lib/order-quote,
-          lib/iade-penceresi). Sabit yazılsaydı mağaza tarifesini
-          değiştirdiği gün kapak yalan söylerdi — bu depoda daha
-          önce tam olarak bu oldu (AGENTS.md: "Sayfaya 120 TL /
-          2.000 TL yazmayın").
+          Rakamlar aşağıdaki panele taşındı (components/home-blocks
+          → Perks): oradaki maddeler BAĞLANTILI, yani müşteri
+          "14 gün iade" yazısına dokunup koşulları okuyabiliyor.
+          Kapakta yalnızca fotoğraf, başlık ve tek bir eylem
+          kalıyor.
         */}
-        <dl className="hero-kanit">
-          <div>
-            <dt>{urunSayisi.toLocaleString("tr-TR")}</dt>
-            <dd>seçilmiş ürün</dd>
-          </div>
-          <div>
-            <dt>{IADE_GUNU} gün</dt>
-            <dd>koşulsuz iade</dd>
-          </div>
-          <div>
-            <dt>3D Secure</dt>
-            <dd>güvenli ödeme</dd>
-          </div>
-        </dl>
 
         {/*
           Kategori kısayolları. Hero’nun altında, kaydırmadan
