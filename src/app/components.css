@@ -6587,3 +6587,124 @@ body.hero-split .hero {
 body.hero-split .hero-body {
   align-content: start;
 }
+
+/* ==========================================================
+   TAM GENİŞLİK SİNEMATİK KAPAK (tema → kapak: editorial-orbs)
+
+   Eski hâlinin sorunu DÜZ KARARTMAYDI: `.hero-veil` fotoğrafın
+   TAMAMINI soldan sağa bastırıyordu (sol kenarda %72 siyah).
+   Metin okunuyordu ama fotoğraf ölüyordu — model, ürün, ışık
+   hiçbiri görünmüyordu. Moda ve kozmetikte satışı yapan şey o
+   fotoğraf.
+
+   Yeni tarif:
+   - Gradyan yalnızca ALTTAN yukarı açılıyor; üst yarı tamamen
+     temiz kalıyor, fotoğraf canlı duruyor.
+   - Kapak ekranın tamamını kaplıyor (kabuk boşluğundan çıkıyor).
+   - Başlık büyüyor; içerik alta çapalanıyor.
+
+   `margin-inline: calc(50% - 50vw)` kabuk sınırını kırıyor.
+   Yatay kaydırma riski yok: `html, body { overflow-x: clip }`
+   zaten var (globals.css).
+   ========================================================== */
+
+body.hero-editorial-orbs .hero {
+  margin-inline: calc(50% - 50vw);
+  width: 100vw;
+  max-width: 100vw;
+  min-height: min(84vh, 780px);
+  align-items: end;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/*
+  Gradyan alttan. Üstte tamamen saydam: fotoğrafın yüzü, ışığı ve
+  rengi olduğu gibi görünüyor. Metnin oturduğu alt üçte birde
+  koyulaşıyor.
+*/
+body.hero-editorial-orbs .hero-veil {
+  /*
+    İKİ KATMAN. Alttan yükselen gradyan metnin oturduğu alanı
+    güvene alıyor; üstüne çok hafif bir genel koyuluk biniyor.
+
+    Tek başına gradyan YETMEDİ (ölçüldü): bu fotoğrafın üst yarısı
+    gökyüzü, yani açık — beyaz başlık orada okunmuyordu. Panelden
+    başka bir fotoğraf yüklendiğinde de aynı risk var ve kapak
+    hangi fotoğrafla olursa olsun okunur kalmalı.
+
+    %18 bilinçli bir denge: fotoğrafın rengi ve ışığı duruyor
+    (eski düz karartma solda %72'ydi ve fotoğrafı öldürüyordu),
+    ama metnin altında her zaman bir taban var.
+  */
+  background:
+    linear-gradient(
+      to top,
+      rgba(10, 11, 9, 0.88) 0%,
+      rgba(10, 11, 9, 0.7) 28%,
+      rgba(10, 11, 9, 0.34) 54%,
+      rgba(10, 11, 9, 0.08) 74%,
+      transparent 88%
+    ),
+    rgba(10, 11, 9, 0.18);
+}
+
+body.hero-editorial-orbs .hero-body {
+  max-width: min(54rem, 92vw);
+  padding: var(--s7) max(var(--edge), 6vw) var(--s7);
+}
+
+/*
+  Başlık sayfanın en büyük sesi. Tam genişlik kapakta 56 piksel
+  küçük kalıyordu; ekranın yarısını kaplayan bir fotoğrafın
+  üstünde başlık da o ölçekte olmalı.
+*/
+body.hero-editorial-orbs .hero-body h1 {
+  font-size: clamp(38px, 6vw, 86px);
+  line-height: 1.02;
+}
+
+body.hero-editorial-orbs .hero-lede {
+  max-width: 38rem;
+  font-size: clamp(15px, 1.4vw, 19px);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/*
+  Birincil düğme beyaz: koyu gradyanın üstünde en yüksek karşıtlık
+  ondan geliyor ve göz doğrudan oraya gidiyor.
+*/
+body.hero-editorial-orbs .hero-cta .btn {
+  background: #fff;
+  border-color: #fff;
+  color: #111;
+}
+
+body.hero-editorial-orbs .hero-cta .btn:hover {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+/* Telefonda: biraz daha kısa ve gradyan daha erken koyulaşıyor —
+   dar ekranda metin fotoğrafın daha büyük kısmını kaplıyor. */
+@media (max-width: 860px) {
+  body.hero-editorial-orbs .hero {
+    min-height: min(78vh, 620px);
+  }
+
+  body.hero-editorial-orbs .hero-veil {
+    background: linear-gradient(
+      to top,
+      rgba(10, 11, 9, 0.9) 0%,
+      rgba(10, 11, 9, 0.7) 32%,
+      rgba(10, 11, 9, 0.28) 58%,
+      transparent 86%
+    );
+  }
+
+  body.hero-editorial-orbs .hero-body {
+    padding-inline: var(--pad);
+  }
+}
