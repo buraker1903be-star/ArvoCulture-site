@@ -6304,3 +6304,45 @@
     transition: transform 0.22s ease;
   }
 }
+
+/*
+  TELEFONDA DOKUNMA HEDEFLERİ (18.10.2026).
+
+  Ölçüldü (375px, koleksiyon sayfası): kart üzerindeki "Sepete
+  ekle" 40px, favori düğmesi 40×40, sıralama seçicisi 38px —
+  hepsi 44'ün altında. Üçü de kartın aynı köşesinde ya da hemen
+  yanında duruyor; başparmakla yanlış olana basmak kolay.
+
+  44 piksel Apple'ın, 48 Google'ın tabanı. Burada 44 seçildi:
+  48'e çıkarmak kart ızgarasının düşey ritmini bozuyordu.
+
+  YALNIZCA DOKUNMATİKTE. `pointer: coarse` sorgusu fare
+  kullanıcısını etkilemiyor; masaüstünde 40px düğme zaten
+  rahat ve büyütmek görsel dengeyi bozardı.
+*/
+@media (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+  }
+
+  .fav-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  /*
+    Simge aynı kalıyor: büyüyen şey dokunma alanı, görsel ağırlık
+    değil. Daire büyütülüp simge de büyütülseydi kart köşesinde
+    ürünle yarışan bir öğe olurdu.
+  */
+  .fav-button svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .filters-toggle,
+  .collection-sort select,
+  select {
+    min-height: 44px;
+  }
+}
