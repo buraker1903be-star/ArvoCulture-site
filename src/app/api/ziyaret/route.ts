@@ -70,10 +70,19 @@ export async function POST(request: Request) {
     );
   } catch (hata) {
     /*
-      Sayaç İKİNCİL İŞ. Yazılamadıysa müşteriye hiçbir şey
-      olmamalı; yalnızca günlüğe düşüyor.
+      Sayaç İKİNCİL İŞ: yazılamadıysa müşteriye hiçbir şey
+      olmamalı. Ama yanıt "ok" DEMİYOR — uç her durumda başarı
+      döndürürken yazmanın düşüp düşmediği hiçbir yerden
+      anlaşılamıyordu; tarayıcıdan tek bir istekle sınamak
+      mümkün değildi.
     */
     console.error("Ziyaret kaydedilemedi:", hata);
+    return NextResponse.json({
+      ok: false,
+      /* Sır değil: fonksiyon adı ve durum kodu. Anahtar ya da
+         istek gövdesi dönmüyor. */
+      hata: hata instanceof Error ? hata.message.slice(0, 200) : "bilinmiyor",
+    });
   }
 
   return NextResponse.json({ ok: true });

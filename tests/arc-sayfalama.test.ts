@@ -18,7 +18,7 @@ process.env.ARC_SUPABASE_URL ??= "https://ornek.supabase.co";
 process.env.ARC_SUPABASE_PUBLISHABLE_KEY ??= "anahtar";
 process.env.ARC_ORGANIZATION_ID ??= "00000000-0000-4000-8000-000000000001";
 
-const { rpcTumSayfalar } = await import("@/lib/arc");
+const { rpcTumSayfalar, rpc } = await import("@/lib/arc");
 
 type Cagri = { p_limit: number; p_offset: number };
 
@@ -32,7 +32,11 @@ function sahteSunucu(toplam: number, cagrilar: Cagri[]) {
     return {
       ok: true,
       status: 200,
+      /* Gerçek Response'ta ikisi de var; `istek` artık gövdeyi
+         metin okuyup boşsa null sayıyor (void dönen fonksiyonlarda
+         PostgREST boş gövde veriyor). */
       json: async () => satirlar,
+      text: async () => JSON.stringify(satirlar),
     } as unknown as Response;
   };
 }
@@ -43,7 +47,12 @@ function basligiYokSayanSunucu(toplam: number) {
     const govde = JSON.parse(init.body) as Cagri;
     const satirlar = Array.from({ length: toplam }, (_, i) => ({ slug: `u-${i}` }))
       .slice(0, govde.p_limit);
-    return { ok: true, status: 200, json: async () => satirlar } as unknown as Response;
+    return {
+      ok: true,
+      status: 200,
+      json: async () => satirlar,
+      text: async () => JSON.stringify(satirlar),
+    } as unknown as Response;
   };
 }
 
@@ -99,4 +108,31 @@ test("sayfa sınırı aşılırsa liste şişmiyor", async () => {
     rpcTumSayfalar("f", {}, {}, { sayfaBoyutu: 100, enFazlaSayfa: 3 }),
   );
   assert.equal(satirlar.length, 300);
+});
+
+test("boş gövde hata değil: void dönen fonksiyon başarılı sayılıyor", async () => {
+  /*
+    `returns void` bir fonksiyonda PostgREST 204 ve BOŞ gövde
+    dönüyor; `response.json()` orada "Unexpected end of JSON
+    input" fırlatıyordu. İşini yapmış bir çağrı başarısız
+    görünüyor ve çağıran taraf onu yeniden deneyebiliyordu —
+    ziyaret sayacında tam bu oldu (19.10.2026).
+  */
+  const eski = globalThis.fetch;
+  globalThis.fetch = (async () =>
+    ({
+      ok: true,
+      status: 204,
+      json: async () => {
+        throw new SyntaxError("Unexpected end of JSON input");
+      },
+      text: async () => "",
+    }) as unknown as Response) as typeof fetch;
+
+  try {
+    const sonuc = await rpc("arc_storefront_visit", { p_path: "/" });
+    assert.equal(sonuc, null);
+  } finally {
+    globalThis.fetch = eski;
+  }
 });

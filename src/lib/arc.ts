@@ -128,7 +128,18 @@ async function istek<TParams extends object>(
     );
   }
 
-  return await response.json();
+  /*
+    BOŞ GÖVDE HATA DEĞİL.
+
+    `returns void` bir fonksiyonda PostgREST 204 ve BOŞ gövde
+    dönüyor; `response.json()` o gövdede "Unexpected end of JSON
+    input" fırlatıyordu. Yani işini yapmış bir çağrı başarısız
+    görünüyor ve çağıran taraf onu yeniden deneyebiliyordu.
+    Ziyaret sayacında tam bu oldu (19.10.2026).
+  */
+  const metin = await response.text();
+  if (metin.trim() === "") return null;
+  return JSON.parse(metin);
 }
 
 export async function rpc<TResult, TParams extends object = object>(
