@@ -52,8 +52,16 @@ export type StorefrontTheme = {
   manifest_description: string;
   apparel_title: string;
   apparel_description: string;
+  /* "Ana koleksiyonlar" bandının görselleri ve bağlantıları.
+     Panelde bölüm 29.09.2026'dan beri vardı ama yarımdı: başlık
+     ve açıklama yazılabiliyor, görseli ve bağlantısı yoktu — ve
+     vitrin bölümü hiç çizmiyordu. */
+  apparel_image_url?: string;
+  apparel_href?: string;
   beauty_title: string;
   beauty_description: string;
+  beauty_image_url?: string;
+  beauty_href?: string;
   trust_one: string;
   trust_two: string;
   trust_three: string;
@@ -145,8 +153,12 @@ export const defaultTheme: StorefrontTheme = {
   manifest_description: "",
   apparel_title: "",
   apparel_description: "",
+  apparel_image_url: undefined,
+  apparel_href: undefined,
   beauty_title: "",
   beauty_description: "",
+  beauty_image_url: undefined,
+  beauty_href: undefined,
   trust_one: "Seçilmiş ürünler",
   trust_two: "Güvenli ödeme",
   trust_three: "Özenli paketleme",

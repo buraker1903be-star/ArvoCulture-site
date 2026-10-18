@@ -7,6 +7,7 @@ import { categoryKey, urunSayisiYazisi } from "@/lib/categories";
 import type { KategoriVitrini } from "@/lib/kategori-vitrini";
 import { JsonLd } from "@/components/json-ld";
 import { kategoriListesiSchema } from "@/lib/seo";
+import { canOptimizeImage } from "@/lib/image-hosts";
 
 /** Ürün ızgarası. Ana sayfada birden çok yerde kullanılır. */
 export function ProductBlock({
@@ -238,6 +239,80 @@ export function CategoryStrip({
     </section>
   );
 }
+
+/*
+  ANA KOLEKSİYONLAR ("dünyalar").
+
+  Bölüm ArvoARC panelinde 29.09.2026'dan beri VARDI ve vitrin onu
+  hiç çizmiyordu: mağaza sahibi "Giyim başlığı", "Bakım açıklaması"
+  yazabiliyor, yazdığı hiçbir yerde görünmüyordu. `show_worlds`,
+  `order_worlds`, `apparel_*` ve `beauty_*` alanlarının hepsi öyle
+  duruyordu — kupon kuralındaki ile aynı sessiz kalıp: panel vaat
+  ediyor, vitrin yapmıyor.
+
+  Ne işe yarıyor: ürün rafları fiyat ve kanıt gösteriyor, bu band
+  HİKÂYE gösteriyor. Tek bir ürün hattının yaşam görseli bir rafta
+  kart olarak duramaz; kart fiyat ve ad için var.
+
+  BAŞLIĞI VE GÖRSELİ OLMAYAN DÜNYA ÇİZİLMİYOR. Yarım bir dünya
+  (başlık var, görsel yok) koyu boş bir dikdörtgen olurdu ve
+  mağaza sahibi neyi eksik bıraktığını göremezdi. Tek dünya varsa
+  bant tam genişlik: iki sütunun biri boş kalmıyor.
+*/
+export type Dunya = {
+  anahtar: string;
+  baslik: string;
+  aciklama: string;
+  gorsel: string;
+  href: string;
+};
+
+export function Worlds({ items }: { items: Dunya[] }) {
+  if (items.length === 0) return null;
+
+  return (
+    <section className="panel worlds" data-arvo-section="worlds">
+      <div className="world-cards">
+        {items.map((dunya) => (
+          <Link key={dunya.anahtar} href={dunya.href} className="world">
+            <span className="world-art">
+              <Image
+                /* Panelden gelen adres herhangi bir yerde olabilir;
+                   listede olmayan adres next/image'ı hata verdirir. */
+                unoptimized={!canOptimizeImage(dunya.gorsel)}
+                src={dunya.gorsel}
+                alt=""
+                fill
+                sizes={
+                  items.length === 1
+                    ? "(max-width: 860px) 100vw, 1200px"
+                    : "(max-width: 860px) 100vw, 50vw"
+                }
+                /* Bant kapağın altında, ilk ekranda değil; ama tek
+                   dünya varken sayfanın en büyük görseli oluyor. */
+                priority={false}
+                loading="lazy"
+              />
+            </span>
+
+            <span className="world-body">
+              <strong data-arvo-field={`${dunya.anahtar}_title`}>
+                {dunya.baslik}
+              </strong>
+              {dunya.aciklama && (
+                <small data-arvo-field={`${dunya.anahtar}_description`}>
+                  {dunya.aciklama}
+                </small>
+              )}
+              <em>Keşfet</em>
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 
 const HELP = [
   { label: "Kargom ne zaman çıkar?", href: "/teslimat" },

@@ -7415,3 +7415,149 @@ body.theme-modern .promo-body::before {
   font-size: var(--t-xs);
   color: rgba(255, 255, 255, 0.56);
 }
+
+/* ==========================================================
+   ANA KOLEKSİYONLAR ("dünyalar") BANDI
+
+   Ürün rafları fiyat ve kanıt gösteriyor; bu band HİKÂYE
+   gösteriyor. Tek bir ürün hattının yaşam görseli bir rafta kart
+   olarak duramaz — kart ad ve fiyat için var, görselin kendisi
+   orada 200 piksele iniyor.
+
+   Bölüm ArvoARC panelinde 29.09.2026'dan beri duruyordu ve vitrin
+   onu hiç çizmiyordu.
+   ========================================================== */
+
+.world-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s4);
+}
+
+/* Tek dünya varsa bant tam genişlik: iki sütunun biri boş kalmıyor
+   ve görsel asıl ölçüsüne kavuşuyor. */
+.world-cards:has(> :only-child) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.world {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--panel-2);
+  box-shadow: inset 0 0 0 1px rgba(16, 18, 15, 0.06);
+}
+
+.world-art {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+}
+
+/* Tek dünyada görsel yatıyor: 4/5 oranında tam genişlik bir kart,
+   ekranı baştan aşağı kaplayıp bandın altındaki her şeyi kaydırma
+   mesafesine atardı. */
+.world-cards:has(> :only-child) .world-art {
+  aspect-ratio: 21 / 9;
+}
+
+.world-art img {
+  object-fit: cover;
+  transition: transform 640ms var(--ease);
+}
+
+.world-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(12, 13, 12, 0.82) 0%,
+    rgba(12, 13, 12, 0.46) 24%,
+    rgba(12, 13, 12, 0.1) 52%,
+    transparent 76%
+  );
+}
+
+.world-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  padding: var(--s5) var(--s5) calc(var(--s5) + 2px);
+  color: #fff;
+}
+
+.world-body strong {
+  font-size: clamp(24px, 2.6vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.024em;
+  line-height: 1.08;
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.34);
+}
+
+.world-body small {
+  max-width: 44ch;
+  font-size: var(--t-sm);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* "Keşfet" hap: bandın tek eylemi ve sayfadaki düğme diliyle aynı. */
+.world-body em {
+  margin-top: 2px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.world-body em::after {
+  content: "→";
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 320ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  .world:hover .world-art img {
+    transform: scale(1.04);
+  }
+
+  .world:hover .world-body em::after {
+    transform: translateX(5px);
+  }
+}
+
+@media (max-width: 860px) {
+  .world-cards,
+  .world-cards:has(> :only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Telefonda 21/9 bir şerit görseli okunmaz hâle getiriyor: özne
+     bantta kayboluyor. Her iki durumda da dikey. */
+  .world-art,
+  .world-cards:has(> :only-child) .world-art {
+    aspect-ratio: 4 / 5;
+  }
+
+  .world-body {
+    padding: var(--s4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-art img,
+  .world-body em::after {
+    transition: none;
+  }
+}

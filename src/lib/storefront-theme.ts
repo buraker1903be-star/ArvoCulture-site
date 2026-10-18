@@ -6,6 +6,21 @@ import {
   defaultTheme,
   type StorefrontTheme,
 } from "@/lib/storefront-theme-varsayilan";
+/** Panelden gelen görsel adresi; boşsa tanımsız. */
+const gorsel = (v: unknown) =>
+  typeof v === "string" && v.trim() ? v.trim() : undefined;
+
+/*
+  Bağlantı yalnızca SİTE İÇİ olabilir. Panel tarafında da süzülüyor
+  (actions.ts → href) ama vitrin ona güvenmiyor: temaya başka bir
+  yoldan "https://..." düşerse ana sayfa müşteriyi başka siteye
+  götürürdü.
+*/
+const icYol = (v: unknown) =>
+  typeof v === "string" && v.startsWith("/") && !v.startsWith("//")
+    ? v.slice(0, 240)
+    : undefined;
+
 const str = (v: unknown, f: string, max = 360) =>
   typeof v === "string" && v.trim() ? v.trim().slice(0, max) : f;
 const bool = (v: unknown, f: boolean) => (typeof v === "boolean" ? v : f);
@@ -131,8 +146,15 @@ export const getStorefrontTheme = cache(async (): Promise<StorefrontTheme> => {
         d.apparel_description,
         180,
       ),
+      /* Görsel ve bağlantı YEDEĞE DÜŞMÜYOR: varsayılan tema yansız
+         ve bu alanların yansız bir değeri yok. Yoksa dünya hiç
+         çizilmiyor — başka bir mağazanın görseline düşmektense. */
+      apparel_image_url: gorsel(c.apparel_image_url),
+      apparel_href: icYol(c.apparel_href),
       beauty_title: str(c.beauty_title, d.beauty_title, 100),
       beauty_description: str(c.beauty_description, d.beauty_description, 180),
+      beauty_image_url: gorsel(c.beauty_image_url),
+      beauty_href: icYol(c.beauty_href),
       trust_one: str(c.trust_one, d.trust_one, 80),
       trust_two: str(c.trust_two, d.trust_two, 80),
       trust_three: str(c.trust_three, d.trust_three, 80),

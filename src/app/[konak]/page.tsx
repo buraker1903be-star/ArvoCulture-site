@@ -9,6 +9,7 @@ import {
   ProductBlock,
   Perks,
   CategoryStrip,
+  Worlds,
   HelpStrip,
 } from "@/components/home-blocks";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
@@ -236,6 +237,47 @@ export default async function Home({
           rail
         />
       </Reveal>
+
+      {/*
+        ANA KOLEKSİYONLAR ("dünyalar") BANDI.
+
+        Panel bu bölümü 29.09.2026'dan beri sunuyordu ve vitrin onu
+        hiç çizmiyordu; mağaza sahibinin yazdığı başlık ve açıklama
+        hiçbir yerde görünmüyordu (bkz. components/home-blocks →
+        Worlds). Yeri bilinçli: ürün raflarından sonra, kampanya
+        bandından önce — fiyat ve kanıttan sonra HİKÂYE, sonra
+        teklif.
+
+        Başlığı ya da görseli olmayan dünya listeye girmiyor.
+      */}
+      {theme.show_worlds && (
+        <Reveal>
+          <Worlds
+            items={[
+              {
+                anahtar: "apparel",
+                baslik: theme.apparel_title,
+                aciklama: theme.apparel_description,
+                gorsel: theme.apparel_image_url,
+                /* Bağlantı panelden; yazılmadıysa bölümün adına
+                   karşılık gelen kategori. */
+                href: theme.apparel_href ?? "/koleksiyon/giyim",
+              },
+              {
+                anahtar: "beauty",
+                baslik: theme.beauty_title,
+                aciklama: theme.beauty_description,
+                gorsel: theme.beauty_image_url,
+                href: theme.beauty_href ?? "/koleksiyon/bakim",
+              },
+            ].flatMap((dunya) =>
+              dunya.baslik && dunya.gorsel
+                ? [{ ...dunya, gorsel: dunya.gorsel }]
+                : [],
+            )}
+          />
+        </Reveal>
+      )}
 
       {/* Başlıksız kampanya bloğu çizilmiyor: varsayılan metin
           ArvoCulture'ın ARVO10 kuponuydu, artık boş. Boş bir
