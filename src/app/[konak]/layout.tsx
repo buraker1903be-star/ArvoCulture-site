@@ -9,6 +9,7 @@ import "../layout.css";
 import { CartProvider } from "@/components/cart";
 import { FavouritesProvider } from "@/components/favourites";
 import { Header } from "@/components/header";
+import { getPopularSearches } from "@/lib/popular-searches";
 import { BottomNav } from "@/components/bottom-nav";
 import { AppShell } from "@/components/app-shell";
 import { PageTransition } from "@/components/page-transition";
@@ -201,7 +202,16 @@ export default async function RootLayout({
      generateMetadata'nın üstünde. */
   konagiAyarla((await params).konak);
 
-  const [theme, discounts, collections, stage, salesRules, kimlik, adres] =
+  const [
+    theme,
+    discounts,
+    collections,
+    stage,
+    salesRules,
+    kimlik,
+    adres,
+    aramaTerimleri,
+  ] =
     await Promise.all([
       getStorefrontTheme(),
       getStorefrontDiscounts(),
@@ -213,6 +223,11 @@ export default async function RootLayout({
          sayfası "bu işletme ArvoCulture'dır" diyordu. */
       getStoreIdentity(),
       vitrinAdresi(),
+      /* Başlıktaki büyüteç artık arama katmanını açıyor ve katmanın
+         boş durumunda sık aranan terimler görünüyor; liste her
+         sayfada gerekli. `cache` ile ana sayfada ikinci kez
+         sorgulanmıyor. */
+      getPopularSearches(),
     ]);
   /*
     Abonelik ödenmediğinde mağaza kademe kademe kapanır; son kademede vitrin
@@ -255,7 +270,11 @@ export default async function RootLayout({
           supabaseKey={env.supabaseKey}
         >
           <CartProvider discounts={discounts} salesRules={salesRules}>
-            <Header theme={theme} collections={collections} />
+            <Header
+              theme={theme}
+              collections={collections}
+              searchTerms={aramaTerimleri}
+            />
             {/*
               Sayfa içeriği geçiş sarmalayıcısının içinde; başlık,
               alt çubuk ve altbilgi dışarıda kalıyor. Gezinirken

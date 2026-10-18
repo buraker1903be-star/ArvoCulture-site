@@ -8,13 +8,17 @@ import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
 import { useLayerBack } from "@/lib/use-layer-back";
 import { StoreLogo } from "@/components/store-logo";
+import { SearchOverlay } from "@/components/search-overlay";
 
 export function Header({
   theme,
   collections,
+  searchTerms = [],
 }: {
   theme: StorefrontTheme;
   collections: StorefrontCollection[];
+  /** Arama katmanının boş durumunda gösterilen sık aranan terimler. */
+  searchTerms?: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
@@ -413,14 +417,19 @@ export function Header({
           ))}
         </nav>
         <div className="actions">
+          {/*
+            BÜYÜTEÇ ARTIK KATMAN AÇIYOR, SAYFA DEĞİŞTİRMİYOR.
+
+            Önceden /arama sayfasına gidiyordu: müşteri baktığı
+            sayfayı terk ediyor, aradığını bulamazsa geri tuşuyla
+            dönüyordu. Ana sayfadaki kutu zaten katman açıyordu;
+            aynı ikon iki yerde iki farklı şey yapıyordu.
+
+            /arama sayfası DURUYOR: paylaşılabilir bir adres ve
+            katmandaki Enter (seçim yokken) oraya gidiyor.
+          */}
           {theme.show_search && (
-            <Link href="/arama" aria-label="Ara" className="header-action-link">
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="6.5" />
-                <path d="m16 16 4 4" />
-              </svg>
-              <span>Ara</span>
-            </Link>
+            <SearchOverlay trigger="icon" terms={searchTerms} />
           )}
           {theme.show_account && (
             <Link

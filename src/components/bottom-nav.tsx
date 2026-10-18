@@ -16,7 +16,12 @@ import { CartContext } from "@/components/cart";
  */
 const TABS = [
   { href: "/", label: "Ana sayfa", icon: "home", event: null },
-  { href: "/arama", label: "Ara", icon: "search", event: null },
+  /*
+    "Ara" da gezinmiyor: başlıktaki arama katmanını açıyor (menü ve
+    sepet gibi). Telefonda arama sayfasına gitmek, müşterinin
+    baktığı listeyi kaybetmesi demekti.
+  */
+  { href: null, label: "Ara", icon: "search", event: "arvo:search" },
   /*
     "Katalog" gezinmez, kategori menüsünü açar. Etiket "Menü"ydü;
     müşteri için belirsizdi — uygulamalarda "Menü" genelde ayarlar
