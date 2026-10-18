@@ -6919,19 +6919,48 @@ body.theme-modern .tag-out {
 */
 .cat-card-thumbs {
   display: flex;
-  gap: 6px;
   margin-top: 2px;
 }
 
 .cat-card-thumbs img {
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   border-radius: 12px;
   object-fit: cover;
   background: #fff;
+  /* Dıştan halka: kareler üst üste bindiği için birbirlerinden
+     ayrılmaları gerekiyor, içeriden çerçeve bunu yapmıyor. */
   box-shadow:
-    0 3px 12px rgba(0, 0, 0, 0.26),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+    0 0 0 2px rgba(255, 255, 255, 0.88),
+    0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+/*
+  ÜST ÜSTE BİNEN DESTE.
+
+  Üçü yan yana ve aralıklı durduğunda kartın altında üç ayrı beyaz
+  çip gibi okunuyordu: ada rakip oluyor, "ürün" olduklarını
+  söylemiyorlardı. Bindirilince tek bir NESNE — "bu kategorinin
+  ürünleri" — ve yer de kaplamıyor.
+
+  İmleç karta gelince deste açılıyor: hareketin kaynağı yine
+  dokunulan şeyin karşılık vermesi.
+*/
+.cat-card-thumbs img + img {
+  margin-left: -16px;
+  transition: margin-left 420ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  .cat-card:hover .cat-card-thumbs img + img {
+    margin-left: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-card-thumbs img + img {
+    transition: none;
+  }
 }
 
 body.theme-modern .cat-card {
@@ -7058,9 +7087,15 @@ body.theme-modern .cat-card:hover .cat-card-body em::after {
   }
 
   .cat-card-thumbs img {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
+  }
+
+  /* Dokunmatikte "üzerine gelme" yok: deste hep açık duruyor,
+     yoksa müşteri üç ürünün ikisini hiç göremezdi. */
+  .cat-card-thumbs img + img {
+    margin-left: 5px;
   }
 }
 
