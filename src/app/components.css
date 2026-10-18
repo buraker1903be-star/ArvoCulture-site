@@ -8612,43 +8612,90 @@ body.theme-modern .mega-columns > div:first-child a b {
 }
 
 /* ==========================================================
-   HESAP ÇEKMECESİ (18.10.2026)
+   HESAP MENÜSÜ (18.10.2026)
 
-   Başlıktaki kişi simgesi /hesap sayfasına gidiyordu. Giriş çoğu
-   zaman ALIŞVERİŞİN ORTASINDA yapılıyor ("siparişim nerede",
-   "adresim kayıtlı mıydı") ve sayfadan çıkmak o akışı kesiyordu.
+   Başlıktaki kişi simgesi önce /hesap sayfasına gidiyordu, sonra
+   yandan çekmece açtı; ikisi de yanlıştı. Sayfa alışverişin
+   akışını kesiyordu — giriş çoğu zaman alışverişin ORTASINDA
+   yapılıyor ("siparişim nerede", "adresim kayıtlı mıydı").
+   Çekmece ise başlıkta duran bir simgeye ekranın öbür ucundan
+   cevap veriyordu: tıklanan yerle açılan yer arasında bağ yok.
 
-   Panel sayfayla ortak (AccountPanel) — ikinci bir giriş formu
-   yazmak, yarın birinde düzeltilen bir doğrulamanın öbüründe
-   kalması demekti. Panel sayfada `.panel` kutuları çiziyor;
-   çekmece zaten beyaz bir yüzey, içeride ikinci kutu "kutu içinde
-   kutu" oluyordu.
+   Menü simgenin ALTINDAN açılıyor; üst menünün kategori
+   panelleriyle aynı davranış ve aynı yer.
+
+   Panel sayfayla ortak (AccountPanel) ve sayfada kendi `.panel`
+   kutularını çiziyor; menü zaten beyaz bir yüzey, içeride ikinci
+   kutu "kutu içinde kutu" oluyordu.
    ========================================================== */
 
-/* Form taşıyan çekmece daha geniş: 26rem'de e-posta ve şifre
-   alanları ile adres defteri sıkışıyordu. */
-.drawer-wide {
-  width: min(100%, 34rem);
+/* Kap, panelin tutunacağı yer: simgeye göre hizalanıyor. */
+.account-menu {
+  position: relative;
+  display: inline-flex;
 }
 
-/* İçerik çekmece boyunu aşınca kayıyor; başlık yerinde kalıyor. */
-.drawer-scroll {
-  flex: 1;
-  min-height: 0;
+.account-pop {
+  position: absolute;
+  top: calc(100% + 10px);
+  /* Sağa yaslı: simge başlığın sağ ucunda ve sola yaslı bir panel
+     ekranın dışına taşardı. */
+  right: 0;
+  z-index: 45;
+  width: min(92vw, 27rem);
+  max-height: min(78vh, 640px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: var(--s4) var(--s5) var(--s6);
+  padding: var(--s5);
+  border: 1px solid var(--line-soft);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: 0 24px 60px rgba(16, 18, 15, 0.14);
+  animation: account-pop-in 200ms var(--ease-out);
 }
 
-.drawer-scroll .panel {
+@keyframes account-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-pop {
+    animation: none;
+  }
+}
+
+/* Menünün içinde panel kutusu yok: kabuk zaten beyaz bir yüzey. */
+.account-pop .panel {
   padding: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
 }
 
-/* Panel içinde art arda gelen bölümler arasında nefes: kutular
-   kalkınca birbirine yapışıyorlardı. */
-.drawer-scroll .panel + .panel {
-  margin-top: var(--s6);
+.account-pop .panel + .panel {
+  margin-top: var(--s5);
+}
+
+.account-pop-loading {
+  padding: var(--s5) 0;
+  color: var(--ink-2);
+}
+
+/*
+  Telefonda daha dar ve daha az iç boşluk. `position: fixed`
+  DENENMEDİ: başlıkta `backdrop-filter` var ve içindeki fixed
+  öğeler için yeni bir kapsayıcı kuruyor — panel ekrana değil
+  başlığa göre konumlanırdı (arama katmanında tam bu olmuştu).
+  `absolute` + sağa yaslı genişlik zaten ekranda kalıyor: simge
+  sağ uçta ve panel soluna doğru açılıyor.
+*/
+@media (max-width: 520px) {
+  .account-pop {
+    width: min(94vw, 23rem);
+    padding: var(--s4);
+    max-height: 72vh;
+  }
 }

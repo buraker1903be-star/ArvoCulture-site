@@ -460,13 +460,16 @@ export function Header({
           */}
           {theme.show_account && <FavouritesOverlay />}
           {/*
-            KİŞİ SİMGESİ ÇEKMECE AÇIYOR, SAYFA DEĞİŞTİRMİYOR.
+            KİŞİ SİMGESİ MENÜ AÇIYOR, SAYFA DEĞİŞTİRMİYOR.
 
             Giriş çoğu zaman ALIŞVERİŞİN ORTASINDA yapılıyor
             ("siparişim nerede", "adresim kayıtlı mıydı") ve
             /hesap sayfasına gitmek o akışı kesiyordu: müşteri
             baktığı ürünü ya da sepeti terk ediyor, girdikten
-            sonra geri tuşuyla dönmeye çalışıyordu.
+            sonra geri tuşuyla dönmeye çalışıyordu. Yandan çekmece
+            de denendi; başlıkta duran bir simgeye ekranın öbür
+            ucundan cevap veriyordu. Menü simgenin ALTINDAN
+            açılıyor, kategori panelleriyle aynı yer.
 
             Panel sayfayla ortak; Supabase paketi tembel
             yükleniyor (bkz. account-drawer).
