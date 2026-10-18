@@ -10226,3 +10226,94 @@ body.theme-modern .auth-alt .linklike:hover {
     background: var(--panel-2);
   }
 }
+
+/* ==========================================================
+   SİPARİŞ DETAYINDA ÖDEME (18.10.2026)
+
+   Sayfa ödemenin DURUMUNU bile göstermiyordu, yöntemini hiç:
+   müşteri kartla mı havaleyle mi ödediğini hatırlamak
+   zorundaydı. Havalede daha kötüsü vardı — çizelgenin altında
+   "Ödemeniz bekleniyor" yazıyordu ama parayı NEREYE göndereceği
+   hiçbir yerde yoktu; müşteri onay e-postasını aramaya
+   gidiyordu.
+
+   Kutu özetin üstünde: tutarı okumadan önce "ödendi mi" sorusu
+   yanıtlanıyor.
+   ========================================================== */
+
+.odeme-kutu {
+  display: grid;
+  gap: var(--s3);
+  padding-bottom: var(--s4);
+  margin-bottom: var(--s4);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.odeme-satir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.odeme-satir strong {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Ödenmiş sipariş yeşil, bekleyen nötr: bekleyen bir ödeme HATA
+   değil, yapılacak iş. Kırmızı olsaydı müşteri bir şeyin ters
+   gittiğini sanırdı. */
+.odeme-satir .tag[data-odendi] {
+  border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+  color: var(--ok);
+}
+
+.odeme-havale {
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s4);
+  border: 1px dashed var(--gold-soft);
+  border-radius: var(--r);
+  background: var(--panel-2);
+}
+
+.odeme-havale > p {
+  margin: 0;
+  font-size: var(--t-xs);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.odeme-havale dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.odeme-havale dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
+  font-size: var(--t-xs);
+}
+
+.odeme-havale dt {
+  color: var(--ink-3);
+}
+
+.odeme-havale dd {
+  margin: 0;
+  color: var(--ink);
+  text-align: right;
+}
+
+/* IBAN tek dokunuşla seçilsin: müşteri kopyalayıp bankasına
+   yapıştırıyor ve elle yazılan her hane bir hata ihtimali. */
+.odeme-iban {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--t-sm);
+  letter-spacing: 0.02em;
+  user-select: all;
+}

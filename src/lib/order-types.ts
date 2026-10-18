@@ -31,6 +31,16 @@ export type Order = {
   total: number;
   currency: string;
   coupon_code: string | null;
+  /*
+    Ödeme yöntemi — ArvoARC'ta metadata'da SERBEST METİN
+    ("Banka havalesi / EFT", "Kredi kartı", "Nakit").
+
+    İsteğe bağlı iki sebeple: eski siparişlerde alan hiç
+    yazılmamış (geçmişi "kart" varsayıp doldurmak, varsayımı
+    veriye dönüştürmek olurdu) ve RPC'ye yeni eklendi, migration
+    uygulanana kadar gelmiyor.
+  */
+  payment_method?: string | null;
   address: OrderAddress | null;
   billing_address: OrderAddress | null;
   note: string | null;
@@ -258,6 +268,12 @@ export function siparisAdimlari(order: Order): SiparisAdimi[] | null {
     sayılmıyor: havale siparişi ödeme gelene kadar hazırlanmaya
     başlamıyor ve çubuğu ilerletmek, olmayan bir ilerlemeyi
     müjdelemek olurdu.
+
+    ÖDEME NOTU ÇİZELGEDEN ÇIKTI. "Hazırlanıyor" adımının altında
+    "Ödemeniz bekleniyor" yazıyordu ve canlıda çelişkili
+    okunuyordu: sipariş hem hazırlanıyor hem ödeme bekliyor
+    görünüyordu. Ödemenin kendi kutusu var; orada yöntemiyle ve
+    havalede hesap numarasıyla birlikte duruyor.
   */
   const odendi = ["paid", "authorized", "partially_refunded"].includes(
     order.payment_status,
@@ -266,11 +282,7 @@ export function siparisAdimlari(order: Order): SiparisAdimi[] | null {
 
   const sirali: Array<[string, boolean, string | undefined]> = [
     ["Siparişiniz alındı", true, undefined],
-    [
-      "Hazırlanıyor",
-      hazirlaniyor,
-      odendi ? undefined : "Ödemeniz bekleniyor",
-    ],
+    ["Hazırlanıyor", hazirlaniyor, undefined],
     ["Kargoda", kargoda, undefined],
     ["Teslim edildi", teslim, undefined],
   ];
@@ -287,3 +299,36 @@ export function siparisAdimlari(order: Order): SiparisAdimi[] | null {
     durum: sira < sonTamam ? "gecti" : sira === sonTamam ? "simdi" : "bekliyor",
   }));
 }
+
+/**
+ * Ödeme yöntemi etiketi ve havale olup olmadığı.
+ *
+ * Metin ArvoARC'tan serbest geliyor; vitrin onu OLDUĞU GİBİ
+ * gösteriyor ama havale olup olmadığını bilmesi gerekiyor:
+ * ödenmemiş havale siparişinde müşterinin parayı nereye
+ * göndereceğini söylemek zorundayız. Ayırt etme kuralı
+ * ArvoARC'ın `isBankTransfer` kuralıyla aynı — metinde "havale"
+ * aranıyor; etiket orada da serbest metin olduğu için sabit bir
+ * koda bağlanamıyor.
+ */
+export function odemeYontemi(order: Pick<Order, "payment_method">): {
+  etiket: string | null;
+  havale: boolean;
+} {
+  const metin = (order.payment_method ?? "").trim();
+  if (!metin) return { etiket: null, havale: false };
+  return {
+    etiket: metin,
+    havale: metin.toLocaleLowerCase("tr").includes("havale"),
+  };
+}
+
+/** Müşteriye gösterilecek ödeme durumu. */
+export const ODEME_DURUM_ETIKETI: Record<string, string> = {
+  pending: "Ödeme bekleniyor",
+  authorized: "Ödeme onaylandı",
+  paid: "Ödendi",
+  partially_refunded: "Kısmen iade edildi",
+  refunded: "İade edildi",
+  failed: "Ödeme alınamadı",
+};

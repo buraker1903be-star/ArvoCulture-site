@@ -37,7 +37,18 @@ test("ödeme bekleyen havale siparişi ilk adımda kalıyor", () => {
     siparisAdimlari({ ...temel, status: "pending", payment_status: "pending" }) ?? [];
   assert.equal(adimlar[0].durum, "simdi");
   assert.equal(adimlar[1].durum, "bekliyor");
-  assert.equal(adimlar[1].not, "Ödemeniz bekleniyor");
+});
+
+test("çizelge ödeme notu taşımıyor", () => {
+  /*
+    "Hazırlanıyor" adımının altında "Ödemeniz bekleniyor"
+    yazıyordu ve canlıda çelişkili okunuyordu: sipariş hem
+    hazırlanıyor hem ödeme bekliyor görünüyordu. Ödemenin kendi
+    kutusu var.
+  */
+  const adimlar =
+    siparisAdimlari({ ...temel, status: "processing", payment_status: "pending" }) ?? [];
+  assert.ok(adimlar.every((adim) => adim.not === undefined));
 });
 
 test("paketlerin hepsi teslim edilince son adım", () => {

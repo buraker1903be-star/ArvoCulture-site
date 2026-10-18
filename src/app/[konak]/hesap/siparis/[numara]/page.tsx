@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { OrderDetail } from "@/components/order-detail";
 import { env } from "@/lib/env";
 import { konagiAyarla } from "@/lib/konak";
+import { getSellerBank } from "@/lib/seller-source";
 
 export const metadata: Metadata = {
   title: "Sipariş detayı",
@@ -28,12 +29,29 @@ export default async function OrderPage({
 
   const { numara } = await params;
 
+  /*
+    HAVALE HESABI SUNUCUDAN.
+
+    Ödenmemiş havale siparişinde müşterinin parayı NEREYE
+    göndereceğini söylemek zorundayız; "ödeme bekleniyor" tek
+    başına hiçbir şey yaptırmıyor ve müşteri onay e-postasını
+    aramaya gidiyordu. Sipariş istemcide çekildiği için hesabı
+    orada okuyamayız (anon anahtar, üstelik önbelleksiz okuma
+    sunucuya ait); buradan geçiyor ve yalnızca gerekince
+    basılıyor.
+
+    Hesap yoksa null geliyor ve havale kutusu hiç çizilmiyor —
+    yanlış IBAN göstermektense hiç göstermemek (lib/seller-source).
+  */
+  const banka = await getSellerBank();
+
   return (
     <main className="shell">
       <OrderDetail
         orderNumber={decodeURIComponent(numara)}
         supabaseUrl={env.supabaseUrl}
         supabaseKey={env.supabaseKey}
+        banka={banka}
       />
     </main>
   );

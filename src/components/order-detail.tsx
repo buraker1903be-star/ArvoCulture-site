@@ -17,11 +17,14 @@ import {
   RETURN_STATUS,
   type ReturnRequestRow,
   initials,
+  odemeYontemi,
   siparisAdimlari,
+  ODEME_DURUM_ETIKETI,
   type Order,
   type OrderAddress,
 } from "@/lib/order-types";
 import { toplamFarki } from "@/lib/siparis-durumu";
+import type { HavaleHesabi } from "@/lib/seller-source";
 
 /*
   "okunamadi" AYRI BİR HÂL (17.10.2026).
@@ -38,10 +41,13 @@ export function OrderDetail({
   orderNumber,
   supabaseUrl,
   supabaseKey,
+  banka,
 }: {
   orderNumber: string;
   supabaseUrl: string;
   supabaseKey: string;
+  /** Havale hesabı; yoksa havale yönergesi hiç çizilmiyor. */
+  banka?: HavaleHesabi | null;
 }) {
   const [order, setOrder] = useState<Order | null>(null);
   const [iadeler, setIadeler] = useState<ReturnRequestRow[]>([]);
@@ -173,6 +179,10 @@ export function OrderDetail({
   */
   const gonderiler = order.shipments ?? [];
   const adimlar = siparisAdimlari(order);
+  const odeme = odemeYontemi(order);
+  const odendi = ["paid", "authorized", "partially_refunded"].includes(
+    order.payment_status,
+  );
 
   /*
     İNDİRİM ARVOARC'IN `discount` ALANINDAN OKUNAMIYOR.
@@ -450,6 +460,63 @@ export function OrderDetail({
         </section>
 
         <aside className="panel detail-side">
+          {/*
+            ÖDEME KUTUSU.
+
+            Sayfa ödemenin DURUMUNU bile göstermiyordu, yöntemini
+            hiç: müşteri kartla mı havaleyle mi ödediğini
+            hatırlamak zorundaydı. Havalede daha kötüsü vardı —
+            "ödeme bekleniyor" diyorduk ama parayı nereye
+            göndereceğini söylemiyorduk; müşteri onay e-postasını
+            aramaya gidiyordu.
+          */}
+          <div className="odeme-kutu">
+            <p className="about-eyebrow">Ödeme</p>
+            <div className="odeme-satir">
+              {/* Yöntem eski siparişlerde kayıtlı değil; uydurulmuyor. */}
+              {odeme.etiket && <strong>{odeme.etiket}</strong>}
+              <span
+                className="tag tag-soft"
+                data-odendi={odendi ? "" : undefined}
+              >
+                {ODEME_DURUM_ETIKETI[order.payment_status] ??
+                  order.payment_status}
+              </span>
+            </div>
+
+            {odeme.havale && !odendi && banka && (
+              <div className="odeme-havale">
+                <p>
+                  Tutarı aşağıdaki hesaba gönderin; açıklamaya{" "}
+                  <b>{order.order_number}</b> yazmayı unutmayın.
+                </p>
+                <dl>
+                  {banka.bankName && (
+                    <div>
+                      <dt>Banka</dt>
+                      <dd>{banka.bankName}</dd>
+                    </div>
+                  )}
+                  {banka.accountHolder && (
+                    <div>
+                      <dt>Alıcı</dt>
+                      <dd>{banka.accountHolder}</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt>IBAN</dt>
+                    {/* Seçilebilir: müşteri kopyalayıp bankasına
+                        yapıştırıyor. */}
+                    <dd className="odeme-iban">{banka.iban}</dd>
+                  </div>
+                </dl>
+                {banka.transferInstructions && (
+                  <p className="hint">{banka.transferInstructions}</p>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="head">
             <h2>Özet</h2>
           </div>
