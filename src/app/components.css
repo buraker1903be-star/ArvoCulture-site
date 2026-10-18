@@ -7583,29 +7583,36 @@ body.theme-modern .promo-body::before {
    çekiyor. Oran sınıfı varsa — vitrinde her zaman var — panelin
    seçimi kazanıyor.
 
-   Özgüllük: `:has` kuralı (0,4,0) ediyor; buradakiler `html` ve
-   oran sınıfıyla onu geçiyor.
+   SEÇİCİ <body>'YE BAĞLI. İlk yazışta `html.ratio-square` yazdım
+   ve kural hiç eşleşmedi: tema sınıfları layout'ta <body> üzerine
+   basılıyor, <html> üzerinde yalnızca `arvo-preview-mode` var
+   (canlıda ölçüldü — "Şimdi keşfet" 160x200, indirimler 160x160
+   kalmaya devam etti).
+
+   Özgüllük: `:has` kuralı (0,4,0) ediyor. Gruptaki üç seçicinin
+   her biri karşılığı olan temel kuralı geçiyor; karışık raftaki
+   kartı da üçüncü seçici (0,5,1) ile alıyor.
    ========================================================== */
 
-html.ratio-square .card-art,
-html.ratio-square .card-art[data-art="lifestyle"],
-html.ratio-square
+body.ratio-square .card-art,
+body.ratio-square .card-art[data-art="lifestyle"],
+body.ratio-square
   :is(.grid, .product-grid, .rail):has(.card-art[data-art="lifestyle"])
   .card-art {
   aspect-ratio: 1;
 }
 
-html.ratio-portrait .card-art,
-html.ratio-portrait .card-art[data-art="lifestyle"],
-html.ratio-portrait
+body.ratio-portrait .card-art,
+body.ratio-portrait .card-art[data-art="lifestyle"],
+body.ratio-portrait
   :is(.grid, .product-grid, .rail):has(.card-art[data-art="lifestyle"])
   .card-art {
   aspect-ratio: 3 / 4;
 }
 
-html.ratio-landscape .card-art,
-html.ratio-landscape .card-art[data-art="lifestyle"],
-html.ratio-landscape
+body.ratio-landscape .card-art,
+body.ratio-landscape .card-art[data-art="lifestyle"],
+body.ratio-landscape
   :is(.grid, .product-grid, .rail):has(.card-art[data-art="lifestyle"])
   .card-art {
   aspect-ratio: 4 / 3;
@@ -7631,14 +7638,14 @@ html.ratio-landscape
    sepete eklemenin yolu ürün sayfası.
    ========================================================== */
 
-html.badges-off .card-flags {
+body.badges-off .card-flags {
   display: none;
 }
 
-html.quickadd-off .card-action {
+body.quickadd-off .card-action {
   display: none;
 }
 
-html.vendor-off .card-brand {
+body.vendor-off .card-brand {
   display: none;
 }
