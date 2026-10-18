@@ -7288,3 +7288,95 @@ body.theme-modern .promo-code .coupon-code em {
     transition: none;
   }
 }
+
+/*
+  Kupon ve asıl düğme aynı satırda; satır bandın tabanını kuruyor.
+  Önceden alt alta duruyorlardı ve "Alışverişe başla" üçüncü
+  sırada, köşede kalıyordu. Dar ekranda yine alt alta iniyorlar
+  (wrap) — orada yan yana sıkıştırmak ikisini de küçültürdü.
+
+  Tema bağımsız: yerleşim sorunu editoryal sürümde de vardı.
+*/
+.promo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s4);
+  margin-top: var(--s2);
+}
+
+/* Satır içindeyken kuponun kendi üst boşluğuna gerek yok. */
+.promo-actions .promo-code {
+  margin-top: 0;
+}
+
+/* ---------- Bandı canlandıran katmanlar ------------------- */
+
+/*
+  FİLİGRAN DÜZ GRİ DEĞİL, DEGRADE.
+
+  Dolu ve tek renk olunca sağ yarıyı kaplayan BÜYÜK GRİ BİR BLOK
+  gibi okunuyordu: boyutu doğruydu, rengi değil. Altından beyaza
+  inen çok soluk bir degrade, rakamı yüzeyin bir parçası yapıyor
+  ve bandın tek renk kaynağını (altın) ikinci kez kullanıyor.
+*/
+body.theme-modern .promo-watermark {
+  font-size: clamp(150px, 21vw, 310px);
+  background: linear-gradient(
+    152deg,
+    rgba(169, 134, 52, 0.38) 0%,
+    rgba(255, 255, 255, 0.11) 48%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Çok yavaş nefes: duran bir rakam ile yaşayan bir yüzey
+     arasındaki farkı veren şey bu, fark edilmesi gereken bir
+     hareket değil. */
+  animation: promo-filigran 14s var(--ease) infinite alternate;
+}
+
+@keyframes promo-filigran {
+  from {
+    opacity: 0.78;
+    transform: translateY(-50%) scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.045);
+  }
+}
+
+/*
+  Üst kenarda altın saç teli: bandın beyaz sayfadan koptuğu çizgi.
+  Koyu yüzeyin üst kenarı beyazın içinde eriyordu.
+*/
+body.theme-modern .promo-body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--pad);
+  width: clamp(60px, 14vw, 180px);
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-modern .promo-watermark {
+    animation: none;
+  }
+}
+
+/*
+  Dar ekranda filigran farklı yerleşiyor (bkz. yukarıdaki 860px
+  kuralı: top:auto, transform:none). Nefes animasyonu kendi
+  `translateY(-50%)`ini dayattığı için orada rakam yukarı
+  kayıyordu; dar ekranda animasyon kapalı.
+*/
+@media (max-width: 860px) {
+  body.theme-modern .promo-watermark {
+    animation: none;
+  }
+}

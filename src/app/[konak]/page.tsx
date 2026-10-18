@@ -251,21 +251,34 @@ export default async function Home({
                 {theme.campaign_description}
               </p>
 
-              {/* Kupon kodu, açıklama metninin içinde kaybolmasın diye
-                ayrı bir kart olarak gösteriliyor. */}
-              {coupon?.code && (
-                <div className="promo-code">
-                  <div>
-                    <small>İndirim kodu</small>
-                    <strong>{coupon.code}</strong>
-                  </div>
-                  <CouponCopy code={coupon.code} />
-                </div>
-              )}
+              {/*
+                KUPON VE DÜĞME AYNI SATIRDA.
 
-              <Link className="btn btn-light" href="/koleksiyon/tumu">
-                Alışverişe başla
-              </Link>
+                İkisi alt alta duruyordu: solda iki küçük blok, sağda
+                dev bir filigran ve ortada boşluk — bant dengesizdi ve
+                asıl eylem ("Alışverişe başla") üçüncü sırada,
+                köşede kalıyordu. Yan yana gelince satır bandın
+                tabanını kuruyor; dar ekranda alt alta iniyorlar.
+
+                Sıra kupon → düğme: müşteri önce kodu alıyor, sonra
+                alışverişe başlıyor. Ters sırada kodu kopyalamadan
+                tıklayıp çıkanlar olurdu.
+              */}
+              <div className="promo-actions">
+                {coupon?.code && (
+                  <div className="promo-code">
+                    <div>
+                      <small>İndirim kodu</small>
+                      <strong>{coupon.code}</strong>
+                    </div>
+                    <CouponCopy code={coupon.code} />
+                  </div>
+                )}
+
+                <Link className="btn btn-light" href="/koleksiyon/tumu">
+                  Alışverişe başla
+                </Link>
+              </div>
             </div>
           </section>
         </Reveal>
