@@ -309,6 +309,17 @@ export type MagazaKimligi = {
   legalName: string;
   email: string;
   phone: string;
+  /**
+   * Numaranın bağlantısı: WhatsApp varsa `https://wa.me/…`, yoksa
+   * `tel:`.
+   *
+   * Altbilgideki numara önce `tel:` ile bağlanıyordu ve masaüstünde
+   * tıklayınca çoğu tarayıcıda hiçbir şey olmuyordu (ya da bir
+   * arama uygulaması seçtiriyordu). Mağazanın hattı zaten WhatsApp
+   * hattı; sohbet, müşterinin sipariş numarasını yazabildiği ve
+   * yanıtın kayda geçtiği tek kanal.
+   */
+  phoneLink: string;
   taxNumber: string;
   addressLine: string;
   addressDistrict: string;

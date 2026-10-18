@@ -303,6 +303,15 @@ export const getStoreIdentity = cache(async (): Promise<MagazaKimligi> => {
     legalName: metin(row?.legal_name),
     email: metin(row?.contact_email),
     phone: telefonBicimi(row?.contact_phone ?? row?.whatsapp_number),
+    /* WhatsApp numarası varsa sohbet, yoksa arama. `getSeller`
+       aynı kuralı kuruyor (phoneLink); iki yerde ayrışmasınlar
+       diye ikisi de ham `whatsapp_number`a bakıyor. */
+    phoneLink: (() => {
+      const wa = (row?.whatsapp_number ?? "").replace(/\D/g, "");
+      if (wa) return `https://wa.me/${wa}`;
+      const tel = (row?.contact_phone ?? "").replace(/[^+\d]/g, "");
+      return tel ? `tel:${tel}` : "";
+    })(),
     taxNumber: metin(row?.tax_number),
     addressLine: metin(row?.address_line),
     addressDistrict: metin(row?.address_district),

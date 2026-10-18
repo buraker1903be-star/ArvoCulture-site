@@ -305,8 +305,22 @@ export default async function RootLayout({
                   */}
                   {(kimlik.phone || kimlik.email) && (
                     <p className="footer-contact">
-                      {kimlik.phone && (
-                        <a href={`tel:${kimlik.phone.replace(/[^+\d]/g, "")}`}>
+                      {/*
+                        Numara WHATSAPP'a bağlı (kimlik.phoneLink).
+                        `tel:` masaüstünde çoğu tarayıcıda hiçbir
+                        şey yapmıyordu; mağazanın hattı zaten
+                        WhatsApp hattı ve sohbet, müşterinin sipariş
+                        numarasını yazabildiği, yanıtın kayda
+                        geçtiği tek kanal. WhatsApp numarası
+                        tanımlı değilse bağlantı yine `tel:`.
+                      */}
+                      {kimlik.phone && kimlik.phoneLink && (
+                        <a
+                          href={kimlik.phoneLink}
+                          {...(kimlik.phoneLink.startsWith("http")
+                            ? { target: "_blank", rel: "noopener noreferrer" }
+                            : {})}
+                        >
                           {kimlik.phone}
                         </a>
                       )}

@@ -17,6 +17,7 @@ const BOS: MagazaKimligi = {
   brand: "",
   legalName: "",
   email: "",
+  phoneLink: "",
   phone: "",
   taxNumber: "",
   addressLine: "",

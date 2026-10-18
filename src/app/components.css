@@ -8254,40 +8254,52 @@ body.theme-modern .footer-credit img {
   Taşan harfler kırpılıyor: kelimenin bantla birlikte devam
   ettiğini söylüyor.
 */
+/*
+  YER BAŞTAN AYRILIYOR.
+
+  İmza tembel yüklenen bir görsel ve yüksekliği GÖRSELİN ORANINDAN
+  geliyordu (`width: 100%; height: auto`): dosya gelene kadar kutu
+  sıfır yükseklikteydi, geldiğinde altbilgi aşağı kayıyordu. Üstelik
+  yükseklik kiracının logosunun oranına bağlıydı — dar bir logoda
+  dev, kare bir logoda yüzlerce piksellik bir blok.
+
+  Kutunun yüksekliği artık sabit ve görsel ONUN İÇİNE oturuyor
+  (`contain`). Yükleme sırasında hiçbir şey kaymıyor ve her
+  kiracıda aynı ölçüde duruyor.
+
+  Negatif alt boşluk da kalktı: telif satırının çizgisini imzanın
+  üstüne bindiren şey oydu.
+*/
 body.theme-modern .footer-mark {
   display: block;
-  margin: var(--s6) 0 calc(var(--s5) * -1);
+  height: clamp(64px, 11vw, 150px);
+  margin: var(--s6) 0 var(--s4);
   overflow: hidden;
-  line-height: 0.82;
   user-select: none;
 }
 
 /*
-  Logo tam genişlikte ve beyaza çevrilmiş. Kaynak 1920 piksel
-  genişliğinde, altbilgi bandı en fazla ~1200 — yani büyütme değil
-  KÜÇÜLTME oluyor, kenarlar yumuşamıyor.
+  Kaynak 1920 piksel genişliğinde, bant en fazla ~1200 — büyütme
+  değil küçültme oluyor, kenarlar yumuşamıyor.
 */
 body.theme-modern .footer-mark > img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
   filter: brightness(0) invert(1);
   opacity: 0.06;
 }
 
-/* Logosu olmayan kiracıda imza mağazanın adı: aynı ölçekte,
-   aynı soluklukta. */
+/* Logosu olmayan kiracıda imza mağazanın adı: aynı kutuya
+   sığacak ölçüde, aynı soluklukta. */
 body.theme-modern .footer-mark > span {
   display: block;
-  font-size: clamp(56px, 13vw, 190px);
+  font-size: clamp(46px, 9.5vw, 128px);
   font-weight: 700;
   letter-spacing: -0.05em;
+  line-height: 1.05;
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.055);
-}
-
-@media (max-width: 640px) {
-  body.theme-modern .footer-mark {
-    margin-bottom: calc(var(--s4) * -1);
-  }
 }
