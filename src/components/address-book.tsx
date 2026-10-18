@@ -218,7 +218,7 @@ export function AddressBook({ supabase }: { supabase: SupabaseClient }) {
     <section className="panel" id="adreslerim">
       <div className="head">
         <div>
-          <h2>Adreslerim</h2>
+          <h1>Adreslerim</h1>
           <p>Teslimat ve fatura adreslerinizi buradan yönetin.</p>
         </div>
         {editing === null && (

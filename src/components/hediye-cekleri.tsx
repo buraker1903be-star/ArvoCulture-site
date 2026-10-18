@@ -90,13 +90,12 @@ export function HediyeCekleri({
   }, [supabaseUrl, supabaseKey, getir]);
 
   if (durum.ad === "yukleniyor") {
-    return <section className="panel panel-tight">Yükleniyor…</section>;
+    return <p className="hint">Yükleniyor…</p>;
   }
 
   if (durum.ad === "misafir") {
     return (
-      <section className="panel order-result">
-        <h2>Çeklerinizi görmek için giriş yapın.</h2>
+      <div className="order-result">
         <p>
           Hediye çekleri hesabınıza tanımlanır; giriş yaptığınızda
           bakiyeniz burada görünür.
@@ -106,36 +105,32 @@ export function HediyeCekleri({
             Giriş yap
           </Link>
         </div>
-      </section>
+      </div>
     );
   }
 
   if (durum.ad === "ariza") {
     return (
-      <section className="panel order-result">
-        <h2>Çekleriniz şu an okunamadı.</h2>
-        <p>
-          Bakiyeniz duruyor; bağlantı sorunu geçici olabilir. Birazdan
-          tekrar deneyin.
-        </p>
-      </section>
+      <p className="form-error" role="alert">
+        Çekleriniz şu an okunamadı; bakiyeniz duruyor. Bağlantı sorunu
+        geçici olabilir, birazdan tekrar deneyin.
+      </p>
     );
   }
 
   if (durum.cekler.length === 0) {
     return (
-      <section className="panel order-result">
-        <h2>Henüz hediye çekiniz yok.</h2>
-        <p>
-          Size bir hediye çeki tanımlandığında kodu ve bakiyesi burada
-          görünür.
+      <div className="order-result">
+        <p className="hint">
+          Henüz hediye çekiniz yok. Size bir çek tanımlandığında kodu ve
+          bakiyesi burada görünür.
         </p>
         <div className="order-actions">
           <Link className="btn" href="/koleksiyon/tumu">
             Ürünlere göz atın
           </Link>
         </div>
-      </section>
+      </div>
     );
   }
 

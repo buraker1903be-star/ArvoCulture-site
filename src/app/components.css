@@ -9995,3 +9995,110 @@ body.theme-modern .auth-alt .linklike:hover {
     transition: none;
   }
 }
+
+/* ==========================================================
+   HESAP SAYFALARI TEK KALIBA (18.10.2026)
+
+   Altı bölüm üç ayrı tasarım gibi duruyordu:
+
+   * Kuponlar ve hediye çekleri panelin DIŞINDA çiziliyordu, bu
+     yüzden o iki sayfada karşılama şeridi HİÇ YOKTU.
+   * Başlıklar iki ayrı kalıptaydı: o iki sayfa künye + büyük
+     başlık (`about-hero`), ötekiler panel başlığı kullanıyordu.
+   * Her bölüm kendi sayfasına çıkınca "Hoş geldiniz, Burak."
+     her sayfada tekrar ediyor ve sayfanın asıl başlığını
+     (Adreslerim, Kuponlarım) gölgeliyordu — üstelik iki h1.
+
+   Kabuk artık tek yerde (AccountPanel): oturum denetimi,
+   karşılama ve yan menü. Sayfa yalnızca kendi gövdesini veriyor
+   ve gövde her yerde aynı: `.panel > .head > h1 + p`.
+   ========================================================== */
+
+/* Özet dışındaki sayfalarda karşılama bir KİMLİK ŞERİDİ: aynı
+   bilgi, tek satır, başlığı gölgelemeyen boy. */
+.hesap-karsilama:not([data-genis]) {
+  gap: var(--s4);
+  padding: var(--s4) var(--pad);
+}
+
+.hesap-karsilama:not([data-genis]) .hesap-karsilama-monogram {
+  width: 40px;
+  height: 40px;
+  font-size: 17px;
+  box-shadow: 0 0 0 1px var(--gold-soft), 0 0 0 3px var(--panel);
+}
+
+.hesap-karsilama-ad {
+  margin: 0;
+  font-size: var(--t-lead);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.hesap-karsilama:not([data-genis]) .hesap-karsilama-eposta {
+  margin-top: 1px;
+  font-size: var(--t-xs);
+}
+
+/* Bölüm başlığı: panel başlığıyla aynı kalıp, h1 boyunda. */
+.hesap-icerik .panel > .head h1 {
+  margin: 0;
+  font-size: clamp(24px, 2.4vw, 32px);
+  letter-spacing: -0.025em;
+}
+
+/* --- Kupon kodu kopyalama düğmesi ---
+
+   `.coupon-code` yalnızca ana sayfadaki kampanya şeridinin
+   içinde (`.promo-code`) biçimlendirilmişti; Kuponlarım
+   sayfasında düğme biçimsiz kaldı ve kod ile "Kopyala" yan yana
+   yapışık çıktı ("ARVO10Kopyala"). */
+.kupon-kart .coupon-code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px dashed var(--line);
+  border-radius: var(--r);
+  background: var(--panel-2);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 180ms var(--ease),
+    background-color 180ms var(--ease);
+}
+
+.kupon-kart .coupon-code span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--t-sm);
+  letter-spacing: 0.08em;
+}
+
+.kupon-kart .coupon-code em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .kupon-kart .coupon-code:hover {
+    border-color: var(--gold);
+    background: var(--panel);
+  }
+
+  .kupon-kart .coupon-code:hover em {
+    color: var(--gold-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kupon-kart .coupon-code {
+    transition: none;
+  }
+}

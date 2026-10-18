@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useCallback, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getAuthClient } from "@/lib/auth-client";
 import { AddressBook } from "@/components/address-book";
@@ -55,6 +56,7 @@ export function AccountPanel({
   cikisBitti,
   kuponSayisi = 0,
   bolum = "ozet",
+  children,
 }: {
   supabaseUrl: string;
   supabaseKey: string;
@@ -93,7 +95,20 @@ export function AccountPanel({
    * oturumu, siparişleri ve profil durumunu tutmaya devam
    * ediyor; artık yalnızca istenen bölümü basıyor.
    */
-  bolum?: "ozet" | "bilgilerim" | "adreslerim" | "siparislerim";
+  bolum?: "ozet" | "bilgilerim" | "adreslerim" | "siparislerim" | "icerik";
+  /**
+   * `bolum="icerik"` için: sunucuda çizilmiş bölüm gövdesi.
+   *
+   * Kuponlar ve hediye çekleri panelin DIŞINDA duruyordu ve
+   * sonuç canlıda görüldü: o iki sayfada karşılama şeridi hiç
+   * yoktu, başlıklar da başka bir kalıptaydı (künye + büyük
+   * başlık), ötekiler ise panel başlığı kullanıyordu. Aynı
+   * hesabın altı sayfası üç ayrı tasarım gibi duruyordu.
+   *
+   * Kabuk artık tek yerde: oturum denetimi, karşılama ve yan menü
+   * burada; sayfa yalnızca kendi gövdesini veriyor.
+   */
+  children?: ReactNode;
 }) {
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
@@ -604,7 +619,19 @@ export function AccountPanel({
           Tek karşılama kaldı; profil kartı artık yalnızca FORM.
         */}
         {!menuBicimi && (
-          <section className="hesap-karsilama">
+          <section
+            className="hesap-karsilama"
+            /*
+              KARŞILAMA YALNIZCA ÖZET SAYFASINDA BÜYÜK.
+
+              Her bölüm kendi sayfasına çıkınca karşılama her
+              sayfada tekrar ediyordu ve "Hoş geldiniz, Burak."
+              başlığı sayfanın asıl başlığını (Adreslerim,
+              Kuponlarım) gölgeliyordu — üstelik iki h1 oluyordu.
+              Özet dışında kimlik şeridi: aynı bilgi, bir satır.
+            */
+            data-genis={bolum === "ozet" ? "" : undefined}
+          >
             <span className="hesap-karsilama-monogram" aria-hidden="true">
               {(profileName || session.user.email || "•")
                 .charAt(0)
@@ -612,13 +639,21 @@ export function AccountPanel({
             </span>
 
             <div className="hesap-karsilama-metin">
-              <p className="about-eyebrow">Hesabım</p>
-              <h1>
-                Hoş geldiniz
-                {selamAdi(profileName, session.user.email) &&
-                  `, ${selamAdi(profileName, session.user.email)}`}
-                .
-              </h1>
+              {bolum === "ozet" ? (
+                <>
+                  <p className="about-eyebrow">Hesabım</p>
+                  <h1>
+                    Hoş geldiniz
+                    {selamAdi(profileName, session.user.email) &&
+                      `, ${selamAdi(profileName, session.user.email)}`}
+                    .
+                  </h1>
+                </>
+              ) : (
+                <p className="hesap-karsilama-ad">
+                  {profileName.trim() || selamAdi(profileName, session.user.email)}
+                </p>
+              )}
               <p className="hesap-karsilama-eposta">{session.user.email}</p>
             </div>
 
@@ -696,11 +731,15 @@ export function AccountPanel({
 
               {bolum === "adreslerim" && <AddressBook supabase={supabase} />}
 
+              {/* Sunucuda çizilen bölümler (kuponlar, hediye
+                  çekleri) gövdelerini buradan veriyor. */}
+              {bolum === "icerik" && children}
+
               {bolum === "siparislerim" && (
                 <section className="panel" id="siparislerim">
                   <div className="head">
                     <div>
-                      <h2>Siparişlerim</h2>
+                      <h1>Siparişlerim</h1>
                       <p>Geçmiş siparişleriniz ve tüm detayları.</p>
                     </div>
                   </div>

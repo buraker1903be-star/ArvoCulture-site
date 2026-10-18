@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { HesapYanMenu } from "@/components/hesap-yan-menu";
+import { AccountPanel } from "@/components/account-panel";
 import { CouponCopy } from "@/components/coupon-strip";
+import { env } from "@/lib/env";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { konagiAyarla } from "@/lib/konak";
 import { formatPrice } from "@/lib/product-types";
@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   /* Hesap altındaki her sayfa gibi indekslenmiyor. */
   robots: { index: false, follow: true },
 };
+
+/* Kabuk oturuma bakıyor; rota saklanmamalı. */
+export const dynamic = "force-dynamic";
 
 /**
  * Kuponlarım.
@@ -44,31 +47,27 @@ export default async function Kuponlarim({
 
   return (
     <main className="shell">
-      <div className="hesap-duzen">
-        <HesapYanMenu />
-        <div className="hesap-icerik">
-          <section className="panel about-hero detail-hero">
-            <p className="about-eyebrow">Kuponlarım</p>
-            <h1>Kullanabileceğiniz kodlar.</h1>
-            <p className="about-lede">
-              Sepete girerken kodu yapıştırın; indirim ödeme adımında
-              uygulanır.
-            </p>
-          </section>
+      <AccountPanel
+        supabaseUrl={env.supabaseUrl}
+        supabaseKey={env.supabaseKey}
+        bolum="icerik"
+        kuponSayisi={kuponlar.length}
+      >
+        <section className="panel">
+          <div className="head">
+            <div>
+              <h1>Kuponlarım</h1>
+              <p>
+                Sepete girerken kodu yapıştırın; indirim ödeme adımında
+                uygulanır.
+              </p>
+            </div>
+          </div>
 
           {kuponlar.length === 0 ? (
-            <section className="panel order-result">
-              <h2>Şu anda açık bir kupon yok.</h2>
-              <p>
-                Yeni kampanyalar burada görünür. Bu arada indirimdeki
-                ürünlere göz atabilirsiniz.
-              </p>
-              <div className="order-actions">
-                <Link className="btn" href="/koleksiyon/firsatlar">
-                  Fırsatlara bakın
-                </Link>
-              </div>
-            </section>
+            <p className="hint">
+              Şu anda açık bir kupon yok. Yeni kampanyalar burada görünür.
+            </p>
           ) : (
             <ul className="kupon-izgara">
               {kuponlar.map((kupon) => (
@@ -81,7 +80,17 @@ export default async function Kuponlarim({
                           ? "Ücretsiz kargo"
                           : formatPrice(kupon.value / 100)}
                     </span>
-                    <strong>{kupon.name}</strong>
+                    {/*
+                      Kampanyanın adı KODLA AYNIYSA yazılmıyor:
+                      "ARVO10" başlığının altında ikinci kez
+                      "ARVO10" yazan bir kutu, müşteriye iki ayrı
+                      şey varmış gibi geliyordu.
+                    */}
+                    {kupon.name &&
+                      kupon.name.toUpperCase() !==
+                        (kupon.code ?? "").toUpperCase() && (
+                        <strong>{kupon.name}</strong>
+                      )}
                   </div>
 
                   <ul className="kupon-kosul">
@@ -109,9 +118,8 @@ export default async function Kuponlarim({
               ))}
             </ul>
           )}
-
-        </div>
-      </div>
+        </section>
+      </AccountPanel>
     </main>
   );
 }

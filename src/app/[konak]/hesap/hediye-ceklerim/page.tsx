@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HesapYanMenu } from "@/components/hesap-yan-menu";
+import { AccountPanel } from "@/components/account-panel";
 import { HediyeCekleri } from "@/components/hediye-cekleri";
 import { env } from "@/lib/env";
 import { konagiAyarla } from "@/lib/konak";
@@ -28,24 +28,25 @@ export default async function HediyeCeklerim({
 
   return (
     <main className="shell">
-      <div className="hesap-duzen">
-        <HesapYanMenu />
-        <div className="hesap-icerik">
-          <section className="panel about-hero detail-hero">
-            <p className="about-eyebrow">Hediye çeklerim</p>
-            <h1>Bakiyeniz burada.</h1>
-            <p className="about-lede">
-              Hesabınıza tanımlı hediye çekleri ve kalan tutarları.
-            </p>
-          </section>
+      <AccountPanel
+        supabaseUrl={env.supabaseUrl}
+        supabaseKey={env.supabaseKey}
+        bolum="icerik"
+      >
+        <section className="panel">
+          <div className="head">
+            <div>
+              <h1>Hediye çeklerim</h1>
+              <p>Hesabınıza tanımlı çekler ve kalan tutarları.</p>
+            </div>
+          </div>
 
           <HediyeCekleri
             supabaseUrl={env.supabaseUrl}
             supabaseKey={env.supabaseKey}
           />
-
-        </div>
-      </div>
+        </section>
+      </AccountPanel>
     </main>
   );
 }

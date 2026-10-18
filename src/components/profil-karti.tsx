@@ -101,7 +101,7 @@ export function ProfilKarti({
       */}
       <div className="head">
         <div>
-          <h2>Hesap bilgilerim</h2>
+          <h1>Hesap bilgilerim</h1>
           <p>Sipariş formlarında bu bilgiler hazır gelir.</p>
         </div>
         {uyelik && <span className="profil-uyelik">Üye · {uyelik}</span>}
