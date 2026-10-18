@@ -163,6 +163,25 @@ export function HediyeCekleri({
               )}
             </div>
 
+            {/*
+              TÜKENMİŞ ÇEKE DAMGA.
+
+              Kart yalnızca soluklaşıyordu ve küçük bir satır
+              "bakiyesi tükendi" diyordu; göz önce BÜYÜK RAKAMI
+              okuyor ve "₺0,00" tek başına bir arıza gibi
+              görünüyor. Damga rakamın üstüne düşüyor: müşteri
+              okumadan anlıyor.
+
+              Ekran okuyucuya ayrıca söylenmiyor — altındaki
+              cümle zaten aynı şeyi yazıyor ve iki kez duyurmak
+              gürültü olurdu.
+            */}
+            {bitti && (
+              <span className="cek-damga" aria-hidden="true">
+                Kullanıldı
+              </span>
+            )}
+
             <code className="cek-kod">{cek.code}</code>
 
             {/* Asgari tutar, son kullanımdan ÖNCE: ödeme anında

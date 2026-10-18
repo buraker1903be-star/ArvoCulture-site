@@ -10891,3 +10891,55 @@ body.theme-modern .auth-alt .linklike:hover {
     transition: none;
   }
 }
+
+/* ==========================================================
+   TÜKENMİŞ HEDİYE ÇEKİNİN DAMGASI (19.10.2026)
+
+   Kart yalnızca soluklaşıyordu ve altındaki küçük satır
+   "bakiyesi tükendi" diyordu. Göz önce BÜYÜK RAKAMI okuyor ve
+   "₺0,00" tek başına bir arıza gibi görünüyor — müşteri parasının
+   kaybolduğunu sanabilir. Damga rakamın üstüne düşüyor.
+   ========================================================== */
+
+.cek-kart {
+  position: relative;
+  overflow: hidden;
+}
+
+.cek-damga {
+  position: absolute;
+  top: 50%;
+  right: -14%;
+  padding: 6px 42px;
+  transform: translateY(-50%) rotate(-12deg);
+  border: 2px solid color-mix(in srgb, var(--ink-3) 45%, transparent);
+  border-radius: var(--r);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink-3) 70%, transparent);
+  /* Mürekkep damgası gibi: kartın üstünde durmuyor, içine
+     işliyor. */
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Kart zaten soluk; damga onun üstünde kaybolmasın. */
+.cek-kart-bitti {
+  opacity: 0.75;
+}
+
+.cek-kart-bitti .cek-bakiye,
+.cek-kart-bitti .cek-kod {
+  opacity: 0.55;
+}
+
+@media (max-width: 420px) {
+  .cek-damga {
+    right: -18%;
+    padding: 5px 34px;
+    font-size: var(--t-xs);
+  }
+}
