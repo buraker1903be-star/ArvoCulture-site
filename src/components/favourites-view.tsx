@@ -22,7 +22,7 @@ type State =
   | { status: "error" };
 
 export function FavouritesView() {
-  const { slugs, syncing } = useFavourites();
+  const { slugs, syncing, cikistaBosaldi } = useFavourites();
   const [state, setState] = useState<State>({ status: "loading" });
 
   /* Hangi liste için istek yapıldığını tutar: aynı liste için
@@ -106,6 +106,32 @@ export function FavouritesView() {
   }
 
   if (state.status === "empty") {
+    /*
+      ÇIKIŞTAN SONRAKİ BOŞLUK AYRI BİR ŞEY.
+
+      Çıkışta tarayıcıdaki liste bilerek siliniyor (ortak
+      bilgisayarda bir sonraki müşteriye devrolmasın diye) ve ekran
+      o anda "Henüz favoriniz yok" diyordu. Oysa liste hesapta
+      duruyor: müşteriye beğendiklerinin SİLİNDİĞİNİ söylemiş
+      oluyorduk.
+    */
+    if (cikistaBosaldi) {
+      return (
+        <section className="panel order-result">
+          <h2>Çıkış yaptınız.</h2>
+          <p>
+            Beğendikleriniz hesabınızda duruyor. Tekrar giriş
+            yaptığınızda hepsi burada olacak.
+          </p>
+          <div className="order-actions">
+            <Link className="btn" href="/hesap">
+              Giriş yap
+            </Link>
+          </div>
+        </section>
+      );
+    }
+
     return (
       <section className="panel order-result">
         <h2>Henüz favoriniz yok.</h2>

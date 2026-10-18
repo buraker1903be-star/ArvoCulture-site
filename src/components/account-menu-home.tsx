@@ -143,10 +143,19 @@ export function AccountMenuHome({
   ad,
   eposta,
   cikisYap,
+  cikisDurumu,
 }: {
   ad: string;
   eposta: string | undefined;
   cikisYap: () => void;
+  /**
+   * Çıkış isteğinin durumu.
+   *
+   * Düğme önceden tek tıkla isteği gönderip hiçbir şey
+   * söylemiyordu: ağ yavaşsa menü birkaç saniye aynı kalıyor,
+   * müşteri "çalışmadı" sanıp tekrar basıyordu.
+   */
+  cikisDurumu: "bos" | "cikiliyor" | "cikildi" | "hata";
 }) {
   return (
     <div className="account-home">
@@ -178,9 +187,25 @@ export function AccountMenuHome({
         ))}
       </nav>
 
-      <button type="button" className="account-signout" onClick={cikisYap}>
-        Çıkış yap
+      <button
+        type="button"
+        className="account-signout"
+        disabled={cikisDurumu === "cikiliyor"}
+        onClick={cikisYap}
+      >
+        {cikisDurumu === "cikiliyor" ? "Çıkılıyor…" : "Çıkış yap"}
       </button>
+
+      {/*
+        Hata görünmek ZORUNDA: istek düşerse oturum yerinde kalıyor
+        ve müşteri çıktığını sanıp ortak bilgisayardan kalkıyordu.
+      */}
+      {cikisDurumu === "hata" && (
+        <p className="form-error" role="alert">
+          Çıkış yapılamadı; hâlâ giriş yapmış durumdasınız. Tekrar
+          deneyin.
+        </p>
+      )}
     </div>
   );
 }

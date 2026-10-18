@@ -49,6 +49,16 @@ type FavouritesContextValue = {
   /** Hesapla eşitleme sürüyor mu? Düğmeler buna göre kilitlenmez,
       yalnızca liste ekranı bir bekleme durumu gösterebilir. */
   syncing: boolean;
+  /**
+   * Liste bu tarayıcıda ÇIKIŞ YÜZÜNDEN mi boş?
+   *
+   * Çıkışta tarayıcıdaki liste bilerek siliniyor (ortak
+   * bilgisayarda bir sonraki müşteriye devrolmasın diye) ve favori
+   * sayfası o anda "Henüz favoriniz yok" diyordu — oysa liste
+   * hesapta duruyor. Müşteriye beğendiklerinin silindiğini
+   * söylemiş oluyorduk.
+   */
+  cikistaBosaldi: boolean;
 };
 
 const FavouritesContext = createContext<FavouritesContextValue | null>(null);
@@ -72,6 +82,7 @@ export function FavouritesProvider({
 }) {
   const [slugs, setSlugs] = useState<string[]>([]);
   const [syncing, setSyncing] = useState(false);
+  const [cikistaBosaldi, setCikistaBosaldi] = useState(false);
 
   /* Oturum sahibi. Aynı kullanıcı için tekrar tekrar eşitlememek
      için tutuluyor: token yenilendiğinde de olay tetikleniyor. */
@@ -220,6 +231,7 @@ export function FavouritesProvider({
         syncedUser.current = null;
         writeFavourites([]);
         setSlugs([]);
+        setCikistaBosaldi(true);
         return;
       }
 
@@ -229,6 +241,8 @@ export function FavouritesProvider({
          tekrar eşitlemiyoruz. */
       if (syncedUser.current === userId) return;
 
+      /* Yeni oturum: boş liste artık çıkışın sonucu değil. */
+      setCikistaBosaldi(false);
       syncedUser.current = userId;
       void syncWithAccount();
     });
@@ -253,6 +267,7 @@ export function FavouritesProvider({
          reddederse geri alınıyor. */
       writeFavourites(next);
       setSlugs(next);
+      if (adding) setCikistaBosaldi(false);
 
       /* Misafir: liste yalnızca tarayıcıda, Supabase yüklenmiyor. */
       if (!client && !hasStoredSession()) return;
@@ -293,8 +308,9 @@ export function FavouritesProvider({
       isFavourite: (slug: string) => slugs.includes(slug),
       toggle,
       syncing,
+      cikistaBosaldi,
     }),
-    [slugs, toggle, syncing],
+    [slugs, toggle, syncing, cikistaBosaldi],
   );
 
   return (

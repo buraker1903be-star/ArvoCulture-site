@@ -104,6 +104,19 @@ export function AccountPanel({
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordDone, setNewPasswordDone] = useState(false);
 
+  /*
+    ÇIKIŞIN KENDİ DURUMU VAR.
+
+    Önceden `signOut` bir satırdı: isteği gönderip yerel durumu
+    temizliyordu. İstek DÜŞERSE Supabase oturumu yerinde kalıyor
+    ama ekran çıkılmış gibi görünüyordu — ortak bilgisayarda
+    müşteri çıktığını sanıp kalkıyor, oturum açık kalıyordu.
+    Şimdi hata görünüyor ve çıkılmış gibi yapılmıyor.
+  */
+  const [cikisDurumu, setCikisDurumu] = useState<
+    "bos" | "cikiliyor" | "cikildi" | "hata"
+  >("bos");
+
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -356,10 +369,37 @@ export function AccountPanel({
   }
 
   async function signOut() {
-    await getAuthClient(supabaseUrl, supabaseKey).auth.signOut();
+    setCikisDurumu("cikiliyor");
+    const { error } = await getAuthClient(
+      supabaseUrl,
+      supabaseKey,
+    ).auth.signOut({
+      /*
+        YALNIZCA BU TARAYICI.
+
+        Supabase'in varsayılanı `global`: buradan çıkmak
+        müşterinin TELEFONUNDAKİ oturumu da kapatıyordu. Mağazada
+        bu beklenmedik bir şey — bilgisayarda çıkış yapan kişi
+        telefonunda da yeniden giriş yapmak zorunda kalıyor.
+        Bütün cihazlardan çıkmak ayrı bir istek ve ayrı bir düğme
+        olmalı; sessiz varsayılan değil.
+      */
+      scope: "local",
+    });
+
+    if (error) {
+      console.error(error);
+      setCikisDurumu("hata");
+      return;
+    }
+
     setOrders(null);
     setEmail("");
     setPassword("");
+    /* Sonraki müşteri formda bir öncekinin adını bulmasın. */
+    setProfileName("");
+    setProfilePhone("");
+    setCikisDurumu("cikildi");
   }
 
   if (!configured) {
@@ -500,10 +540,19 @@ export function AccountPanel({
           <div className="account-bar">
             <div>
               <strong>{session.user.email}</strong>
-              <small>Hesabınıza giriş yaptınız</small>
+              <small>
+                {cikisDurumu === "hata"
+                  ? "Çıkış yapılamadı; hâlâ giriş yapmış durumdasınız."
+                  : "Hesabınıza giriş yaptınız"}
+              </small>
             </div>
-            <button type="button" className="linklike" onClick={signOut}>
-              Çıkış yap
+            <button
+              type="button"
+              className="linklike"
+              disabled={cikisDurumu === "cikiliyor"}
+              onClick={() => void signOut()}
+            >
+              {cikisDurumu === "cikiliyor" ? "Çıkılıyor…" : "Çıkış yap"}
             </button>
           </div>
         )}
@@ -524,6 +573,7 @@ export function AccountPanel({
             ad={selamAdi(profileName, session.user.email)}
             eposta={session.user.email}
             cikisYap={signOut}
+            cikisDurumu={cikisDurumu}
           />
         ) : (
           <>
@@ -603,12 +653,34 @@ export function AccountPanel({
   /* --- Giriş formu --- */
   return (
     <section className="panel auth-panel">
+      {/*
+        ÇIKIŞIN BİR CEVABI OLMALI.
+
+        Çıkıştan sonra ekran sessizce giriş formuna dönüyordu ve
+        aynı anda favori listesi BOŞALIYORDU (ortak bilgisayarda
+        liste bir sonrakine devrolmasın diye, bilerek). Açıklama
+        olmayınca bu veri kaybı gibi görünüyor: müşteri
+        beğendiklerinin silindiğini sanıyor.
+      */}
+      {cikisDurumu === "cikildi" && (
+        <p className="auth-cikis" role="status">
+          <strong>Çıkış yapıldı.</strong> Favorileriniz ve
+          siparişleriniz hesabınızda duruyor; tekrar giriş
+          yaptığınızda yerlerinde olacaklar.
+        </p>
+      )}
+
       <div className="auth-tabs" role="tablist">
         <button
           type="button"
           role="tab"
           aria-selected={mode === "login"}
-          onClick={() => setMode("login")}
+          onClick={() => {
+            setMode("login");
+            /* Müşteri giriş yapmaya başladı; çıkış bildirimi
+               artık geçmişe ait. */
+            setCikisDurumu("bos");
+          }}
         >
           Giriş yap
         </button>
@@ -616,7 +688,10 @@ export function AccountPanel({
           type="button"
           role="tab"
           aria-selected={mode === "register"}
-          onClick={() => setMode("register")}
+          onClick={() => {
+            setMode("register");
+            setCikisDurumu("bos");
+          }}
         >
           Hesap oluştur
         </button>

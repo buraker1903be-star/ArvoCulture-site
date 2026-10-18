@@ -9451,3 +9451,39 @@ body.theme-modern .auth-alt .linklike:hover {
     text-align: center;
   }
 }
+
+/* ==========================================================
+   ÇIKIŞ BİLDİRİMİ (18.10.2026)
+
+   Çıkıştan sonra ekran sessizce giriş formuna dönüyordu ve aynı
+   anda favori listesi BOŞALIYORDU — ortak bilgisayarda liste bir
+   sonraki müşteriye devrolmasın diye, bilerek. Açıklama olmayınca
+   bu veri kaybı gibi görünüyor.
+   ========================================================== */
+
+.auth-cikis {
+  margin: 0 0 var(--s4);
+  padding: 11px 14px;
+  border-left: 2px solid var(--ok);
+  border-radius: 0 var(--r) var(--r) 0;
+  background: var(--panel-2);
+  font-size: var(--t-sm);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.auth-cikis strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Çıkış sürerken düğme basılabilir görünmemeli; ağ yavaşsa
+   müşteri "çalışmadı" sanıp tekrar basıyordu. */
+.account-signout:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.account-home .form-error {
+  margin: 0;
+}
