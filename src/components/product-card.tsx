@@ -14,8 +14,25 @@ export function discountOf(product: Product) {
   return 0;
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  cokSatanRozeti = true,
+}: {
+  product: Product;
+  /**
+   * "Çok satan" rozeti basılsın mı.
+   *
+   * Bölümün KENDİSİ çok satanlardan oluşuyorsa kapanıyor: on kartın
+   * onunda aynı rozet, başlığın ("Çok satanlar") altında hiçbir şey
+   * ayırt etmiyor, yalnızca gürültü ekliyor.
+   */
+  cokSatanRozeti?: boolean;
+}) {
   const off = discountOf(product);
+  /* Tükenen üründe "çok satan" yazmak alay gibi duruyor: müşteri
+     satın alamayacağı bir ürünün ne kadar sevildiğini okuyor. */
+  const cokSatan =
+    cokSatanRozeti && product.bestSeller && product.available !== false;
   const href = `/urun/${product.slug}`;
   const second = product.images?.[1];
 
@@ -34,17 +51,18 @@ export function ProductCard({ product }: { product: Product }) {
         data-art={product.artStyle}
       >
         {/*
-          Görselin üzerinde artık yalnızca "Tükendi" duruyor.
+          Görsel üzerindeki rozetler: Tükendi | %X İNDİRİM | Çok satan.
 
-          İndirim ve "çok satan" rozetleri de buradaydı: dört
-          doygun kırmızı dikdörtgen yan yana gelince sayfadaki en
-          gürültülü öğe onlar oluyordu ve göz ürünlerden önce
-          rozetlere gidiyordu. İkisi de bilgiyi kaybetmeden aşağı
-          taşındı — indirim fiyatın yanına, çok satan marka
-          satırına. Tükendi kalıyor: müşteri satın alamayacağı bir
-          ürüne tıklamadan önce bunu görmeli.
+          Bir ara hepsi buradan kaldırılmıştı ve gerekçe doğruydu:
+          dört doygun kırmızı DİKDÖRTGEN yan yana gelince sayfanın en
+          gürültülü öğesi onlar oluyor, göz ürünlerden önce rozetlere
+          gidiyordu. Sorun rozetin yeri değil biçimiydi; cam hapa
+          geçince ikisi de geri döndü (aşağıdaki notlar).
+
+          Aynı anda en fazla ikisi çıkıyor: tükenen üründe indirim
+          ve "çok satan" basılmıyor.
         */}
-        {(product.available === false || off > 0) && (
+        {(product.available === false || off > 0 || cokSatan) && (
           <span className="card-flags">
             {product.available === false ? (
               <b className="tag tag-out">Tükendi</b>
@@ -70,8 +88,23 @@ export function ProductCard({ product }: { product: Product }) {
                 Fiyatın yanındaki ikinci oran kaldırıldı: aynı
                 bilgiyi iki kez göstermek karta gürültü ekliyordu.
               */
-              <b className="tag tag-off">%{off} İNDİRİM</b>
+              off > 0 && <b className="tag tag-off">%{off} İNDİRİM</b>
             )}
+            {/*
+              "ÇOK SATAN" DA ROZET OLDU (18.10.2026).
+
+              İndirim rozeti görselden alınıp künye satırına
+              taşınmış, sonra cam hap olarak görsele dönmüştü; "çok
+              satan" o taşımada künye satırında kalmıştı ve markanın
+              yanında, 10 punto soluk büyük harfle duruyordu —
+              kaydırırken kimse görmüyordu. İkisi de aynı köşede,
+              aynı hapta: biri fırsatı, diğeri KANITI söylüyor.
+
+              Rengi ayrı: indirim kırmızı, çok satan mürekkep. İki
+              kırmızı hap üst üste gelince hangisinin fiyatla ilgili
+              olduğu kayboluyordu.
+            */}
+            {cokSatan && <b className="tag tag-best">Çok satan</b>}
           </span>
         )}
         {/*
@@ -111,12 +144,11 @@ export function ProductCard({ product }: { product: Product }) {
         büyük harf dilinde, aralarında ince bir ayraç. Marka boşsa
         ayraç da basılmaz.
       */}
-      {(product.eyebrow || (product.bestSeller && product.available !== false)) && (
+      {/* "Çok satan" buradan görsele taşındı; satırda yalnızca marka
+          kaldı. İki yerde göstermek aynı bilgiyi tekrar etmek olurdu. */}
+      {product.eyebrow && (
         <p className="card-brand">
-          {product.eyebrow && <span>{product.eyebrow}</span>}
-          {product.bestSeller && product.available !== false && (
-            <em>Çok satan</em>
-          )}
+          <span>{product.eyebrow}</span>
         </p>
       )}
       <h3>

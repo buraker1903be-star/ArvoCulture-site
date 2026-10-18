@@ -204,6 +204,9 @@ export default async function Home({
           href="/koleksiyon/cok-satan-cilt-bakim-urunleri"
           hrefLabel="Tümünü gör"
           products={best}
+          /* Bölümün tamamı çok satanlardan oluşuyor; her kartta aynı
+             rozeti tekrarlamak başlığı tekrarlamak olurdu. */
+          cokSatanRozeti={false}
           /*
             GRİ ZEMİN KALKTI (18.10.2026).
 

@@ -17,6 +17,7 @@ export function ProductBlock({
   hrefLabel,
   products,
   alt,
+  cokSatanRozeti,
   rail,
 }: {
   title: string;
@@ -31,6 +32,14 @@ export function ProductBlock({
   hrefLabel: string;
   products: Product[];
   alt?: boolean;
+  /**
+   * Kartlarda "Çok satan" rozeti basılsın mı.
+   *
+   * Bölümün kendisi çok satanlardan oluşuyorsa kapatılıyor: on
+   * kartın onunda aynı rozet, "Çok satanlar" başlığının altında
+   * hiçbir şey ayırt etmiyor.
+   */
+  cokSatanRozeti?: boolean;
   /**
    * Izgara yerine yatay kaydırmalı raf. Sekiz özdeş ızgaranın
    * ardı ardına gelmesi sayfayı düzleştiriyordu; bir bölümü
@@ -53,13 +62,21 @@ export function ProductBlock({
       {rail ? (
         <Rail>
           {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+            <ProductCard
+              key={product.slug}
+              product={product}
+              cokSatanRozeti={cokSatanRozeti}
+            />
           ))}
         </Rail>
       ) : (
         <div className="grid">
           {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+            <ProductCard
+              key={product.slug}
+              product={product}
+              cokSatanRozeti={cokSatanRozeti}
+            />
           ))}
         </div>
       )}

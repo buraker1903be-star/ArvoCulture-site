@@ -7105,3 +7105,29 @@ body.theme-modern .cat-card:hover .cat-card-body em::after {
     transition: none;
   }
 }
+
+/*
+  "ÇOK SATAN" ROZETİ.
+
+  İndirim hapıyla aynı geometri, farklı renk: indirim kırmızı
+  (--sale), bu mürekkep. İki kırmızı hap üst üste gelince
+  hangisinin fiyatla ilgili olduğu kayboluyordu.
+
+  Önceden künye satırındaydı — markanın yanında 10 punto, soluk,
+  büyük harf. Kaydırırken görünmüyordu; oysa "çok satan" bir
+  vitrinde fiyattan sonraki en güçlü kanıt.
+*/
+.tag-best {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  /* Beyaz fonlu ürün çekimlerinde hap zemine karışmasın. */
+  box-shadow: 0 1px 2px rgba(16, 18, 15, 0.08);
+}
