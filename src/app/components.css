@@ -790,8 +790,31 @@
 }
 
 @media (max-width: 640px) {
+  /*
+    TELEFONDA ÜRÜN ADI KESİLMİYOR (18.10.2026).
+
+    Başlık iki satıra kelepçeliydi ve 13 pikselde yazılıyordu;
+    ölçüldü: koleksiyon sayfasındaki 24 üründen 14'ü kesiliyordu
+    (%58). "LR L-Recapin Saç Dökülmesine Karşı Bakım
+    Şampuan+Tonik İkilisi" gibi adlar üç nokta ile bitiyor,
+    müşteri hangi ürün olduğunu KART ÜZERİNDEN anlayamıyordu —
+    iki ürün aynı görünüp farklı şey oluyordu (ruj ile dudak
+    kalemi, şampuan ile şampuan+tonik ikilisi).
+
+    Hiza bozulmuyor: kart dikey esnek ve düğme `margin-top: auto`
+    ile tabana yapışık, yani başlık uzasa da satırdaki kartlar
+    aynı yükseklikte bitiyor.
+
+    Yazı 14 piksele çıktı: 13 piksel iki satıra sığdırmak için
+    seçilmişti, kelepçe kalkınca o kısıt da kalktı.
+  */
   .card h3 {
-    font-size: var(--t-sm);
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+    min-height: 0;
+    font-size: 14px;
+    line-height: 1.35;
   }
 }
 
