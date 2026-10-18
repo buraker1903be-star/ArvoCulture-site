@@ -448,7 +448,22 @@ export default async function RootLayout({
                 satırında var, üçüncü kez okunması gerekmiyor.
               */}
               <span className="footer-mark" aria-hidden="true">
-                {theme.store_name ?? "Mağaza"}
+                {/*
+                  İmza MAĞAZANIN LOGOSU, adı değil: düz sansla
+                  yazılmış bir ad, markanın kendi harf biçimini
+                  taşımıyordu — ArvoCulture'ın wordmark'ında "ARVO"
+                  kalın, "CULTURE" ince ve italik, ve imzanın
+                  tamamı o ayrımdan doğuyor.
+
+                  StoreLogo logosu olmayan kiracıda mağaza ADINA
+                  düşüyor; yani ikinci bir mağaza logosuz da olsa
+                  imza çiziliyor ve kimsenin logosu başkasının
+                  altbilgisinde görünmüyor.
+                */}
+                <StoreLogo
+                  logoUrl={theme.logo_url}
+                  storeName={theme.store_name ?? "Mağaza"}
+                />
               </span>
 
               <div className="footer-legal">
