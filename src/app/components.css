@@ -7303,6 +7303,18 @@ body.theme-modern .promo-code .coupon-code em {
   align-items: center;
   gap: var(--s4);
   margin-top: var(--s2);
+  /*
+    SÜTUNUN TAMAMINI KAPLIYOR.
+
+    `.promo-body` bir ızgara ve `justify-items: start` diyor; yani
+    her çocuk içeriği kadar daralıyor. Bu satır da daraldığında
+    kupon hapı (asgari 21rem) ile düğme aynı satıra sığmıyor ve
+    `flex-wrap` ikisini alt alta indiriyordu — canlıda ölçüldü:
+    satır 396px'e düşüyor, ikisi 511px istiyordu. `justify-self`
+    ile sütunu kaplayınca yan yana duruyorlar; dar ekranda sütun
+    da daraldığı için wrap yine devreye giriyor.
+  */
+  justify-self: stretch;
 }
 
 /* Satır içindeyken kuponun kendi üst boşluğuna gerek yok. */
