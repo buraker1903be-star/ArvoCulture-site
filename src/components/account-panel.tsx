@@ -743,6 +743,20 @@ function translateAuthError(message: string) {
     ],
     /* Müşteri sağlayıcı ekranında vazgeçti; bu bir arıza değil. */
     [/access_denied|user denied|cancell?ed/i, "Giriş iptal edildi."],
+    /*
+      SAĞLAYICI E-POSTA VERMEDİ.
+
+      Facebook'ta görülebiliyor: hesap yalnızca telefonla açılmışsa
+      ya da müşteri e-posta iznini vermezse Supabase'e e-posta
+      gelmiyor ve "Allow users without an email" kapalı olduğu için
+      giriş reddediliyor. Kapalı olması doğru — siparişler ve
+      favoriler e-postaya bağlı — ama müşteriye NE YAPACAĞINI
+      söylemek gerekiyor.
+    */
+    [
+      /email.*(not provided|missing|required)|no email|unverified email/i,
+      "Hesabınızda doğrulanmış bir e-posta adresi görünmüyor. E-posta ile giriş yapabilir ya da sağlayıcıda e-posta iznini verip tekrar deneyebilirsiniz.",
+    ],
     [
       /redirect|not allowed/i,
       "Giriş tamamlanamadı. Lütfen tekrar deneyin ya da e-posta ile girin.",
