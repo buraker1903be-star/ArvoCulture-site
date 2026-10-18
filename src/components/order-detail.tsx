@@ -205,26 +205,40 @@ export function OrderDetail({
 
   return (
     <>
+      {/*
+        BAŞLIK İKİ SÜTUN.
+
+        Künye, numara ve çizelge alt alta duruyordu ve kart tek
+        başına ekranın üçte birini kaplıyordu; sayfanın asıl işi
+        (ürünler, ödeme, özet) katlamanın altına iniyordu.
+
+        Solda "hangi sipariş", sağda "nerede" — ikisi de ilk
+        bakışta, aşağı inmeden. Çizelge sağ sütunda dikey:
+        dört adım yan yana sıkışmaktansa alt alta rahat duruyor
+        ve yüksekliği sol sütunla denkleşiyor.
+      */}
       <section className="panel about-hero detail-hero">
-        <nav className="crumbs" aria-label="Konum">
-          <Link href="/hesap">Hesabım</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">{order.order_number}</span>
-        </nav>
-        <h1>{order.order_number}</h1>
-        <div className="detail-meta">
-          {/*
-            Durum GÖNDERİLERDEN türetiliyor: ArvoARC'ın sipariş durumu
-            "fulfilled"da kalıyor (orada "kargoya verildi" demek) ve
-            paketler teslim edilse bile müşteri onu görüyordu.
-          */}
-          <span className="tag tag-soft">{siparisDurumEtiketi(order)}</span>
-          <time dateTime={order.created_at}>
-            {formatOrderDate(order.created_at)}
-          </time>
-          {/* Tutar başlıkta: sipariş sayfasını açan müşterinin ilk iki
-              sorusu "nerede" ve "ne kadardı". */}
-          <b className="detail-tutar">{formatPrice(order.total / 100)}</b>
+        <div className="detail-hero-ozet">
+          <nav className="crumbs" aria-label="Konum">
+            <Link href="/hesap">Hesabım</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{order.order_number}</span>
+          </nav>
+          <h1>{order.order_number}</h1>
+          <div className="detail-meta">
+            {/*
+              Durum GÖNDERİLERDEN türetiliyor: ArvoARC'ın sipariş durumu
+              "fulfilled"da kalıyor (orada "kargoya verildi" demek) ve
+              paketler teslim edilse bile müşteri onu görüyordu.
+            */}
+            <span className="tag tag-soft">{siparisDurumEtiketi(order)}</span>
+            <time dateTime={order.created_at}>
+              {formatOrderDate(order.created_at)}
+            </time>
+            {/* Tutar başlıkta: sipariş sayfasını açan müşterinin ilk iki
+                sorusu "nerede" ve "ne kadardı". */}
+            <b className="detail-tutar">{formatPrice(order.total / 100)}</b>
+        </div>
         </div>
 
         {/*
@@ -235,7 +249,7 @@ export function OrderDetail({
           sipariş sayfasına girmenin birinci sebebi tam bu soru.
         */}
         {adimlar && (
-          <ol className="siparis-cizelge">
+          <ol className="siparis-cizelge siparis-cizelge-dikey">
             {adimlar.map((adim) => (
               <li
                 key={adim.ad}

@@ -9860,8 +9860,34 @@ body.theme-modern .auth-alt .linklike:hover {
   color: var(--ink);
 }
 
-/* Telefonda dört sütun 80 piksele düşüp adları kırpıyordu;
-   çizelge dikey akıyor. */
+/*
+   DİKEY ÇİZELGE iki yerde: başlık kartının sağ sütununda (orada
+   dört adım yan yana sıkışırdı) ve telefonda (dört sütun 80
+   piksele düşüp adları kırpıyordu). Kurallar ortak; biri
+   değişirse ikisi birden değişsin.
+*/
+.siparis-cizelge-dikey {
+  grid-auto-flow: row;
+  gap: 0;
+}
+
+.siparis-cizelge-dikey li {
+  padding: 0 0 var(--s4) var(--s5);
+}
+
+.siparis-cizelge-dikey li:last-child {
+  padding-bottom: 0;
+}
+
+.siparis-cizelge-dikey li::before {
+  top: 11px;
+  bottom: -4px;
+  left: 5px;
+  right: auto;
+  width: 1px;
+  height: auto;
+}
+
 @media (max-width: 620px) {
   .siparis-cizelge {
     grid-auto-flow: row;
@@ -10428,4 +10454,47 @@ body.theme-modern .auth-alt .linklike:hover {
   padding-top: var(--s3);
   border-top: 1px solid var(--line-soft);
   color: var(--ink-3);
+}
+
+/* ==========================================================
+   SİPARİŞ BAŞLIĞI İKİ SÜTUN (18.10.2026)
+
+   Künye, sipariş numarası ve yolculuk çizelgesi alt alta
+   duruyordu; kart tek başına ekranın üçte birini kaplıyor ve
+   sayfanın asıl işi (ürünler, ödeme, özet) katlamanın altına
+   iniyordu.
+
+   Solda "hangi sipariş", sağda "nerede" — ikisi de ilk bakışta.
+   Çizelge sağ sütunda dikey: dört adım yan yana sıkışmaktansa
+   alt alta rahat duruyor ve yüksekliği sol sütunla denkleşiyor.
+   ========================================================== */
+
+.detail-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 17rem);
+  gap: var(--gap);
+  align-items: center;
+  /* `.about-hero` justify-items: start diyor; iki sütunlu düzende
+     sağ sütunu sola yapıştırıyordu. */
+  justify-items: stretch;
+}
+
+.detail-hero-ozet {
+  display: grid;
+  justify-items: start;
+  gap: var(--s3);
+  min-width: 0;
+}
+
+/* Çizelge dikeyken satır yüksekliği daha derli toplu olmalı:
+   kart boyunu belirleyen o. */
+.detail-hero .siparis-cizelge-dikey li {
+  padding-bottom: var(--s3);
+}
+
+@media (max-width: 860px) {
+  /* Dar ekranda iki sütun sığmıyor; çizelge numaranın altına
+     geçiyor ve orada zaten dikey duruyor. */
+  .detail-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
