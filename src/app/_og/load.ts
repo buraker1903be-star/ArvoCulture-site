@@ -55,16 +55,17 @@ export async function ogLogo(url?: string): Promise<OgLogo> {
     if (uzak && olcu) return { src: uzak, ...olcu };
   }
 
-  try {
-    const data = await readFile(
-      join(process.cwd(), "public/arvoculture-logo-transparent.png"),
-    );
-    const src = `data:image/png;base64,${data.toString("base64")}`;
-    const olcu = gorselOlcusu(src);
-    return olcu ? { src, ...olcu } : null;
-  } catch {
-    return null;
-  }
+  /*
+    DEPODAKİ DOSYAYA DÜŞÜLMÜYOR (18.10.2026).
+
+    Burada `public/arvoculture-logo-transparent.png` yedeği vardı
+    ve logosu olmayan ikinci bir kiracının paylaşım kartında
+    ArvoCulture'ın logosu görünüyordu — paylaşılan bağlantı geri
+    alınamaz, kart bir kez önbelleklenince platformda öyle kalır.
+
+    `null` dönünce kart mağazanın ADINI yazıyor (cards.ts → logo).
+  */
+  return null;
 }
 
 /**
