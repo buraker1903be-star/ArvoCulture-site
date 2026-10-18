@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -48,6 +49,7 @@ export function AccountPanel({
   supabaseUrl,
   supabaseKey,
   menuBicimi = false,
+  cikisBitti,
 }: {
   supabaseUrl: string;
   supabaseKey: string;
@@ -61,7 +63,17 @@ export function AccountPanel({
    * değil, sayfaya giden kısa bir liste.
    */
   menuBicimi?: boolean;
+  /**
+   * Çıkış tamamlandı — menü biçiminde kabı kapatmak için.
+   *
+   * Menü, çıkıştan sonra aynı yerde giriş formuna dönüyordu:
+   * çıkmak isteyen müşterinin önüne hemen "Giriş yap / Hesap
+   * oluştur" açılıyordu. Sayfa görünümünde böyle bir sorun yok;
+   * orada form zaten sayfanın kendisi.
+   */
+  cikisBitti?: () => void;
 }) {
+  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [orders, setOrders] = useState<Order[] | null>(null);
@@ -400,6 +412,28 @@ export function AccountPanel({
     setProfileName("");
     setProfilePhone("");
     setCikisDurumu("cikildi");
+
+    /*
+      Menü biçiminde kap kapanıyor; "çıkış yapıldı" bildirimine de
+      gerek kalmıyor çünkü panel hiç görünmüyor. Sayfa görünümünde
+      çağrılmıyor: orada kapatılacak bir kap yok.
+    */
+    cikisBitti?.();
+
+    /*
+      HESAP SAYFALARINDAN ÇIKILINCA ANA SAYFAYA.
+
+      /hesap ve altındaki ekranlar (kuponlarım, hediye çeklerim)
+      yalnızca üyeye ait; çıkıştan sonra orada kalmak "Giriş yap /
+      Hesap oluştur" formunun açılması demekti. Çıkmak isteyen
+      müşteriye girmeyi teklif etmek, istediğinin tersi.
+
+      /favoriler bilerek dışarıda: misafir de kullanabiliyor ve
+      ekran listenin hesapta durduğunu zaten söylüyor.
+    */
+    if (window.location.pathname.startsWith("/hesap")) {
+      router.push("/");
+    }
   }
 
   if (!configured) {
@@ -654,13 +688,18 @@ export function AccountPanel({
   return (
     <section className="panel auth-panel">
       {/*
-        ÇIKIŞIN BİR CEVABI OLMALI.
+        GEÇİŞ ANI İÇİN.
 
-        Çıkıştan sonra ekran sessizce giriş formuna dönüyordu ve
-        aynı anda favori listesi BOŞALIYORDU (ortak bilgisayarda
-        liste bir sonrakine devrolmasın diye, bilerek). Açıklama
-        olmayınca bu veri kaybı gibi görünüyor: müşteri
-        beğendiklerinin silindiğini sanıyor.
+        Çıkıştan sonra giriş formu artık AÇILMIYOR: menü kapanıyor,
+        hesap sayfasından ana sayfaya gidiliyor. Ama ikisi de bir
+        an sürüyor ve o anda ekranda duran şey bu panel. Açıklama
+        olmasa müşteri, çıkmak için bastığı düğmenin önüne "Giriş
+        yap / Hesap oluştur" koyduğunu görürdü.
+
+        Favori listesinin aynı anda boşalması da burada söyleniyor:
+        liste ortak bilgisayarda bir sonrakine devrolmasın diye
+        bilerek siliniyor ve açıklamasız bırakılınca veri kaybı
+        gibi görünüyor.
       */}
       {cikisDurumu === "cikildi" && (
         <p className="auth-cikis" role="status">

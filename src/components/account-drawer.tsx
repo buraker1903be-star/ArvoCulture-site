@@ -106,6 +106,16 @@ export function AccountDrawer({
             supabaseUrl={supabaseUrl}
             supabaseKey={supabaseKey}
             menuBicimi
+            /*
+              ÇIKINCA MENÜ KAPANIYOR.
+
+              Önceden panel aynı yerde giriş formuna dönüyordu:
+              çıkış yapan müşterinin önüne hemen "Giriş yap /
+              Hesap oluştur" açılıyordu. Çıkmak isteyen birine
+              girmeyi teklif etmek, istediğinin tersini yapmak.
+              Menünün kapanması zaten çıkışın cevabı.
+            */
+            cikisBitti={close}
           />
         </div>
       )}
