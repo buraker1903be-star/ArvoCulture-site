@@ -8211,9 +8211,25 @@ body.theme-modern .badge-card small {
   color: var(--ink-2);
 }
 
-body.theme-modern .footer-pay,
-body.theme-modern .footer-legal {
+body.theme-modern .footer-pay {
   border-color: rgba(255, 255, 255, 0.12);
+}
+
+/*
+  TELİF SATIRININ ÜST ÇİZGİSİ KALKTI.
+
+  Çizgi imzanın üstünden geçiyor ve dev logoyu ikiye bölüyordu
+  (canlıda görüldü): satır imzanın ALTINDA duruyor ama kenarlığı
+  imzanın negatif alt boşluğunun içine düşüyor.
+
+  Ayrımı zaten imzanın kendisi yapıyor — araya bir de çizgi
+  koymak, aynı işi iki kez yapıp birini bozmak oluyordu. Ödeme
+  satırının çizgisi duruyor: o imzanın üstünde ve bağlantıları
+  ödeme bilgisinden ayıran tek şey.
+*/
+body.theme-modern .footer-legal {
+  border-top: 0;
+  padding-top: var(--s2);
 }
 
 body.theme-modern .footer-pay small,
