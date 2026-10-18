@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getAuthClient } from "@/lib/auth-client";
 import { AddressBook } from "@/components/address-book";
 import { OrderCard } from "@/components/order-card";
+import { AccountMenuHome, selamAdi } from "@/components/account-menu-home";
 import type { Order } from "@/lib/order-types";
 
 type Mode = "login" | "register" | "reset";
@@ -473,41 +473,35 @@ export function AccountPanel({
           </p>
         )}
 
-        <div className="account-bar">
-          <div>
-            <strong>{session.user.email}</strong>
-            <small>Hesabınıza giriş yaptınız</small>
+        {!menuBicimi && (
+          <div className="account-bar">
+            <div>
+              <strong>{session.user.email}</strong>
+              <small>Hesabınıza giriş yaptınız</small>
+            </div>
+            <button type="button" className="linklike" onClick={signOut}>
+              Çıkış yap
+            </button>
           </div>
-          <button type="button" className="linklike" onClick={signOut}>
-            Çıkış yap
-          </button>
-        </div>
+        )}
 
         {/*
-          MENÜDE SAYFA DEĞİL, LİSTE.
+          MENÜDE SAYFA DEĞİL, KISA BİR EV.
 
           Açılır menüye hesap sayfasının tamamını basmak sütunları
-          üst üste bindiriyordu. Buradaki bağlantılar sayfanın
-          ilgili bölümüne iniyor (çapalar: #hesap-bilgilerim,
-          #adreslerim, #siparislerim).
+          üst üste bindiriyordu. Kartlar sayfanın ilgili bölümüne
+          iniyor (çapalar: #hesap-bilgilerim, #adreslerim,
+          #siparislerim).
 
-          "Kuponlarım" ve "Hediye çeklerim" BİLEREK YOK: vitrinde
-          böyle bir ekran yok ve olmayan bir sayfaya bağlantı
-          koymak, müşteriyi boş bir yere göndermek olurdu.
-
-          Beğenilen ürünler satırı "Favorilerim" adını taşıyor:
-          gittiği sayfanın (/favoriler) başlığı ve başlıktaki
-          kalp bağlantısı da öyle diyor. Aynı yere giden iki
-          bağlantının iki ayrı adı olması, müşteriye iki ayrı
-          liste varmış gibi gelirdi.
+          Selamda e-posta DEĞİL ad var: giriş yapmış birine
+          adresini göstermek, tanımadığını söylemektir.
         */}
         {menuBicimi ? (
-          <nav className="account-links" aria-label="Hesap menüsü">
-            <Link href="/hesap#hesap-bilgilerim">Profilim</Link>
-            <Link href="/hesap#adreslerim">Adreslerim</Link>
-            <Link href="/hesap#siparislerim">Siparişlerim</Link>
-            <Link href="/favoriler">Favorilerim</Link>
-          </nav>
+          <AccountMenuHome
+            ad={selamAdi(profileName, session.user.email)}
+            eposta={session.user.email}
+            cikisYap={signOut}
+          />
         ) : (
           <>
             {/*

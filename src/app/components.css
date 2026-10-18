@@ -8953,52 +8953,360 @@ body.theme-modern .auth-alt .linklike:hover {
    27rem'lik bir açılır menüye sıkışıyor, sütunlar üst üste
    biniyor ve metin kırpılıyordu (canlıda görüldü).
 
-   Menüde olması gereken şey sayfa değil, sayfaya giden kısa bir
-   liste. Bağlantılar hesap sayfasının ilgili bölümüne iniyor.
+   İlk düzeltme düz bir bağlantı listesiydi; çalışıyordu ama
+   mağazanın diliyle konuşmuyordu: selam yerine e-posta adresi,
+   altı çizgisiz dört satır. Menü altı maddeye çıkınca düz liste
+   taranamaz hale de geliyordu — hepsi aynı görünüyordu.
+
+   Şimdi: adla selam + simgeli kartlar. Kartlar iki sütun;
+   simge, başlık ve tek kelimelik alt metin müşterinin okumadan
+   ayırt etmesini sağlıyor.
    ========================================================== */
 
-.account-links {
+.account-home {
   display: grid;
-  gap: 2px;
-  margin-top: var(--s4);
+  gap: var(--s4);
 }
 
-.account-links a {
+/* Selam şeridi menünün iç boşluğunu taşıyor: kenardan kenara
+   gidiyor ki menünün "kapağı" gibi dursun, içine konmuş bir
+   kutu gibi değil. */
+.account-hello {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 13px 14px;
-  margin: 0 -14px;
-  border-radius: 12px;
-  font-size: var(--t-lead);
-  font-weight: 500;
-  letter-spacing: -0.012em;
-  color: var(--ink);
-  transition: background-color 160ms var(--ease);
+  gap: var(--s4);
+  margin: calc(var(--s5) * -1) calc(var(--s5) * -1) 0;
+  padding: var(--s5);
+  border-bottom: 1px solid var(--line-soft);
+  background:
+    radial-gradient(
+      120% 160% at 0% 0%,
+      color-mix(in srgb, var(--brand) 9%, transparent),
+      transparent 62%
+    ),
+    var(--panel-2);
 }
 
-/* Her satırın sonunda ok: satırın bir YER olduğunu, bir eylem
-   olmadığını söylüyor. */
-.account-links a::after {
-  content: "→";
-  font-size: 15px;
+.account-monogram {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-pill);
+  background: var(--brand);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: 0;
+  /* Altın halka: markanın ikinci rengi, tek yerde ve küçük. */
+  box-shadow: 0 0 0 1px var(--gold-soft), 0 0 0 4px var(--panel-2);
+}
+
+.account-hello-text {
+  min-width: 0;
+}
+
+.account-hello-eyebrow {
+  margin: 0;
+  font-size: var(--t-xs);
+  letter-spacing: var(--track);
+  text-transform: uppercase;
   color: var(--ink-3);
-  transition: transform 260ms var(--ease-out);
+}
+
+.account-hello-text strong {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* E-posta uzun olabiliyor ve menünün genişliğini belirlememeli. */
+.account-hello-text small {
+  display: block;
+  margin-top: 3px;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s2);
+}
+
+.account-tile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--ink);
+  transition:
+    border-color 180ms var(--ease),
+    background-color 180ms var(--ease),
+    transform 180ms var(--ease-out);
+}
+
+.account-tile-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--panel-2);
+  color: var(--brand);
+  transition:
+    background-color 180ms var(--ease),
+    color 180ms var(--ease);
+}
+
+.account-tile-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.account-tile-text {
+  min-width: 0;
+}
+
+.account-tile-text strong {
+  display: block;
+  font-size: var(--t-body);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  /* "Hediye çeklerim" iki sütunlu kartta sığmayınca satır
+     sonunda kırpılıyordu; kırpmak yerine tek satırda üç nokta. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-tile-text small {
+  display: block;
+  margin-top: 1px;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (hover: hover) {
-  .account-links a:hover {
+  .account-tile:hover {
+    border-color: color-mix(in srgb, var(--brand) 34%, var(--line));
     background: var(--panel-2);
+    transform: translateY(-1px);
   }
 
-  .account-links a:hover::after {
-    transform: translateX(4px);
+  .account-tile:hover .account-tile-icon {
+    background: var(--brand);
+    color: #fff;
+  }
+}
+
+.account-tile:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Çıkış, menünün en sessiz öğesi: yanlışlıkla basılacak bir yerde
+   değil, ama aranınca bulunacak bir yerde. */
+.account-signout {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: transparent;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    border-color 180ms var(--ease),
+    color 180ms var(--ease);
+}
+
+@media (hover: hover) {
+  .account-signout:hover {
+    border-color: var(--line);
+    color: var(--ink);
+  }
+}
+
+/* Dar ekranda iki sütun kartları ezecek kadar daralıyor. */
+@media (max-width: 400px) {
+  .account-tiles {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .account-hello {
+    margin: calc(var(--s4) * -1) calc(var(--s4) * -1) 0;
+    padding: var(--s4);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .account-links a,
-  .account-links a::after {
+  .account-tile,
+  .account-tile-icon,
+  .account-signout {
     transition: none;
   }
+
+  .account-tile:hover {
+    transform: none;
+  }
+}
+
+/* ==========================================================
+   KUPONLARIM VE HEDİYE ÇEKLERİM (18.10.2026)
+
+   İkisi de yeni ekran. Önceden kupon kodu YALNIZCA ana sayfadaki
+   şeritte görünüyordu: müşteri oradan ayrılınca kod da kayboluyor,
+   geri dönüp bakmak gerekiyordu. Hediye çeki ise hiç yoktu.
+
+   Kart biçimi bilerek "bilet"e benziyor — kenarındaki oyuk ve
+   kesikli çizgi, sayfadaki diğer panellerden ayırıyor; müşteri
+   listeyi okumadan ne olduğunu anlıyor.
+   ========================================================== */
+
+.kupon-izgara,
+.cek-izgara {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--gap);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kupon-kart,
+.cek-kart {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+  padding: var(--pad);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  background: var(--panel);
+  box-shadow: var(--float);
+}
+
+.kupon-kart-ust {
+  display: grid;
+  gap: 4px;
+  padding-bottom: var(--s3);
+  /* Biletin perforasyonu: değeri koşuldan ayıran kesikli çizgi. */
+  border-bottom: 1px dashed var(--line);
+}
+
+.kupon-deger {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--brand);
+}
+
+.kupon-kart-ust strong {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.kupon-kosul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+}
+
+.kupon-kosul li {
+  position: relative;
+  padding-left: 14px;
+}
+
+.kupon-kosul li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 4px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--gold);
+}
+
+/* --- Hediye çeki --- */
+
+.cek-ust {
+  display: grid;
+  gap: 2px;
+}
+
+.cek-etiket {
+  font-size: var(--t-xs);
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.cek-bakiye {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--brand);
+}
+
+.cek-ust small {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+/* Kod seçilebilir kalmalı: müşteri çoğu zaman kopyalayıp bir
+   yere not ediyor. */
+.cek-kod {
+  padding: 10px 12px;
+  border: 1px dashed var(--line);
+  border-radius: var(--r);
+  background: var(--panel-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--t-sm);
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  user-select: all;
+}
+
+.cek-not {
+  margin: 0;
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+}
+
+/* Bakiyesi biten çek silinmiyor: müşteri "nereye gitti" diye
+   aramasın diye duruyor, ama solgun. */
+.cek-kart-bitti {
+  opacity: 0.6;
+}
+
+.cek-kart-bitti .cek-bakiye {
+  color: var(--ink-3);
 }
