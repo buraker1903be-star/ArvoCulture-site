@@ -76,3 +76,37 @@ test("telefon kuralı dışarıdan geliyor", () => {
     ["phone"],
   );
 });
+
+/*
+  YURTDIŞINDA İLÇE ZORUNLU DEĞİL.
+
+  "İl / ilçe" Türkiye'nin adres düzeni; pek çok ülkede ikinci bir
+  idari kademe yok ya da adreste yazılmıyor. Zorunlu tutmak müşteriyi
+  uydurma bir ilçe yazmaya zorlardı ve kargo etiketine o uydurma
+  değer basılırdı.
+*/
+test("yurtdışı adresinde ilçe eksik sayılmıyor", () => {
+  const ilcesiz = { ...TAM, district: "" };
+  assert.deepEqual(
+    eksikAlanlar(ilcesiz, ONAYLI, 1, telefonGecerli, true).map((e) => e.alan),
+    [],
+  );
+  /* Yurt içinde kural değişmiyor. */
+  assert.deepEqual(
+    eksikAlanlar(ilcesiz, ONAYLI, 1, telefonGecerli).map((e) => e.alan),
+    ["district"],
+  );
+});
+
+test("yurtdışında şehir ve açık adres yine zorunlu", () => {
+  /* İlçenin seçmeli olması adresin tamamını seçmeli yapmıyor:
+     şehir ve açık adres olmadan kargo etiketi basılamaz. */
+  const eksikler = eksikAlanlar(
+    { ...TAM, city: "", line: "" },
+    ONAYLI,
+    1,
+    telefonGecerli,
+    true,
+  ).map((e) => e.alan);
+  assert.deepEqual(eksikler, ["city", "line"]);
+});

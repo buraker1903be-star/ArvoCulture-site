@@ -29,7 +29,7 @@ export function CartDrawer({
   onClose: () => void;
 }) {
   /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
-  const { yaz } = useParaBirimi();
+  const { yaz, paraBirimi } = useParaBirimi();
   const { items, total, remove, setQuantity, discounts, salesRules } =
     useContext(CartContext);
   const [code, setCode] = useState("");
@@ -95,6 +95,22 @@ export function CartDrawer({
   // kupon kullanmak ücretsiz kargoyu kaybettirmemeli.
   const shipping = shippingFor(total, freeShipping, salesRules);
   const remaining = amountToFreeShipping(total, freeShipping, salesRules);
+  /*
+    DOLAR MODUNDA KARGO ÖDEME ADIMINDA BELİRLENİYOR.
+
+    Burada yurt içi tarifesi (120 TL) yazılıyordu ve dolar modunda
+    "$3,15" olarak görünüyordu; oysa yurtdışı tarifesi onun on katı ve
+    ancak müşteri ÜLKESİNİ seçince bilinebiliyor. Sepette 3 dolar
+    görüp ödemede 25 dolar bulmak, bu depodaki en pahalı kusurların
+    kalıbı. TL eşiğine dayanan "şu kadar daha ekleyin" şeridi de aynı
+    sebeple dolar modunda çizilmiyor.
+
+    Dolar modu yurt içi müşteriyi de kapsıyor (TL'den dolara geçmek
+    serbest) ve onun için küçük bir kayıp: kesin ücreti bir adım
+    sonra görüyor. Karşılığı, yurtdışı müşterisine hiç yanlış rakam
+    göstermemek.
+  */
+  const kargoSonra = paraBirimi === "USD";
 
   /*
     Çekmece doğrudan <body> altına basılır. Başlık `position:
@@ -146,6 +162,7 @@ export function CartDrawer({
               gösteriyor; eşik geçilince mesaj kaybolmak yerine
               müşteriye kargonun ücretsiz olduğunu söylüyor.
             */}
+            {!kargoSonra && (
             <div
               className="drawer-nudge"
               /* Eşik geçilince şerit yeşile dönüyor: "kazandın"
@@ -170,6 +187,7 @@ export function CartDrawer({
                 />
               </span>
             </div>
+            )}
 
             <ul className="drawer-items">
               {items.map((item) => (
@@ -305,12 +323,16 @@ export function CartDrawer({
                 <div>
                   <dt>Kargo</dt>
                   <dd>
-                    {shipping === 0 ? "Ücretsiz" : yaz(shipping)}
+                    {kargoSonra
+                      ? "Ödeme adımında"
+                      : shipping === 0
+                        ? "Ücretsiz"
+                        : yaz(shipping)}
                   </dd>
                 </div>
                 <div className="grand">
                   <dt>Toplam</dt>
-                  <dd>{yaz(afterDiscount + shipping)}</dd>
+                  <dd>{yaz(afterDiscount + (kargoSonra ? 0 : shipping))}</dd>
                 </div>
               </dl>
               <Link className="btn btn-block" href="/odeme" onClick={close}>

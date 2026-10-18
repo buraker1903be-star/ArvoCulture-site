@@ -9,12 +9,28 @@ import { formatPrice } from "@/lib/product-types";
 import { readCoupon, readNote } from "@/lib/cart-extras";
 import { getAuthClient } from "@/lib/auth-client";
 import { HediyeCekiSecici } from "@/components/hediye-ceki-secici";
-import { formatPhone, isValidPhone, phoneDigits } from "@/lib/phone";
+import {
+  formatInternationalPhone,
+  formatPhone,
+  isValidInternationalPhone,
+  isValidPhone,
+  phoneDigits,
+} from "@/lib/phone";
 import { eksikAlanlar, eksikMetni } from "@/lib/odeme-eksikleri";
 import { evaluateCoupon, kuponaTabiToplam } from "@/lib/coupon";
 import type { Address } from "@/components/address-book";
 import { CheckoutSteps } from "@/components/checkout-steps";
-import { amountToFreeShipping, shippingFor, transferDiscountFor } from "@/lib/order-quote";
+import {
+  amountToFreeShipping,
+  shippingFor,
+  transferDiscountFor,
+  yurtdisiKargo,
+  yurtIci,
+} from "@/lib/order-quote";
+import type { Bolge } from "@/lib/kargo-bolgesi";
+import { teslimatUlkeleri, ulkeAdi } from "@/lib/ulkeler";
+import { useParaBirimi } from "@/components/para-birimi";
+import { dolara, dolarYazisi } from "@/lib/dolar";
 
 /**
  * Ödeme sayfası.
@@ -26,6 +42,25 @@ import { amountToFreeShipping, shippingFor, transferDiscountFor } from "@/lib/or
  */
 
 const ARC_URL = "https://arc.arvo-os.com";
+
+/*
+  KARGO ENGELİNİN SEBEBİ SÖYLENİYOR.
+
+  Üç engel üç ayrı şey: mod kapalı (yurtdışına hiç satmıyoruz), kur
+  tanımsız (satıyoruz ama fiyatlayamıyoruz), bölge yok (bu ülkeye
+  gitmiyoruz). Hepsine "kargo hesaplanamadı" demek, müşteriye ne
+  yapacağını söylememek olurdu — başka bir ülke mi seçecek, Türkçe
+  vitrine mi dönecek, bizimle mi iletişime geçecek?
+*/
+const KARGO_ENGEL_METNI: Record<"mod" | "kur" | "bolge", string> = {
+  mod: "Şu anda yalnızca Türkiye'ye gönderim yapıyoruz.",
+  kur:
+    "Yurtdışı gönderim ücreti şu anda hesaplanamıyor. " +
+    "Kısa süre sonra tekrar deneyin ya da bizimle iletişime geçin.",
+  bolge:
+    "Seçtiğiniz ülkeye henüz gönderim yapamıyoruz. " +
+    "Başka bir ülke seçebilir ya da bizimle iletişime geçebilirsiniz.",
+};
 
 /** Kargo kuralı ArvoARC’taki fonksiyonla aynı tutulmalıdır. */
 
@@ -51,13 +86,23 @@ export function CheckoutForm({
   supabaseUrl,
   supabaseKey,
   havale,
+  bolgeler = [],
 }: {
   supabaseUrl?: string;
   supabaseKey?: string;
   /** Hesap bilgisi yoksa null; havale seçeneği hiç gösterilmiyor. */
   havale: HavaleBilgisi | null;
+  /*
+    Yurtdışı kargo tarifesi. Boş liste "yurtdışına gönderim yok"
+    demek — uydurma bir ücret göstermektense ülke seçeneğini hiç
+    açmamak doğru (lib/kargo-bolgeleri).
+  */
+  bolgeler?: Bolge[];
 }) {
   const { items, total, discounts, salesRules } = useContext(CartContext);
+  /* Seçili para birimi: dolar seçiliyse tutarın dolar karşılığı da
+     yazılıyor — ama ASIL rakam lira, çünkü tahsilat lira (aşağıda). */
+  const { paraBirimi } = useParaBirimi();
   const router = useRouter();
   const [saved, setSaved] = useState<Address[]>([]);
   const [selected, setSelected] = useState<string | "manual">("manual");
@@ -70,6 +115,9 @@ export function CheckoutForm({
     district: "",
     line: "",
     postal: "",
+    /* Varsayılan Türkiye: vitrin önce Türkiye'ye satıyor ve ArvoARC
+       da ülkesi boş gelen adresi Türkiye sayıyor. */
+    country: "TR",
   });
   const [consents, setConsents] = useState({
     distance: false,
@@ -183,9 +231,48 @@ export function CheckoutForm({
     ? evaluateCoupon(discounts, coupon, total, kuponaTabiToplam(items))
     : null;
 
+  /*
+    KARGO: TESLİMAT ÜLKESİNE GÖRE İKİ AYRI TARİFE.
+
+    Önceden tek yol vardı — yurt içi ücreti ve TL eşiği — ve adres
+    formunda ülke alanı hiç yoktu: her sipariş Türkiye'ye gidiyor
+    sayılıyordu. Yurtdışına satış açılırken bu, gerçek maliyetin onda
+    biriyle sipariş geçirmek demekti.
+
+    Hesap ArvoARC'ın sipariş fonksiyonunun aynası (lib/order-quote);
+    ekranda görünen rakam tahsil edilenle aynı olmak zorunda.
+  */
+  const yurtDisi = !yurtIci(form.country);
+  const yurtdisiSonuc = yurtDisi
+    ? yurtdisiKargo(total, form.country, bolgeler, salesRules)
+    : null;
+  /* Engel varsa sipariş hiç geçmiyor; sebebi aşağıda yazıyor. */
+  const kargoEngeli =
+    yurtdisiSonuc && "engel" in yurtdisiSonuc ? yurtdisiSonuc.engel : null;
+
   // Ücretsiz kargo kuponu kargoyu sıfırlar; eşik indirim öncesi ara toplam.
-  const shipping = shippingFor(total, appliedCoupon?.ok === true && appliedCoupon.freeShipping, salesRules);
+  const shipping =
+    yurtdisiSonuc && "tl" in yurtdisiSonuc
+      ? yurtdisiSonuc.tl
+      : yurtDisi
+        ? 0
+        : shippingFor(total, appliedCoupon?.ok === true && appliedCoupon.freeShipping, salesRules);
   const grand = total + shipping;
+
+  /*
+    TELEFON BİÇİMİ DE ÜLKEYE GÖRE. Türkiye biçimlendirmesi baştaki
+    90/0'ı atıp numarayı on haneye kesiyor: Almanya'dan +49 171 …
+    yazan müşterinin numarası sessizce "+90 (171) …" oluyordu ve
+    kargo firması o numaraya ulaşamıyordu.
+  */
+  const telefonGecerli = yurtDisi ? isValidInternationalPhone : isValidPhone;
+  const telefonBicimle = yurtDisi ? formatInternationalPhone : formatPhone;
+
+  /* Ülke seçeneği yalnızca tarife tanımlıysa açılıyor: seçilince
+     "bu ülkeye gönderim yapılmıyor" diyen bir liste, olmayan
+     listeden kötü. */
+  const ulkeler = teslimatUlkeleri(bolgeler);
+  const ulkeSecilebilir = salesRules.internationalEnabled && ulkeler.length > 1;
 
   /*
     Havale indirimi. Kartlı ödemede PayTR komisyonu var,
@@ -281,11 +368,24 @@ export function CheckoutForm({
   }
 
   async function submit() {
-    const eksikler = eksikAlanlar(form, consents, items.length, isValidPhone);
+    const eksikler = eksikAlanlar(form, consents, items.length, telefonGecerli, yurtDisi);
     if (eksikler.length > 0) {
       setState("error");
       setMessage(eksikMetni(eksikler));
       eksigeGotur(eksikler[0].alan);
+      return;
+    }
+
+    /*
+      KARGO ENGELİ ÖDEME ADIMINDA DURDURUYOR. ArvoARC siparişi yine
+      reddediyor (kural orada) ama müşteriye sebebini BURADA söylemek
+      gerekiyor: ArvoARC'ın hatası "Bu ülkeye gönderim yapılmıyor"
+      diye dönse de müşteri o noktada kart ekranına geçmiş oluyor.
+    */
+    if (kargoEngeli) {
+      setState("error");
+      setMessage(KARGO_ENGEL_METNI[kargoEngeli]);
+      eksigeGotur("country");
       return;
     }
 
@@ -309,13 +409,19 @@ export function CheckoutForm({
         body: JSON.stringify({
           email: form.email,
           name: form.name,
-          phone: `+90${phoneDigits(form.phone)}`,
+          /* Yurt içinde +90 eklenip on haneye indiriliyor; yurtdışında
+             müşterinin yazdığı ülke kodu korunuyor. */
+          phone: yurtDisi ? form.phone : `+90${phoneDigits(form.phone)}`,
           address: {
             line: form.line,
             district: form.district,
             city: form.city,
             postal: form.postal,
-            country: "TR",
+            /* ÜLKE ARTIK FORMDAN. Burada "TR" sabitti: yurtdışı
+               adresi yazan müşterinin siparişi Türkiye'ye gidiyor
+               sayılıyor, yurt içi kargosu tahsil ediliyor ve LR
+               ürünü engeline de takılmıyordu. */
+            country: form.country,
           },
           /* Havale seçilirse sipariş ödeme beklemede oluşur. */
           paymentMethod: useTransfer ? "havale" : "kart",
@@ -576,15 +682,17 @@ export function CheckoutForm({
                 data-alan="phone"
                 autoComplete="tel"
                 inputMode="tel"
-                placeholder="+90 (5XX) XXX XX XX"
+                placeholder={yurtDisi ? "+49 171 1234567" : "+90 (5XX) XXX XX XX"}
                 value={form.phone}
                 onChange={(event) =>
-                  setForm({ ...form, phone: formatPhone(event.target.value) })
+                  setForm({ ...form, phone: telefonBicimle(event.target.value) })
                 }
               />
-              {form.phone && !isValidPhone(form.phone) && (
+              {form.phone && !telefonGecerli(form.phone) && (
                 <small className="field-warn">
-                  Cep telefonu 5 ile başlayan 10 haneli olmalı.
+                  {yurtDisi
+                    ? "Numarayı ülke koduyla yazın (örn. +49 171 1234567)."
+                    : "Cep telefonu 5 ile başlayan 10 haneli olmalı."}
                 </small>
               )}
             </label>
@@ -598,8 +706,41 @@ export function CheckoutForm({
                 {...field("postal")}
               />
             </label>
+            {ulkeSecilebilir && (
+              <label>
+                Ülke
+                <select
+                  data-alan="country"
+                  autoComplete="country"
+                  value={form.country}
+                  onChange={(event) => {
+                    const kod = event.target.value;
+                    /*
+                      ÜLKE DEĞİŞİNCE TELEFON YENİDEN BİÇİMLENİYOR.
+                      Türkiye biçiminde yazılmış bir numara yurtdışı
+                      seçilince "+90…" olarak kalıyordu ve müşteri
+                      kendi numarasını yanlış sanıyordu.
+                    */
+                    const yabanci = !yurtIci(kod);
+                    setForm((mevcut) => ({
+                      ...mevcut,
+                      country: kod,
+                      phone: mevcut.phone
+                        ? (yabanci ? formatInternationalPhone : formatPhone)(mevcut.phone)
+                        : mevcut.phone,
+                    }));
+                  }}
+                >
+                  {ulkeler.map((kod) => (
+                    <option key={kod} value={kod}>
+                      {ulkeAdi(kod)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <label>
-              İl
+              {yurtDisi ? "Şehir" : "İl"}
               <input
                 type="text"
                 data-alan="city"
@@ -608,7 +749,10 @@ export function CheckoutForm({
               />
             </label>
             <label>
-              İlçe
+              {/* Yurtdışında ilçe zorunlu değil: pek çok ülkede
+                  ikinci bir idari kademe adreste yazılmıyor
+                  (lib/odeme-eksikleri). */}
+              {yurtDisi ? "Eyalet / bölge (varsa)" : "İlçe"}
               <input
                 type="text"
                 data-alan="district"
@@ -749,7 +893,13 @@ export function CheckoutForm({
             </div>
             <div>
               <dt>Kargo</dt>
-              <dd>{shipping === 0 ? "Ücretsiz" : formatPrice(shipping)}</dd>
+              <dd>
+                {kargoEngeli
+                  ? "—"
+                  : shipping === 0
+                    ? "Ücretsiz"
+                    : formatPrice(shipping)}
+              </dd>
             </div>
             {appliedCoupon?.ok && (
               <div>
@@ -783,13 +933,41 @@ export function CheckoutForm({
             </div>
           </dl>
 
+          {/*
+            TAHSİLAT LİRA, DOLAR GÖSTERİM.
+
+            Ödeme sağlayıcısı lira çekiyor ve sipariş lira olarak
+            kaydediliyor; dolar yalnızca fiyatı anlaşılır kılmak
+            için. Bunu yazmazsak kartında "₺" gören müşteri
+            dolandırıldığını sanabilirdi — ekranda $ yazıp lira
+            çekmek, söylenmediğinde sessiz bir sapma.
+          */}
+          {paraBirimi === "USD" && dolara(payable, salesRules.usdRate, salesRules.usdMarginPercent) !== null && (
+            <p className="hint">
+              Yaklaşık{" "}
+              {dolarYazisi(
+                dolara(payable, salesRules.usdRate, salesRules.usdMarginPercent)!,
+              )}
+              . Tahsilat Türk lirası olarak yapılır.
+            </p>
+          )}
+
+          {kargoEngeli && (
+            <p className="field-warn" role="status">
+              {KARGO_ENGEL_METNI[kargoEngeli]}
+            </p>
+          )}
+
           {appliedCoupon?.ok && (
             <p className="hint">
               Kod indirimi, siparişiniz oluşturulurken toplamdan düşülür.
             </p>
           )}
 
-          {shipping > 0 && (
+          {/* TL EŞİĞİ YURTDIŞINDA GEÇMİYOR: "şu kadar daha ekleyin,
+              kargo ücretsiz olsun" cümlesi orada tutulamayacak bir söz
+              (bkz. lib/order-quote, yurtdisiKargo). */}
+          {!yurtDisi && shipping > 0 && (
             <p className="hint">
               {formatPrice(amountToFreeShipping(total, false, salesRules))} daha ekleyin, kargo
               ücretsiz olsun.

@@ -48,6 +48,13 @@ export function eksikAlanlar(
   onaylar: OdemeOnaylari,
   kalemSayisi: number,
   telefonGecerli: (deger: string) => boolean,
+  /*
+    YURTDIŞINDA İLÇE ZORUNLU DEĞİL. "İl / ilçe" Türkiye'nin adres
+    düzeni; pek çok ülkede ikinci bir idari kademe yok ya da adreste
+    yazılmıyor. Zorunlu tutmak, müşteriyi uydurma bir ilçe yazmaya
+    zorlamak olurdu ve kargo etiketine o uydurma değer basılırdı.
+  */
+  yurtDisi = false,
 ): EksikAlan[] {
   const eksik: EksikAlan[] = [];
 
@@ -63,7 +70,7 @@ export function eksikAlanlar(
   if (form.city.trim().length <= 1) {
     eksik.push({ alan: "city", mesaj: "İl" });
   }
-  if (form.district.trim().length <= 1) {
+  if (!yurtDisi && form.district.trim().length <= 1) {
     eksik.push({ alan: "district", mesaj: "İlçe" });
   }
   if (form.line.trim().length <= 8) {

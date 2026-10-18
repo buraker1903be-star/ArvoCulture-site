@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CheckoutForm } from "@/components/checkout-form";
 import { env } from "@/lib/env";
 import { getSellerBank } from "@/lib/seller-source";
+import { getShippingZones } from "@/lib/kargo-bolgeleri";
 import { konagiAyarla } from "@/lib/konak";
 
 /*
@@ -48,11 +49,21 @@ export default async function CheckoutPage({
      gösterilmiyor; yanlış hesap göstermektense seçeneği kapatmak. */
   const havale = await getSellerBank();
 
+  /*
+    Yurtdışı kargo tarifesi. Ödeme formu ülkeyi sorduğu anda ücreti
+    göstermek zorunda ve tutarı ArvoARC hesaplasa da ekranda aynı
+    rakam çıkmalı. Okunamazsa boş liste geliyor ve ülke seçeneği hiç
+    açılmıyor — uydurma bir ücret göstermektense yurt içi satışla
+    kalmak (lib/kargo-bolgeleri).
+  */
+  const bolgeler = await getShippingZones();
+
   return (
     <CheckoutForm
       supabaseUrl={env.supabaseUrl}
       supabaseKey={env.supabaseKey}
       havale={havale}
+      bolgeler={bolgeler}
     />
   );
 }

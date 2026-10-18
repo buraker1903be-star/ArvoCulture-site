@@ -44,3 +44,38 @@ export function isValidPhone(value: string) {
   // Türkiye cep numaraları 5 ile başlar.
   return digits.length === 10 && digits.startsWith("5");
 }
+
+/*
+  YURTDIŞI NUMARASI AYRI YOL.
+
+  Yukarıdaki biçimlendirme Türkiye'ye göre: baştaki 90 ve 0
+  atılıyor, numara on haneye kesiliyor ve +90 ekleniyor. Yurtdışı
+  müşterisi numarasını bu alana yazınca sessizce bozuluyordu —
+  Almanya'dan +49 171 … yazan müşterinin numarası "+90 (171) …"
+  oluyor ve kargo firması o numaraya ulaşamıyordu.
+
+  Ülke kodu MÜŞTERİNİN YAZDIĞI gibi kalıyor: dünyadaki numara
+  biçimlerini tek bir şablona oturtmaya çalışmak, oturtamadığı her
+  numarayı bozmak demek. Yapılan tek şey rakam ve "+" dışını atmak.
+*/
+
+/** Yurtdışı numarası: baştaki "+" korunur, gerisi rakam. */
+export function formatInternationalPhone(input: string) {
+  const arti = input.trim().startsWith("+");
+  const digits = input.replace(/\D/g, "").slice(0, 15);
+  if (digits.length === 0) return arti ? "+" : "";
+  return `+${digits}`;
+}
+
+/**
+ * Yurtdışı numarası geçerli mi?
+ *
+ * E.164 en fazla 15 hane; alt sınır 7, çünkü daha kısası hiçbir
+ * ülkede ülke kodu + abone numarası etmiyor. Daha sıkı bir kural
+ * (ülke kodu listesi) geçerli numaraları reddetme riski taşıyor ve
+ * numarayı asıl doğrulayan kargo firması.
+ */
+export function isValidInternationalPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 7 && digits.length <= 15;
+}

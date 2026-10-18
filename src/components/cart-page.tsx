@@ -31,7 +31,7 @@ import {
  */
 export function CartPageView() {
   /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
-  const { yaz } = useParaBirimi();
+  const { yaz, paraBirimi } = useParaBirimi();
   const { items, total, remove, setQuantity, salesRules } = useContext(CartContext);
 
   const [coupon, setCoupon] = useState("");
@@ -113,6 +113,11 @@ export function CartPageView() {
 
   const shipping = shippingFor(total, couponSaved && couponFreeShipping, salesRules);
   const remaining = amountToFreeShipping(total, couponSaved && couponFreeShipping, salesRules);
+  /* Dolar modunda kargo ödeme adımında belirleniyor: yurtdışı
+     tarifesi ancak ülke seçilince biliniyor ve yurt içi ücretini
+     dolara çevirip göstermek sepette 3 dolar, ödemede 25 dolar
+     demekti (ayrıntı: components/cart-drawer). */
+  const kargoSonra = paraBirimi === "USD";
 
   if (items.length === 0) {
     return (
@@ -310,15 +315,21 @@ export function CartPageView() {
             </div>
             <div>
               <dt>Kargo</dt>
-              <dd>{shipping === 0 ? "Ücretsiz" : yaz(shipping)}</dd>
+              <dd>
+                {kargoSonra
+                  ? "Ödeme adımında"
+                  : shipping === 0
+                    ? "Ücretsiz"
+                    : yaz(shipping)}
+              </dd>
             </div>
             <div className="grand">
               <dt>Toplam</dt>
-              <dd>{yaz(total + shipping)}</dd>
+              <dd>{yaz(total + (kargoSonra ? 0 : shipping))}</dd>
             </div>
           </dl>
 
-          {remaining > 0 && (
+          {!kargoSonra && remaining > 0 && (
             <p className="hint">
               {yaz(remaining)} daha ekleyin, kargo ücretsiz olsun.
             </p>

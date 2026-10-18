@@ -1152,8 +1152,12 @@
   text-transform: none;
 }
 
+/* Ülke seçimi de bir alan: odak çizgisi ötekilerle aynı olmalı.
+   Önceden `select` burada yoktu ve klavyeyle gezen müşteri ülke
+   alanına geldiğinde hiçbir işaret görmüyordu. */
 .fields input:focus-visible,
-.fields textarea:focus-visible {
+.fields textarea:focus-visible,
+.fields select:focus-visible {
   border-color: var(--brand);
 }
 

@@ -1,5 +1,7 @@
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "./shipping";
 import { SELLER } from "./seller";
+import { dolara } from "./dolar";
+import { kargoSenti, type Bolge } from "./kargo-bolgesi";
 
 /*
   Sepet ve ödeme ekranındaki tutar hesapları — ArvoARC'ın aynası.
@@ -119,6 +121,77 @@ export function shippingFor(
 ): number {
   if (freeShippingCoupon) return 0;
   return toKurus(subtotal) >= toKurus(rules.freeShippingOver) ? 0 : rules.shippingFee;
+}
+
+/**
+ * Teslimat ülkesi Türkiye mi?
+ *
+ * Adres alanı serbest metin: "TR", "tr", "Türkiye", "Turkey" hepsi
+ * gelebiliyor ve hepsi Türkiye. ArvoARC'ın sipariş fonksiyonu da aynı
+ * listeyi normalleştiriyor; biri "Türkiye"yi yurtdışı sayarsa müşteri
+ * sepette yurt içi kargosu görüp siparişte yurtdışı tarifesiyle
+ * karşılaşırdı.
+ */
+const TURKIYE = new Set([
+  "TR",
+  "TURKIYE",
+  "TÜRKIYE",
+  "TÜRKİYE",
+  "TURKEY",
+  "TURKIYE CUMHURIYETI",
+]);
+
+export function yurtIci(ulke: string | null | undefined): boolean {
+  const kod = (ulke ?? "").trim().toUpperCase();
+  /* BOŞ ÜLKE TÜRKİYE SAYILIYOR, ArvoARC gibi: sipariş fonksiyonu
+     adresteki boş ülkeyi `coalesce(nullif(trim(…),''), 'TR')` ile
+     Türkiye'ye çeviriyor. Burada boşu yurtdışı saysaydık, ülke
+     alanı olmayan eski bir sepet sepette yurtdışı tarifesi görür
+     ama siparişte yurt içi kargosu ödenirdi. */
+  if (!kod) return true;
+  return TURKIYE.has(kod);
+}
+
+/**
+ * Yurtdışı kargosu (TL) — ArvoARC'ın sipariş fonksiyonunun aynası.
+ *
+ * TL EŞİĞİ VE ÜCRETSİZ KARGO KUPONU BURADA HİÇ GEÇMİYOR: ikisi de
+ * yurt içi maliyetine göre konmuş sözler ve yurtdışı tarifesi onun
+ * on katı. ArvoARC da aynı kuralı uyguluyor
+ * (migration 20261018223636).
+ *
+ * ENGEL SEBEBİYLE DÖNÜYOR, boş tutarla değil: müşteriye "kargo
+ * hesaplanamadı" demek yetmiyor — bu ülkeye hiç gönderilmiyorsa
+ * başka bir ülke seçmesi, mod kapalıysa Türkçe vitrine dönmesi
+ * gerekiyor. Sıfır dönmek ise "bedava kargo" sözü vermek olurdu.
+ */
+export type YurtdisiKargo =
+  | { tl: number; usdSent: number }
+  | { engel: "mod" | "kur" | "bolge" };
+
+export function yurtdisiKargo(
+  subtotal: number,
+  ulke: string,
+  bolgeler: Bolge[],
+  rules: SalesRules = DEFAULT_SALES_RULES,
+): YurtdisiKargo {
+  if (!rules.internationalEnabled) return { engel: "mod" };
+
+  const kur = rules.usdRate;
+  if (!kur || kur <= 0) return { engel: "kur" };
+
+  /* Eşik MÜŞTERİNİN GÖRDÜĞÜ dolar tutarıyla karşılaştırılıyor, yani
+     kâr payı dahil — ArvoARC da öyle. Ham tutarla karşılaştırmak,
+     sepette "100,80 $" yazan müşteriye eşiği 100 $ olan bölgede
+     kargo ücreti göstermek olurdu. */
+  const dolarSepet = dolara(subtotal, kur, rules.usdMarginPercent);
+  if (dolarSepet === null) return { engel: "kur" };
+
+  const sent = kargoSenti(bolgeler, ulke, Math.round(dolarSepet * 100));
+  if (sent === null) return { engel: "bolge" };
+
+  /* Sent × kur = kuruş: (USD×100) × (TL/USD) = TL×100. */
+  return { tl: Math.round(sent * kur) / 100, usdSent: sent };
 }
 
 /** Ücretsiz kargoya kalan tutar (TL). Kargo zaten ücretsizse 0. */
