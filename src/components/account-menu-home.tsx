@@ -64,7 +64,7 @@ const CIZGI = {
 
 const SATIRLAR: Satir[] = [
   {
-    href: "/hesap#hesap-bilgilerim",
+    href: "/hesap/bilgilerim",
     baslik: "Profilim",
     alt: "Bilgileriniz",
     simge: (
@@ -75,7 +75,7 @@ const SATIRLAR: Satir[] = [
     ),
   },
   {
-    href: "/hesap#adreslerim",
+    href: "/hesap/adreslerim",
     baslik: "Adreslerim",
     alt: "Teslimat",
     simge: (
@@ -86,7 +86,7 @@ const SATIRLAR: Satir[] = [
     ),
   },
   {
-    href: "/hesap#siparislerim",
+    href: "/hesap/siparislerim",
     baslik: "Siparişlerim",
     alt: "Takip",
     simge: (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { HesapYanMenu } from "@/components/hesap-yan-menu";
 import { CouponCopy } from "@/components/coupon-strip";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { konagiAyarla } from "@/lib/konak";
@@ -43,86 +44,74 @@ export default async function Kuponlarim({
 
   return (
     <main className="shell">
-      <section className="panel about-hero detail-hero">
-        <p className="about-eyebrow">Kuponlarım</p>
-        <h1>Kullanabileceğiniz kodlar.</h1>
-        <p className="about-lede">
-          Sepete girerken kodu yapıştırın; indirim ödeme adımında
-          uygulanır.
-        </p>
-      </section>
+      <div className="hesap-duzen">
+        <HesapYanMenu />
+        <div className="hesap-icerik">
+          <section className="panel about-hero detail-hero">
+            <p className="about-eyebrow">Kuponlarım</p>
+            <h1>Kullanabileceğiniz kodlar.</h1>
+            <p className="about-lede">
+              Sepete girerken kodu yapıştırın; indirim ödeme adımında
+              uygulanır.
+            </p>
+          </section>
 
-      {kuponlar.length === 0 ? (
-        <section className="panel order-result">
-          <h2>Şu anda açık bir kupon yok.</h2>
-          <p>
-            Yeni kampanyalar burada görünür. Bu arada indirimdeki
-            ürünlere göz atabilirsiniz.
-          </p>
-          <div className="order-actions">
-            <Link className="btn" href="/koleksiyon/firsatlar">
-              Fırsatlara bakın
-            </Link>
-          </div>
-        </section>
-      ) : (
-        <ul className="kupon-izgara">
-          {kuponlar.map((kupon) => (
-            <li key={kupon.id} className="kupon-kart">
-              <div className="kupon-kart-ust">
-                <span className="kupon-deger">
-                  {kupon.discount_type === "percentage"
-                    ? `%${kupon.value}`
-                    : kupon.discount_type === "free_shipping"
-                      ? "Ücretsiz kargo"
-                      : formatPrice(kupon.value / 100)}
-                </span>
-                <strong>{kupon.name}</strong>
+          {kuponlar.length === 0 ? (
+            <section className="panel order-result">
+              <h2>Şu anda açık bir kupon yok.</h2>
+              <p>
+                Yeni kampanyalar burada görünür. Bu arada indirimdeki
+                ürünlere göz atabilirsiniz.
+              </p>
+              <div className="order-actions">
+                <Link className="btn" href="/koleksiyon/firsatlar">
+                  Fırsatlara bakın
+                </Link>
               </div>
+            </section>
+          ) : (
+            <ul className="kupon-izgara">
+              {kuponlar.map((kupon) => (
+                <li key={kupon.id} className="kupon-kart">
+                  <div className="kupon-kart-ust">
+                    <span className="kupon-deger">
+                      {kupon.discount_type === "percentage"
+                        ? `%${kupon.value}`
+                        : kupon.discount_type === "free_shipping"
+                          ? "Ücretsiz kargo"
+                          : formatPrice(kupon.value / 100)}
+                    </span>
+                    <strong>{kupon.name}</strong>
+                  </div>
 
-              <ul className="kupon-kosul">
-                {kupon.minimum_subtotal > 0 && (
-                  <li>
-                    {formatPrice(kupon.minimum_subtotal / 100)} ve üzeri
-                    sepetlerde
-                  </li>
-                )}
-                {/*
-                  Koşul ana sayfadaki şeritle AYNI cümle: kod iki
-                  yerde duyuruluyor ve koşul yalnızca birinde
-                  yazsaydı müşterinin gördüğü yere göre farklı bir
-                  söz vermiş olurduk.
-                */}
-                <li>
-                  {kupon.combinable
-                    ? "Diğer indirimlerle birlikte kullanılabilir"
-                    : "İndirimdeki ürünlerde geçerli değildir"}
+                  <ul className="kupon-kosul">
+                    {kupon.minimum_subtotal > 0 && (
+                      <li>
+                        {formatPrice(kupon.minimum_subtotal / 100)} ve üzeri
+                        sepetlerde
+                      </li>
+                    )}
+                    {/*
+                      Koşul ana sayfadaki şeritle AYNI cümle: kod iki
+                      yerde duyuruluyor ve koşul yalnızca birinde
+                      yazsaydı müşterinin gördüğü yere göre farklı bir
+                      söz vermiş olurduk.
+                    */}
+                    <li>
+                      {kupon.combinable
+                        ? "Diğer indirimlerle birlikte kullanılabilir"
+                        : "İndirimdeki ürünlerde geçerli değildir"}
+                    </li>
+                  </ul>
+
+                  <CouponCopy code={kupon.code as string} />
                 </li>
-              </ul>
+              ))}
+            </ul>
+          )}
 
-              <CouponCopy code={kupon.code as string} />
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <section className="panel panel-tight help">
-        <strong>Hesabınızın geri kalanı</strong>
-        <ul>
-          <li>
-            <Link href="/hesap">Hesabım</Link>
-          </li>
-          <li>
-            <Link href="/hesap/hediye-ceklerim">Hediye çeklerim</Link>
-          </li>
-          <li>
-            <Link href="/favoriler">Favorilerim</Link>
-          </li>
-          <li>
-            <Link href="/sepet">Sepetim</Link>
-          </li>
-        </ul>
-      </section>
+        </div>
+      </div>
     </main>
   );
 }

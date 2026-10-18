@@ -9885,3 +9885,113 @@ body.theme-modern .auth-alt .linklike:hover {
     height: auto;
   }
 }
+
+/* ==========================================================
+   HESAP DÜZENİ — BÖLÜMLER AYRI SAYFA (18.10.2026)
+
+   Her şey tek sayfadaydı: profil formu, adres defteri ve bütün
+   sipariş listesi alt alta. Üç kusuru vardı:
+
+   * SAYFA MÜŞTERİYLE BİRLİKTE BÜYÜYORDU. Sekiz siparişte bile
+     uzun bir kaydırma; elli siparişte profil formu erişilemez
+     hale geliyordu. Başlıktaki menü bu yüzden çapalara
+     bağlanmıştı — çapa, sayfanın uzunluğuna konmuş bir yamadır.
+   * BÖLÜMLERİN ADRESİ YOKTU; "adreslerimi düzelt" diye bir
+     bağlantı gönderilemiyordu.
+   * TUTARSIZDI: kuponlar ve hediye çekleri zaten ayrı sayfaydı.
+
+   Sekme DEĞİL sayfa: sekme içeriği tıklamanın arkasına saklar
+   ama tek adreste bırakır — geri düğmesi ve paylaşılan bağlantı
+   çalışmaz.
+   ========================================================== */
+
+.hesap-duzen {
+  display: grid;
+  grid-template-columns: 13.5rem minmax(0, 1fr);
+  gap: var(--gap);
+  align-items: start;
+}
+
+.hesap-yan {
+  display: grid;
+  gap: 1px;
+  position: sticky;
+  /* Sayfadaki öteki yapışkan sütunlarla aynı pay (sepet özeti,
+     ürün satın alma kutusu); başlığın altında kalıyor. */
+  top: var(--gap);
+}
+
+.hesap-yan-link {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink-2);
+  transition:
+    background-color 160ms var(--ease),
+    color 160ms var(--ease);
+}
+
+@media (hover: hover) {
+  .hesap-yan-link:hover {
+    background: var(--panel-2);
+    color: var(--ink);
+  }
+}
+
+.hesap-yan-link[aria-current="page"] {
+  background: var(--brand);
+  color: #fff;
+}
+
+.hesap-icerik {
+  display: grid;
+  gap: var(--gap);
+  align-content: start;
+  min-width: 0;
+}
+
+/* Özet sayfasındaki tek sipariş kartı, dört sütunluk ızgarada
+   tek başına esneyip sayfa genişliğine yayılıyordu. */
+.order-cards-tek {
+  grid-template-columns: minmax(0, 24rem);
+}
+
+@media (max-width: 860px) {
+  .hesap-duzen {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Dar ekranda menü yatay ve kaydırmalı: dikey liste ekranın
+     yarısını yiyordu. */
+  .hesap-yan {
+    position: static;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    gap: var(--s2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 calc(-1 * var(--edge));
+    padding: 0 var(--edge);
+  }
+
+  .hesap-yan::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hesap-yan-link {
+    border: 1px solid var(--line-soft);
+    white-space: nowrap;
+  }
+
+  .hesap-yan-link[aria-current="page"] {
+    border-color: var(--brand);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hesap-yan-link {
+    transition: none;
+  }
+}

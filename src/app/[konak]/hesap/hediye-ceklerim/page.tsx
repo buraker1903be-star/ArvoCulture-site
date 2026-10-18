@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HesapYanMenu } from "@/components/hesap-yan-menu";
 import { HediyeCekleri } from "@/components/hediye-cekleri";
 import { env } from "@/lib/env";
 import { konagiAyarla } from "@/lib/konak";
@@ -28,36 +28,24 @@ export default async function HediyeCeklerim({
 
   return (
     <main className="shell">
-      <section className="panel about-hero detail-hero">
-        <p className="about-eyebrow">Hediye çeklerim</p>
-        <h1>Bakiyeniz burada.</h1>
-        <p className="about-lede">
-          Hesabınıza tanımlı hediye çekleri ve kalan tutarları.
-        </p>
-      </section>
+      <div className="hesap-duzen">
+        <HesapYanMenu />
+        <div className="hesap-icerik">
+          <section className="panel about-hero detail-hero">
+            <p className="about-eyebrow">Hediye çeklerim</p>
+            <h1>Bakiyeniz burada.</h1>
+            <p className="about-lede">
+              Hesabınıza tanımlı hediye çekleri ve kalan tutarları.
+            </p>
+          </section>
 
-      <HediyeCekleri
-        supabaseUrl={env.supabaseUrl}
-        supabaseKey={env.supabaseKey}
-      />
+          <HediyeCekleri
+            supabaseUrl={env.supabaseUrl}
+            supabaseKey={env.supabaseKey}
+          />
 
-      <section className="panel panel-tight help">
-        <strong>Hesabınızın geri kalanı</strong>
-        <ul>
-          <li>
-            <Link href="/hesap">Hesabım</Link>
-          </li>
-          <li>
-            <Link href="/hesap/kuponlarim">Kuponlarım</Link>
-          </li>
-          <li>
-            <Link href="/favoriler">Favorilerim</Link>
-          </li>
-          <li>
-            <Link href="/sepet">Sepetim</Link>
-          </li>
-        </ul>
-      </section>
+        </div>
+      </div>
     </main>
   );
 }

@@ -10,6 +10,8 @@ import { OrderCard } from "@/components/order-card";
 import { AccountMenuHome, selamAdi } from "@/components/account-menu-home";
 import { ProfilKarti } from "@/components/profil-karti";
 import { HesapOzeti } from "@/components/hesap-ozeti";
+import { HesapYanMenu } from "@/components/hesap-yan-menu";
+import { HesapOzetBolumu } from "@/components/hesap-ozet-bolumu";
 import type { Order } from "@/lib/order-types";
 
 type Mode = "login" | "register" | "reset";
@@ -52,6 +54,7 @@ export function AccountPanel({
   menuBicimi = false,
   cikisBitti,
   kuponSayisi = 0,
+  bolum = "ozet",
 }: {
   supabaseUrl: string;
   supabaseKey: string;
@@ -82,6 +85,15 @@ export function AccountPanel({
    * istemek, aynı veriyi iki kez çekmek olurdu.
    */
   kuponSayisi?: number;
+  /**
+   * Hangi bölüm çizilecek.
+   *
+   * Her şey tek sayfadayken sayfa müşteriyle birlikte büyüyordu
+   * ve bölümlerin adresi yoktu (bkz. `HesapYanMenu`). Panel
+   * oturumu, siparişleri ve profil durumunu tutmaya devam
+   * ediyor; artık yalnızca istenen bölümü basıyor.
+   */
+  bolum?: "ozet" | "bilgilerim" | "adreslerim" | "siparislerim";
 }) {
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
@@ -628,7 +640,7 @@ export function AccountPanel({
           </section>
         )}
 
-        {!menuBicimi && (
+        {!menuBicimi && bolum === "ozet" && (
           <HesapOzeti
             supabase={supabase}
             siparisSayisi={siparisOkunamadi ? null : (orders?.length ?? null)}
@@ -640,9 +652,10 @@ export function AccountPanel({
           MENÜDE SAYFA DEĞİL, KISA BİR EV.
 
           Açılır menüye hesap sayfasının tamamını basmak sütunları
-          üst üste bindiriyordu. Kartlar sayfanın ilgili bölümüne
-          iniyor (çapalar: #hesap-bilgilerim, #adreslerim,
-          #siparislerim).
+          üst üste bindiriyordu. Kartlar artık bölümlerin KENDİ
+          sayfalarına gidiyor; önce çapalara (#adreslerim)
+          gidiyorlardı ve çapa, sayfanın uzunluğuna konmuş bir
+          yamaydı.
 
           Selamda e-posta DEĞİL ad var: giriş yapmış birine
           adresini göstermek, tanımadığını söylemektir.
@@ -655,75 +668,83 @@ export function AccountPanel({
             cikisDurumu={cikisDurumu}
           />
         ) : (
-          <>
-            {/*
-          Sekme yerine tek sayfa: hesap bilgileri ve adresler üstte
-          yan yana, siparişler altta tam genişlikte. Müşteri
-          aradığını sekme değiştirmeden görüyor.
-        */}
-            <div className="account-top">
-              {/* Çapa kartın içinde (id="hesap-bilgilerim"); hesap
-              menüsündeki "Profilim" bağlantısı buraya iniyor. */}
-              <ProfilKarti
-                ad={profileName}
-                telefon={profilePhone}
-                eposta={session.user.email}
-                uyelikTarihi={session.user.created_at}
-                adDegisti={setProfileName}
-                telefonDegisti={setProfilePhone}
-                kaydet={saveProfile}
-                sifreDegistir={sifreDegistir}
-              />
+          <div className="hesap-duzen">
+            <HesapYanMenu />
 
-              <AddressBook supabase={supabase} />
+            <div className="hesap-icerik">
+              {bolum === "ozet" && (
+                <HesapOzetBolumu
+                  orders={orders}
+                  siparisOkunamadi={siparisOkunamadi}
+                  supabaseUrl={supabaseUrl}
+                  yenidenDene={() => void loadOrders()}
+                />
+              )}
+
+              {bolum === "bilgilerim" && (
+                <ProfilKarti
+                  ad={profileName}
+                  telefon={profilePhone}
+                  eposta={session.user.email}
+                  uyelikTarihi={session.user.created_at}
+                  adDegisti={setProfileName}
+                  telefonDegisti={setProfilePhone}
+                  kaydet={saveProfile}
+                  sifreDegistir={sifreDegistir}
+                />
+              )}
+
+              {bolum === "adreslerim" && <AddressBook supabase={supabase} />}
+
+              {bolum === "siparislerim" && (
+                <section className="panel" id="siparislerim">
+                  <div className="head">
+                    <div>
+                      <h2>Siparişlerim</h2>
+                      <p>Geçmiş siparişleriniz ve tüm detayları.</p>
+                    </div>
+                  </div>
+
+                  {orders === null && !siparisOkunamadi && (
+                    <p className="hint">Siparişler yükleniyor…</p>
+                  )}
+
+                  {siparisOkunamadi && (
+                    <p className="form-error" role="alert">
+                      Siparişleriniz şu anda alınamadı; yerinde duruyorlar.{" "}
+                      <button
+                        type="button"
+                        className="link-button"
+                        onClick={() => void loadOrders()}
+                      >
+                        Tekrar dene
+                      </button>
+                    </p>
+                  )}
+
+                  {orders?.length === 0 && (
+                    <p className="hint">
+                      Henüz siparişiniz görünmüyor. Misafir olarak sipariş
+                      verdiyseniz, aynı e-posta adresini doğruladığınızda
+                      siparişleriniz burada listelenir.
+                    </p>
+                  )}
+
+                  {orders && orders.length > 0 && (
+                    <div className="order-cards">
+                      {orders.map((order) => (
+                        <OrderCard
+                          key={order.order_number}
+                          order={order}
+                          supabaseUrl={supabaseUrl}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </section>
+              )}
             </div>
-
-            <section className="panel" id="siparislerim">
-              <div className="head">
-                <div>
-                  <h2>Siparişlerim</h2>
-                  <p>Geçmiş siparişleriniz ve tüm detayları.</p>
-                </div>
-              </div>
-
-              {orders === null && !siparisOkunamadi && (
-                <p className="hint">Siparişler yükleniyor…</p>
-              )}
-
-              {siparisOkunamadi && (
-                <p className="form-error" role="alert">
-                  Siparişleriniz şu anda alınamadı; yerinde duruyorlar.{" "}
-                  <button
-                    type="button"
-                    className="link-button"
-                    onClick={() => void loadOrders()}
-                  >
-                    Tekrar dene
-                  </button>
-                </p>
-              )}
-
-              {orders?.length === 0 && (
-                <p className="hint">
-                  Henüz siparişiniz görünmüyor. Misafir olarak sipariş
-                  verdiyseniz, aynı e-posta adresini doğruladığınızda
-                  siparişleriniz burada listelenir.
-                </p>
-              )}
-
-              {orders && orders.length > 0 && (
-                <div className="order-cards">
-                  {orders.map((order) => (
-                    <OrderCard
-                      key={order.order_number}
-                      order={order}
-                      supabaseUrl={supabaseUrl}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-          </>
+          </div>
         )}
       </div>
     );
