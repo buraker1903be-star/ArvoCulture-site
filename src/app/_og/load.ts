@@ -5,6 +5,7 @@ import { env } from "@/lib/env";
 import { canOptimizeImage } from "@/lib/image-hosts";
 import { vitrinAdresi } from "@/lib/konak";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
+import { gorselOlcusu } from "@/lib/gorsel-olcusu";
 
 /*
   Paylaşım kartlarının malzemesi: fontlar, logo ve ürün görseli.
@@ -45,17 +46,22 @@ export async function ogFonts() {
  * ürün görseliyle aynı yoldan geçiyor. Okunamazsa depodaki dosyaya
  * düşülüyor: logosuz bir kart da çiziliyor ama tanınmaz oluyor.
  */
-export async function ogLogo(url?: string): Promise<string | null> {
+export type OgLogo = { src: string; en: number; boy: number } | null;
+
+export async function ogLogo(url?: string): Promise<OgLogo> {
   if (url) {
     const uzak = await ogProductImage(url);
-    if (uzak) return uzak;
+    const olcu = uzak && gorselOlcusu(uzak);
+    if (uzak && olcu) return { src: uzak, ...olcu };
   }
 
   try {
     const data = await readFile(
       join(process.cwd(), "public/arvoculture-logo-transparent.png"),
     );
-    return `data:image/png;base64,${data.toString("base64")}`;
+    const src = `data:image/png;base64,${data.toString("base64")}`;
+    const olcu = gorselOlcusu(src);
+    return olcu ? { src, ...olcu } : null;
   } catch {
     return null;
   }
@@ -120,6 +126,7 @@ export async function ogMarka() {
     storeName: theme.store_name || "Mağaza",
     kart: {
       logo,
+      storeName: theme.store_name || "Mağaza",
       eyebrow: theme.hero_eyebrow,
       title: theme.hero_title,
       emphasis: theme.hero_emphasis,

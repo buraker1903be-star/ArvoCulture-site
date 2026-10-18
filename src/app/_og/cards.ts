@@ -30,23 +30,50 @@ const DISPLAY = "Cormorant";
 const SANS = "Inter";
 
 /* Logo 1920×231; kartta bu oranla küçültülüyor. */
-function logo(src: string | null, width: number) {
-  const height = Math.round((width * 231) / 1920);
-  return src
-    ? h("img", { src, width, height, style: { objectFit: "contain" } })
-    : h(
-        "div",
-        {
-          style: {
-            display: "flex",
-            fontFamily: SANS,
-            fontSize: 22,
-            letterSpacing: 5,
-            color: C.ink,
-          },
-        },
-        "ARVOCULTURE",
-      );
+export type KartLogosu = { src: string; en: number; boy: number } | null;
+
+/*
+  LOGO KENDİ ORANINDA ÇİZİLİYOR.
+
+  Burada oran 1920:231 olarak SABİTTİ — depodaki ArvoCulture
+  logosunun oranı. Panele yüklenen logo başka orandaysa
+  `objectFit: contain` onu o ince kutunun içine sıkıştırıyor ve
+  logo minicik çıkıyordu (18.10.2026'da canlıda görüldü). Satori
+  uzak görseli kendisi ölçmediği için ölçü baytlardan okunup
+  buraya geliyor (`_og/load` → gorselOlcusu).
+
+  Kutuya sığdırma: genişlik ve yükseklik tavanlarının küçüğü
+  seçiliyor; kare bir logo da, uzun bir yazı logosu da aynı görsel
+  ağırlıkta duruyor.
+
+  Logo yoksa mağazanın ADI yazılıyor. Önceden "ARVOCULTURE"
+  sabitti: logosu olmayan ikinci bir kiracının kartında bizim
+  adımız görünürdü.
+*/
+function logo(kaynak: KartLogosu, azamiEn: number, azamiBoy: number, ad: string) {
+  if (kaynak) {
+    const olcek = Math.min(azamiEn / kaynak.en, azamiBoy / kaynak.boy, 1);
+    return h("img", {
+      src: kaynak.src,
+      width: Math.round(kaynak.en * olcek),
+      height: Math.round(kaynak.boy * olcek),
+      style: { objectFit: "contain" },
+    });
+  }
+
+  return h(
+    "div",
+    {
+      style: {
+        display: "flex",
+        fontFamily: SANS,
+        fontSize: 22,
+        letterSpacing: 5,
+        color: C.ink,
+      },
+    },
+    ad.toLocaleUpperCase("tr-TR"),
+  );
 }
 
 /*
@@ -90,13 +117,16 @@ function eyebrow(text: string) {
  */
 export function brandCard({
   logo: logoSrc,
+  storeName,
   eyebrow: eyebrowText,
   title,
   emphasis,
   tagline,
   host,
 }: {
-  logo: string | null;
+  logo: KartLogosu;
+  /** Logo okunamazsa kartın başına yazılacak ad. */
+  storeName: string;
   eyebrow: string;
   title: string;
   emphasis: string;
@@ -117,7 +147,7 @@ export function brandCard({
         background: C.ivory,
       },
     },
-    logo(logoSrc, 340),
+    logo(logoSrc, 340, 96, storeName),
     h(
       "div",
       { style: { display: "flex", flexDirection: "column" } },
@@ -177,7 +207,7 @@ export function brandCard({
 }
 
 export type ProductCardProps = {
-  logo: string | null;
+  logo: KartLogosu;
   /** PNG/JPEG data URI; yoksa görsel alanı boş kalır. */
   image: string | null;
   brand: string;
@@ -335,7 +365,7 @@ export function productCard(p: ProductCardProps) {
             borderTop: `1px solid ${C.line}`,
           },
         },
-        logo(p.logo, 230),
+        logo(p.logo, 230, 64, p.brand),
         h(
           "div",
           {
