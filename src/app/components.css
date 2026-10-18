@@ -9487,3 +9487,276 @@ body.theme-modern .auth-alt .linklike:hover {
 .account-home .form-error {
   margin: 0;
 }
+
+/* ==========================================================
+   HESAP SAYFASI — YENİDEN (18.10.2026)
+
+   İki ayrı sorun vardı ve ikisi de aynı kökten geliyordu:
+   sayfa, kimin baktığını bilmeyen bir sunucu tarafından
+   çiziliyordu.
+
+   MİSAFİR GÖRÜNÜMÜ: 1440 piksellik ekranda ortalanmış 27rem'lik
+   bir form — ekranın dörtte üçü boş. Üstelik üye olmanın ne
+   kazandırdığı hiçbir yerde yazmıyordu; form, kendini
+   açıklamayan bir kapıydı.
+
+   ÜYE GÖRÜNÜMÜ: kimlik ÜÇ KEZ tekrarlanıyordu — sayfanın "Hoş
+   geldiniz." başlığı, altındaki gri şeritte e-posta, profil
+   kartının içinde ad ve aynı e-posta. Hiçbiri müşterinin ADIYLA
+   selam vermiyordu. Hesapta ne olduğu (kaç sipariş, kaç favori,
+   ne kadar bakiye) ise hiçbir yerde görünmüyordu.
+   ========================================================== */
+
+/* --- Misafir: form + davet --- */
+
+.hesap-giris {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas:
+    "ust  davet"
+    "form davet";
+  align-content: start;
+  gap: var(--gap);
+}
+
+.hesap-giris-ust {
+  grid-area: ust;
+  padding: var(--pad) var(--pad) 0;
+}
+
+.hesap-giris-ust h1 {
+  margin: var(--s2) 0 var(--s3);
+}
+
+.hesap-giris > .auth-panel {
+  grid-area: form;
+  /* Formun kendi iç genişlik sınırı var (auth-panel > *);
+     sütunun içinde ortalanıyor. */
+  align-self: start;
+}
+
+.hesap-davet {
+  grid-area: davet;
+  align-self: start;
+  display: grid;
+  gap: var(--s4);
+  align-content: start;
+}
+
+.hesap-davet h2 {
+  margin: 0;
+  font-size: clamp(22px, 2vw, 28px);
+  letter-spacing: -0.02em;
+}
+
+.hesap-davet-liste {
+  display: grid;
+  gap: var(--s4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hesap-davet-liste li {
+  position: relative;
+  padding-left: var(--s5);
+  font-size: var(--t-sm);
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+/* Madde imi yerine ince altın çizgi: liste bir "fayda sayımı"
+   değil, dört kısa paragraf. */
+.hesap-davet-liste li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 10px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.hesap-davet-liste strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.hesap-davet-misafir {
+  margin: 0;
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line-soft);
+  font-size: var(--t-xs);
+  line-height: 1.65;
+  color: var(--ink-3);
+}
+
+.hesap-davet-misafir strong {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+/* Dar ekranda davet formun ALTINA geçiyor: oraya gelen müşterinin
+   çoğu zaten giriş yapmaya geliyor, önce form görünmeli. */
+@media (max-width: 900px) {
+  .hesap-giris {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "ust"
+      "form"
+      "davet";
+  }
+
+  .hesap-giris-ust {
+    padding: 0;
+  }
+}
+
+/* --- Üye: karşılama --- */
+
+.hesap-karsilama {
+  display: flex;
+  align-items: center;
+  gap: var(--s5);
+  padding: var(--pad);
+  border-radius: var(--r);
+  background:
+    radial-gradient(
+      90% 180% at 0% 0%,
+      color-mix(in srgb, var(--brand) 10%, transparent),
+      transparent 60%
+    ),
+    var(--panel);
+  box-shadow: var(--float);
+}
+
+.hesap-karsilama-monogram {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-pill);
+  background: var(--brand);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 27px;
+  box-shadow: 0 0 0 1px var(--gold-soft), 0 0 0 5px var(--panel);
+}
+
+.hesap-karsilama-metin {
+  flex: 1;
+  min-width: 0;
+}
+
+.hesap-karsilama-metin h1 {
+  margin: var(--s2) 0 0;
+  font-size: clamp(28px, 3.2vw, 44px);
+  letter-spacing: -0.03em;
+}
+
+.hesap-karsilama-eposta {
+  margin: 6px 0 0;
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hesap-karsilama-cikis {
+  flex: none;
+  display: grid;
+  justify-items: end;
+  gap: var(--s2);
+  align-self: flex-start;
+}
+
+/* --- Üye: özet sayaçları --- */
+
+.hesap-ozet {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s3);
+}
+
+.hesap-sayac {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  padding: var(--s4) var(--s5);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: var(--float);
+  transition:
+    border-color 180ms var(--ease),
+    transform 180ms var(--ease-out);
+}
+
+.hesap-sayac-deger {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--brand);
+  /* Bakiye "1.250,00 TL" olabiliyor; sayaç kutusunu taşırmasın. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hesap-sayac strong {
+  margin-top: 4px;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.hesap-sayac small {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .hesap-sayac:hover {
+    border-color: color-mix(in srgb, var(--brand) 34%, var(--line));
+    transform: translateY(-2px);
+  }
+}
+
+.hesap-sayac:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+@media (max-width: 860px) {
+  .hesap-ozet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hesap-karsilama {
+    flex-wrap: wrap;
+    gap: var(--s4);
+  }
+
+  /* Çıkış dar ekranda ada yapışıp başlığı sıkıştırıyordu. */
+  .hesap-karsilama-cikis {
+    order: 3;
+    width: 100%;
+    justify-items: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hesap-sayac {
+    transition: none;
+  }
+
+  .hesap-sayac:hover {
+    transform: none;
+  }
+}

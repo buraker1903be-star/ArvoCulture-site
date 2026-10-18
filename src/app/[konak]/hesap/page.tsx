@@ -4,13 +4,17 @@ import { AccountPanel } from "@/components/account-panel";
 import { env } from "@/lib/env";
 import { getSeller } from "@/lib/seller-source";
 import { konagiAyarla } from "@/lib/konak";
+import { getStorefrontDiscounts } from "@/lib/discounts";
 
 export const metadata: Metadata = {
   title: "Hesabım",
   description:
     /* Marka adı çıkarıldı: sayfa indekslenmiyor (robots: index false)
-       ve ortak dağıtımda her kiracıya ArvoCulture'ı yazardı. */
-    "Sipariş takibi ve hesap işlemleri. Üye olmadan da sipariş verebilir, siparişinizi numarasıyla takip edebilirsiniz.",
+       ve ortak dağıtımda her kiracıya ArvoCulture'ı yazardı.
+       "Numarasıyla takip" de yazmıyor: vitrinde numarayla
+       sorgulanan bir ekran YOK, takip sipariş onayı
+       e-postasındaki kişiye özel bağlantıyla yapılıyor. */
+    "Sipariş takibi ve hesap işlemleri. Üye olmadan da sipariş verebilir, onay e-postanızdaki bağlantıdan siparişinizi izleyebilirsiniz.",
   alternates: { canonical: "/hesap" },
   robots: { index: false, follow: true },
 };
@@ -18,9 +22,13 @@ export const metadata: Metadata = {
 /**
  * Hesap sayfası.
  *
- * Solda misafir sipariş takibi, sağda hesap paneli. Üyelik
- * zorunlu değil: misafir alışveriş açık kalır, hesap yalnızca
- * sipariş geçmişi ve hızlı ödeme için bir kolaylıktır.
+ * Sayfanın gövdesi tek bileşen: `AccountPanel`. Karşılama, giriş
+ * formu, özet, profil, adresler ve siparişler orada — çünkü
+ * hepsinin yanıtı "kim bakıyor" sorusuna bağlı ve bunu yalnızca
+ * tarayıcıdaki oturum biliyor.
+ *
+ * Üyelik zorunlu değil: misafir alışveriş açık kalır, hesap
+ * yalnızca sipariş geçmişi ve hızlı ödeme için bir kolaylıktır.
  */
 
 export default async function Account({
@@ -33,26 +41,33 @@ export default async function Account({
      güvenilemiyor (lib/konak). */
   konagiAyarla((await params).konak);
 
-  const { phoneLink: whatsapp } = await getSeller();
+  /* Özet şeridindeki "Kuponlarım" sayacı. Kuponlar müşteriden
+     bağımsız; tarayıcıda ikinci kez istemek aynı veriyi iki kez
+     çekmek olurdu. */
+  const [{ phoneLink: whatsapp }, indirimler] = await Promise.all([
+    getSeller(),
+    getStorefrontDiscounts(),
+  ]);
+  const kuponSayisi = indirimler.filter((indirim) => indirim.code).length;
 
   return (
     <main className="shell">
-      {/* Künye ile başlık aynı kelimeyi tekrarlıyordu; başlık artık
-          karşılıyor. Sepet ve favorilerle aynı kısa başlık boyu. */}
-      <section className="panel about-hero detail-hero">
-        <p className="about-eyebrow">Hesabım</p>
-        <h1>Hoş geldiniz.</h1>
-        <p className="about-lede">
-          Siparişleriniz, adres defteriniz ve hesap bilgileriniz tek yerde.
-          Üyelik zorunlu değil; misafir olarak da alışveriş yapabilirsiniz.
-        </p>
-      </section>
+      {/*
+        BAŞLIK PANELİN İÇİNDE.
 
-      {/* Bağlantı bilgileri sunucudan aktarılır; NEXT_PUBLIC_
-          değişkenine bağımlılık yok. */}
+        Sayfa "Hoş geldiniz." diye başlıyordu ama kime dediği
+        belirsizdi: oturumu yalnızca tarayıcı biliyor, sunucu
+        bilmiyor. Giriş yapmış müşteri kendi adını göremiyor, misafir
+        ise hiç tanımadığı bir yerde karşılanıyordu. Karşılama artık
+        panelin işi; o, kimin baktığını biliyor.
+
+        Bağlantı bilgileri sunucudan aktarılır; NEXT_PUBLIC_
+        değişkenine bağımlılık yok.
+      */}
       <AccountPanel
         supabaseUrl={env.supabaseUrl}
         supabaseKey={env.supabaseKey}
+        kuponSayisi={kuponSayisi}
       />
 
       <section className="panel panel-tight help">

@@ -91,16 +91,21 @@ export function ProfilKarti({
 
   return (
     <section className="panel profil" id="hesap-bilgilerim">
-      <header className="profil-ust">
-        <span className="profil-monogram" aria-hidden="true">
-          {(ad || eposta || "•").charAt(0).toLocaleUpperCase("tr")}
-        </span>
-        <div className="profil-kimlik">
-          <h2>{ad.trim() || "Profilim"}</h2>
-          <p>{eposta}</p>
+      {/*
+        BAŞLIK KİMLİK DEĞİL, İŞ.
+
+        Burada monogram + ad + e-posta + üyelik rozeti duruyordu;
+        sayfanın karşılaması da aynı dörtlüyü gösteriyordu. İki
+        yuvarlak, iki "Burak", iki adres — kart kimliği ikinci kez
+        ilan ediyordu. Kimlik yukarıda; kart artık formun kendisi.
+      */}
+      <div className="head">
+        <div>
+          <h2>Hesap bilgilerim</h2>
+          <p>Sipariş formlarında bu bilgiler hazır gelir.</p>
         </div>
         {uyelik && <span className="profil-uyelik">Üye · {uyelik}</span>}
-      </header>
+      </div>
 
       {/* Eksik alan bir uyarı değil, bir SEBEP: neden gerektiğini
           söylemeyen bir "profilinizi tamamlayın" çubuğu, kapatılan

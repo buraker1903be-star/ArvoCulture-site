@@ -9,6 +9,7 @@ import { AddressBook } from "@/components/address-book";
 import { OrderCard } from "@/components/order-card";
 import { AccountMenuHome, selamAdi } from "@/components/account-menu-home";
 import { ProfilKarti } from "@/components/profil-karti";
+import { HesapOzeti } from "@/components/hesap-ozeti";
 import type { Order } from "@/lib/order-types";
 
 type Mode = "login" | "register" | "reset";
@@ -50,6 +51,7 @@ export function AccountPanel({
   supabaseKey,
   menuBicimi = false,
   cikisBitti,
+  kuponSayisi = 0,
 }: {
   supabaseUrl: string;
   supabaseKey: string;
@@ -72,6 +74,14 @@ export function AccountPanel({
    * orada form zaten sayfanın kendisi.
    */
   cikisBitti?: () => void;
+  /**
+   * Açık kupon sayısı — özet şeridindeki sayaç için.
+   *
+   * SUNUCUDAN geliyor: kuponlar müşteriden bağımsız ve zaten
+   * sayfanın sunucu tarafında okunuyor. Tarayıcıda ikinci kez
+   * istemek, aynı veriyi iki kez çekmek olurdu.
+   */
+  kuponSayisi?: number;
 }) {
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
@@ -570,25 +580,60 @@ export function AccountPanel({
           </p>
         )}
 
+        {/*
+          SAYFANIN KARŞILAMASI.
+
+          Üç parça aynı şeyi söylüyordu: sayfanın "Hoş geldiniz."
+          başlığı (kime hoş geldin dediği belirsiz), altındaki gri
+          şeritte e-posta adresi, onun da altında profil kartının
+          içinde ad ve aynı e-posta. Üçü de kimliği taşıyordu ve
+          hiçbiri müşterinin ADIYLA selam vermiyordu.
+
+          Tek karşılama kaldı; profil kartı artık yalnızca FORM.
+        */}
         {!menuBicimi && (
-          <div className="account-bar">
-            <div>
-              <strong>{session.user.email}</strong>
-              <small>
-                {cikisDurumu === "hata"
-                  ? "Çıkış yapılamadı; hâlâ giriş yapmış durumdasınız."
-                  : "Hesabınıza giriş yaptınız"}
-              </small>
+          <section className="hesap-karsilama">
+            <span className="hesap-karsilama-monogram" aria-hidden="true">
+              {(profileName || session.user.email || "•")
+                .charAt(0)
+                .toLocaleUpperCase("tr")}
+            </span>
+
+            <div className="hesap-karsilama-metin">
+              <p className="about-eyebrow">Hesabım</p>
+              <h1>
+                Hoş geldiniz
+                {selamAdi(profileName, session.user.email) &&
+                  `, ${selamAdi(profileName, session.user.email)}`}
+                .
+              </h1>
+              <p className="hesap-karsilama-eposta">{session.user.email}</p>
             </div>
-            <button
-              type="button"
-              className="linklike"
-              disabled={cikisDurumu === "cikiliyor"}
-              onClick={() => void signOut()}
-            >
-              {cikisDurumu === "cikiliyor" ? "Çıkılıyor…" : "Çıkış yap"}
-            </button>
-          </div>
+
+            <div className="hesap-karsilama-cikis">
+              <button
+                type="button"
+                className="linklike"
+                disabled={cikisDurumu === "cikiliyor"}
+                onClick={() => void signOut()}
+              >
+                {cikisDurumu === "cikiliyor" ? "Çıkılıyor…" : "Çıkış yap"}
+              </button>
+              {cikisDurumu === "hata" && (
+                <p className="form-error" role="alert">
+                  Çıkış yapılamadı; hâlâ giriş yapmış durumdasınız.
+                </p>
+              )}
+            </div>
+          </section>
+        )}
+
+        {!menuBicimi && (
+          <HesapOzeti
+            supabase={supabase}
+            siparisSayisi={siparisOkunamadi ? null : (orders?.length ?? null)}
+            kuponSayisi={kuponSayisi}
+          />
         )}
 
         {/*
@@ -685,7 +730,7 @@ export function AccountPanel({
   }
 
   /* --- Giriş formu --- */
-  return (
+  const girisFormu = (
     <section className="panel auth-panel">
       {/*
         GEÇİŞ ANI İÇİN.
@@ -949,6 +994,82 @@ export function AccountPanel({
         )}
       </div>
     </section>
+  );
+
+  /*
+    MENÜDE TEK SÜTUN, SAYFADA İKİ.
+
+    /hesap masaüstünde 1440 piksel genişliğinde açılıyordu ve
+    içinde ortalanmış 27rem'lik bir giriş formu duruyordu: ekranın
+    dörtte üçü boş. Üstelik üye olmanın ne kazandırdığı hiçbir
+    yerde yazmıyordu — form, kendini açıklamayan bir kapıydı.
+
+    Yan sütun o boşluğu dolduruyor ve iki soruyu yanıtlıyor:
+    "neden üye olayım" ve "üye değilsem siparişimi nasıl takip
+    ederim". Menüde (27rem) böyle bir boşluk yok, orada tek sütun.
+  */
+  if (menuBicimi) return girisFormu;
+
+  return (
+    <div className="hesap-giris">
+      {/*
+        Başlık sayfadan buraya taşındı: sunucu kimin baktığını
+        bilmediği için "Hoş geldiniz." her iki duruma da aynı
+        şekilde basılıyordu.
+      */}
+      <header className="hesap-giris-ust">
+        <p className="about-eyebrow">Hesabım</p>
+        <h1>Giriş yapın.</h1>
+        <p className="about-lede">
+          Siparişleriniz, adres defteriniz ve favorileriniz tek yerde.
+        </p>
+      </header>
+
+      {girisFormu}
+
+      <aside className="panel hesap-davet">
+        <p className="about-eyebrow">Üyelik</p>
+        <h2>Hesap ne kazandırıyor?</h2>
+
+        <ul className="hesap-davet-liste">
+          <li>
+            <strong>Siparişleriniz tek yerde.</strong> Geçmiş
+            siparişleriniz, tutarları ve kargo durumları hesabınızda
+            durur; e-postadaki bağlantıyı aramanıza gerek kalmaz.
+          </li>
+          <li>
+            <strong>Adres defteri.</strong> Teslimat ve fatura
+            adresiniz kayıtlı gelir; bir sonraki alışveriş tek
+            adımda biter.
+          </li>
+          <li>
+            <strong>Favorileriniz her cihazda.</strong> Telefonda
+            beğendiğiniz ürün bilgisayarda da listenizde olur;
+            tarayıcı verisini temizleseniz de durur.
+          </li>
+          <li>
+            <strong>Kuponlar ve hediye çekleri.</strong> Size
+            tanımlı bakiye ve kullanabileceğiniz kodlar hesabınızda
+            görünür.
+          </li>
+        </ul>
+
+        {/*
+          ÜYELİK ZORUNLU DEĞİL ve bunu söylemek davetin parçası.
+          Önceden burada "siparişinizi NUMARASIYLA takip
+          edebilirsiniz" yazıyordu; vitrinde numarayla sorgulanan
+          bir ekran YOK — takip, sipariş onayı e-postasındaki
+          kişiye özel bağlantıyla yapılıyor. Tutulamayan bir söz,
+          verilmemiş sözden kötü: müşteri numarayı nereye yazacağını
+          arıyor ve bulamıyor.
+        */}
+        <p className="hesap-davet-misafir">
+          <strong>Üye olmadan da alışveriş yapabilirsiniz.</strong>{" "}
+          Sipariş onayı e-postanızdaki bağlantı, siparişinizin güncel
+          durumunu her zaman açar.
+        </p>
+      </aside>
+    </div>
   );
 }
 
