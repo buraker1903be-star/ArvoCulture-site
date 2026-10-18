@@ -12,6 +12,7 @@ import { Header } from "@/components/header";
 import { getPopularSearches } from "@/lib/popular-searches";
 import { BottomNav } from "@/components/bottom-nav";
 import { AppShell } from "@/components/app-shell";
+import { ZiyaretKaydi } from "@/components/ziyaret-kaydi";
 import { PageTransition } from "@/components/page-transition";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStoreStage } from "@/lib/store-stage";
@@ -535,6 +536,9 @@ export default async function RootLayout({
               teklifi. Görsel olarak yalnızca gerektiğinde beliriyor.
             */}
             <AppShell />
+            {/* Sayfa açılışı sayaca yazılıyor; konum Vercel'in
+                kenar başlıklarından, kişisel veri saklanmıyor. */}
+            <ZiyaretKaydi />
 
             {/*
               Mağaza kimliği ve site şeması her sayfada basılıyor:
