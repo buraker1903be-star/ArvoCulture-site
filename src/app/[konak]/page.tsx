@@ -101,7 +101,10 @@ export default async function Home({
   const flagged = inStock.filter((product) => product.bestSeller);
   const best = (curated.length > 0 ? curated : flagged).slice(0, 10);
 
-  const fresh = inStock.slice(0, 5);
+  /* Beş değil on: bölüm artık yatay raf ve beş kart rafın
+     kaydırılacak bir devamı olduğunu söylemiyor — şerit ekranda
+     bitiyor, ok çıkmıyor, müşteri kaydırmayı denemiyor. */
+  const fresh = inStock.slice(0, 10);
 
   /*
     Sonuç vermeyen terimler gösterilmiyor: müşteri tıklayıp boş
@@ -210,7 +213,10 @@ export default async function Home({
 
       {/* Satış verisi yoksa bölüm hiç görünmez. Hiç satılmamış
           ürünü "çok satan" diye göstermek güveni zedeler. */}
-      {/* Bu bölüm yatay raf: ızgara tekrarını kırıyor. */}
+      {/* Ana sayfadaki bütün ürün bölümleri yatay raf: aynı kartlar
+          iki ayrı düzende durunca sayfa kendi içinde çelişiyordu.
+          Izgara koleksiyon ve arama sayfalarında kalıyor — orada
+          müşteri TARIYOR, burada göz geziniyor. */}
       <Reveal>
         <ProductBlock
           title="Çok satanlar"
@@ -319,6 +325,16 @@ export default async function Home({
               href="/koleksiyon/tumu"
               hrefLabel="Tüm ürünler"
               products={fresh}
+              /*
+                RAF OLDU (18.10.2026).
+
+                Ana sayfadaki beş ürün bölümünün dördü rafa geçtikten
+                sonra TEK IZGARA bu kaldı ve gerekçe tersine döndü:
+                raf eskiden "ızgara tekrarını kırmak" içindi, şimdi
+                ızgara şeridin ritmini kırıyor. Aynı kartlar iki ayrı
+                düzende duruyordu.
+              */
+              rail
             />
           </div>
         </Reveal>
