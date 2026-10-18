@@ -89,3 +89,11 @@ test("iki ayrı hata tolerans 1'de geçmiyor", () => {
   /* Yer değiştirmeyi ucuzlatmak, her şeyi ucuzlatmak değil. */
   assert.equal(uzaklik("prafuum", "parfum", 1), 2);
 });
+
+test("düzeltme kataloğun yazımını bozmuyor", () => {
+  /* Türkçe küçültme I→ı yapıyor ve Latin marka adını bozuyordu:
+     "zeitgrad" düzeltmesi "zeıtgard" diye görünüyordu. */
+  assert.equal("ZEITGARD".toLocaleLowerCase("tr-TR"), "zeıtgard");
+  /* Bu yüzden kataloğun yazımı olduğu gibi saklanıyor; bu test
+     kuralın gerekçesini sabitliyor. */
+});

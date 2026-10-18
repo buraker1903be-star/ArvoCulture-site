@@ -314,7 +314,17 @@ function dagarcik(items: SearchItem[]): Dagarcik {
       const kelime = normalize(ham);
       if (!kelime) continue;
       sozluk.add(kelime);
-      if (!yazim.has(kelime)) yazim.set(kelime, ham.toLocaleLowerCase("tr-TR"));
+      /*
+        KÜÇÜLTÜLMÜYOR, KATALOĞUN YAZIMI OLDUĞU GİBİ ALINIYOR.
+
+        Türkçe küçültme (`tr-TR`) `I` harfini `ı` yapıyor ve Latin
+        marka adını bozuyordu: "zeitgrad" araması düzeltmeyi
+        "zeıtgard" diye gösteriyordu (canlıda görüldü). Düz
+        `toLowerCase` ise Türkçe `İ`yi bozuyor. İkisi de yanlış
+        olduğu için kataloğun kendi yazımı basılıyor — zaten
+        müşteriye gösterilmek istenen şey o.
+      */
+      if (!yazim.has(kelime)) yazim.set(kelime, ham);
     }
   };
 
