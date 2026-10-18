@@ -381,7 +381,19 @@ export function Header({
           {navigation.map((menu) => (
             <div className="mega-menu" key={menu.title}>
               <Link href={menu.href} className="mega-trigger">
-                {menu.title} <span>⌄</span>
+                {menu.title}
+                {/*
+                  Ok artık metin değil çizim. "⌄" karakteri yazı
+                  tipine göre bambaşka yerde ve ölçüde çiziliyordu:
+                  etiketin üstünde asılı, kalınlığı yazıyla
+                  tutmayan bir işaret. SVG her yazı tipinde aynı ve
+                  kalınlığı etiketinkiyle eşleşiyor.
+                */}
+                <span aria-hidden="true">
+                  <svg viewBox="0 0 12 8">
+                    <path d="M1.5 2 6 6.2 10.5 2" />
+                  </svg>
+                </span>
               </Link>
               <div
                 className={`mega-panel mega-panel-sections-${menu.sections.length}`}
