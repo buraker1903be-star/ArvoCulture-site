@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { BankTransfer } from "@/components/bank-transfer";
 import { formatPrice } from "@/lib/product-types";
 import { readCoupon, readNote } from "@/lib/cart-extras";
 import { getAuthClient } from "@/lib/auth-client";
 import { formatPhone, isValidPhone, phoneDigits } from "@/lib/phone";
+import { eksikAlanlar, eksikMetni } from "@/lib/odeme-eksikleri";
 import { evaluateCoupon } from "@/lib/coupon";
 import type { Address } from "@/components/address-book";
 import { CheckoutSteps } from "@/components/checkout-steps";
@@ -194,20 +195,15 @@ export function CheckoutForm({
   const transferDiscount = useTransfer ? availableTransferDiscount : 0;
   const payable = grand - transferDiscount;
 
-  const ready = useMemo(
-    () =>
-      form.name.trim().length > 2 &&
-      /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email) &&
-      isValidPhone(form.phone) &&
-      form.city.trim().length > 1 &&
-      form.district.trim().length > 1 &&
-      form.line.trim().length > 8 &&
-      consents.distance &&
-      consents.preInfo &&
-      consents.privacy &&
-      items.length > 0,
-    [form, consents, items],
-  );
+  /*
+    "ready" KALDIRILDI.
+
+    Burada formun tamamlanıp tamamlanmadığını söyleyen bir bayrak
+    vardı ve düğmeyi devre dışı bırakıyordu. Koşullar artık
+    `lib/odeme-eksikleri`'nde ve EKSİĞİN NE OLDUĞUNU da söylüyor —
+    bayrak yalnızca "hazır değil" diyebiliyordu, müşteriye hiçbir
+    şey anlatmadan.
+  */
 
   function field(key: keyof typeof form) {
     return {
@@ -253,7 +249,42 @@ export function CheckoutForm({
     return null;
   }
 
+  /*
+    EKSİK ALANA GÖTÜRME (18.10.2026).
+
+    "Ödemeye geç" düğmesi form tamamlanana kadar DEVRE DIŞIydı ve
+    canlıda ölçüldü: boş formla basmak hiçbir şey yapmıyordu —
+    hata yok, odak yok, kaydırma yok. Müşteri on iki alanı
+    doldurup 2.150 piksel aşağı kaydırıyor ve karşısında gri bir
+    düğme buluyordu; hangisinin eksik olduğunu söyleyen hiçbir şey
+    yoktu.
+
+    Düğme artık açık. Basınca eksik SÖYLENİYOR ve sayfadaki ilk
+    eksiğe gidiliyor; `block: "center"` çünkü alanın hemen üstünde
+    etiketi var ve "start" onu başlığın altına gizliyordu.
+  */
+  function eksigeGotur(alan: string) {
+    const hedef = document.querySelector<HTMLElement>(`[data-alan="${alan}"]`);
+    if (!hedef) return;
+    hedef.scrollIntoView({ behavior: "smooth", block: "center" });
+    /* Onaylar bir kutu, odaklanabilir değil: içindeki ilk kutucuk
+       alınıyor. */
+    const odaklanacak =
+      hedef instanceof HTMLInputElement || hedef instanceof HTMLTextAreaElement
+        ? hedef
+        : hedef.querySelector<HTMLElement>("input, textarea, select");
+    window.setTimeout(() => odaklanacak?.focus({ preventScroll: true }), 320);
+  }
+
   async function submit() {
+    const eksikler = eksikAlanlar(form, consents, items.length, isValidPhone);
+    if (eksikler.length > 0) {
+      setState("error");
+      setMessage(eksikMetni(eksikler));
+      eksigeGotur(eksikler[0].alan);
+      return;
+    }
+
     setState("sending");
     setMessage("");
 
@@ -525,16 +556,17 @@ export function CheckoutForm({
           <div className="fields">
             <label>
               Ad soyad
-              <input type="text" autoComplete="name" {...field("name")} />
+              <input type="text" data-alan="name" autoComplete="name" {...field("name")} />
             </label>
             <label>
               E-posta
-              <input type="email" autoComplete="email" {...field("email")} />
+              <input type="email" data-alan="email" autoComplete="email" {...field("email")} />
             </label>
             <label>
               Telefon
               <input
                 type="tel"
+                data-alan="phone"
                 autoComplete="tel"
                 inputMode="tel"
                 placeholder="+90 (5XX) XXX XX XX"
@@ -554,6 +586,7 @@ export function CheckoutForm({
               <input
                 type="text"
                 inputMode="numeric"
+                data-alan="postal"
                 autoComplete="postal-code"
                 {...field("postal")}
               />
@@ -562,6 +595,7 @@ export function CheckoutForm({
               İl
               <input
                 type="text"
+                data-alan="city"
                 autoComplete="address-level1"
                 {...field("city")}
               />
@@ -570,6 +604,7 @@ export function CheckoutForm({
               İlçe
               <input
                 type="text"
+                data-alan="district"
                 autoComplete="address-level2"
                 {...field("district")}
               />
@@ -578,6 +613,7 @@ export function CheckoutForm({
               Açık adres
               <textarea
                 rows={3}
+                data-alan="line"
                 autoComplete="street-address"
                 {...field("line")}
               />
@@ -585,7 +621,7 @@ export function CheckoutForm({
           </div>
 
           <h2>Onaylar</h2>
-          <div className="consents">
+          <div className="consents" data-alan="onaylar">
             <label>
               <input
                 type="checkbox"
@@ -728,14 +764,18 @@ export function CheckoutForm({
           <button
             type="button"
             className="btn btn-block"
-            disabled={!ready || state === "sending"}
+            /* Devre dışı DEĞİL: eksik varken de basılabiliyor ki
+               müşteri neyin eksik olduğunu öğrenebilsin. Yalnızca
+               gönderim sürerken kilitleniyor. */
+            disabled={state === "sending"}
+            aria-describedby={state === "error" ? "odeme-hatasi" : undefined}
             onClick={submit}
           >
             {state === "sending" ? "Yönlendiriliyor…" : "Ödemeye geç"}
           </button>
 
           {state === "error" && (
-            <p className="form-error" role="alert">
+            <p className="form-error" role="alert" id="odeme-hatasi">
               {message}
             </p>
           )}
