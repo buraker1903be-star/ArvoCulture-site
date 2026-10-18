@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -699,7 +700,7 @@ export function AccountPanel({
           alışverişin ortasında yapılan bir iş değil. */}
       {kompakt && mode === "login" && (
         <p className="auth-signup">
-          Hesabınız yok mu? <a href="/hesap">Hesap oluşturun</a>
+          Hesabınız yok mu? <Link href="/hesap">Hesap oluşturun</Link>
         </p>
       )}
     </section>
