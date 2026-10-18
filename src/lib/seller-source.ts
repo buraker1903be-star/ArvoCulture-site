@@ -4,6 +4,7 @@ import { SELLER as FALLBACK } from "@/lib/seller";
 import { getSalesRules } from "@/lib/store-settings";
 import { vitrinKonagi } from "@/lib/konak";
 import type { MagazaKimligi } from "@/lib/seo";
+import { telefonBicimi } from "@/lib/telefon";
 import { shippingTerms } from "@/lib/order-quote";
 
 /**
@@ -164,7 +165,8 @@ export const getSeller = cache(async (): Promise<Seller> => {
     .filter(Boolean)
     .join(", ");
 
-  const phone = row.contact_phone ?? row.whatsapp_number ?? FALLBACK.phone;
+  const phone =
+    telefonBicimi(row.contact_phone ?? row.whatsapp_number) || FALLBACK.phone;
   const whatsapp = (row.whatsapp_number ?? "").replace(/\D/g, "");
 
   return {
@@ -272,7 +274,7 @@ export const getStoreIdentity = cache(async (): Promise<MagazaKimligi> => {
     brand: metin(row?.trade_name) || metin(row?.legal_name),
     legalName: metin(row?.legal_name),
     email: metin(row?.contact_email),
-    phone: metin(row?.contact_phone) || metin(row?.whatsapp_number),
+    phone: telefonBicimi(row?.contact_phone ?? row?.whatsapp_number),
     taxNumber: metin(row?.tax_number),
     addressLine: metin(row?.address_line),
     addressDistrict: metin(row?.address_district),
