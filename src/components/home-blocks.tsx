@@ -254,6 +254,12 @@ export function CategoryStrip({
   HİKÂYE gösteriyor. Tek bir ürün hattının yaşam görseli bir rafta
   kart olarak duramaz; kart fiyat ve ad için var.
 
+  GÖRSEL PANELDEN GELİR. Tema `beauty_image_url` / `apparel_image_url`
+  taşıyor ve panelde yükleme yuvası var. `public/dunya/` altındaki
+  dosyalar yalnızca başlangıç içindir (kategori görsellerindeki
+  düzenin aynısı): panelden bir görsel yüklendiği anda tema o adrese
+  geçiyor ve buradaki dosya kullanılmaz olur.
+
   BAŞLIĞI VE GÖRSELİ OLMAYAN DÜNYA ÇİZİLMİYOR. Yarım bir dünya
   (başlık var, görsel yok) koyu boş bir dikdörtgen olurdu ve
   mağaza sahibi neyi eksik bıraktığını göremezdi. Tek dünya varsa
