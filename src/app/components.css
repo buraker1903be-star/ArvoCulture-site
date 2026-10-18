@@ -8520,118 +8520,94 @@ body.theme-modern .mega-panel-head a::after {
 }
 
 /*
-  ALT MENÜ: SÜTUN LİSTESİ DEĞİL, GRUPLANMIŞ HAPLAR.
+  ALT MENÜ: PANEL İÇERİĞİ KADAR.
 
-  Panel beş sütunluk düz bir bağlantı listesiydi — menü değil SİTE
-  HARİTASI. Üç somut sorunu vardı:
+  İki deneme de yanlış yerden tutmuştu. Önce beş sütunluk düz
+  liste vardı; sonra haplara çevirdim. İkisinde de asıl sorun
+  duruyordu: PANEL HER MENÜDE KENARDAN KENARA açılıyor
+  (`left: rail; right: rail`), oysa menüler eşit büyüklükte değil.
+  "Kadın"da beş grup ve yirmi sekiz madde var, "Çocuk"ta tek grup
+  ve yedi madde — aynı genişlikteki panelin biri dolu, öteki
+  neredeyse boş çıkıyordu. Liste biçimini değiştirmek o boşluğu
+  kapatmıyordu, yalnızca boşluğu başka şekle sokuyordu.
 
-  * YÜKSEKLİK. "Kadın" menüsü 600 pikseli aşıyordu: en uzun sütun
-    (9 madde) panelin boyunu belirliyordu, yanındaki sütunda tek
-    bir madde varken.
-  * SAĞDA BOŞLUK. Sütunlar eşit genişlikteydi ama eşit dolu
-    değildi; son sütunun altı da sağı da boş kalıyordu.
-  * TIKLAMA HEDEFİ. Bağlantı yazının kendisi kadardı: 13 puntoluk
-    bir kelimeye nişan almak gerekiyordu.
+  Panel artık içeriği kadar geniş ve SAYFAYA göre ortalanıyor —
+  tetikleyiciye değil: `.mega-menu` static kalmak zorunda (base
+  CSS'teki nota bakın, relative yapılınca panel o küçük başlığa
+  sıkışıyor), yani ortalama başlığın kendisine göre yapılıyor.
+  Kenardan kenara açılan şerit yerine gerçek bir açılır menü:
+  "Çocuk" tek sütunluk derli toplu bir panel, "Kadın" beş
+  sütunluk geniş bir panel oluyor ve ikisi de dolu.
 
-  Yeni düzen: her grup bir SATIR. Başlık solda sabit bir sütunda,
-  maddeler sağda hap olarak sarıyor. Panel genişliğini sonuna
-  kadar kullanıyor, yükseklik yarıya iniyor ve her madde gerçek
-  bir hedef oluyor. Haplar sayfanın geri kalanıyla aynı dil:
-  arama terimleri, kategori rozetleri ve düğmeler hep hap.
-
-  ÜRÜN SAYISI KALDIRILDI: yirmi sekiz maddenin yanındaki yirmi
-  sekiz rakam, okunacak şeyi ikiye katlıyordu.
+  Liste sütunlara geri döndü: haplar "Çocuk"ta tek satır kalıp
+  altlarında yüzlerce piksel boşluk bırakıyordu ve yedi hap,
+  yedi satırdan daha okunaklı değil.
 */
-body.theme-modern .mega-columns {
-  display: grid;
-  gap: 0;
+body.theme-modern .mega-panel {
+  left: 50%;
+  right: auto;
+  width: max-content;
+  max-width: calc(100% - (var(--rail) * 2));
+  transform: translate(-50%, -8px);
+}
+
+body.theme-modern .mega-menu:hover .mega-panel,
+body.theme-modern .mega-menu:focus-within .mega-panel {
+  transform: translate(-50%, 0);
+}
+
+/* Sarmalayıcı düzene karışmıyor: bağlantılar yine alt alta. */
+body.theme-modern .mega-chips {
+  display: block;
 }
 
 body.theme-modern .mega-columns > div {
-  display: grid;
-  grid-template-columns: 148px minmax(0, 1fr);
-  gap: var(--s3) var(--s5);
-  align-items: start;
-  max-width: none;
-  padding: var(--s4) 0;
-}
-
-/* Gruplar arasında kıl payı çizgi: yalnızca aralarda — en üstte
-   ve en altta yok, yoksa panel bir tabloya dönüyor. */
-body.theme-modern .mega-columns > div + div {
-  border-top: 1px solid var(--line-soft);
+  min-width: 170px;
 }
 
 body.theme-modern .mega-columns > div > p:first-child {
-  margin: 7px 0 0;
-  padding: 0;
-  border: 0;
-  font-size: 10px;
+  padding-bottom: 0;
+  border-bottom: 0;
+  margin-bottom: var(--s2);
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--ink-3);
 }
 
-body.theme-modern .mega-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
+/*
+  Satırın kendisi vurgulanıyor. Önceden adın altından altın bir
+  çizgi geçiyordu; çizgi uzun koleksiyon adlarında kırpılan
+  metinle çakışıyor ve tıklama hedefi yalnızca yazı kadar
+  kalıyordu.
+*/
 body.theme-modern .mega-columns a {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 14px;
-  margin: 0;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--panel);
-  transition:
-    background-color 160ms var(--ease),
-    border-color 160ms var(--ease),
-    transform 160ms var(--ease-out);
+  display: block;
+  padding: 7px 10px;
+  margin-left: -10px;
+  border-radius: 10px;
+  transition: background-color 160ms var(--ease);
 }
 
 body.theme-modern .mega-columns a b {
-  min-width: 0;
-  font-size: 13px;
+  font-size: var(--t-sm);
   font-weight: 500;
-  color: var(--ink);
+  color: var(--ink-2);
   background-image: none;
 }
 
 @media (hover: hover) {
   body.theme-modern .mega-columns a:hover {
-    border-color: var(--ink);
-    background: var(--ink);
-    transform: translateY(-1px);
-  }
-
-  body.theme-modern .mega-columns a:hover b {
-    color: var(--panel);
+    background: var(--panel-2);
   }
 }
 
-/* Marka grubunun kalın yazısı kalktı: artık ayrı bir sütun değil
-   ve ilk grubun hapları ötekilerden kalın görünüyordu. */
-body.theme-modern .mega-columns > div:first-child a b {
-  font-weight: 500;
+body.theme-modern .mega-columns a:hover b,
+body.theme-modern .mega-columns a:focus-visible b {
   color: var(--ink);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  body.theme-modern .mega-columns a {
-    transition: none;
-  }
-  body.theme-modern .mega-columns a:hover {
-    transform: none;
-  }
+body.theme-modern .mega-columns > div:first-child a b {
+  font-weight: 600;
+  color: var(--ink);
 }
-
-/* Dar ekranda başlık üste çıkıyor: 148px'lik sütun tablette
-   hapların yerini yiyordu. */
-@media (max-width: 900px) {
-  body.theme-modern .mega-columns > div {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
