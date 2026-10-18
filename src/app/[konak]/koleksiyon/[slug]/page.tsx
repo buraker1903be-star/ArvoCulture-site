@@ -14,6 +14,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 import { KATEGORI_MENU_GRUPLARI, SABIT_KOLEKSIYONLAR } from "@/lib/categories";
+import { koleksiyonKapsami, MERGED_INTO } from "@/lib/koleksiyon-kapsami";
+import { DahaFazlaYukle } from "@/components/daha-fazla-yukle";
 import { breadcrumbSchema, collectionSchema } from "@/lib/seo";
 import { konagiAyarla, vitrinAdresi } from "@/lib/konak";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
@@ -26,41 +28,12 @@ const labels = SABIT_KOLEKSIYONLAR;
    grupta sessizce ayrışırdı. */
 const menuGroups = KATEGORI_MENU_GRUPLARI;
 
-/**
- * Birleştirilen koleksiyonlar.
- *
- * Parfümler ArvoARC'ta iki ayrı kaynaktan geliyor ve her cinsiyet için
- * iki koleksiyon var: LR'ninkiler ("parfumler-erkek") ve tedarikçi
- * kataloğundakiler ("kozmetik-kisisel-bakim-erkek-parfumu").
- * Müşteri için bu ayrımın bir anlamı yok — "erkek parfümü" arayan
- * biri hepsini bir arada görmeli, hangi tedarikçiden geldiğini
- * bilmek zorunda olmamalı. Menüde iki ayrı satır hâlinde durması
- * ise doğrudan karışıklık yaratıyordu.
- *
- * Burada uydurulan bir koleksiyon yok: ikisi de ArvoARC'ta duran
- * gerçek koleksiyonlar, yalnızca tek sayfada birleştiriliyorlar.
- * ArvoARC tarafında bu koleksiyonlar tek çatı altında toplanırsa
- * buradaki satır silinir ve hiçbir şey değişmez.
- */
-const MERGED_COLLECTIONS: Record<string, string[]> = {
-  "parfumler-erkek": [
-    "parfumler-erkek",
-    "kozmetik-kisisel-bakim-erkek-parfumu",
-  ],
-  "parfumler-kadin": [
-    "parfumler-kadin",
-    "kozmetik-kisisel-bakim-kadin-parfumu",
-  ],
-};
-
-/** Birleştirmede yutulan koleksiyonlar: hangi sayfaya ait oldukları. */
-const MERGED_INTO = new Map(
-  Object.entries(MERGED_COLLECTIONS).flatMap(([hedef, kaynaklar]) =>
-    kaynaklar
-      .filter((kaynak) => kaynak !== hedef)
-      .map((kaynak) => [kaynak, hedef] as const),
-  ),
-);
+/*
+  Birleştirilen koleksiyonlar, yutulan slug'lar ve kapsam hesabı
+  lib/koleksiyon-kapsami'ne taşındı: aynı hesabı "daha fazla
+  yükle" ucu da yapıyor ve ikisi ayrılırsa düğmeyle gelen ürünler
+  sayfadakinden farklı bir kümeden çıkardı.
+*/
 
 /* Bedenler varyantlardan gelir; ürün etiketlerinde yok. */
 const SIZE_ORDER = [
@@ -273,11 +246,8 @@ export default async function Collection({
       tekilleştirme veritabanında yapılıyor. Önceden her kaynak için
       ayrı sorgu atılıp sonuçlar bellekte birleştiriliyordu.
     */
-    const kaynaklar = MERGED_COLLECTIONS[slug] ?? (exactCollection ? [exactCollection.slug] : []);
-    const kapsam = {
-      collectionSlugs: kaynaklar,
-      menuGroups: kaynaklar.length ? undefined : menuGroups[slug],
-    };
+    const kapsam = koleksiyonKapsami(slug, Boolean(exactCollection));
+    const kaynaklar = kapsam.collectionSlugs;
     /* Süzgeç seçenekleri ayrı ve beş dakika önbellekli çağrıda:
        sayfa sorgusunun içindeyken ağır koleksiyonlarda süre
        sınırını aşıyordu (lib/products.ts). */
@@ -426,31 +396,27 @@ export default async function Collection({
           </div>
         )}
 
-        {pageCount > 1 && (
-          <nav
-            className="collection-pagination"
-            aria-label="Koleksiyon sayfaları"
-          >
-            {currentPage > 1 && (
-              <Link
-                prefetch={false}
-                href={pageHref(slug, query, currentPage - 1)}
-              >
-                ← Önceki
-              </Link>
-            )}
-            <span>
-              {currentPage} / {pageCount}
-            </span>
-            {currentPage < pageCount && (
-              <Link
-                prefetch={false}
-                href={pageHref(slug, query, currentPage + 1)}
-              >
-                Sonraki →
-              </Link>
-            )}
-          </nav>
+        {/*
+          SAYFALAMA YERİNE "DAHA FAZLA YÜKLE".
+
+          Önce "← Önceki / Sonraki →" bağlantılarıydı: müşteri her
+          sayfada başa dönüyor, kaldığı yeri kaybediyor ve ikinci
+          sayfadan sonra çoğu zaman geri gelmiyordu. Liste artık
+          büyüyor.
+
+          Sunucu sayfalaması YERİNDE DURUYOR: ilk sayfa yine
+          sunucuda çiziliyor ve sonraki sayfanın adresi düğmenin
+          içindeki `<noscript>` bağlantısında — arama motoru ve
+          JavaScript'siz tarayıcı kataloğun tamamına yine
+          ulaşabiliyor.
+        */}
+        {pageCount > 1 && visibleProducts.length > 0 && (
+          <DahaFazlaYukle
+            slug={slug}
+            ilkSayfa={currentPage}
+            sayfaSayisi={pageCount}
+            sonrakiAdres={pageHref(slug, query, currentPage + 1)}
+          />
         )}
       </section>
 

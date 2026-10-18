@@ -74,6 +74,25 @@ export function CollectionFilters({
 
   const clearAll = () => router.push("?", { scroll: false });
 
+  /*
+    AÇIK SÜZGEÇLER ŞERİTTE.
+
+    Panel kapalıyken yalnızca bir sayı görünüyordu ("Filtrele 2") —
+    müşteri hangi iki süzgecin açık olduğunu görmek için paneli
+    açmak, kaldırmak için de içeride doğru düğmeyi bulmak
+    zorundaydı. Liste beklenenden kısa gelince de sebebini
+    göremiyordu: "ürün yok" sanıp çıkıyordu.
+
+    Rozetler açık süzgeci ADIYLA yazıyor ve tek tıkla kaldırıyor.
+  */
+  const acikSuzgecler: Array<{ etiket: string; anahtar: string }> = [
+    ...(brand ? [{ etiket: brand, anahtar: "marka" }] : []),
+    ...(size ? [{ etiket: `Beden ${size}`, anahtar: "beden" }] : []),
+    ...(max ? [{ etiket: `${max} TL'ye kadar`, anahtar: "ust" }] : []),
+    ...(onlyDeals ? [{ etiket: "İndirimliler", anahtar: "indirimli" }] : []),
+    ...(showSoldOut ? [{ etiket: "Tükenenler dahil", anahtar: "tukenenler" }] : []),
+  ];
+
   return (
     <div className="filters">
       <div className="filters-bar">
@@ -105,6 +124,27 @@ export function CollectionFilters({
           </select>
         </label>
       </div>
+
+      {acikSuzgecler.length > 0 && (
+        <div className="filters-active" aria-label="Açık filtreler">
+          {acikSuzgecler.map((suzgec) => (
+            <button
+              key={suzgec.anahtar}
+              type="button"
+              onClick={() => apply(suzgec.anahtar, "")}
+              /* Etiketin kendisi düğme: "× İndirimliler" yazan bir
+                 rozete basmak onu kaldırıyor. */
+              aria-label={`${suzgec.etiket} filtresini kaldır`}
+            >
+              {suzgec.etiket}
+              <em aria-hidden="true">×</em>
+            </button>
+          ))}
+          <button type="button" className="linklike" onClick={clearAll}>
+            Hepsini temizle
+          </button>
+        </div>
+      )}
 
       {open && (
         <div className="filters-panel">

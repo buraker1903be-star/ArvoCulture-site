@@ -10943,3 +10943,95 @@ body.theme-modern .auth-alt .linklike:hover {
     font-size: var(--t-xs);
   }
 }
+
+/* ==========================================================
+   KOLEKSİYON: AÇIK SÜZGEÇLER VE "DAHA FAZLA YÜKLE" (19.10.2026)
+
+   SÜZGEÇ ROZETLERİ. Panel kapalıyken yalnızca bir sayı
+   görünüyordu ("Filtrele 2"); müşteri hangi iki süzgecin açık
+   olduğunu görmek için paneli açmak, kaldırmak için de içeride
+   doğru düğmeyi bulmak zorundaydı. Liste beklenenden kısa
+   gelince sebebini göremiyor, "ürün yok" sanıp çıkıyordu.
+
+   DAHA FAZLA YÜKLE. Sayfalama "← Önceki / Sonraki →"
+   bağlantılarıydı: müşteri her sayfada başa dönüyor, kaldığı
+   yeri kaybediyordu.
+   ========================================================== */
+
+.filters-active {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: var(--s3);
+}
+
+.filters-active button:not(.linklike) {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--brand) 32%, var(--line));
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--brand) 6%, transparent);
+  font-size: var(--t-xs);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 160ms var(--ease),
+    background-color 160ms var(--ease);
+}
+
+.filters-active em {
+  font-style: normal;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .filters-active button:not(.linklike):hover {
+    border-color: var(--sale);
+    background: color-mix(in srgb, var(--sale) 7%, transparent);
+  }
+
+  .filters-active button:not(.linklike):hover em {
+    color: var(--sale);
+  }
+}
+
+/* --- Daha fazla yükle --- */
+
+.daha-fazla {
+  display: grid;
+  justify-items: center;
+  gap: var(--s2);
+  margin-top: var(--s6);
+}
+
+.daha-fazla small {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.daha-fazla .btn {
+  min-width: 14rem;
+}
+
+.daha-fazla .form-error {
+  margin: 0;
+}
+
+/* Eklenen ürünler ilk ızgaranın devamı gibi dursun: aradaki
+   boşluk satır aralığıyla aynı, yoksa "ikinci bir liste" gibi
+   görünüyordu. */
+.daha-fazla-izgara {
+  margin-top: var(--gap);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filters-active button:not(.linklike) {
+    transition: none;
+  }
+}
