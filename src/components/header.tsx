@@ -382,18 +382,6 @@ export function Header({
             <div className="mega-menu" key={menu.title}>
               <Link href={menu.href} className="mega-trigger">
                 {menu.title}
-                {/*
-                  Ok artık metin değil çizim. "⌄" karakteri yazı
-                  tipine göre bambaşka yerde ve ölçüde çiziliyordu:
-                  etiketin üstünde asılı, kalınlığı yazıyla
-                  tutmayan bir işaret. SVG her yazı tipinde aynı ve
-                  kalınlığı etiketinkiyle eşleşiyor.
-                */}
-                <span aria-hidden="true">
-                  <svg viewBox="0 0 12 8">
-                    <path d="M1.5 2 6 6.2 10.5 2" />
-                  </svg>
-                </span>
               </Link>
               <div
                 className={`mega-panel mega-panel-sections-${menu.sections.length}`}
@@ -401,7 +389,7 @@ export function Header({
                 <div className="mega-panel-head">
                   <p>{menu.title}</p>
                   <Link href={menu.href} prefetch={false}>
-                    Tümünü gör ↗
+                    Tümünü gör
                   </Link>
                 </div>
                 <div className="mega-columns">
@@ -420,6 +408,19 @@ export function Header({
                           prefetch={false}
                         >
                           <b>{item.title}</b>
+                          {/*
+                            ÜRÜN SAYISI MENÜDE.
+
+                            Menü yüz on sekiz koleksiyon adından
+                            ibaretti; hangisinin üç, hangisinin üç
+                            yüz ürün olduğu ancak tıklayınca
+                            görülüyordu. Sayı koleksiyon listesinde
+                            ZATEN VAR (product_count, menü onunla
+                            sıralanıyor) — ek sorgu yok.
+                          */}
+                          {item.product_count > 0 && (
+                            <small>{item.product_count}</small>
+                          )}
                         </Link>
                       ))}
                     </div>

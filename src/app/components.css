@@ -8373,20 +8373,13 @@ body.theme-modern .mega-menu:focus-within .mega-trigger {
   color: var(--ink);
 }
 
-body.theme-modern .mega-trigger > span {
-  display: inline-grid;
-  place-items: center;
-}
-
-body.theme-modern .mega-trigger > span svg {
-  width: 11px;
-  height: 11px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+/*
+  OK KALDIRILDI. Önce metin karakteriydi ("⌄"), sonra SVG oldu;
+  ikisi de aynı işi yapıyordu — "burada alt menü var" demek. O işi
+  artık üzerine gelince beliren hap zemin ve panelin kendisi
+  yapıyor, dokuz etiketin yanındaki dokuz küçük ok gürültüden
+  başka bir şey değildi.
+*/
 
 /* --- Menü paneli --- */
 
@@ -8484,4 +8477,89 @@ body.theme-modern .announcement {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.07em;
+}
+
+/* ==========================================================
+   ALT MENÜ (18.10.2026)
+   ========================================================== */
+
+/*
+  "Tümünü gör": 0,14em aralıklı büyük harf ve altın alt çizgiydi;
+  paneldeki tek eylem ve sayfanın geri kalanında her eylem hap.
+  Ok da metin karakteriydi ("↗"); CSS'ten geliyor ve dokununca
+  kayıyor — kartlardaki, kategori ve dünya bantlarındaki okla aynı
+  davranış.
+*/
+body.theme-modern .mega-panel-head a {
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--panel-2);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--ink);
+}
+
+body.theme-modern .mega-panel-head a::after {
+  content: "→";
+  display: inline-block;
+  transition: transform 320ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  body.theme-modern .mega-panel-head a:hover {
+    background: var(--ink);
+    color: var(--panel);
+  }
+
+  body.theme-modern .mega-panel-head a:hover::after {
+    transform: translateX(4px);
+  }
+}
+
+/*
+  SÜTUNLAR PANELİ PAYLAŞIYOR.
+
+  Sütunlar 240px'le sınırlıydı ve geniş ekranda beşi toplam
+  1.300px tutuyordu; panel kenardan kenara olduğu için sağda
+  yüzlerce piksellik bir boşluk kalıyordu (canlıda görüldü:
+  "Kadın" menüsünde son sütunun sağı tamamen boş). Sınır kalkınca
+  beş sütun paneli eşit bölüyor ve uzun koleksiyon adları da daha
+  az kırpılıyor.
+*/
+body.theme-modern .mega-columns > div {
+  max-width: none;
+}
+
+/*
+  Satır: ad solda, ürün sayısı sağda. Sayı koleksiyon listesinde
+  zaten vardı (menü onunla sıralanıyor) ve hiçbir yerde
+  gösterilmiyordu — menü yüz on sekiz addan ibaretti, hangisinin
+  üç hangisinin üç yüz ürün olduğu ancak tıklayınca görülüyordu.
+*/
+body.theme-modern .mega-columns a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+
+body.theme-modern .mega-columns a b {
+  min-width: 0;
+}
+
+body.theme-modern .mega-columns a small {
+  flex: none;
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--ink-3);
+}
+
+/* Üzerine gelince sayı da koyulaşıyor: satır tek parça
+   davranıyor, yarısı sönük kalmıyor. */
+body.theme-modern .mega-columns a:hover small {
+  color: var(--ink-2);
 }
