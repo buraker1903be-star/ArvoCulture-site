@@ -6,7 +6,8 @@ import { getSeller } from "@/lib/seller-source";
 export const metadata: Metadata = {
   title: "İptal ve İade",
   description:
-    "ArvoCulture sipariş iptali, cayma hakkı ve iade süreçleri.",
+    /* Marka adı çıkarıldı; her kiracının arama sonucunda görünüyor. */
+    "Sipariş iptali, cayma hakkı ve iade süreçleri.",
   alternates: { canonical: "/iptal-iade" },
 };
 

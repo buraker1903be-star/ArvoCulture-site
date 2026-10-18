@@ -99,11 +99,14 @@ const mapProduct = (row: StorefrontRow, index = 0): Product => {
     oldPrice: row.compare_at_price
       ? Number(row.compare_at_price) / 100
       : undefined,
-    eyebrow: row.vendor || "ARVOCULTURE",
+    /* Markası olmayan üründe göbek metni BOŞ. Önceden
+       "ARVOCULTURE" yazılıyordu: ikinci bir kiracının ürün
+       kartında bizim markamız görünürdü. Kart boş göbek metnini
+       zaten çizmiyor. */
+    eyebrow: row.vendor || "",
     tone: TONES[index % TONES.length] as string,
-    subtitle:
-      plainText(row.subtitle) ||
-      "ArvoCulture seçkisinden özenle seçilmiş ürün.",
+    /* Yedek alt başlıktan marka adı çıkarıldı; aynı gerekçe. */
+    subtitle: plainText(row.subtitle) || "Seçkiden özenle seçilmiş ürün.",
     description: description || plainText(row.subtitle),
     tags: row.product_type ? [row.product_type] : [],
     image: images[0],

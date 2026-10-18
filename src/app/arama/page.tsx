@@ -4,7 +4,8 @@ import { getPopularSearches } from "@/lib/popular-searches";
 
 export const metadata: Metadata = {
   title: "Arama",
-  description: "ArvoCulture kataloğunda ürün, marka ve kategori araması.",
+  /* Marka adı çıkarıldı; her kiracının arama sonucunda görünüyor. */
+  description: "Katalogda ürün, marka ve kategori araması.",
   alternates: { canonical: "/arama" },
   // Arama sonuç sayfalarının dizine girmesi kalitesiz sonuç üretir.
   robots: { index: false, follow: true },

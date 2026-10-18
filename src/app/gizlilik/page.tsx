@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage, InfoSection } from "@/components/info-page";
 import { getSeller } from "@/lib/seller-source";
+import { SaticiBilinmiyor } from "@/components/satici-bilinmiyor";
 
 export const metadata: Metadata = {
   title: "Gizlilik ve Çerez Politikası",
@@ -23,6 +24,7 @@ export default async function PrivacyPage() {
       title="Gizlilik ve Çerez Politikası"
       intro="Sitemizi kullanırken verilerinizin nasıl korunduğu ve çerezlerin nasıl kullanıldığı."
     >
+      <SaticiBilinmiyor seller={SELLER} />
       <InfoSection title="Kapsam">
         <p>
           Bu politika, {SELLER.website} adresinde geçerlidir ve{" "}

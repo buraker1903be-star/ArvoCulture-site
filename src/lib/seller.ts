@@ -8,24 +8,42 @@
  * güncelleniyor.
  */
 export const SELLER = {
-  legalName:
-    "ARVOCULTURE GROUP TEKNOLOJİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ",
-  shortName: "ArvoCulture",
-  brand: "ArvoCulture",
+  /*
+    KİMLİK BİLGİSİ BURADA YOK VE OLMAMALI.
 
-  address:
-    "Yakuplu Mah. Hürriyet Bulvarı, Skyport Residence No:1 D:113, 34524 Beylikdüzü / İstanbul",
+    Burada ArvoCulture'ın ticaret unvanı, adresi, vergi dairesi,
+    vergi numarası, MERSİS'i, ticaret sicil numarası, e-postası ve
+    telefonu duruyordu — hepsi YEDEK olarak: satıcı kaydı
+    okunamazsa hukuki sayfalar bu değerlere düşüyordu.
 
-  taxOffice: "Beylikdüzü Vergi Dairesi",
-  taxNumber: "1860785335",
-  mersis: "0086178533500001",
-  tradeRegistry: "1149259",
+    Banka hesabıyla aynı tuzak (17.10.2026): yanlış satıcı
+    göstermek, satıcı göstermemekten KÖTÜ. Okuması geçici olarak
+    başarısız olan ikinci bir kiracının mesafeli satış
+    sözleşmesinde BAŞKA bir şirketin unvanı ve vergi numarası
+    görünür; müşteri kiminle sözleşme yaptığını oradan okuyor ve
+    hiçbir yerde hata belirmiyor.
 
-  email: "info@arvoculture.com",
-  phone: "+90 507 437 05 07",
-  phoneLink: "https://wa.me/905074370507",
+    Alanlar BOŞ: hukuki sayfalar satıcı bilinmiyorken bunu açıkça
+    söylüyor (components/satici-bilinmiyor), uydurma bir unvan
+    üretmiyor.
 
-  website: "https://arvoculture.com",
+    Kurallar (cayma süresi, azami teslim süresi, havale indirimi)
+    burada kalıyor: onlar mevzuattan ve varsayılan ayardan gelen
+    sayılar, kimlik değil.
+  */
+  legalName: "",
+  shortName: "",
+  brand: "",
+  address: "",
+  taxOffice: "",
+  taxNumber: "",
+  mersis: "",
+  tradeRegistry: "",
+  email: "",
+  phone: "",
+  phoneLink: "",
+  website: "",
+
 
   /*
     BANKA BİLGİSİ BURADA YOK VE OLMAMALI.

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InfoPage, InfoSection } from "@/components/info-page";
 import { getSeller } from "@/lib/seller-source";
+import { SaticiBilinmiyor } from "@/components/satici-bilinmiyor";
 
 export const metadata: Metadata = {
   title: "Yasal Bildirim",
@@ -29,6 +30,7 @@ export default async function LegalNoticePage() {
       title="Yasal Bildirim"
       intro="Elektronik Ticaretin Düzenlenmesi Hakkında Kanun uyarınca hizmet sağlayıcı bilgileri."
     >
+      <SaticiBilinmiyor seller={SELLER} />
       <InfoSection title="Hizmet Sağlayıcı">
         <p>
           <strong>Ticaret Unvanı:</strong> {SELLER.legalName}
@@ -102,10 +104,20 @@ export default async function LegalNoticePage() {
           İzinsiz kopyalanması, çoğaltılması veya kullanılması hukuka
           aykırıdır.
         </p>
+        {/*
+          Üçüncü taraf marka atfı HER MAĞAZA için doğru, o yüzden
+          kodda kalıyor. Mağazaya özel beyan (örneğin bir
+          dağıtıcılık ilişkisinin bildirimi) ayarından geliyor;
+          yoksa hiç basılmıyor. Önceden burada "ArvoCulture, LR
+          Health & Beauty bağımsız iş ortağıdır" cümlesi sabitti ve
+          ikinci bir kiracı olmayan bir ticari ilişkiyi beyan etmiş
+          oluyordu.
+        */}
         <p>
-          ArvoCulture, LR Health &amp; Beauty bağımsız iş ortağıdır. LR
-          markası ve ürün adları ilgili hak sahibine aittir.
+          Sitede adı geçen üçüncü taraf marka ve ürün adları ilgili hak
+          sahiplerine aittir.
         </p>
+        {SELLER.legalDisclosure && <p>{SELLER.legalDisclosure}</p>}
       </InfoSection>
 
       <InfoSection title="Sorumluluk">

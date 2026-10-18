@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage, InfoSection } from "@/components/info-page";
 import { getSeller } from "@/lib/seller-source";
+import { SaticiBilinmiyor } from "@/components/satici-bilinmiyor";
 
 export const metadata: Metadata = {
   title: "Üyelik Sözleşmesi",
-  description:
-    "ArvoCulture üyeliğinin koşulları, tarafların hak ve yükümlülükleri.",
+  /* Marka adı çıkarıldı; her kiracının arama sonucunda görünüyor. */
+  description: "Üyeliğin koşulları, tarafların hak ve yükümlülükleri.",
   alternates: { canonical: "/uyelik-sozlesmesi" },
 };
 
@@ -24,8 +25,12 @@ export default async function MembershipPage() {
     <InfoPage
       eyebrow="Yasal"
       title="Üyelik Sözleşmesi"
-      intro="ArvoCulture hesabı oluşturan kullanıcılar ile mağaza arasındaki üyelik ilişkisinin koşulları."
+      /* Marka adı satıcı kaydından: sözleşmenin giriş cümlesinde
+         BAŞKA bir markanın adı, sözleşmenin tarafını yanlış
+         göstermek olurdu. */
+      intro={`${SELLER.brand} hesabı oluşturan kullanıcılar ile mağaza arasındaki üyelik ilişkisinin koşulları.`}
     >
+      <SaticiBilinmiyor seller={SELLER} />
       <InfoSection title="1. Taraflar">
         <p>
           <strong>Site sahibi:</strong> {SELLER.legalName}

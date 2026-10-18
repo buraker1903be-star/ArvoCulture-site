@@ -43,6 +43,7 @@ type SellerRow = {
   bank_transfer_instructions: string | null;
   parent_organization_name: string | null;
   parent_organization_url: string | null;
+  legal_disclosure: string | null;
 };
 
 /*
@@ -65,6 +66,14 @@ export type Seller = {
   website: string;
   kepAddress: string | null;
   etbisVerified: boolean;
+  /**
+   * Mağazanın kendi hukuki beyanı (yasal bildirim ve kullanım
+   * koşullarında). Yoksa boş ve sayfa o paragrafı hiç çizmiyor:
+   * önceden "ArvoCulture, LR Health & Beauty bağımsız iş
+   * ortağıdır" cümlesi kodda sabitti ve ikinci bir kiracı olmayan
+   * bir ticari ilişkiyi beyan etmiş oluyordu.
+   */
+  legalDisclosure: string;
   /* Kargo ve havale: mağaza panelinden (getSalesRules). */
   shippingFee: string;
   freeShippingThreshold: string;
@@ -164,6 +173,7 @@ export const getSeller = cache(async (): Promise<Seller> => {
       ...sales,
       kepAddress: null,
       etbisVerified: true,
+      legalDisclosure: "",
     };
   }
 
@@ -185,8 +195,12 @@ export const getSeller = cache(async (): Promise<Seller> => {
     ...FALLBACK,
     ...sales,
     legalName: row.legal_name,
-    shortName: row.trade_name ?? FALLBACK.shortName,
-    brand: row.trade_name ?? FALLBACK.brand,
+    /* Ticari ad yoksa UNVANA düşülüyor, sabite değil: sabitler
+       artık boş ve "Bu sözleşme, … internet sitesi üzerinden"
+       gibi eksik bir cümle üretirlerdi. Unvan her zaman var —
+       satır onsuz zaten yedeğe düşüyor. */
+    shortName: row.trade_name?.trim() || row.legal_name,
+    brand: row.trade_name?.trim() || row.legal_name,
     address: address || FALLBACK.address,
     taxOffice: row.tax_office ?? FALLBACK.taxOffice,
     taxNumber: row.tax_number ?? FALLBACK.taxNumber,
@@ -198,6 +212,7 @@ export const getSeller = cache(async (): Promise<Seller> => {
     website: row.storefront_url ?? FALLBACK.website,
     kepAddress: row.kep_address,
     etbisVerified: row.etbis_verified ?? false,
+    legalDisclosure: row.legal_disclosure?.trim() ?? "",
   };
 });
 

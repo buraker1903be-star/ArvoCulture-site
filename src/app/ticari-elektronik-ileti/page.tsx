@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage, InfoSection } from "@/components/info-page";
 import { getSeller } from "@/lib/seller-source";
+import { SaticiBilinmiyor } from "@/components/satici-bilinmiyor";
 
 export const metadata: Metadata = {
   title: "Ticari Elektronik İleti Aydınlatma Metni",
@@ -31,6 +32,7 @@ export default async function CommercialMessagesPage() {
       title="Ticari Elektronik İleti"
       intro="Kampanya, indirim ve duyuru iletileri hakkında bilgilendirme."
     >
+      <SaticiBilinmiyor seller={SELLER} />
       <InfoSection title="Hizmet Sağlayıcı">
         <p>
           {SELLER.legalName}

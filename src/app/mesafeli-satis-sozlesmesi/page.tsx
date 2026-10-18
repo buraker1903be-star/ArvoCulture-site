@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { InfoPage, InfoSection } from "@/components/info-page";
 import { getSeller } from "@/lib/seller-source";
+import { SaticiBilinmiyor } from "@/components/satici-bilinmiyor";
 
+/* Marka adı çıkarıldı: açıklama her kiracının arama sonucunda
+   görünüyor ve sabit ad oraya BİZİM markamızı yazardı. */
 export const metadata: Metadata = {
   title: "Mesafeli Satış Sözleşmesi",
   description:
-    "ArvoCulture üzerinden yapılan alışverişlere ilişkin mesafeli satış sözleşmesi.",
+    "Mağaza üzerinden yapılan alışverişlere ilişkin mesafeli satış sözleşmesi.",
   alternates: { canonical: "/mesafeli-satis-sozlesmesi" },
 };
 
@@ -31,8 +34,12 @@ export default async function DistanceSalesPage() {
     <InfoPage
       eyebrow="Yasal"
       title="Mesafeli Satış Sözleşmesi"
-      intro="Bu sözleşme, ArvoCulture internet sitesi üzerinden yapılan alışverişlerde tarafların hak ve yükümlülüklerini düzenler."
+      /* Marka adı satıcı kaydından: sözleşmenin giriş cümlesinde
+         BAŞKA bir markanın adı, sözleşmenin tarafını yanlış
+         göstermek olurdu. */
+      intro={`Bu sözleşme, ${SELLER.brand} internet sitesi üzerinden yapılan alışverişlerde tarafların hak ve yükümlülüklerini düzenler.`}
     >
+      <SaticiBilinmiyor seller={SELLER} />
       <InfoSection title="1. Taraflar">
         <p>
           <strong>SATICI</strong>

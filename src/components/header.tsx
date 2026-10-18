@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { asciiSlug } from "@/lib/categories";
@@ -8,6 +7,7 @@ import { CartLink } from "./cart";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
 import { useLayerBack } from "@/lib/use-layer-back";
+import { StoreLogo } from "@/components/store-logo";
 
 export function Header({
   theme,
@@ -331,14 +331,12 @@ export function Header({
         <Link
           href="/"
           className="logo"
-          aria-label={`${theme.store_name ?? "ArvoCulture"} ana sayfa`}
+          aria-label={`${theme.store_name ?? "Mağaza"} ana sayfa`}
           onClick={close}
         >
-          <Image
-            src="/arvoculture-logo-transparent.png"
-            alt={theme.store_name ?? "ArvoCulture"}
-            width={320}
-            height={39}
+          <StoreLogo
+            logoUrl={theme.logo_url}
+            storeName={theme.store_name ?? "Mağaza"}
             priority
           />
         </Link>

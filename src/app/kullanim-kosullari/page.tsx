@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage, InfoSection } from "@/components/info-page";
 import { getSeller } from "@/lib/seller-source";
+import { SaticiBilinmiyor } from "@/components/satici-bilinmiyor";
 
 export const metadata: Metadata = {
   title: "Kullanım Koşulları",
-  description: "ArvoCulture internet sitesinin kullanım koşulları.",
+  /* Marka adı çıkarıldı; her kiracının arama sonucunda görünüyor. */
+  description: "Mağaza internet sitesinin kullanım koşulları.",
   alternates: { canonical: "/kullanim-kosullari" },
 };
 
@@ -23,6 +25,7 @@ export default async function TermsPage() {
       title="Kullanım Koşulları"
       intro="Bu siteyi kullanarak aşağıdaki koşulları kabul etmiş sayılırsınız."
     >
+      <SaticiBilinmiyor seller={SELLER} />
       <InfoSection title="Site Sahibi">
         <p>
           {SELLER.website} adresli internet sitesi {SELLER.legalName}{" "}
@@ -91,10 +94,20 @@ export default async function TermsPage() {
           İzinsiz kullanımı, kopyalanması veya çoğaltılması hukuka
           aykırıdır.
         </p>
+        {/*
+          Üçüncü taraf marka atfı HER MAĞAZA için doğru, o yüzden
+          kodda kalıyor. Mağazaya özel beyan (örneğin bir
+          dağıtıcılık ilişkisinin bildirimi) ayarından geliyor;
+          yoksa hiç basılmıyor. Önceden burada "ArvoCulture, LR
+          Health & Beauty bağımsız iş ortağıdır" cümlesi sabitti ve
+          ikinci bir kiracı olmayan bir ticari ilişkiyi beyan etmiş
+          oluyordu.
+        */}
         <p>
-          ArvoCulture, LR Health &amp; Beauty bağımsız iş ortağıdır. LR
-          markası ve ürün adları ilgili hak sahibine aittir.
+          Sitede adı geçen üçüncü taraf marka ve ürün adları ilgili hak
+          sahiplerine aittir.
         </p>
+        {SELLER.legalDisclosure && <p>{SELLER.legalDisclosure}</p>}
       </InfoSection>
 
       <InfoSection title="Sorumluluğun Sınırı">

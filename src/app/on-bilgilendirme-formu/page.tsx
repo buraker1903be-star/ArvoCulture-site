@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage, InfoSection } from "@/components/info-page";
 import { getSeller } from "@/lib/seller-source";
+import { SaticiBilinmiyor } from "@/components/satici-bilinmiyor";
 
 export const metadata: Metadata = {
   title: "Ön Bilgilendirme Formu",
@@ -31,6 +32,7 @@ export default async function PreInfoPage() {
       title="Ön Bilgilendirme Formu"
       intro="Mesafeli Sözleşmeler Yönetmeliği uyarınca, siparişinizi tamamlamadan önce bilmeniz gerekenler."
     >
+      <SaticiBilinmiyor seller={SELLER} />
       <InfoSection title="Satıcı Bilgileri">
         <p>
           Unvan: {SELLER.legalName}

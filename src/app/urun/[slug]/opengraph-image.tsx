@@ -60,6 +60,7 @@ export default async function Image({
       /* Marka adı mağazanın temasından; sabit "ArvoCulture" her
          kiracının ürün kartına bizim markamızı yazıyordu. */
       brand: product.eyebrow || marka.storeName,
+      host: marka.kart.host,
       name: product.name,
       priceText: formatPrice(product.price),
       oldPriceText: oldPrice ? formatPrice(oldPrice) : undefined,

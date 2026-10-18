@@ -234,7 +234,7 @@ export function AppShell() {
           aria-label="Uygulama kurulumu"
         >
           <div className="install-text">
-            <strong>ArvoCulture’ı ana ekranına ekle</strong>
+            <strong>Bu mağazayı ana ekranına ekle</strong>
             <small>
               {iosIpucu
                 ? "Paylaş simgesine dokun, ardından “Ana Ekrana Ekle”yi seç."

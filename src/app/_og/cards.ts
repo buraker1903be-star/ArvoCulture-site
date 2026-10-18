@@ -215,6 +215,10 @@ export type ProductCardProps = {
   priceText: string;
   oldPriceText?: string;
   offText?: string;
+  /* Kartın altındaki adres. Önceden "arvoculture.com" sabitti ve
+     her kiracının ürün kartı bizim adresimizi gösteriyordu —
+     paylaşılan bağlantı geri alınamaz. */
+  host: string;
 };
 
 /* Uzun adlar küçülüyor; çok uzunsa kısaltılıyor (satori satır sınırı
@@ -377,7 +381,7 @@ export function productCard(p: ProductCardProps) {
               color: C.ink2,
             },
           },
-          "arvoculture.com",
+          p.host,
         ),
       ),
     ),

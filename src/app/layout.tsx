@@ -22,6 +22,7 @@ import { storeSchema, websiteSchema } from "@/lib/seo";
 import { getStoreIdentity } from "@/lib/seller-source";
 import { env } from "@/lib/env";
 import { vitrinAdresi } from "@/lib/konak";
+import { StoreLogo } from "@/components/store-logo";
 
 /**
  * İki font, iki iş.
@@ -206,12 +207,10 @@ export default async function RootLayout({
             <footer>
               <div className="footer-top">
                 <div className="footer-brand">
-                  <Image
+                  <StoreLogo
                     className="footer-logo"
-                    src="/arvoculture-logo-transparent.png"
-                    alt={theme.store_name ?? "Mağaza"}
-                    width={320}
-                    height={39}
+                    logoUrl={theme.logo_url}
+                    storeName={theme.store_name ?? "Mağaza"}
                   />
                   <p>{theme.footer_tagline}</p>
 

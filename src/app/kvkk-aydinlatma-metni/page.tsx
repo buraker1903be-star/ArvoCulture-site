@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InfoPage, InfoSection } from "@/components/info-page";
 import { getSeller } from "@/lib/seller-source";
+import { SaticiBilinmiyor } from "@/components/satici-bilinmiyor";
 
 export const metadata: Metadata = {
   title: "KVKK Aydınlatma Metni",
@@ -30,6 +31,7 @@ export default async function KvkkPage() {
       title="KVKK Aydınlatma Metni"
       intro="6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında, kişisel verilerinizin nasıl işlendiğine dair bilgilendirme."
     >
+      <SaticiBilinmiyor seller={SELLER} />
       <InfoSection title="Veri Sorumlusu">
         <p>
           Kişisel verileriniz, veri sorumlusu sıfatıyla{" "}

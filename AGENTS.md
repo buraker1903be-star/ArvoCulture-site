@@ -151,6 +151,27 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
   önbelleği olmayan dinamik sayfalar, `onbelleksiz` orada güvenli;
   hukuki sayfalarda aynı şey rotayı çizilemez yapardı.
 
+- **Kimlik ve hesap bilgisinin KODDA YEDEĞİ YOK.** Ticaret unvanı,
+  adres, vergi/MERSİS, e-posta, telefon ve banka hesabı yalnızca satıcı
+  kaydından gelir (`arc_storefront_seller` → `lib/seller-source`).
+  `lib/seller.ts` artık yalnızca KURAL tutuyor (cayma süresi, azami
+  teslim süresi, havale indirimi); kimlik alanları boş.
+  Okunamazsa sayfa eksik basar ve bunu SÖYLER
+  (`components/satici-bilinmiyor`); havale hesabı yoksa havale
+  seçeneği hiç gösterilmez. Gerekçe iki kez somutlaştı (17–18.10.2026):
+  koddaki yedek IBAN paneldekinden BAŞKA bir hesaptı ve müşteriye
+  aylarca o gösterildi; kimlik yedeği de ikinci bir kiracının mesafeli
+  satış sözleşmesine ArvoCulture'ı taraf olarak yazardı. **Yanlış
+  bilgi göstermek, hiç göstermemekten kötüdür**: biri görünür bir
+  kusur, diğeri görünmeyen.
+- **Marka adı, logo ve tanıtım metinleri temadan.** Başlık/altbilgi
+  logosu, PWA bildirimi, paylaşım kartları, koleksiyon açıklaması ve
+  ürün şemasının marka alanı `getStorefrontTheme()` üzerinden gelir;
+  sayfalara "ArvoCulture" YAZILMAZ. Paylaşılan bağlantı geri alınamaz:
+  kart bir kez WhatsApp'ta önbelleklenince orada öyle kalır.
+  Uzak logo `next/image` ile basılmaz — oranı bilinmediği için ezilir
+  (`components/store-logo`, `lib/gorsel-olcusu`).
+
 ## Testler
 
 ```bash

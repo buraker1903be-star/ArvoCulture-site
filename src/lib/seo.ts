@@ -51,6 +51,8 @@ export function productSchema(
   product: Product,
   /** Mağazanın kanonik adresi; `vitrinAdresi()` veriyor. */
   siteUrl: string,
+  /** Ürünün kendi markası yoksa kullanılacak mağaza adı. */
+  storeName: string,
   rules: SalesRules = DEFAULT_SALES_RULES,
   variants: SchemaVariant[] = [],
 ) {
@@ -109,7 +111,10 @@ export function productSchema(
       : product.image
         ? { image: [product.image] }
         : {}),
-    brand: { "@type": "Brand", name: product.eyebrow || "ArvoCulture" },
+    /* Ürünün kendi markası yoksa MAĞAZANIN adı. Önceden
+       "ArvoCulture" sabitti: ikinci bir kiracının markasız
+       ürünü arama motoruna bizim markamızla bildiriliyordu. */
+    brand: { "@type": "Brand", name: product.eyebrow || storeName },
     ...(product.category ? { category: product.category } : {}),
     itemCondition: "https://schema.org/NewCondition",
     offers: {

@@ -6,6 +6,8 @@ import type { Product } from "@/lib/product-types";
    geliyordu ve ikinci bir kiracının ürün şeması ArvoCulture'ın
    adresini gösterirdi. */
 const ADRES = "https://ornek-magaza.test";
+/* Ürünün kendi markası yoksa şemaya mağaza adı giriyor. */
+const MAGAZA = "Örnek Mağaza";
 
 /*
   lib/seo.ts, lib/env üzerinden ortam değişkeni okuyor ve eksikse
@@ -61,7 +63,7 @@ const v = (over: Partial<SchemaVariant> = {}): SchemaVariant => ({
 });
 
 test("tek varyantlı üründe gerçek SKU ve kesin fiyat veriliyor", () => {
-  const sema = productSchema(urun(), ADRES, undefined, [v({ sku: "28244-301", price: 3411.9 })]) as never as {
+  const sema = productSchema(urun(), ADRES, MAGAZA, undefined, [v({ sku: "28244-301", price: 3411.9 })]) as never as {
     sku?: string;
     offers: { "@type": string; price?: string };
   };
@@ -71,7 +73,7 @@ test("tek varyantlı üründe gerçek SKU ve kesin fiyat veriliyor", () => {
 });
 
 test("çok varyantlı üründe SKU verilmiyor, fiyat aralığı veriliyor", () => {
-  const sema = productSchema(urun(), ADRES, undefined, [
+  const sema = productSchema(urun(), ADRES, MAGAZA, undefined, [
     v({ sku: "29020-1", price: 1899.9 }),
     v({ sku: "29020-2", price: 2099.9 }),
     v({ sku: "29020-3", price: 1899.9 }),
@@ -91,7 +93,7 @@ test("çok varyantlı üründe SKU verilmiyor, fiyat aralığı veriliyor", () =
 test("varyantların hiçbiri satılabilir değilse stokta değil", () => {
   /* Ürünün "satılabilir" olması varyantlarından en az birinin
      satılabilir olması demek (ArvoARC: bool_or). */
-  const sema = productSchema(urun({ available: true }), ADRES, undefined, [
+  const sema = productSchema(urun({ available: true }), ADRES, MAGAZA, undefined, [
     v({ available: false }),
     v({ sku: "29020-2", available: false }),
   ]) as never as { offers: { availability: string } };
@@ -99,7 +101,7 @@ test("varyantların hiçbiri satılabilir değilse stokta değil", () => {
 });
 
 test("bir varyant satılabilirse stokta", () => {
-  const sema = productSchema(urun(), ADRES, undefined, [
+  const sema = productSchema(urun(), ADRES, MAGAZA, undefined, [
     v({ available: false }),
     v({ sku: "29020-2", available: true }),
   ]) as never as { offers: { availability: string } };
@@ -107,7 +109,7 @@ test("bir varyant satılabilirse stokta", () => {
 });
 
 test("varyant bilgisi yoksa ürünün kendi alanına düşülüyor", () => {
-  const stokta = productSchema(urun({ available: false }), ADRES) as never as { offers: { availability: string; price?: string } };
+  const stokta = productSchema(urun({ available: false }), ADRES, MAGAZA) as never as { offers: { availability: string; price?: string } };
   assert.equal(stokta.offers.availability, "https://schema.org/OutOfStock");
   /* Varyant yoksa Offer ve ürünün fiyatı. */
   assert.equal(stokta.offers.price, "1899.90");
@@ -116,7 +118,7 @@ test("varyant bilgisi yoksa ürünün kendi alanına düşülüyor", () => {
 test("iade penceresi ve satıcı kimliği şemada duruyor", () => {
   /* Şemadaki süre ile sözleşmedeki sürenin ayrışması mevzuat riski;
      ikisi de seller.ts'ten geliyor. */
-  const sema = productSchema(urun(), ADRES, undefined, [v()]) as never as {
+  const sema = productSchema(urun(), ADRES, MAGAZA, undefined, [v()]) as never as {
     offers: { hasMerchantReturnPolicy: { merchantReturnDays: number }; seller: { "@id": string } };
   };
   assert.equal(sema.offers.hasMerchantReturnPolicy.merchantReturnDays, 14);

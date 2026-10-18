@@ -14,6 +14,7 @@ import { vitrinAdresi } from "@/lib/konak";
 import { kategoriAdresi } from "@/lib/categories";
 import { getSalesRules } from "@/lib/store-settings";
 import { shippingTerms } from "@/lib/order-quote";
+import { getStorefrontTheme } from "@/lib/storefront-theme";
 
 /**
  * Ürün sayfası altmış saniyeliğine saklanıyor.
@@ -89,7 +90,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
 
-  const [product, catalogue, varyantSonucu, salesRules, adres] = await Promise.all([
+  const [product, catalogue, varyantSonucu, salesRules, adres, theme] = await Promise.all([
     getStorefrontProduct(slug),
     getStorefrontProducts(120),
     /* Gerçek bedenler; sepete doğru SKU yazılabilsin. Okuma
@@ -103,6 +104,10 @@ export default async function ProductPage({ params }: Params) {
        sabitiydi ve ikinci bir kiracının ürün şeması ArvoCulture'ın
        adresini gösterirdi. */
     vitrinAdresi(),
+    /* Ürünün kendi markası yoksa şemaya mağaza adı giriyor;
+       sabit "ArvoCulture" ikinci bir kiracının markasız ürününü
+       bizim markamızla bildiriyordu. */
+    getStorefrontTheme(),
   ]);
 
   if (!product) notFound();
@@ -289,7 +294,7 @@ export default async function ProductPage({ params }: Params) {
           kesin fiyat, çok varyantlıda fiyat aralığı (AggregateOffer).
           Önceden SKU olarak ürün slug'ı, fiyat olarak kataloğun en
           düşük fiyatı yazılıyordu. */}
-      <JsonLd data={productSchema(product, adres, salesRules, variants)} />
+      <JsonLd data={productSchema(product, adres, theme.store_name ?? "Mağaza", salesRules, variants)} />
       <JsonLd
         data={breadcrumbSchema(
           [
