@@ -120,8 +120,23 @@ export function Header({
 
   /** Bir ana kategorinin sütunlarını üretir. */
   const genderSections = (gender: string) => {
+    /*
+      SATILABİLİR ÜRÜNÜ KALMAYAN KOLEKSİYON MENÜDE YOK.
+
+      Sayı ArvoARC'tan geliyor ve 19.10.2026'dan beri yalnızca
+      SATILABİLİR ürünü sayıyor (arc_vitrin_koleksiyonlar).
+      Öncesinde Kürk gibi hepsi tükenmiş bir kategori menüde
+      duruyordu: müşteri tıklıyor, baştan sona "Tükendi" rozetli
+      bir rafla karşılaşıyordu.
+
+      Burada ikinci bir süzgeç var çünkü sayı sıfırsa ArvoARC
+      satırı zaten göndermiyor; bu satır eski bir önbellekten ya
+      da ikizi güncellenmemiş bir kiracıdan gelen sıfırı da
+      eliyor.
+    */
     const own = collections.filter(
-      (collection) => collection.parent === gender,
+      (collection) =>
+        collection.parent === gender && collection.product_count > 0,
     );
 
     const groups = new Map<string, StorefrontCollection[]>();
@@ -211,7 +226,9 @@ export function Header({
       .filter(
         (collection) =>
           groups.includes(collection.menu_group) &&
-          !HIDDEN_IN_MENU.has(collection.slug),
+          !HIDDEN_IN_MENU.has(collection.slug) &&
+          /* Satılabilir ürünü kalmayan koleksiyon menüde yok. */
+          collection.product_count > 0,
       )
       .sort((a, b) => b.product_count - a.product_count)
       .map((collection) => ({
@@ -245,7 +262,10 @@ export function Header({
   const brandItems = (names: readonly string[]) =>
     names
       .map((name) =>
-        collections.find((item) => norm(item.title).includes(norm(name))),
+        collections.find(
+          (item) =>
+            norm(item.title).includes(norm(name)) && item.product_count > 0,
+        ),
       )
       .filter((item): item is StorefrontCollection => Boolean(item));
 
@@ -315,10 +335,21 @@ export function Header({
         { title: "KİME GÖRE", items: withoutBrands(["Parfüm"]) },
       ],
     },
-  ].map((menu) => ({
-    ...menu,
-    sections: menu.sections.filter((section) => section.items.length > 0),
-  }));
+  ]
+    .map((menu) => ({
+      ...menu,
+      sections: menu.sections.filter((section) => section.items.length > 0),
+    }))
+    /*
+      BÖLÜMÜ KALMAYAN ANA BAŞLIK DA GİDİYOR.
+
+      Süzgeç yalnızca cinsiyet sekmelerine uygulanıyordu;
+      "Kozmetik" gibi tek bölümlü bir başlık, o bölümdeki
+      koleksiyonların hepsi tükendiğinde boş bir açılır menüyle
+      ekranda kalıyordu. Tıklanınca hiçbir şey göstermeyen bir
+      başlık, olmayan başlıktan kötü.
+    */
+    .filter((menu) => menu.sections.length > 0);
 
   const bestSeller = collections.find((item) => item.title === "Çok Satanlar");
   const offers = collections.find(

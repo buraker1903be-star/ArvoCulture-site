@@ -43,11 +43,23 @@ export function CollectionFilters({
   const brand = params.get("marka") ?? "";
   const max = params.get("ust") ?? "";
   const onlyDeals = params.get("indirimli") === "1";
-  const inStock = params.get("stokta") === "1";
+  /*
+    SÜZGEÇ TERSİNE ÇEVRİLDİ (19.10.2026).
+
+    "Stokta olanlar" kutusu vardı ve liste varsayılan olarak
+    TÜKENENLERİ DE gösteriyordu; Kürk kategorisinde ürünlerin
+    hepsi tükenmişti ve müşteri baştan sona "Tükendi" rozetli bir
+    rafla karşılaşıyordu. Satın alınamayacak ürünlerle dolu bir
+    raf, boş raftan kötüdür.
+
+    Artık tükenenler gizli ve kutu bunun TERSİNİ yapıyor:
+    "Tükenenleri de göster".
+  */
+  const showSoldOut = params.get("tukenenler") === "1";
 
   const activeCount =
     (size ? 1 : 0) + (brand ? 1 : 0) + (max ? 1 : 0) +
-    (onlyDeals ? 1 : 0) + (inStock ? 1 : 0);
+    (onlyDeals ? 1 : 0) + (showSoldOut ? 1 : 0);
 
   /** Tek bir parametreyi değiştirip sayfayı başa alır. */
   const apply = (key: string, value: string) => {
@@ -164,10 +176,10 @@ export function CollectionFilters({
               </button>
               <button
                 type="button"
-                aria-pressed={inStock}
-                onClick={() => apply("stokta", inStock ? "" : "1")}
+                aria-pressed={showSoldOut}
+                onClick={() => apply("tukenenler", showSoldOut ? "" : "1")}
               >
-                Stokta olanlar
+                Tükenenleri de göster
               </button>
             </div>
           </div>

@@ -157,7 +157,8 @@ export default async function Collection({
     marka?: string;
     ust?: string;
     indirimli?: string;
-    stokta?: string;
+    /* Eski bağlantılarda kalabilir; artık okunmuyor. */
+    tukenenler?: string;
   }>;
 }) {
   /* Adres yoldan geliyor; her sayfa onu veri katmanına kendisi
@@ -181,7 +182,23 @@ export default async function Collection({
   const marka = (query.marka ?? "").toString();
   const ust = Number(query.ust ?? 0);
   const indirimli = query.indirimli === "1";
-  const stokta = query.stokta === "1";
+  /*
+    TÜKENENLER ARTIK VARSAYILAN OLARAK GİZLİ (19.10.2026).
+
+    Süzgeç tersine çevrildi. Önce liste her şeyi gösteriyor,
+    "Stokta olanlar" kutusu işaretlenirse tükenenler düşüyordu;
+    sonuç canlıda görüldü: Kürk kategorisindeki ürünlerin hepsi
+    tükenmişti ve müşteri baştan sona "Tükendi" rozetli bir
+    listeyle karşılaşıyordu — satın alınamayacak ürünlerle dolu
+    bir raf, boş raftan kötüdür.
+
+    Tükenenleri görmek isteyen `?tukenenler=1` ile görebiliyor;
+    bağlantı listenin altında duruyor. "Satılabilir mi" sorusunu
+    ArvoARC yanıtlıyor (`arc_variant_available`): stoksuz satışa
+    açık LR ürünleri stokları sıfır görünse de listede kalıyor.
+  */
+  const tukenenlerDe = query.tukenenler === "1";
+  const stokta = !tukenenlerDe;
   const sirala = (query.sirala ?? "onerilen").toString();
 
   const collections = await getStorefrontCollections();
