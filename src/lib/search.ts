@@ -1,4 +1,5 @@
 import type { SearchItem } from "@/lib/search-index";
+import { duzeltilmisSorgu } from "@/lib/yazim-toleransi";
 
 /**
  * Türkçe arama normalleştirmesi.
@@ -213,11 +214,49 @@ const sirala = (scored: Array<{ item: SearchItem; score: number }>) =>
 export function aramaSonuclari(
   items: SearchItem[],
   query: string,
-): { sonuclar: SearchItem[]; yaklasik: boolean } {
+): { sonuclar: SearchItem[]; yaklasik: boolean; duzeltme?: string } {
   const tam = searchProducts(items, query);
   if (tam.length > 0) return { sonuclar: tam, yaklasik: false };
 
   const words = toWords(query);
+  if (words.length === 0) return { sonuclar: [], yaklasik: false };
+
+  /*
+    YAZIM HATASI KURTARMASI (18.10.2026).
+
+    Buradan önce tek kelimelik sorgu için hiçbir kurtarma yoktu:
+    "prafüm" 0 sonuç veriyordu, oysa 43 parfüm var. Canlı uçta
+    ölçülen diğerleri: "nemlendirci" 0 (doğrusu 10), "sampaun" 0
+    (7), "tshirt" 0 — oysa "t-shirt" 1.549 ürün buluyor ve tireyi
+    atlamak çok sık.
+
+    Sıra bilinçli: önce yazım düzeltmesi, sonra çok kelimeli
+    yaklaşık eşleşme. Düzeltme sorguyu KATALOĞUN kelimesine
+    çeviriyor, yani düzeltilmiş sorgu tam eşleşme verebilir ve o
+    her zaman yaklaşıktan iyidir.
+
+    Yalnızca burada çalışıyor, yani tam eşleşme hiç yokken: iyi
+    çalışan bir aramayı bulanıklaştırmıyor ve olağan sorguda
+    maliyeti yok.
+  */
+  const { sozluk, yazim } = dagarcik(items);
+  const { kelimeler: duzeltilmis, degisti } = duzeltilmisSorgu(words, sozluk);
+  if (degisti) {
+    const scored: Array<{ item: SearchItem; score: number }> = [];
+    for (const item of items) {
+      const { score, eslesen } = puanla(item, duzeltilmis);
+      if (eslesen === duzeltilmis.length) scored.push({ item, score });
+    }
+    if (scored.length > 0) {
+      return {
+        sonuclar: sirala(scored),
+        yaklasik: true,
+        /* Müşteriye kataloğun gerçek yazımı gösteriliyor. */
+        duzeltme: duzeltilmis.map((k) => yazim.get(k) ?? k).join(" "),
+      };
+    }
+  }
+
   if (words.length < 2) return { sonuclar: [], yaklasik: false };
 
   const scored: Array<{ item: SearchItem; score: number }> = [];
@@ -229,4 +268,63 @@ export function aramaSonuclari(
     scored.push({ item, score: eslesen * 100 + score });
   }
   return { sonuclar: sirala(scored), yaklasik: scored.length > 0 };
+}
+
+/*
+  DÜZELTMENİN SÖZLÜĞÜ: KATALOĞUN KENDİ KELİMELERİ.
+
+  Ad, marka ve kategoriden kuruluyor; SLUG DIŞARIDA. Slug'da
+  "pratik", "nem", "yenileme" gibi dolgu kelimeler var ve bir
+  yazım hatasını onlardan birine düzeltmek, müşteriyi aradığından
+  uzaklaştırırdı (puanlamada slug'ın en düşük ağırlığı almasıyla
+  aynı gerekçe).
+
+  Dizin başına bir kez kuruluyor: sözlük her çağrıda yeniden
+  üretilseydi sıfır sonuçlu her arama katalogu baştan tarardı.
+*/
+type Dagarcik = {
+  sozluk: Set<string>;
+  /*
+    Normalleştirilmiş kelime → kataloğun gerçek yazımı.
+
+    Sözlük ASCII'ye indirgenmiş tutuluyor (normalize: ü→u, ş→s),
+    yoksa "parfum" yazan müşteri "parfüm"ü bulamazdı. Ama
+    düzeltmeyi müşteriye ASCII hâliyle göstermek yanlış: mağaza
+    Türkçe ve ekranda "parfum" yazıyordu. Burada ilk görülen
+    gerçek yazım saklanıyor.
+  */
+  yazim: Map<string, string>;
+};
+
+const dagarcikOnbellegi = new WeakMap<SearchItem[], Dagarcik>();
+
+/** Metni normalleştirmeden, aynı sınırlardan bölen eş. */
+const hamKelimeler = (value: string) =>
+  value.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+
+function dagarcik(items: SearchItem[]): Dagarcik {
+  const hazir = dagarcikOnbellegi.get(items);
+  if (hazir) return hazir;
+
+  const sozluk = new Set<string>();
+  const yazim = new Map<string, string>();
+
+  const ekle = (metin: string) => {
+    for (const ham of hamKelimeler(metin)) {
+      const kelime = normalize(ham);
+      if (!kelime) continue;
+      sozluk.add(kelime);
+      if (!yazim.has(kelime)) yazim.set(kelime, ham.toLocaleLowerCase("tr-TR"));
+    }
+  };
+
+  for (const item of items) {
+    ekle(item.name);
+    ekle(item.brand);
+    ekle(item.category);
+  }
+
+  const sonuc = { sozluk, yazim };
+  dagarcikOnbellegi.set(items, sonuc);
+  return sonuc;
 }

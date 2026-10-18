@@ -58,11 +58,13 @@ export function LiveSearch({
     total: number;
     /* Tam eşleşme bulunamadı, liste yakın sonuçlardan oluşuyor. */
     yaklasik: boolean;
+    duzeltme?: string;
   }>({
     q: "",
     items: [],
     total: 0,
     yaklasik: false,
+    duzeltme: undefined,
   });
   const [hataliSorgu, setHataliSorgu] = useState<string | null>(null);
 
@@ -92,6 +94,7 @@ export function LiveSearch({
             results?: SearchItem[];
             total?: number;
             yaklasik?: boolean;
+            duzeltme?: string;
           };
           const items = Array.isArray(data.results) ? data.results : [];
           setCevap({
@@ -99,6 +102,8 @@ export function LiveSearch({
             items,
             total: typeof data.total === "number" ? data.total : items.length,
             yaklasik: data.yaklasik === true,
+            duzeltme:
+              typeof data.duzeltme === "string" ? data.duzeltme : undefined,
           });
         })
         .catch((error) => {
@@ -141,9 +146,17 @@ export function LiveSearch({
     cevap.total > results.length
       ? `ilk ${results.length} · toplam ${cevap.total} sonuç`
       : `${results.length} sonuç`;
-  const sayiMetni = cevap.yaklasik
-    ? `Tam eşleşme yok · yakın ${kesit}`
-    : kesit.charAt(0).toLocaleUpperCase("tr-TR") + kesit.slice(1);
+  /*
+    Yazım düzeltildiyse müşteriye NE ARANDIĞI söyleniyor.
+    "Tam eşleşme yok · yakın 43 sonuç" demek, neyin gösterildiğini
+    anlatmıyor ve müşterinin yanlış yazdığını fark etmesini
+    engelliyordu — bir sonraki aramasında aynı hatayı yapıyor.
+  */
+  const sayiMetni = cevap.duzeltme
+    ? `“${cevap.duzeltme}” için ${kesit}`
+    : cevap.yaklasik
+      ? `Tam eşleşme yok · yakın ${kesit}`
+      : kesit.charAt(0).toLocaleUpperCase("tr-TR") + kesit.slice(1);
 
   return (
     <div className="live-search">

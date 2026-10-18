@@ -39,13 +39,18 @@ export async function GET(request: Request) {
       yalnızca listeden okununca 300 eşleşmeli bir arama "48 sonuç"
       diyordu.
     */
-    const { sonuclar, yaklasik } = aramaSonuclari(items, query);
+    const { sonuclar, yaklasik, duzeltme } = aramaSonuclari(items, query);
     return NextResponse.json({
       results: sonuclar.slice(0, limit),
       total: sonuclar.length,
       /* Tam eşleşme yoksa liste "yakın sonuç"tur; arayüz bunu
          söylemeli, aksi hâlde müşteri yanlış ürünü aradığını sanır. */
       yaklasik,
+      /* Yazım düzeltildiyse HANGİ kelimeye düzeltildiği de
+         söyleniyor: "yakın sonuç" demek tek başına müşteriye neyin
+         gösterildiğini anlatmıyor ve yanlış yazdığını fark
+         etmesini engelliyor. */
+      duzeltme,
     });
   } catch (error) {
     /*
