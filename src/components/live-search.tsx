@@ -70,6 +70,10 @@ function Kart({
   return (
     <article
       className="card"
+      /* Yurtdışı modunda gönderilemeyen ürün arama sonucunda da
+         görünmemeli: gizleme kuralı bu niteliğe tutunuyor
+         (lib/yurtdisi-gizleme). */
+      data-urun={slug}
       /* Klavyeyle seçili kart imleçle gezilen kartla AYNI
          görünüyor: iki ayrı vurgu dili öğrenilmesi gereken bir şey
          olurdu. */

@@ -28,14 +28,22 @@ export function ProductBuy({
   product,
   variants,
   varyantOkunamadi = false,
+  yurtdisiEngelli = false,
 }: {
   product: Product;
   variants: Variant[];
   /** Seçenekler ArvoARC'tan okunamadı; hangi varyant olduğu bilinmiyor. */
   varyantOkunamadi?: boolean;
+  /*
+    Yurtdışına gönderilemeyen ürün (arc_products.international_blocked).
+    Varsayılan false: işareti bilmeyen bir çağıran ürünü satılabilir
+    saysın — satışı yanlışlıkla kapatmak, kapatmayı atlamaktan kötü;
+    sipariş fonksiyonu zaten reddediyor.
+  */
+  yurtdisiEngelli?: boolean;
 }) {
   /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
-  const { yaz } = useParaBirimi();
+  const { yaz, paraBirimi } = useParaBirimi();
   const { add } = useContext(CartContext);
   const [renk, setRenk] = useState<string | null>(null);
   const [beden, setBeden] = useState<string | null>(null);
@@ -163,6 +171,37 @@ export function ProductBuy({
         <p className="stock-line">
           Ürün seçenekleri şu anda alınamadı. Sayfayı yenileyin; sürerse
           bize yazın.
+        </p>
+      </div>
+    );
+  }
+
+  /*
+    YURTDIŞINA GÖNDERİLEMEYEN ÜRÜN, DOLAR MODUNDA SATILMIYOR.
+
+    Kartı listelerde gizli (lib/yurtdisi-gizleme) ama SAYFA ERİŞİLEBİLİR
+    kalıyor: bağlantı WhatsApp'ta, Google'da ya da müşterinin
+    favorilerinde duruyor olabilir ve gizlenen bir kart o bağlantıları
+    yok etmiyor. Sayfayı 404 yapmak da yanlış olurdu — ürün var,
+    yalnızca o adrese gönderilemiyor.
+
+    "Tükendi" DEMİYOR: ürün tükenmiş değil. Yanlış sebep, müşteriyi
+    stok bekletir.
+
+    Ölçüt dil ya da para birimi değil TESLİMAT ÜLKESİ — ama vitrin
+    ülkeyi ödeme adımına kadar bilmiyor. Dolar modu burada ülkenin en
+    iyi göstergesi; yine de son söz sipariş fonksiyonunda ve o,
+    adresi Türkiye olan bir siparişi geçiriyor.
+  */
+  if (yurtdisiEngelli && paraBirimi === "USD") {
+    return (
+      <div className="pdp-buy">
+        <button className="btn btn-block" type="button" disabled>
+          Not available for international shipping
+        </button>
+        <p className="stock-line">
+          This product can only be shipped within Türkiye. Switch to ₺ if
+          your delivery address is in Türkiye.
         </p>
       </div>
     );

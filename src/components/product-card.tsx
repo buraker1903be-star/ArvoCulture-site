@@ -32,7 +32,14 @@ export function ProductCard({ product }: { product: Product }) {
   const second = product.images?.[1];
 
   return (
-    <article className="card">
+    /*
+      `data-urun` GİZLEME İÇİN. Yurtdışı modunda gönderilemeyen
+      ürünlerin kartları sunucuda basılan bir CSS kuralıyla
+      gizleniyor ve kuralın tutunacağı yer bu nitelik
+      (lib/yurtdisi-gizleme). Niteliği kaldırmak, o kartların
+      yurtdışı vitrininde yeniden görünmesi demek.
+    */
+    <article className="card" data-urun={product.slug}>
       <Link
         href={href}
         className="card-art"

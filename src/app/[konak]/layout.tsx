@@ -14,6 +14,8 @@ import { BottomNav } from "@/components/bottom-nav";
 import { AppShell } from "@/components/app-shell";
 import { ZiyaretKaydi } from "@/components/ziyaret-kaydi";
 import { ParaBirimiSaglayici } from "@/components/para-birimi";
+import { getBlockedProducts } from "@/lib/engelli-urunler";
+import { paraBirimiOnYukleyici, yurtdisiGizlemeCss } from "@/lib/yurtdisi-gizleme";
 import { PageTransition } from "@/components/page-transition";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStoreStage } from "@/lib/store-stage";
@@ -213,6 +215,7 @@ export default async function RootLayout({
     kimlik,
     adres,
     aramaTerimleri,
+    engelliUrunler,
   ] =
     await Promise.all([
       getStorefrontTheme(),
@@ -230,7 +233,18 @@ export default async function RootLayout({
          sayfada gerekli. `cache` ile ana sayfada ikinci kez
          sorgulanmıyor. */
       getPopularSearches(),
+      /* Yurtdışına gönderilemeyen ürünler: yurtdışı modunda
+         gizlenecek kartların listesi (lib/engelli-urunler). */
+      getBlockedProducts(),
     ]);
+
+  /*
+    YURTDIŞI MODU KAPALIYSA NE BETİK NE DE KURAL BASILIYOR. Kapalı bir
+    mağazada `data-para` hiç kurulmasa da sayfa doğru çalışır; gereksiz
+    bir satır içi betik her sayfanın boyanmasını bekletir.
+  */
+  const yurtdisiAcik = salesRules.internationalEnabled && (salesRules.usdRate ?? 0) > 0;
+  const gizlemeCss = yurtdisiAcik ? yurtdisiGizlemeCss(engelliUrunler) : null;
   /*
     Abonelik ödenmediğinde mağaza kademe kademe kapanır; son kademede vitrin
     de kapanır (bkz. lib/store-stage.ts). Katalog, sepet ve ödeme hiç
@@ -257,6 +271,35 @@ export default async function RootLayout({
   } as CSSProperties;
   return (
     <html lang="tr">
+      <head>
+        {/*
+          PARA BİRİMİ BOYAMADAN ÖNCE OKUNUYOR.
+
+          Seçim localStorage'da ve sağlayıcı onu bir etkide okuyor,
+          yani ilk boyamada sayfa TL modunda. Fiyat için bu kabul
+          edilmiş bir bedel (bkz. components/para-birimi) ama ÜRÜN
+          GİZLEMEK için değil: yurtdışı müşterisi gönderemeyeceğimiz
+          ürünlerin bir an görünüp kaybolduğu bir sayfa görürdü.
+
+          Bu yüzden `data-para` niteliği boyamadan önce, satır içi bir
+          betikle konuyor; gizleme kuralı da aşağıda SUNUCUDA basılıyor
+          (liste para biriminden bağımsız, yani rota önbelleğini
+          bozmuyor). Betik okuyamazsa hiçbir şey yapmıyor: TL modunda
+          kalmak, yanlış gizlemekten iyi.
+        */}
+        {yurtdisiAcik && (
+          <script
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: paraBirimiOnYukleyici() }}
+          />
+        )}
+        {gizlemeCss && (
+          <style
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: gizlemeCss }}
+          />
+        )}
+      </head>
       <body
         style={style}
         className={`${sans.variable} ${display.variable} ${displayItalic.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio} ${theme.show_badges ? "badges-on" : "badges-off"} ${theme.show_quick_add ? "quickadd-on" : "quickadd-off"} ${theme.show_vendor ? "vendor-on" : "vendor-off"}`}

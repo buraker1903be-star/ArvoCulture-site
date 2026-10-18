@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getBlockedProducts } from "@/lib/engelli-urunler";
 import { Fiyat } from "@/components/para-birimi";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -118,7 +119,8 @@ export default async function ProductPage({ params }: Params) {
   const { slug, konak } = await params;
   konagiAyarla(konak);
 
-  const [product, catalogue, varyantSonucu, salesRules, adres, theme] = await Promise.all([
+  const [product, catalogue, varyantSonucu, salesRules, adres, theme, engelliUrunler] =
+    await Promise.all([
     getStorefrontProduct(slug),
     getStorefrontProducts(120),
     /* Gerçek bedenler; sepete doğru SKU yazılabilsin. Okuma
@@ -136,6 +138,11 @@ export default async function ProductPage({ params }: Params) {
        sabit "ArvoCulture" ikinci bir kiracının markasız ürününü
        bizim markamızla bildiriyordu. */
     getStorefrontTheme(),
+    /* Yurtdışına gönderilemeyen ürünler: dolar modunda satın alma
+       kutusu kapanıyor. Kart listelerde zaten gizli ama bu SAYFA
+       erişilebilir kalıyor — bağlantı WhatsApp'ta ya da müşterinin
+       favorilerinde duruyor olabilir (lib/engelli-urunler). */
+    getBlockedProducts(),
   ]);
 
   if (!product) notFound();
@@ -203,6 +210,7 @@ export default async function ProductPage({ params }: Params) {
             product={product}
             variants={variants}
             varyantOkunamadi={varyantOkunamadi}
+            yurtdisiEngelli={engelliUrunler.includes(product.slug)}
           />
 
           {/* Satın alma kaygısını azaltan üç madde, butonun hemen

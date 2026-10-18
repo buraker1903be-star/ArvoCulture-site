@@ -82,6 +82,17 @@ export function ParaBirimiSaglayici({
     } catch {
       /* Seçim bu oturumda yine de geçerli. */
     }
+    /*
+      `data-para` NİTELİĞİ DE ÇEVRİLİYOR. Yurtdışına gönderilemeyen
+      ürünlerin kartları ona bağlı bir CSS kuralıyla gizleniyor
+      (lib/yurtdisi-gizleme). Niteliği yalnızca sayfa açılışındaki
+      satır içi betik koyuyordu; müşteri düğmeye basınca fiyatlar
+      dolara dönüyor ama gönderilemeyen ürünler ekranda KALIYORDU.
+    */
+    if (typeof document !== "undefined") {
+      if (birim === "USD") document.documentElement.dataset.para = "usd";
+      else delete document.documentElement.dataset.para;
+    }
   }, []);
 
   const deger = useMemo<Deger>(() => {
