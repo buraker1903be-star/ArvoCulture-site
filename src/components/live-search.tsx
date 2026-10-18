@@ -25,17 +25,25 @@ import type { SearchItem } from "@/lib/search-index";
 type Durum = "bos" | "yukleniyor" | "hazir" | "hata";
 
 /*
-  Sonuç satırı. Hem arama sonuçları hem de boş durumdaki "son
-  gezdikleriniz" aynı satırı kullanıyor: iki ayrı kopya,
-  birinde düzeltilen bir hizalamanın öbüründe kalması demekti.
+  Sonuç kartı.
+
+  Sonuçlar önce SATIR olarak çiziliyordu (64px küçük görsel, ad,
+  fiyat). Dar alanda çok sonuç sığıyordu ama ürün görseli
+  tanınacak kadar büyük değildi; katalog fotoğrafa dayanan bir
+  katalog ve müşteri ürünü adından değil görselinden tanıyor.
+
+  Kart hem arama sonuçlarında hem boş durumdaki "son
+  gezdikleriniz"de kullanılıyor: iki kopya, birinde düzeltilen bir
+  hizalamanın öbüründe kalması demekti.
 */
-function Satir({
+function Kart({
   slug,
   ad,
   ust,
   fiyat,
   eskiFiyat,
   gorsel,
+  artStyle,
   aktif,
   onNavigate,
   onHover,
@@ -46,33 +54,61 @@ function Satir({
   fiyat: number;
   eskiFiyat?: number;
   gorsel?: string;
+  artStyle?: string;
   aktif?: boolean;
   onNavigate?: () => void;
   onHover?: () => void;
 }) {
+  const off =
+    eskiFiyat && eskiFiyat > fiyat
+      ? Math.round((1 - fiyat / eskiFiyat) * 100)
+      : 0;
+
   return (
-    <li>
+    <article
+      className="card"
+      /* Klavyeyle seçili kart imleçle gezilen kartla AYNI
+         görünüyor: iki ayrı vurgu dili öğrenilmesi gereken bir şey
+         olurdu. */
+      data-aktif={aktif ? "true" : undefined}
+      onMouseEnter={onHover}
+    >
       <Link
         href={`/urun/${slug}`}
+        className="card-art"
+        aria-label={ad}
         onClick={onNavigate}
-        /* Seçili satır imleçle gezilen satırla AYNI görünüyor:
-           iki ayrı vurgu dili öğrenilmesi gereken bir şey olurdu. */
-        data-aktif={aktif ? "true" : undefined}
-        onMouseEnter={onHover}
+        data-art={artStyle}
       >
-        <span className="live-thumb">
-          {gorsel && <Image src={gorsel} alt="" fill sizes="64px" />}
-        </span>
-        <span className="live-text">
-          <small>{ust}</small>
-          <strong>{ad}</strong>
-        </span>
-        <span className="live-price">
-          {formatPrice(fiyat)}
-          {eskiFiyat && eskiFiyat > fiyat && <del>{formatPrice(eskiFiyat)}</del>}
-        </span>
+        {gorsel && (
+          <Image
+            src={gorsel}
+            alt={ad}
+            fill
+            sizes="(max-width: 640px) 44vw, (max-width: 980px) 29vw, (max-width: 1280px) 21vw, min(17vw, 270px)"
+          />
+        )}
       </Link>
-    </li>
+
+      {ust && (
+        <p className="card-brand">
+          <span>{ust}</span>
+        </p>
+      )}
+      <h3>
+        <Link href={`/urun/${slug}`} onClick={onNavigate}>
+          {ad}
+        </Link>
+      </h3>
+
+      <div className="price">
+        <b>{formatPrice(fiyat)}</b>
+        {eskiFiyat && eskiFiyat > fiyat && <del>{formatPrice(eskiFiyat)}</del>}
+        {/* Metin ürün kartındaki rozetle aynı: tek başına bir eksi
+            işareti ve sayı ne olduğunu söylemiyordu. */}
+        {off > 0 && <span className="price-off">%{off} indirim</span>}
+      </div>
+    </article>
   );
 }
 
@@ -88,8 +124,12 @@ export function LiveSearch({
   autoFocus?: boolean;
   limit?: number;
   /**
-   * "grid": arama sayfası — görseller büyük, kart düzeni.
-   * "list": açılır katman — dar alanda çok sonuç sığsın diye satır.
+   * Sonuç düzeni ARTIK İKİSİNDE DE AYNI (kart); bu alan yalnızca
+   * katmanı arama sayfasından ayırıyor.
+   *
+   * "list": açılır katman — alan boşken son gezilen ürünler de
+   * gösteriliyor. "grid": arama sayfası — oraya zaten bir sorguyla
+   * geliniyor, son gezilenler orada yer kaplardı.
    */
   variant?: "grid" | "list";
   onNavigate?: () => void;
@@ -114,7 +154,7 @@ export function LiveSearch({
     sayfasına gidiyor (listenin tamamı), seçiliyken ürüne.
   */
   const [aktif, setAktif] = useState(-1);
-  const listeRef = useRef<HTMLUListElement | null>(null);
+  const listeRef = useRef<HTMLDivElement | null>(null);
 
   /*
     BOŞ DURUM BOŞ KALMIYOR.
@@ -367,9 +407,9 @@ export function LiveSearch({
         gezilenUrunler.length >= 2 && (
           <div className="live-recent">
             <p className="search-heading">Son gezdikleriniz</p>
-            <ul className="live-results">
-              {gezilenUrunler.slice(0, 4).map((urun) => (
-                <Satir
+            <div className="grid">
+              {gezilenUrunler.slice(0, 5).map((urun) => (
+                <Kart
                   key={urun.slug}
                   slug={urun.slug}
                   ad={urun.name}
@@ -377,10 +417,11 @@ export function LiveSearch({
                   fiyat={urun.price}
                   eskiFiyat={urun.oldPrice}
                   gorsel={urun.image}
+                  artStyle={urun.artStyle}
                   onNavigate={onNavigate}
                 />
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
@@ -408,10 +449,20 @@ export function LiveSearch({
           </div>
         )}
 
-      {typed && results.length > 0 && variant === "list" && (
-        <ul className="live-results" ref={listeRef}>
+      {/*
+        SONUÇLAR KART. Önce satır olarak çiziliyordu ve 64px'lik
+        görsel ürünü tanımaya yetmiyordu; katalog fotoğrafa dayanıyor
+        ve müşteri ürünü adından değil görselinden tanıyor.
+
+        Katman ve arama sayfası aynı düzeni kullanıyor: ikisi aynı
+        işi yapıyor, iki ayrı düzen öğrenilmesi gereken bir fark
+        olurdu. `variant` yalnızca son gezilenlerin NEREDE
+        gösterileceğini ayırıyor.
+      */}
+      {typed && results.length > 0 && (
+        <div className="grid" ref={listeRef}>
           {results.map((item, index) => (
-            <Satir
+            <Kart
               key={item.slug}
               slug={item.slug}
               ad={item.name}
@@ -419,65 +470,12 @@ export function LiveSearch({
               fiyat={item.price}
               eskiFiyat={item.oldPrice}
               gorsel={item.image}
+              artStyle={item.artStyle}
               aktif={index === aktifGuvenli}
               onNavigate={onNavigate}
               onHover={() => setAktif(index)}
             />
           ))}
-        </ul>
-      )}
-
-      {typed && results.length > 0 && variant === "grid" && (
-        <div className="grid">
-          {results.map((item) => {
-            const off =
-              item.oldPrice && item.oldPrice > item.price
-                ? Math.round((1 - item.price / item.oldPrice) * 100)
-                : 0;
-
-            return (
-              <article className="card" key={item.slug}>
-                <Link
-                  href={`/urun/${item.slug}`}
-                  className="card-art"
-                  aria-label={item.name}
-                  onClick={onNavigate}
-                  data-art={item.artStyle}
-                >
-                  {/* İndirim görselin üstünde değil, fiyat satırında: ürün
-                      kartı ve ürün sayfasıyla aynı karar. */}
-                  {item.image && (
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      sizes="(max-width: 640px) 40vw, (max-width: 980px) 29vw, (max-width: 1280px) 21vw, min(17vw, 270px)"
-                    />
-                  )}
-                </Link>
-
-                <p className="card-brand">
-                  <span>{item.brand}</span>
-                </p>
-                <h3>
-                  <Link href={`/urun/${item.slug}`} onClick={onNavigate}>
-                    {item.name}
-                  </Link>
-                </h3>
-
-                <div className="price">
-                  <b>{formatPrice(item.price)}</b>
-                  {item.oldPrice && item.oldPrice > item.price && (
-                    <del>{formatPrice(item.oldPrice)}</del>
-                  )}
-                  {/* Metin ürün kartındaki rozetle aynı: tek başına
-                      bir eksi işareti ve sayı ne olduğunu
-                      söylemiyordu (18.10.2026). */}
-                  {off > 0 && <span className="price-off">%{off} indirim</span>}
-                </div>
-              </article>
-            );
-          })}
         </div>
       )}
     </div>

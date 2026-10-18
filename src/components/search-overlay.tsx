@@ -73,7 +73,7 @@ export function SearchOverlay({
               <LiveSearch
                 autoFocus
                 onNavigate={close}
-                limit={8}
+                limit={10}
                 suggestions={terms}
               />
               <button type="button" className="search-close" onClick={close}>

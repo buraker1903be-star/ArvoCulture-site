@@ -1403,10 +1403,20 @@
   display: grid;
   align-items: start;
   animation: layer-in 180ms var(--ease);
+  /*
+    Katman kayıyor. Sonuçlar satır değil KART olunca on sonuç iki
+    sıra ediyor ve sayfa boyunu aşabiliyor; önceden katman sabit
+    yükseklikteydi ve taşan sonuçlara ulaşmanın yolu yoktu.
+    `overscroll-behavior` arkadaki sayfanın da kaymasını önlüyor.
+  */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
+/* Perde SABİT: katman kaydığı için `absolute` olsaydı aşağı
+   indikçe perdenin altı açılırdı. */
 .search-veil {
-  position: absolute;
+  position: fixed;
   inset: 0;
   border: 0;
   background: rgba(16, 18, 15, 0.42);
@@ -2077,79 +2087,16 @@
 /* --- Sonuç listesi --- */
 
 /* Sonuç satırları kıl payı çizgiyle ayrılıyor; vurgu adın renginde. */
-.live-results {
-  display: grid;
-}
+/*
+  SATIR DÜZENİ KALDIRILDI (18.10.2026).
 
-.live-results > li + li {
-  border-top: 1px solid var(--line-soft);
-}
-
-.live-results a {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto;
-  gap: var(--s4);
-  align-items: center;
-  padding: var(--s3) 0;
-}
-
-.live-results a:hover strong {
-  color: var(--brand);
-}
-
-.live-thumb {
-  position: relative;
-  display: block;
-  aspect-ratio: 1;
-  border-radius: 0;
-  background: #fff;
-  border: 1px solid var(--line-soft);
-  overflow: hidden;
-}
-
-.live-thumb img {
-  object-fit: contain;
-  padding: 8%;
-}
-
-.live-text {
-  display: grid;
-  gap: 1px;
-  min-width: 0;
-}
-
-.live-text small {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.live-text strong {
-  font-size: var(--t-sm);
-  font-weight: 400;
-  transition: color 200ms var(--ease);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.live-price {
-  display: grid;
-  justify-items: end;
-  gap: 1px;
-  font-size: var(--t-sm);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.live-price del {
-  font-size: var(--t-xs);
-  font-weight: 400;
-  color: var(--ink-3);
-}
-
+  Arama sonuçları 64px'lik küçük görselli satırlardı; o ölçüde
+  görsel ürünü tanımaya yetmiyor ve bu katalog fotoğrafa dayanıyor —
+  müşteri ürünü adından değil görselinden tanıyor. Katman da arama
+  sayfası da artık ürün KARTI basıyor (.grid + .card), yani
+  .live-results / .live-thumb / .live-text / .live-price
+  kurallarının çağıranı kalmadı.
+*/
 /* --- Katman içindeki arama --- */
 
 .search-head {
@@ -7897,12 +7844,30 @@ body.theme-modern .live-thumb {
   `:hover` kuralından AYRI yazılıyor ama aynı değeri veriyor;
   dokunmatikte hover yok, klavye vurgusu ise her yerde olmalı.
 */
-body.theme-modern .live-results a[data-aktif="true"] {
-  background: var(--panel-2);
+/*
+  Klavyeyle seçili kart. İmleçle gezilen kartla aynı dil: ince bir
+  çerçeve ve hafif gölge. `:hover` ayrı yazılıyor ama aynı şeyi
+  veriyor — dokunmatikte hover yok, klavye vurgusu her yerde
+  olmalı.
+*/
+.card[data-aktif="true"] .card-art {
+  border-color: var(--line);
+  box-shadow: 0 10px 26px rgba(16, 18, 15, 0.1);
+}
+
+.card[data-aktif="true"] h3 a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* Boş durumdaki "son gezdikleriniz" ile sık arananlar arasında
    nefes: ikisi de başlıklı birer blok. */
 .live-recent + .live-suggest .search-heading {
-  margin-top: var(--s5);
+  margin-top: var(--s6);
+}
+
+/* Katmanın altı da nefes alsın: son sıra sayfanın kenarına
+   yapışıyordu. */
+.search-sheet {
+  margin-bottom: clamp(12px, 6vh, 64px);
 }
