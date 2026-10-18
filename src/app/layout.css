@@ -69,6 +69,15 @@
   .announcement-group {
     gap: 4px var(--s4);
   }
+
+  /*
+    Mağazanın kendi duyurusu varken ikincil maddeler gizleniyor:
+    üçü birden iki satıra taşıyordu. Duyuru yoksa kalıyorlar ki
+    şerit boş görünmesin.
+  */
+  .announcement[data-duyuru="var"] .announcement-ikincil {
+    display: none;
+  }
 }
 
 /* ---------- Başlık ---------------------------------------- */
