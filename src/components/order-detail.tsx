@@ -213,9 +213,9 @@ export function OrderDetail({
         (ürünler, ödeme, özet) katlamanın altına iniyordu.
 
         Solda "hangi sipariş", sağda "nerede" — ikisi de ilk
-        bakışta, aşağı inmeden. Çizelge sağ sütunda dikey:
-        dört adım yan yana sıkışmaktansa alt alta rahat duruyor
-        ve yüksekliği sol sütunla denkleşiyor.
+        bakışta, aşağı inmeden. Çizelge YATAY: yolculuk soldan
+        sağa akan bir şey ve dikey liste onu bir "yapılacaklar"
+        gibi gösteriyordu. Sağ sütun bu yüzden geniş tutuldu.
       */}
       <section className="panel about-hero detail-hero">
         <div className="detail-hero-ozet">
@@ -249,7 +249,7 @@ export function OrderDetail({
           sipariş sayfasına girmenin birinci sebebi tam bu soru.
         */}
         {adimlar && (
-          <ol className="siparis-cizelge siparis-cizelge-dikey">
+          <ol className="siparis-cizelge">
             {adimlar.map((adim) => (
               <li
                 key={adim.ad}
@@ -332,6 +332,41 @@ export function OrderDetail({
               </div>
             )}
           </dl>
+        </section>
+      )}
+
+      {/*
+        ADRES KARTI.
+
+        Adresler sipariş ÖZETİNİN içindeydi — tutarın hemen
+        altında, 21rem'lik sütunda satır satır kırılarak. Oysa
+        "ne kadar ödedim" ile "nereye gidiyor" ayrı sorular ve
+        ikincisi müşterinin en çok denetlediği şey: yanlış adrese
+        giden paket geri dönüyor.
+
+        Fatura adresi teslimatla AYNIYSA ikinci sütun tekrar
+        basılmıyor; aynı adresi iki kez göstermek, iki ayrı adres
+        varmış gibi okunur.
+      */}
+      {order.address?.line && (
+        <section className="panel adres-kart">
+          <div className="adres-kutu">
+            <small>Teslimat adresi</small>
+            <AdresGovdesi address={order.address} />
+          </div>
+
+          {order.billing_address?.line &&
+          order.billing_address.line !== order.address.line ? (
+            <div className="adres-kutu">
+              <small>Fatura adresi</small>
+              <AdresGovdesi address={order.billing_address} />
+            </div>
+          ) : (
+            <div className="adres-kutu adres-kutu-ayni">
+              <small>Fatura adresi</small>
+              <p>Teslimat adresiyle aynı.</p>
+            </div>
+          )}
         </section>
       )}
 
@@ -596,22 +631,14 @@ export function OrderDetail({
             </div>
           </dl>
 
-          <AddressBlock label="Teslimat adresi" address={order.address} />
+          {/*
+            ADRESLER BURADAN ÇIKTI.
 
-          {/* Fatura adresi teslimatla aynıysa tekrar gösterilmez. */}
-          {order.billing_address &&
-            order.billing_address.line !== order.address?.line && (
-              <AddressBlock
-                label="Fatura adresi"
-                address={order.billing_address}
-              />
-            )}
-
-          {order.billing_address &&
-            order.billing_address.line === order.address?.line && (
-              <p className="hint">Fatura adresi teslimat adresiyle aynı.</p>
-            )}
-
+            Tutarın hemen altında duruyorlardı ve dar sütunda satır
+            satır kırılıyorlardı; üstelik "ne kadar ödedim" ile
+            "nereye gidiyor" ayrı sorular. Adreslerin artık kendi
+            kartı var (yukarıda, iki sütun).
+          */}
           {order.note && (
             <div className="order-address">
               <small>Sipariş notu</small>
@@ -629,43 +656,40 @@ export function OrderDetail({
 }
 
 /** Adres bloğu. Kurumsal fatura alanları varsa onları da yazar. */
-function AddressBlock({
-  label,
-  address,
-}: {
-  label: string;
-  address: OrderAddress | null;
-}) {
-  if (!address?.line) return null;
-
+/**
+ * Adresin gövdesi — etiketsiz.
+ *
+ * Etiket ayrı durmak zorunda: adres kartında başlık kutunun
+ * kendi başlığı, sipariş notunda ise hiç yok. Önce gövde ile
+ * etiket aynı bileşendeydi ve adres kartı için ikinci bir kopya
+ * yazmak gerekiyordu.
+ */
+function AdresGovdesi({ address }: { address: OrderAddress }) {
   return (
-    <div className="order-address">
-      <small>{label}</small>
-      <p>
-        {address.name && (
-          <>
-            <b>{address.name}</b>
-            {address.phone ? ` · ${address.phone}` : ""}
-            <br />
-          </>
-        )}
-        {address.line}
-        <br />
-        {address.district && address.district !== "-"
-          ? `${address.district} / `
-          : ""}
-        {address.city}
-        {address.postal ? ` · ${address.postal}` : ""}
-        {address.company && (
-          <>
-            <br />
-            {address.company}
-            {address.tax_office ? ` · ${address.tax_office}` : ""}
-            {address.tax_number ? ` · ${address.tax_number}` : ""}
-          </>
-        )}
-      </p>
-    </div>
+    <p>
+      {address.name && (
+        <>
+          <b>{address.name}</b>
+          {address.phone ? ` · ${address.phone}` : ""}
+          <br />
+        </>
+      )}
+      {address.line}
+      <br />
+      {address.district && address.district !== "-"
+        ? `${address.district} / `
+        : ""}
+      {address.city}
+      {address.postal ? ` · ${address.postal}` : ""}
+      {address.company && (
+        <>
+          <br />
+          {address.company}
+          {address.tax_office ? ` · ${address.tax_office}` : ""}
+          {address.tax_number ? ` · ${address.tax_number}` : ""}
+        </>
+      )}
+    </p>
   );
 }
 

@@ -10470,7 +10470,14 @@ body.theme-modern .auth-alt .linklike:hover {
    ========================================================== */
 
 .detail-hero {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 17rem);
+  /*
+    Sağ sütun GENİŞ: çizelge yatay ve dört adımın adları
+    ("Siparişiniz alındı", "Teslim edildi") yan yana sığmalı.
+    Önce 17rem'di ve oraya ancak dikey bir liste sığıyordu —
+    yolculuk soldan sağa akan bir şey, dikey liste onu bir
+    "yapılacaklar" gibi gösteriyordu.
+  */
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   gap: var(--gap);
   align-items: center;
   /* `.about-hero` justify-items: start diyor; iki sütunlu düzende
@@ -10485,10 +10492,31 @@ body.theme-modern .auth-alt .linklike:hover {
   min-width: 0;
 }
 
-/* Çizelge dikeyken satır yüksekliği daha derli toplu olmalı:
-   kart boyunu belirleyen o. */
-.detail-hero .siparis-cizelge-dikey li {
-  padding-bottom: var(--s3);
+/*
+  BAŞLIKTAKİ ÇİZELGE DAHA BÜYÜK.
+
+  Kartın sağ yarısını dolduruyor ve sayfadaki ikinci önemli
+  bilgi o ("siparişim nerede"); 11 piksellik noktalar ve 11
+  piksellik adlarla bir dipnot gibi duruyordu.
+*/
+.detail-hero .siparis-cizelge li {
+  padding-top: var(--s6);
+  font-size: var(--t-sm);
+}
+
+.detail-hero .siparis-cizelge li::before {
+  top: 7px;
+  left: 7px;
+}
+
+.detail-hero .siparis-cizelge-nokta {
+  width: 15px;
+  height: 15px;
+  border-width: 2px;
+}
+
+.detail-hero .siparis-cizelge li[data-durum="simdi"] .siparis-cizelge-nokta {
+  box-shadow: 0 0 0 4px var(--gold-soft);
 }
 
 @media (max-width: 860px) {
@@ -10496,5 +10524,64 @@ body.theme-modern .auth-alt .linklike:hover {
      geçiyor ve orada zaten dikey duruyor. */
   .detail-hero {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ==========================================================
+   SİPARİŞ ADRES KARTI (18.10.2026)
+
+   Adresler sipariş ÖZETİNİN içindeydi — tutarın hemen altında,
+   21rem'lik sütunda satır satır kırılarak. Oysa "ne kadar
+   ödedim" ile "nereye gidiyor" ayrı sorular ve ikincisi
+   müşterinin en çok denetlediği şey: yanlış adrese giden paket
+   geri dönüyor.
+
+   Kendi kartı, iki sütun: teslimat ve fatura yan yana.
+   ========================================================== */
+
+.adres-kart {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.adres-kutu {
+  display: grid;
+  gap: var(--s2);
+  align-content: start;
+  min-width: 0;
+}
+
+.adres-kutu small {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.adres-kutu p {
+  margin: 0;
+  font-size: var(--t-sm);
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.adres-kutu b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* Fatura teslimatla aynıysa kutu boş kalmıyor ama sessiz:
+   aynı adresi iki kez basmak, iki ayrı adres varmış gibi
+   okunurdu. */
+.adres-kutu-ayni p {
+  color: var(--ink-3);
+}
+
+@media (max-width: 760px) {
+  .adres-kart {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s5);
   }
 }
