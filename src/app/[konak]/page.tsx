@@ -23,7 +23,6 @@ import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getSalesRules } from "@/lib/store-settings";
 import { shippingTerms } from "@/lib/order-quote";
 import { Reveal } from "@/components/reveal";
-import { RecentProducts } from "@/components/recent-products";
 import { ForYou } from "@/components/for-you";
 import { CATEGORIES } from "@/lib/categories";
 import { getKategoriVitrinleri } from "@/lib/kategori-vitrini";
@@ -340,10 +339,21 @@ export default async function Home({
         </Reveal>
       )}
 
-      {/* Daha önce gelen ziyaretçi kaldığı yerden devam etsin. */}
-      <Reveal>
-        <RecentProducts />
-      </Reveal>
+      {/*
+        "SON GEZDİKLERİNİZ" ANA SAYFADAN KALDIRILDI (18.10.2026).
+
+        Raf ürün sayfasında DURUYOR (urun/[slug]) ve asıl işini
+        orada yapıyor: müşteri bir ürüne bakarken az önce baktığı
+        ürünlere dönebiliyor. Ana sayfada ise dört rafın altında,
+        sayfanın sonunda duruyordu ve oraya kadar inen müşteri
+        zaten gezinmeyi seçmiş oluyordu.
+
+        Sayfada kişiselleştirme bitmiyor: "Senin için" rafı aynı
+        sinyalden (gezilen ürünler + favoriler) besleniyor ve
+        gezilenlerin KENDİSİNİ değil benzerlerini gösteriyor —
+        yani ana sayfada müşteriye yeni bir şey açıyor, aynı
+        kartları tekrar etmiyor.
+      */}
 
       {/*
         Vitrinin müşteriye göre değişen parçası. Yeni ziyaretçide
