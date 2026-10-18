@@ -24,6 +24,7 @@ import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getSalesRules } from "@/lib/store-settings";
 import { shippingTerms } from "@/lib/order-quote";
 import { Reveal } from "@/components/reveal";
+import { SELLER } from "@/lib/seller";
 import { CATEGORIES } from "@/lib/categories";
 import { getKategoriVitrinleri } from "@/lib/kategori-vitrini";
 import { vitrinAdresi } from "@/lib/konak";
@@ -401,7 +402,13 @@ export default async function Home({
 
 
       <Reveal>
-        <HelpStrip />
+        <HelpStrip
+          shippingBadge={shippingBadge}
+          /* Cayma süresi satış kurallarından; sayfaya "14 gün"
+             yazmak, kural değiştiğinde iki yeri ayrı ayrı
+             güncellemek demek olurdu. */
+          iadeGunu={SELLER.withdrawalDays}
+        />
       </Reveal>
     </main>
   );

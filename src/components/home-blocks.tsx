@@ -320,24 +320,84 @@ export function Worlds({ items }: { items: Dunya[] }) {
 }
 
 
-const HELP = [
-  { label: "Kargom ne zaman çıkar?", href: "/teslimat" },
-  { label: "Nasıl iade ederim?", href: "/iptal-iade" },
-  { label: "Sıkça sorulanlar", href: "/sss" },
-  { label: "Bize ulaşın", href: "/iletisim" },
-];
+/*
+  YARDIM BANDI.
 
-export function HelpStrip() {
+  Önceden tek satırlık bir şeritti: solda bir soru, yanında dört
+  düz gri bağlantı ve sağda ekranın %40'ı boş. Üç sorun vardı:
+
+  * bağlantılar bağlantı gibi durmuyordu (altı çizili değil, rengi
+    gövde metniyle aynı) — tıklanabilir oldukları ancak üzerine
+    gelince anlaşılıyordu;
+  * şerit SORUYOR ama CEVAPLAMIYORDU. Sipariş vermeden önceki
+    tereddüdü gidermesi gereken yer, müşteriyi dört ayrı sayfaya
+    gönderiyordu;
+  * sayfadaki her bölüm panel başlığı + içerik düzenindeyken bu
+    tek başına başka bir dildeydi.
+
+  Artık her kartta sorunun KISA CEVABI da var ve cevaplar gerçek:
+  kargo cümlesi mağaza ayarlarından (shippingTerms), cayma süresi
+  satış kurallarından geliyor. Sayfaya "120 TL" yazmak yasak
+  (AGENTS.md) — bu yüzden metin değil DEĞER aktarılıyor.
+*/
+export function HelpStrip({
+  shippingBadge,
+  iadeGunu,
+}: {
+  /** "2.000 TL üzeri ücretsiz kargo" — mağaza ayarından. */
+  shippingBadge: string;
+  /** Cayma süresi (gün). */
+  iadeGunu: number;
+}) {
+  const items = [
+    {
+      etiket: "Teslimat",
+      soru: "Kargom ne zaman çıkar?",
+      cevap: shippingBadge,
+      href: "/teslimat",
+    },
+    {
+      etiket: "İade",
+      soru: "Nasıl iade ederim?",
+      cevap: `${iadeGunu} gün içinde cayma hakkı`,
+      href: "/iptal-iade",
+    },
+    {
+      etiket: "SSS",
+      soru: "Sıkça sorulanlar",
+      cevap: "Ödeme, kargo, iade ve ürünler",
+      href: "/sss",
+    },
+    {
+      etiket: "İletişim",
+      soru: "Bize ulaşın",
+      /* İletişim bilgisinin KENDİSİ burada yazmıyor: telefon ve
+         e-posta satıcı kaydından geliyor ve bu bileşen onu okumuyor
+         (AGENTS.md — kimlik bilgisi sayfalara yazılmaz). */
+      cevap: "Sipariş numaranızla yazın",
+      href: "/iletisim",
+    },
+  ];
+
   return (
-    <section className="panel panel-tight help" aria-label="Yardım">
-      <strong>Aklınıza takılan bir şey mi var?</strong>
-      <ul>
-        {HELP.map((item) => (
-          <li key={item.href}>
-            <Link href={item.href}>{item.label}</Link>
-          </li>
+    <section className="panel help-panel" aria-label="Yardım">
+      <div className="head">
+        <div>
+          <h2>Aklınıza takılan bir şey mi var?</h2>
+          <p>Sipariş vermeden önce en çok sorulanlar.</p>
+        </div>
+      </div>
+
+      <div className="help-cards">
+        {items.map((item) => (
+          <Link key={item.href} href={item.href} className="help-card">
+            <small>{item.etiket}</small>
+            <strong>{item.soru}</strong>
+            <span>{item.cevap}</span>
+            <em aria-hidden="true">→</em>
+          </Link>
         ))}
-      </ul>
+      </div>
     </section>
   );
 }

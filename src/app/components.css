@@ -7649,3 +7649,104 @@ body.quickadd-off .card-action {
 body.vendor-off .card-brand {
   display: none;
 }
+
+/* ==========================================================
+   YARDIM BANDI (18.10.2026)
+
+   Tek satırlık bir şeritti: solda bir soru, yanında dört düz gri
+   bağlantı, sağda ekranın %40'ı boş. Bağlantılar bağlantı gibi
+   durmuyordu (rengi gövde metniyle aynı, altı çizili değil) ve
+   şerit SORUYOR ama cevaplamıyordu.
+
+   Eski `.help` kuralları DURUYOR: hesap sayfası (/hesap) hâlâ o
+   düzeni kullanıyor ve orada tek satır doğru biçim.
+   ========================================================== */
+
+.help-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s4);
+}
+
+.help-card {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: var(--s4) var(--s4) calc(var(--s4) + 4px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  transition:
+    border-color 240ms var(--ease),
+    transform 240ms var(--ease-out),
+    box-shadow 240ms var(--ease);
+}
+
+.help-card small {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.help-card strong {
+  font-size: var(--t-lead);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+
+/* Cevap: bandı "bağlantı listesi" olmaktan çıkaran şey bu satır. */
+.help-card span {
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.help-card em {
+  margin-top: 6px;
+  font-style: normal;
+  font-size: 15px;
+  color: var(--ink-3);
+  transition:
+    transform 320ms var(--ease-out),
+    color 240ms var(--ease);
+}
+
+@media (hover: hover) {
+  .help-card:hover {
+    border-color: color-mix(in srgb, var(--line) 40%, var(--ink));
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(16, 18, 15, 0.06);
+  }
+
+  .help-card:hover em {
+    transform: translateX(5px);
+    color: var(--ink);
+  }
+}
+
+/* Telefonda ikişerli: dört kart alt alta inince band sayfanın
+   sonunda gereksiz bir kuleye dönüyordu. */
+@media (max-width: 860px) {
+  .help-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 460px) {
+  .help-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help-card,
+  .help-card em {
+    transition: none;
+  }
+  .help-card:hover {
+    transform: none;
+  }
+}
