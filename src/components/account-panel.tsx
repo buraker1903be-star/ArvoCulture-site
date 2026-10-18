@@ -10,9 +10,28 @@ import type { Order } from "@/lib/order-types";
 
 type Mode = "login" | "register" | "reset";
 
+/*
+  FACEBOOK DÜĞMESİ KAPALI (18.10.2026).
 
+  Kurulum tamam: Meta uygulaması açık, Supabase sağlayıcısı bağlı,
+  yönlendirme doğru çalışıyor. Kapalı olmasının sebebi ürün
+  kararı:
 
+  * App Review bitene kadar düğme YALNIZCA uygulamada rolü olan
+    hesaplarla çalışıyor; müşteri tıklayıp hata alıyor ve bu, tam
+    dönüşüm anında güven kaybı. Çalışmayan bir düğme, olmayan
+    düğmeden kötü.
+  * Facebook telefonla açılmış hesaplarda e-posta döndürmüyor;
+    siparişler ve favoriler e-postaya bağlı olduğu için o müşteri
+    çıkmaza giriyor.
+  * Meta tarafı sürekli bakım istiyor (izin değişiminde yeniden
+    inceleme, işletme doğrulamasının güncelliği, veri işleme
+    beyanları).
 
+  AÇMAK İÇİN: bu değeri `true` yapmak yeterli. Supabase ve Meta
+  ayarları yerinde duruyor, başka hiçbir şey gerekmiyor.
+*/
+const FACEBOOK_ACIK = false;
 
 /**
  * Müşteri hesap paneli.
@@ -127,7 +146,9 @@ export function AccountPanel({
     // Kayıt öncesi misafir siparişleri varsa hesaba bağlanır.
     await supabase.rpc("claim_arvoculture_orders");
 
-    const { data, error } = await supabase.rpc("arc_storefront_my_orders", { p_host: tarayiciKonagi() });
+    const { data, error } = await supabase.rpc("arc_storefront_my_orders", {
+      p_host: tarayiciKonagi(),
+    });
     if (error) {
       console.error(error);
       setSiparisOkunamadi(true);
@@ -210,6 +231,41 @@ export function AccountPanel({
   }
 
   /*
+    SAĞLAYICIDAN GERİ DÖNÜŞTE PANEL KİLİTLİ KALIYORDU.
+
+    Sosyal girişte sayfadan ayrılıyoruz ve `busy` açık bırakılıyor
+    (düğmeler pasif, "yönlendiriliyorsunuz…" yazıyor) — bilerek,
+    müşteri ikinci kez tıklamasın diye. Ama müşteri sağlayıcı
+    ekranında vazgeçip GERİ TUŞUYLA dönerse tarayıcı sayfayı
+    bıraktığı hâliyle geri yüklüyor (bfcache): menü açık, bütün
+    düğmeler pasif, panel kilitli. Ne tekrar deneyebiliyor ne
+    e-postayla girebiliyor.
+
+    `pageshow` geri yüklemeyi bildiriyor; durum orada
+    sıfırlanıyor. `visibilitychange` yedek: bazı tarayıcılar
+    sayfayı önbellekten getirmeden sekmeye geri dönüyor.
+  */
+  useEffect(() => {
+    const serbestBirak = () => {
+      setBusy(false);
+      setYonlendirilen(null);
+    };
+    const geriYuklendi = (olay: PageTransitionEvent) => {
+      if (olay.persisted) serbestBirak();
+    };
+    const gorunurOldu = () => {
+      if (document.visibilityState === "visible") serbestBirak();
+    };
+
+    window.addEventListener("pageshow", geriYuklendi);
+    document.addEventListener("visibilitychange", gorunurOldu);
+    return () => {
+      window.removeEventListener("pageshow", geriYuklendi);
+      document.removeEventListener("visibilitychange", gorunurOldu);
+    };
+  }, []);
+
+  /*
     SAĞLAYICIDAN HATAYLA DÖNÜŞ.
 
     Müşteri Google ekranında "iptal" derse ya da sağlayıcı reddederse
@@ -221,7 +277,10 @@ export function AccountPanel({
     yeniden görünmemeli.
   */
   useEffect(() => {
-    const kaynaklar = [window.location.hash.slice(1), window.location.search.slice(1)];
+    const kaynaklar = [
+      window.location.hash.slice(1),
+      window.location.search.slice(1),
+    ];
     for (const kaynak of kaynaklar) {
       if (!kaynak) continue;
       const alanlar = new URLSearchParams(kaynak);
@@ -296,9 +355,8 @@ export function AccountPanel({
       <section className="panel">
         <h2>Hesap sistemi hazırlanıyor</h2>
         <p className="hint" style={{ marginTop: "var(--s2)" }}>
-          Üyelik özelliği kısa süre içinde açılacak. Bu sırada misafir
-          olarak alışveriş yapabilir, siparişinizi numarasıyla takip
-          edebilirsiniz.
+          Üyelik özelliği kısa süre içinde açılacak. Bu sırada misafir olarak
+          alışveriş yapabilir, siparişinizi numarasıyla takip edebilirsiniz.
         </p>
       </section>
     );
@@ -484,7 +542,11 @@ export function AccountPanel({
           {siparisOkunamadi && (
             <p className="form-error" role="alert">
               Siparişleriniz şu anda alınamadı; yerinde duruyorlar.{" "}
-              <button type="button" className="link-button" onClick={() => void loadOrders()}>
+              <button
+                type="button"
+                className="link-button"
+                onClick={() => void loadOrders()}
+              >
                 Tekrar dene
               </button>
             </p>
@@ -492,9 +554,9 @@ export function AccountPanel({
 
           {orders?.length === 0 && (
             <p className="hint">
-              Henüz siparişiniz görünmüyor. Misafir olarak sipariş
-              verdiyseniz, aynı e-posta adresini doğruladığınızda
-              siparişleriniz burada listelenir.
+              Henüz siparişiniz görünmüyor. Misafir olarak sipariş verdiyseniz,
+              aynı e-posta adresini doğruladığınızda siparişleriniz burada
+              listelenir.
             </p>
           )}
 
@@ -561,15 +623,15 @@ export function AccountPanel({
         değil — misafir alışveriş açık — yani bu satır bir uyarı
         değil, davet.
       */}
-      <p className="auth-lede">
-        {mode === "register"
-          ? "Bir sonraki alışveriş tek adımda bitsin."
-          : mode === "reset"
-            ? "Şifrenizi yenilemeniz için bağlantı gönderelim."
-            : "Siparişleriniz ve adres defteriniz tek yerde."}
-      </p>
+        <p className="auth-lede">
+          {mode === "register"
+            ? "Bir sonraki alışveriş tek adımda bitsin."
+            : mode === "reset"
+              ? "Şifrenizi yenilemeniz için bağlantı gönderelim."
+              : "Siparişleriniz ve adres defteriniz tek yerde."}
+        </p>
 
-      <div className="fields auth-fields">
+        <div className="fields auth-fields">
           <label className="wide">
             E-posta
             <input
@@ -616,59 +678,67 @@ export function AccountPanel({
           )}
         </div>
 
-      {message && (
-        <p
-          className={message.kind === "error" ? "form-error" : "form-note"}
-          role="alert"
-        >
-          {message.text}
-        </p>
-      )}
+        {message && (
+          <p
+            className={message.kind === "error" ? "form-error" : "form-note"}
+            role="alert"
+          >
+            {message.text}
+          </p>
+        )}
 
-      {/*
+        {/*
         Kayıt formunda sözleşme bildirimi. Üyelik Sözleşmesi
         kayıt anında onaylanmış sayılıyor; bunun kullanıcıya
         açıkça söylenmesi gerekiyor.
       */}
-      {mode === "register" && (
-        <p className="form-note">
-          Hesap oluşturarak{" "}
-          <a href="/uyelik-sozlesmesi" target="_blank" rel="noreferrer">
-            Üyelik Sözleşmesi
-          </a>{" "}
-          ve{" "}
-          <a href="/kvkk-aydinlatma-metni" target="_blank" rel="noreferrer">
-            KVKK Aydınlatma Metni
-          </a>
-          ’ni kabul etmiş sayılırsınız.
-        </p>
-      )}
+        {mode === "register" && (
+          <p className="form-note">
+            Hesap oluşturarak{" "}
+            <a href="/uyelik-sozlesmesi" target="_blank" rel="noreferrer">
+              Üyelik Sözleşmesi
+            </a>{" "}
+            ve{" "}
+            <a href="/kvkk-aydinlatma-metni" target="_blank" rel="noreferrer">
+              KVKK Aydınlatma Metni
+            </a>
+            ’ni kabul etmiş sayılırsınız.
+          </p>
+        )}
 
-      <button
-        type="submit"
-        className="btn btn-block"
-        /* Şifre de zorunlu: eskiden yalnızca e-posta yeterliydi ve
+        <button
+          type="submit"
+          className="btn btn-block"
+          /* Şifre de zorunlu: eskiden yalnızca e-posta yeterliydi ve
            boş şifreyle gönderilen giriş "bilgiler hatalı" dönüyordu
            — müşteri neyin eksik olduğunu göremiyordu. */
-        disabled={busy || !email || (mode !== "reset" && !password)}
-      >
-        {busy
-          ? "Bekleyin…"
-          : mode === "register"
-            ? "Hesap oluştur"
-            : mode === "reset"
-              ? "Sıfırlama bağlantısı gönder"
-              : "Giriş yap"}
-      </button>
+          disabled={busy || !email || (mode !== "reset" && !password)}
+        >
+          {busy
+            ? "Bekleyin…"
+            : mode === "register"
+              ? "Hesap oluştur"
+              : mode === "reset"
+                ? "Sıfırlama bağlantısı gönder"
+                : "Giriş yap"}
+        </button>
       </form>
 
       <div className="auth-alt">
         {mode === "reset" ? (
-          <button type="button" className="linklike" onClick={() => setMode("login")}>
+          <button
+            type="button"
+            className="linklike"
+            onClick={() => setMode("login")}
+          >
             Girişe dön
           </button>
         ) : (
-          <button type="button" className="linklike" onClick={() => setMode("reset")}>
+          <button
+            type="button"
+            className="linklike"
+            onClick={() => setMode("reset")}
+          >
             Şifremi unuttum
           </button>
         )}
@@ -721,24 +791,25 @@ export function AccountPanel({
             : "Google ile giriş yap"}
         </button>
 
-        <button
-          type="button"
-          className="btn btn-ghost btn-block"
-          disabled={busy}
-          onClick={() => void sosyalGiris("facebook")}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="auth-logo">
-            <path
-              fill="#1877F2"
-              d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"
-            />
-          </svg>
-          {yonlendirilen === "facebook"
-            ? "Facebook'a yönlendiriliyorsunuz…"
-            : "Facebook ile giriş yap"}
-        </button>
+        {FACEBOOK_ACIK && (
+          <button
+            type="button"
+            className="btn btn-ghost btn-block"
+            disabled={busy}
+            onClick={() => void sosyalGiris("facebook")}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="auth-logo">
+              <path
+                fill="#1877F2"
+                d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"
+              />
+            </svg>
+            {yonlendirilen === "facebook"
+              ? "Facebook'a yönlendiriliyorsunuz…"
+              : "Facebook ile giriş yap"}
+          </button>
+        )}
       </div>
-
     </section>
   );
 }
@@ -750,7 +821,10 @@ function translateAuthError(message: string) {
     [/email not confirmed/i, "E-posta adresinizi doğrulamanız gerekiyor."],
     [/user already registered/i, "Bu e-posta ile zaten bir hesap var."],
     [/password should be at least/i, "Şifreniz en az 8 karakter olmalı."],
-    [/rate limit|too many/i, "Çok fazla deneme yapıldı. Biraz sonra tekrar deneyin."],
+    [
+      /rate limit|too many/i,
+      "Çok fazla deneme yapıldı. Biraz sonra tekrar deneyin.",
+    ],
     [/invalid email/i, "Geçerli bir e-posta adresi girin."],
     /* Sağlayıcı Supabase'de açılmamış. Müşteriye "desteklenmeyen
        sağlayıcı" demek bir şey anlatmıyor; sorun onda değil. */
