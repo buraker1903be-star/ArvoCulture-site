@@ -10102,3 +10102,127 @@ body.theme-modern .auth-alt .linklike:hover {
     transition: none;
   }
 }
+
+/* ==========================================================
+   BÖLÜMLER ARASI GEÇİŞ (18.10.2026)
+
+   Bölüm değiştirmek sayfanın TAMAMINI söküyordu: altı sayfanın
+   her biri kendi panelini çizdiği için tıklamada oturum ve
+   sipariş listesi baştan çekiliyor, karşılama ile yan menü de
+   sökülüp yeniden takılıyordu. Müşterinin gördüğü şey buydu —
+   tıkla, bir şey olmasın, sonra sayfa zıplasın.
+
+   Asıl düzeltme animasyon değil DÜZEN oldu: kabuk artık
+   `/hesap/layout.tsx`'te ve Next onu alt sayfalar arasında
+   sökmüyor. Buradakiler o düzeltmenin üstüne gelen üç küçük şey:
+
+   1. tıklanan satırda ANINDA bir işaret (boşlukta kalmasın),
+   2. içerik sütununun İSKELETİ (bekleme okunur olsun),
+   3. yeni gövdenin kısa belirişi (zıplama yerine oturma).
+
+   Üçü de kısa: bekleme SÜSLENMEZ, görünür kılınır. Uzun bir
+   geçiş animasyonu hızlı bir gezinmeyi yavaş hissettirir.
+   ========================================================== */
+
+/* 1 — Tıklanan satırdaki bekleme noktası. */
+.hesap-yan-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+}
+
+.hesap-yan-bekleme {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: currentColor;
+  opacity: 0.45;
+  animation: hesap-bekleme 900ms var(--ease) infinite;
+}
+
+@keyframes hesap-bekleme {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+/* 2 — İskelet: dönen çember değil, içeriğin KABA ŞEKLİ. Müşteri
+   neyin geleceğini görüyor ve sayfa oturduğunda zıplama olmuyor. */
+.hesap-iskelet {
+  display: grid;
+  gap: var(--s4);
+}
+
+.hesap-iskelet-satir,
+.hesap-iskelet-kutu {
+  display: block;
+  border-radius: var(--r);
+  background: linear-gradient(
+    90deg,
+    var(--panel-2) 0%,
+    color-mix(in srgb, var(--panel-2) 55%, var(--panel)) 50%,
+    var(--panel-2) 100%
+  );
+  background-size: 220% 100%;
+  animation: hesap-parilti 1.4s var(--ease) infinite;
+}
+
+.hesap-iskelet-baslik {
+  width: min(16rem, 60%);
+  height: 30px;
+}
+
+.hesap-iskelet-alt {
+  width: min(24rem, 80%);
+  height: 13px;
+}
+
+.hesap-iskelet-kutu {
+  height: 190px;
+  margin-top: var(--s2);
+}
+
+@keyframes hesap-parilti {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
+}
+
+/* 3 — Yeni gövdenin belirişi. 140ms: gecikme olarak
+   hissedilmeyecek kadar kısa, zıplamayı almaya yetecek kadar
+   uzun. Düzen sökülmediği için yalnızca bu sütun oynuyor. */
+.hesap-icerik > * {
+  animation: hesap-belir 140ms var(--ease-out) both;
+}
+
+@keyframes hesap-belir {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hesap-icerik > *,
+  .hesap-iskelet-satir,
+  .hesap-iskelet-kutu,
+  .hesap-yan-bekleme {
+    animation: none;
+  }
+
+  /* Hareket kapalıyken iskelet yine de ayırt edilebilmeli. */
+  .hesap-iskelet-satir,
+  .hesap-iskelet-kutu {
+    background: var(--panel-2);
+  }
+}

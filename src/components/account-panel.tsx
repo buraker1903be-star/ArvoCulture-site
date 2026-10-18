@@ -1,18 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getAuthClient } from "@/lib/auth-client";
-import { AddressBook } from "@/components/address-book";
-import { OrderCard } from "@/components/order-card";
 import { AccountMenuHome, selamAdi } from "@/components/account-menu-home";
-import { ProfilKarti } from "@/components/profil-karti";
 import { HesapOzeti } from "@/components/hesap-ozeti";
 import { HesapYanMenu } from "@/components/hesap-yan-menu";
-import { HesapOzetBolumu } from "@/components/hesap-ozet-bolumu";
+import { HesapBaglamiSaglayici } from "@/components/hesap-baglami";
 import type { Order } from "@/lib/order-types";
 
 type Mode = "login" | "register" | "reset";
@@ -55,7 +52,6 @@ export function AccountPanel({
   menuBicimi = false,
   cikisBitti,
   kuponSayisi = 0,
-  bolum = "ozet",
   children,
 }: {
   supabaseUrl: string;
@@ -95,9 +91,8 @@ export function AccountPanel({
    * oturumu, siparişleri ve profil durumunu tutmaya devam
    * ediyor; artık yalnızca istenen bölümü basıyor.
    */
-  bolum?: "ozet" | "bilgilerim" | "adreslerim" | "siparislerim" | "icerik";
   /**
-   * `bolum="icerik"` için: sunucuda çizilmiş bölüm gövdesi.
+   * Bölüm gövdesi — düzenden (`/hesap/layout.tsx`) geliyor.
    *
    * Kuponlar ve hediye çekleri panelin DIŞINDA duruyordu ve
    * sonuç canlıda görüldü: o iki sayfada karşılama şeridi hiç
@@ -111,6 +106,12 @@ export function AccountPanel({
   children?: ReactNode;
 }) {
   const router = useRouter();
+  /*
+    Karşılamanın boyu ve özet şeridi yalnızca /hesap'ta. Düzen
+    hangi alt sayfanın açık olduğunu BİLMİYOR (çocuk olarak
+    alıyor), o yüzden adresi panel kendisi okuyor.
+  */
+  const ozetMi = usePathname() === "/hesap";
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [orders, setOrders] = useState<Order[] | null>(null);
@@ -244,10 +245,17 @@ export function AccountPanel({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setProfileName(String(meta.full_name ?? ""));
     setProfilePhone(String(meta.phone ?? ""));
-    /* loadOrders eşzamansızdır; durum güncellemesi ağ isteği
-       döndükten sonra olur. */
-    void loadOrders();
-  }, [session, loadOrders]);
+    /*
+      MENÜ SİPARİŞ ÇEKMİYOR. Başlıktaki açılır menü altı bağlantı
+      gösteriyor, sipariş listesi göstermiyor; yine de her
+      açılışta `claim_arvoculture_orders` + `arc_storefront_my_orders`
+      çağrılıyordu — kullanılmayan iki istek.
+
+      loadOrders eşzamansızdır; durum güncellemesi ağ isteği
+      döndükten sonra olur.
+    */
+    if (!menuBicimi) void loadOrders();
+  }, [session, loadOrders, menuBicimi]);
 
   /* --- Form --- */
   async function submit() {
@@ -630,7 +638,7 @@ export function AccountPanel({
               Kuponlarım) gölgeliyordu — üstelik iki h1 oluyordu.
               Özet dışında kimlik şeridi: aynı bilgi, bir satır.
             */
-            data-genis={bolum === "ozet" ? "" : undefined}
+            data-genis={ozetMi ? "" : undefined}
           >
             <span className="hesap-karsilama-monogram" aria-hidden="true">
               {(profileName || session.user.email || "•")
@@ -639,7 +647,7 @@ export function AccountPanel({
             </span>
 
             <div className="hesap-karsilama-metin">
-              {bolum === "ozet" ? (
+              {ozetMi ? (
                 <>
                   <p className="about-eyebrow">Hesabım</p>
                   <h1>
@@ -675,7 +683,7 @@ export function AccountPanel({
           </section>
         )}
 
-        {!menuBicimi && bolum === "ozet" && (
+        {!menuBicimi && ozetMi && (
           <HesapOzeti
             supabase={supabase}
             siparisSayisi={siparisOkunamadi ? null : (orders?.length ?? null)}
@@ -703,87 +711,45 @@ export function AccountPanel({
             cikisDurumu={cikisDurumu}
           />
         ) : (
-          <div className="hesap-duzen">
-            <HesapYanMenu />
+          <HesapBaglamiSaglayici
+            value={{
+              supabase,
+              supabaseUrl,
+              supabaseKey,
+              eposta: session.user.email,
+              uyelikTarihi: session.user.created_at,
+              orders,
+              siparisOkunamadi,
+              siparisleriYenile: () => void loadOrders(),
+              profileName,
+              profilePhone,
+              setProfileName,
+              setProfilePhone,
+              kaydet: saveProfile,
+              sifreDegistir,
+            }}
+          >
+            <div className="hesap-duzen">
+              <HesapYanMenu />
 
-            <div className="hesap-icerik">
-              {bolum === "ozet" && (
-                <HesapOzetBolumu
-                  orders={orders}
-                  siparisOkunamadi={siparisOkunamadi}
-                  supabaseUrl={supabaseUrl}
-                  yenidenDene={() => void loadOrders()}
-                />
-              )}
+              <div className="hesap-icerik">
+                {/*
+                  BÖLÜM GÖVDESİ ÇOCUK OLARAK GELİYOR.
 
-              {bolum === "bilgilerim" && (
-                <ProfilKarti
-                  ad={profileName}
-                  telefon={profilePhone}
-                  eposta={session.user.email}
-                  uyelikTarihi={session.user.created_at}
-                  adDegisti={setProfileName}
-                  telefonDegisti={setProfilePhone}
-                  kaydet={saveProfile}
-                  sifreDegistir={sifreDegistir}
-                />
-              )}
+                Önce `bolum` adında bir anahtar vardı ve panel
+                hangi bölümü basacağına kendisi karar veriyordu —
+                ama her sayfa KENDİ panelini çizdiği için bölüm
+                değiştirmek paneli baştan kuruyordu: oturum ve
+                sipariş listesi yeniden çekiliyor, karşılama ile
+                yan menü sökülüp yeniden takılıyordu.
 
-              {bolum === "adreslerim" && <AddressBook supabase={supabase} />}
-
-              {/* Sunucuda çizilen bölümler (kuponlar, hediye
-                  çekleri) gövdelerini buradan veriyor. */}
-              {bolum === "icerik" && children}
-
-              {bolum === "siparislerim" && (
-                <section className="panel" id="siparislerim">
-                  <div className="head">
-                    <div>
-                      <h1>Siparişlerim</h1>
-                      <p>Geçmiş siparişleriniz ve tüm detayları.</p>
-                    </div>
-                  </div>
-
-                  {orders === null && !siparisOkunamadi && (
-                    <p className="hint">Siparişler yükleniyor…</p>
-                  )}
-
-                  {siparisOkunamadi && (
-                    <p className="form-error" role="alert">
-                      Siparişleriniz şu anda alınamadı; yerinde duruyorlar.{" "}
-                      <button
-                        type="button"
-                        className="link-button"
-                        onClick={() => void loadOrders()}
-                      >
-                        Tekrar dene
-                      </button>
-                    </p>
-                  )}
-
-                  {orders?.length === 0 && (
-                    <p className="hint">
-                      Henüz siparişiniz görünmüyor. Misafir olarak sipariş
-                      verdiyseniz, aynı e-posta adresini doğruladığınızda
-                      siparişleriniz burada listelenir.
-                    </p>
-                  )}
-
-                  {orders && orders.length > 0 && (
-                    <div className="order-cards">
-                      {orders.map((order) => (
-                        <OrderCard
-                          key={order.order_number}
-                          order={order}
-                          supabaseUrl={supabaseUrl}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </section>
-              )}
+                Panel artık `/hesap/layout.tsx`'te bir kez
+                kuruluyor; bölümler veriyi `useHesap` ile okuyor.
+              */}
+                {children}
+              </div>
             </div>
-          </div>
+          </HesapBaglamiSaglayici>
         )}
       </div>
     );

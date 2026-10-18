@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { AccountPanel } from "@/components/account-panel";
 import { CouponCopy } from "@/components/coupon-strip";
-import { env } from "@/lib/env";
 import { getStorefrontDiscounts } from "@/lib/discounts";
-import { konagiAyarla } from "@/lib/konak";
 import { formatPrice } from "@/lib/product-types";
 
 export const metadata: Metadata = {
@@ -14,7 +11,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-/* Kabuk oturuma bakıyor; rota saklanmamalı. */
+/* Kabuk (düzen) oturuma bakıyor; rota saklanmamalı. */
 export const dynamic = "force-dynamic";
 
 /**
@@ -33,93 +30,78 @@ export const dynamic = "force-dynamic";
  * müşteri kodu yalnızca ana sayfadaki şeritte görebiliyordu —
  * oradan ayrılınca kod da kayboluyordu.
  */
-export default async function Kuponlarim({
-  params,
-}: {
-  params: Promise<{ konak: string }>;
-}) {
-  konagiAyarla((await params).konak);
-
+export default async function Kuponlarim() {
   const indirimler = await getStorefrontDiscounts();
   /* Kodu olmayan kayıtlar otomatik kampanyalar (sepette kendiliğinden
      uygulanıyor); kupon listesinde yerleri yok. */
   const kuponlar = indirimler.filter((indirim) => Boolean(indirim.code));
 
   return (
-    <main className="shell">
-      <AccountPanel
-        supabaseUrl={env.supabaseUrl}
-        supabaseKey={env.supabaseKey}
-        bolum="icerik"
-        kuponSayisi={kuponlar.length}
-      >
-        <section className="panel">
-          <div className="head">
-            <div>
-              <h1>Kuponlarım</h1>
-              <p>
-                Sepete girerken kodu yapıştırın; indirim ödeme adımında
-                uygulanır.
-              </p>
-            </div>
-          </div>
+    <section className="panel">
+      <div className="head">
+        <div>
+          <h1>Kuponlarım</h1>
+          <p>
+            Sepete girerken kodu yapıştırın; indirim ödeme adımında
+            uygulanır.
+          </p>
+        </div>
+      </div>
 
-          {kuponlar.length === 0 ? (
-            <p className="hint">
-              Şu anda açık bir kupon yok. Yeni kampanyalar burada görünür.
-            </p>
-          ) : (
-            <ul className="kupon-izgara">
-              {kuponlar.map((kupon) => (
-                <li key={kupon.id} className="kupon-kart">
-                  <div className="kupon-kart-ust">
-                    <span className="kupon-deger">
-                      {kupon.discount_type === "percentage"
-                        ? `%${kupon.value}`
-                        : kupon.discount_type === "free_shipping"
-                          ? "Ücretsiz kargo"
-                          : formatPrice(kupon.value / 100)}
-                    </span>
-                    {/*
-                      Kampanyanın adı KODLA AYNIYSA yazılmıyor:
-                      "ARVO10" başlığının altında ikinci kez
-                      "ARVO10" yazan bir kutu, müşteriye iki ayrı
-                      şey varmış gibi geliyordu.
-                    */}
-                    {kupon.name &&
-                      kupon.name.toUpperCase() !==
-                        (kupon.code ?? "").toUpperCase() && (
-                        <strong>{kupon.name}</strong>
-                      )}
-                  </div>
+      {kuponlar.length === 0 ? (
+        <p className="hint">
+          Şu anda açık bir kupon yok. Yeni kampanyalar burada görünür.
+        </p>
+      ) : (
+        <ul className="kupon-izgara">
+          {kuponlar.map((kupon) => (
+            <li key={kupon.id} className="kupon-kart">
+              <div className="kupon-kart-ust">
+                <span className="kupon-deger">
+                  {kupon.discount_type === "percentage"
+                    ? `%${kupon.value}`
+                    : kupon.discount_type === "free_shipping"
+                      ? "Ücretsiz kargo"
+                      : formatPrice(kupon.value / 100)}
+                </span>
+                {/*
+                  Kampanyanın adı KODLA AYNIYSA yazılmıyor:
+                  "ARVO10" başlığının altında ikinci kez "ARVO10"
+                  yazan bir kutu, müşteriye iki ayrı şey varmış gibi
+                  geliyordu.
+                */}
+                {kupon.name &&
+                  kupon.name.toUpperCase() !==
+                    (kupon.code ?? "").toUpperCase() && (
+                    <strong>{kupon.name}</strong>
+                  )}
+              </div>
 
-                  <ul className="kupon-kosul">
-                    {kupon.minimum_subtotal > 0 && (
-                      <li>
-                        {formatPrice(kupon.minimum_subtotal / 100)} ve üzeri
-                        sepetlerde
-                      </li>
-                    )}
-                    {/*
-                      Koşul ana sayfadaki şeritle AYNI cümle: kod iki
-                      yerde duyuruluyor ve koşul yalnızca birinde
-                      yazsaydı müşterinin gördüğü yere göre farklı bir
-                      söz vermiş olurduk.
-                    */}
-                    <li>
-                      {kupon.combinable
-                        ? "Diğer indirimlerle birlikte kullanılabilir"
-                        : "İndirimdeki ürünlerde geçerli değildir"}
-                    </li>
-                  </ul>
-
-                  <CouponCopy code={kupon.code as string} />
+              <ul className="kupon-kosul">
+                {kupon.minimum_subtotal > 0 && (
+                  <li>
+                    {formatPrice(kupon.minimum_subtotal / 100)} ve üzeri
+                    sepetlerde
+                  </li>
+                )}
+                {/*
+                  Koşul ana sayfadaki şeritle AYNI cümle: kod iki
+                  yerde duyuruluyor ve koşul yalnızca birinde
+                  yazsaydı müşterinin gördüğü yere göre farklı bir söz
+                  vermiş olurduk.
+                */}
+                <li>
+                  {kupon.combinable
+                    ? "Diğer indirimlerle birlikte kullanılabilir"
+                    : "İndirimdeki ürünlerde geçerli değildir"}
                 </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </AccountPanel>
-    </main>
+              </ul>
+
+              <CouponCopy code={kupon.code as string} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLinkStatus } from "next/link";
 
 /**
  * Hesap bölümlerinin yan menüsü.
@@ -34,6 +35,19 @@ const BOLUMLER = [
   { href: "/hesap/hediye-ceklerim", ad: "Hediye çeklerim" },
 ];
 
+/**
+ * Tıklanan satırın bekleme hâli.
+ *
+ * Bölümler sunucuda çiziliyor (`force-dynamic`), yani tıklama ile
+ * yeni içerik arasında bir boşluk var. Önce o boşlukta HİÇBİR ŞEY
+ * olmuyordu: müşteri tıklıyor, menü aynı kalıyor, "çalışmadı" sanıp
+ * tekrar tıklıyordu. `useLinkStatus` o anı bildiriyor.
+ */
+function BeklemeNoktasi() {
+  const { pending } = useLinkStatus();
+  return pending ? <span className="hesap-yan-bekleme" aria-hidden="true" /> : null;
+}
+
 export function HesapYanMenu() {
   const yol = usePathname();
 
@@ -53,6 +67,7 @@ export function HesapYanMenu() {
             aria-current={secili ? "page" : undefined}
           >
             {bolum.ad}
+            <BeklemeNoktasi />
           </Link>
         );
       })}
