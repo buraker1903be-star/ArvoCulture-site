@@ -9,6 +9,7 @@ import type { StorefrontCollection } from "@/lib/collections";
 import { useLayerBack } from "@/lib/use-layer-back";
 import { StoreLogo } from "@/components/store-logo";
 import { SearchOverlay } from "@/components/search-overlay";
+import { FavouritesOverlay } from "@/components/favourites-overlay";
 
 export function Header({
   theme,
@@ -431,18 +432,15 @@ export function Header({
           {theme.show_search && (
             <SearchOverlay trigger="icon" terms={searchTerms} />
           )}
-          {theme.show_account && (
-            <Link
-              href="/favoriler"
-              aria-label="Favorilerim"
-              className="header-action-link"
-            >
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <path d="M12 20.4 4.6 13a4.6 4.6 0 0 1 6.5-6.5l.9.9.9-.9A4.6 4.6 0 0 1 19.4 13z" />
-              </svg>
-              <span>Favoriler</span>
-            </Link>
-          )}
+          {/*
+            KALP DE KATMAN AÇIYOR, SAYFA DEĞİŞTİRMİYOR.
+
+            Favorilere bakmak çoğu zaman bir KARŞILAŞTIRMA: "bunu mu
+            alsam, beğendiğim ötekini mi". Sayfadan çıkmak o
+            karşılaştırmayı bozuyordu. /favoriler sayfası duruyor;
+            hesap ekranından ve doğrudan adresten açılıyor.
+          */}
+          {theme.show_account && <FavouritesOverlay />}
           {theme.show_account && (
             <Link
               href="/hesap"
