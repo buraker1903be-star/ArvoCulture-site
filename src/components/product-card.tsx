@@ -14,25 +14,19 @@ export function discountOf(product: Product) {
   return 0;
 }
 
-export function ProductCard({
-  product,
-  cokSatanRozeti = true,
-}: {
-  product: Product;
-  /**
-   * "Çok satan" rozeti basılsın mı.
-   *
-   * Bölümün KENDİSİ çok satanlardan oluşuyorsa kapanıyor: on kartın
-   * onunda aynı rozet, başlığın ("Çok satanlar") altında hiçbir şey
-   * ayırt etmiyor, yalnızca gürültü ekliyor.
-   */
-  cokSatanRozeti?: boolean;
-}) {
+export function ProductCard({ product }: { product: Product }) {
   const off = discountOf(product);
   /* Tükenen üründe "çok satan" yazmak alay gibi duruyor: müşteri
      satın alamayacağı bir ürünün ne kadar sevildiğini okuyor. */
-  const cokSatan =
-    cokSatanRozeti && product.bestSeller && product.available !== false;
+  /*
+     "Çok satanlar" bölümünde bir ara kapatılmıştı — gerekçe, on
+     kartın onunda aynı rozetin başlığı tekrarlamasıydı. Yanlıştı:
+     rozet orada da aranıyor. Raf yatay kayıyor, başlık ekrandan
+     çıkıyor ve kart tek başına kaldığında neden orada olduğunu
+     söyleyen tek şey rozet. Ayrıca bölümdeki her ürün çok satan
+     değil; koleksiyon boşsa işaretli ürünlere düşülüyor.
+  */
+  const cokSatan = product.bestSeller && product.available !== false;
   const href = `/urun/${product.slug}`;
   const second = product.images?.[1];
 
