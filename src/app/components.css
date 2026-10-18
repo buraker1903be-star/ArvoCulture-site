@@ -7131,3 +7131,160 @@ body.theme-modern .cat-card:hover .cat-card-body em::after {
   /* Beyaz fonlu ürün çekimlerinde hap zemine karışmasın. */
   box-shadow: 0 1px 2px rgba(16, 18, 15, 0.08);
 }
+
+/* ==========================================================
+   KAMPANYA BANDI — MODERN SÜRÜM (18.10.2026)
+
+   Editoryal sürümü duruyor (yukarıdaki .promo kuralları); burada
+   yalnızca modern tema ezilliyor. Ölçülen sorunlar:
+
+   * zemin yeşilimsi zeytin (#1b1f1a→#262b22) ve üzerine yeşil bir
+     ışık — beyaz, serin gri bir sayfanın ortasında çamurlu
+     duruyordu;
+   * "%10" filigranı SERİF KONTUR rakamdı: sayfadaki her başlık
+     kalın sansa geçmişken bant tek başına eski dili konuşuyordu
+     ve içi boş kontur, dev bir süs lekesi gibi okunuyordu;
+   * kupon kutusu keskin köşeli dikdörtgen, içindeki düğme de
+     öyle — bütün düğmelerin hap olduğu sayfada;
+   * bant 545px yüksekliğindeydi ve içinde dört satır yazı vardı.
+
+   Bant KOYU KALIYOR: beyaz sayfada tek koyu yüzey, kampanyayı
+   sayfanın geri kalanından ayıran şeyin kendisi. Değişen, koyunun
+   RENGİ — zeytin yerine mürekkep, altın ışıkla.
+   ========================================================== */
+
+body.theme-modern .promo {
+  background:
+    radial-gradient(110% 140% at 88% 4%, rgba(169, 134, 52, 0.14) 0%, transparent 58%),
+    linear-gradient(180deg, #17181b 0%, #0c0d0f 100%);
+}
+
+/* Eğik tarama kalıyor ama yarı yarıya: mürekkep zeminde aynı
+   opaklık, zeytinde olduğundan daha belirgin çıkıyordu. */
+body.theme-modern .promo::before {
+  opacity: 0.5;
+}
+
+/*
+  Sağdan giren ışık yeşilden altına döndü ve ÇOK YAVAŞ geziniyor.
+  Hareketin amacı dikkat çekmek değil: duran bir degrade ile canlı
+  bir yüzey arasındaki fark, göz bantta bir saniye fazla kalınca
+  fark ediliyor.
+*/
+body.theme-modern .promo::after {
+  top: -40%;
+  right: -10%;
+  width: 60%;
+  height: 180%;
+  background: radial-gradient(
+    circle,
+    rgba(169, 134, 52, 0.2) 0%,
+    transparent 66%
+  );
+  animation: promo-isik 16s var(--ease) infinite alternate;
+}
+
+@keyframes promo-isik {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: translate3d(-7%, 4%, 0) scale(1.14);
+    opacity: 1;
+  }
+}
+
+/*
+  Filigran artık DOLU ve sans: kontur serif rakam süs lekesiydi,
+  dolu ve çok soluk bir rakam yüzeyin parçası oluyor. Büyüdü de —
+  kenardan taşması, rakamın bantla birlikte devam ettiğini
+  söylüyor.
+*/
+body.theme-modern .promo-watermark {
+  right: clamp(-28px, -1.2vw, 0px);
+  font-size: clamp(170px, 27vw, 380px);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  color: rgba(255, 255, 255, 0.055);
+  -webkit-text-stroke: 0;
+}
+
+/* Bant kısaldı: aynı içerik, 545px yerine ~390px. */
+body.theme-modern .promo-body {
+  gap: var(--s3);
+  padding: clamp(38px, 4.4vw, 60px) var(--pad);
+}
+
+body.theme-modern .promo-body h2 {
+  font-size: clamp(30px, 3.6vw, 46px);
+}
+
+body.theme-modern .promo-body > p:not(.promo-eyebrow) {
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+body.theme-modern .promo-eyebrow {
+  letter-spacing: 0.08em;
+}
+
+/*
+  KUPON HAPI.
+
+  Keskin köşeli kutu ve içinde keskin köşeli bir düğme vardı;
+  sayfadaki bütün düğmeler hap. Kesik çizgili kenar bilinçli: kupon
+  kodunun koparılacak bir şey olduğunu biçimiyle söylüyor.
+
+  Kodun harf aralığı da toplandı: 0,14em ile yazılan "ARVO10" bir
+  kod değil, bir afiş gibi duruyordu.
+*/
+body.theme-modern .promo-code {
+  gap: var(--s4);
+  padding: 8px 8px 8px 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  transition:
+    border-color 240ms var(--ease),
+    background-color 240ms var(--ease);
+}
+
+body.theme-modern .promo-code:hover {
+  border-color: rgba(255, 255, 255, 0.52);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.theme-modern .promo-code small {
+  margin-bottom: 1px;
+  letter-spacing: 0.08em;
+}
+
+body.theme-modern .promo-code strong {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+body.theme-modern .promo-code .coupon-code {
+  padding: 11px 20px;
+  border-radius: 999px;
+}
+
+body.theme-modern .promo-code .coupon-code em {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-modern .promo::after {
+    animation: none;
+  }
+  body.theme-modern .promo-code {
+    transition: none;
+  }
+}
