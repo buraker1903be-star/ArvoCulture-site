@@ -72,12 +72,32 @@ const PERKS = [
   { title: "Orijinal ürün", note: "Yetkili tedarik", href: "/sss" },
 ];
 
-export function Perks({ shippingBadge }: { shippingBadge: string }) {
+export function Perks({
+  shippingBadge,
+  urunSayisi,
+}: {
+  shippingBadge: string;
+  /* Katalog büyüklüğü. Kapakta duruyordu ve hemen altındaki bu
+     satırla çakışıyordu; buraya taşındı çünkü buradaki maddeler
+     BAĞLANTILI — müşteri rakama dokunup kataloğa girebiliyor. */
+  urunSayisi?: number;
+}) {
   /* Kargo maddesi mağazanın tarifesinden gelir (shippingTerms); önceden
      "2.000 TL" sabitti ve panelden eşik değişince yanlış kalıyordu. */
   const perks = [
     { title: shippingBadge, note: "Türkiye geneli", href: "/teslimat" },
     ...PERKS,
+    /* Sayı gerçek: katalog sayacından geliyor, yuvarlanmış bir
+       pazarlama rakamı değil. Okunamazsa madde hiç çizilmiyor. */
+    ...(urunSayisi
+      ? [
+          {
+            title: `${urunSayisi.toLocaleString("tr-TR")} ürün`,
+            note: "Seçilmiş katalog",
+            href: "/koleksiyon/tumu",
+          },
+        ]
+      : []),
   ];
   return (
     /*
