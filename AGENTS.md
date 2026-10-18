@@ -99,10 +99,39 @@ yazılır ("Önceden … gösteriyordu"). Yeni kod bu üsluba uyar.
   aile artık kullanılmıyor — tek mağazaya sabitlenmiş bir vitrin,
   ikinci müşteri alan adını bağladığı gün ona BAŞKASININ mağazasını
   gösterirdi ve hata vermezdi.
-  **İki kip var ve ayrımın sebebi önbellek:** `VITRIN_KONAGI`
-  tanımlıysa adres ortam değişkeninden gelir ve `headers()` hiç
-  çağrılmaz (ürün sayfasının ISR önbelleği korunur); boşsa adres
-  istekten okunur ve o sayfalar dinamikleşir.
+  **ADRES YOLDA TAŞINIYOR.** `src/proxy.ts` her isteği
+  `/<konak>/...` olarak yeniden yazıyor ve bütün rotalar
+  `src/app/[konak]/` altında duruyor; sayfa adresi `params` ile
+  alıp `konagiAyarla()` ile veri katmanına bırakıyor. Böylece
+  `headers()` çağrılmıyor, rota önbelleği çalışıyor ve önbellek
+  anahtarı adresi içerdiği için her mağaza KENDİ sayfasını
+  saklıyor. `VITRIN_KONAGI` hâlâ okunuyor ama artık yalnızca
+  SABİTLEME için: tanımlıysa proxy istek başlığına bakmaz, yani
+  uydurma bir `Host` ile başka mağaza açılamaz.
+
+  **Her sayfa adresi KENDİSİ bırakır.** Düzen ile sayfa AYNI ANDA
+  çiziliyor; yalnızca kök düzende bırakmak yetmedi (ölçüldü:
+  sayfalar 500 verdi). Kendi `generateMetadata`'sı olan sayfalar
+  orada da bırakıyor.
+
+  Neden bu yapıya geçildi: adres istek başlığından okunurken ürün
+  sayfası `generateStaticParams` ile statik üretiliyordu ve Next
+  statik üretimde `headers()` görünce DYNAMIC_SERVER_USAGE
+  fırlatıyordu — 18.10.2026'da canlıda BÜTÜN ürün sayfaları (3.400)
+  500 verdi. `export const dynamic` ile kipe göre karar
+  verilemiyor; Next o alanı derleme anında statik okuyor.
+
+  **Önbelleksiz okuyan sayfa `force-dynamic` yazar.** `[konak]`
+  düzeninde `generateStaticParams` olduğu için altındaki her sayfa
+  saklanıyor; `revalidate: 0` bir fetch içeren sayfa (ödeme,
+  sipariş onayı, arama) bu yüzden "page changed from static to
+  dynamic at runtime" ile 500 verir.
+
+  **robots/manifest/sitemap KÖKTE kalır.** Next bu sözleşmeleri
+  yalnızca app kökünde tanıyor; `[konak]` altına taşındıklarında
+  rota listesinden düştüler. Konağı kendileri okuyor, proxy de bu
+  üç adresi yeniden yazmıyor (`lib/konak-yolu`,
+  `tests/konak-yolu.test.ts`).
   **Süreç içi önbellek (`ttlCache`) ANAHTAR İSTER** ve anahtar
   mağazanın adresidir: anahtarsız bir önbellek A'nın satış
   kurallarını (kargo ücreti, havale indirimi) B'nin müşterisine

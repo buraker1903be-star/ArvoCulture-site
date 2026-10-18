@@ -1,6 +1,18 @@
 import type { MetadataRoute } from "next";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 
+/*
+  KÖK SÖZLEŞMESİ, KONAĞI KENDİSİ OKUYOR.
+
+  Next'in robots/manifest/sitemap sözleşmeleri yalnızca app
+  kökünde tanınıyor; `[konak]` altına taşındıklarında rota
+  listesinden düştüler. Bu yüzden kökte duruyorlar ve adres
+  `vitrinKonagi()` ile istek başlığından geliyor — dinamik bir
+  rotada bu sorun değil. Proxy de bu üç adresi yeniden
+  yazmıyor (src/proxy.ts).
+*/
+export const dynamic = "force-dynamic";
+
 /**
  * Uygulama bildirimi (PWA manifest).
  *
