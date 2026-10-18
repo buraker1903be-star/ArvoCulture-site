@@ -10,16 +10,24 @@ import { useLayerBack } from "@/lib/use-layer-back";
 import { StoreLogo } from "@/components/store-logo";
 import { SearchOverlay } from "@/components/search-overlay";
 import { FavouritesOverlay } from "@/components/favourites-overlay";
+import { AccountDrawer } from "@/components/account-drawer";
 
 export function Header({
   theme,
   collections,
   searchTerms = [],
+  supabaseUrl,
+  supabaseKey,
 }: {
   theme: StorefrontTheme;
   collections: StorefrontCollection[];
   /** Arama katmanının boş durumunda gösterilen sık aranan terimler. */
   searchTerms?: string[];
+  /* Hesap çekmecesi için; /hesap sayfası da aynı değerleri
+     özellik olarak alıyor (NEXT_PUBLIC_ değişkenine bağımlılık
+     yok). Yayımlanabilir anahtar, tarayıcıya zaten gidiyor. */
+  supabaseUrl: string;
+  supabaseKey: string;
 }) {
   const [open, setOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
@@ -451,22 +459,23 @@ export function Header({
             hesap ekranından ve doğrudan adresten açılıyor.
           */}
           {theme.show_account && <FavouritesOverlay />}
+          {/*
+            KİŞİ SİMGESİ ÇEKMECE AÇIYOR, SAYFA DEĞİŞTİRMİYOR.
+
+            Giriş çoğu zaman ALIŞVERİŞİN ORTASINDA yapılıyor
+            ("siparişim nerede", "adresim kayıtlı mıydı") ve
+            /hesap sayfasına gitmek o akışı kesiyordu: müşteri
+            baktığı ürünü ya da sepeti terk ediyor, girdikten
+            sonra geri tuşuyla dönmeye çalışıyordu.
+
+            Panel sayfayla ortak; Supabase paketi tembel
+            yükleniyor (bkz. account-drawer).
+          */}
           {theme.show_account && (
-            <Link
-              href="/hesap"
-              aria-label="Hesabım"
-              className="header-action-link"
-              /* Önceden yüklenmiyor: hesap paneli Supabase'i (233 KB)
-                 içe aktarıyor; önceden yükleme onu giriş yapmamış
-                 ziyaretçiye de her sayfada indiriyordu. */
-              prefetch={false}
-            >
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <circle cx="12" cy="8" r="3.5" />
-                <path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6" />
-              </svg>
-              <span>Hesap</span>
-            </Link>
+            <AccountDrawer
+              supabaseUrl={supabaseUrl}
+              supabaseKey={supabaseKey}
+            />
           )}
           <CartLink />
           <button

@@ -8610,3 +8610,45 @@ body.theme-modern .mega-columns > div:first-child a b {
   font-weight: 600;
   color: var(--ink);
 }
+
+/* ==========================================================
+   HESAP ÇEKMECESİ (18.10.2026)
+
+   Başlıktaki kişi simgesi /hesap sayfasına gidiyordu. Giriş çoğu
+   zaman ALIŞVERİŞİN ORTASINDA yapılıyor ("siparişim nerede",
+   "adresim kayıtlı mıydı") ve sayfadan çıkmak o akışı kesiyordu.
+
+   Panel sayfayla ortak (AccountPanel) — ikinci bir giriş formu
+   yazmak, yarın birinde düzeltilen bir doğrulamanın öbüründe
+   kalması demekti. Panel sayfada `.panel` kutuları çiziyor;
+   çekmece zaten beyaz bir yüzey, içeride ikinci kutu "kutu içinde
+   kutu" oluyordu.
+   ========================================================== */
+
+/* Form taşıyan çekmece daha geniş: 26rem'de e-posta ve şifre
+   alanları ile adres defteri sıkışıyordu. */
+.drawer-wide {
+  width: min(100%, 34rem);
+}
+
+/* İçerik çekmece boyunu aşınca kayıyor; başlık yerinde kalıyor. */
+.drawer-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--s4) var(--s5) var(--s6);
+}
+
+.drawer-scroll .panel {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Panel içinde art arda gelen bölümler arasında nefes: kutular
+   kalkınca birbirine yapışıyorlardı. */
+.drawer-scroll .panel + .panel {
+  margin-top: var(--s6);
+}

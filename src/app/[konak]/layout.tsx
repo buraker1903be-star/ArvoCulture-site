@@ -274,6 +274,11 @@ export default async function RootLayout({
               theme={theme}
               collections={collections}
               searchTerms={aramaTerimleri}
+              /* Hesap çekmecesi için; bağlantı bilgileri sunucudan
+                 aktarılıyor, NEXT_PUBLIC_ değişkenine bağımlılık
+                 yok — /hesap sayfası da aynısını yapıyor. */
+              supabaseUrl={env.supabaseUrl}
+              supabaseKey={env.supabaseKey}
             />
             {/*
               Sayfa içeriği geçiş sarmalayıcısının içinde; başlık,
