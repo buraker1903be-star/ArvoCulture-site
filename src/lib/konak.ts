@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { headers } from "next/headers";
 import { rpcDeger } from "@/lib/arc";
 import { ttlCache } from "@/lib/ttl-cache";
@@ -41,11 +42,48 @@ export const tekMagazaKipi = () => SABIT_KONAK.length > 0;
   İki tarafın da sadeleştirmesi var ve bu bilinçli: fonksiyon
   tek başına da doğru çalışmalı, vitrine güvenmemeli.
 */
+/*
+  ADRES ARTIK YOLDAN GELİYOR.
+
+  Middleware her isteği `/<konak>/...` olarak yeniden yazıyor ve
+  rotalar `src/app/[konak]/` altında duruyor, yani adres `params`
+  ile sayfaya ulaşıyor. Sayfa onu buraya BIRAKIYOR
+  (`konagiAyarla`), veri katmanı da buradan okuyor.
+
+  NEDEN KUTU: `vitrinKonagi()` çağıranların çoğu sayfadan değil,
+  derinde bir veri fonksiyonundan geliyor (ürün okuması, satış
+  kuralları, tema). Adresi oraya kadar parametre olarak taşımak
+  otuzdan fazla imzayı değiştirmek olurdu.
+
+  KUTU İSTEK BAŞINA: `cache()` React'in istek kapsamlı belleği;
+  aynı istek içinde aynı nesneyi, farklı isteklerde ayrı nesneyi
+  veriyor. Yani A mağazasının isteği B'nin adresini göremez.
+
+  BAŞLIK YEDEĞİ DURUYOR ama yalnızca middleware'in dokunmadığı
+  yerler için (API uçları). Statik üretilen bir sayfada `headers()`
+  çağırmak DYNAMIC_SERVER_USAGE fırlatıyor ve 18.10.2026'da canlıda
+  bütün ürün sayfalarını kapatan şey buydu; o yüzden yedek
+  sessizce kullanılmıyor, kutu boşsa ve sayfa statikse Next zaten
+  hata veriyor.
+*/
+const kutu = cache((): { konak: string } => ({ konak: "" }));
+
+/** Sayfa, yoldan gelen adresi veri katmanına bırakıyor. */
+export function konagiAyarla(konak: string | undefined): void {
+  const temiz = (konak ?? "").trim().toLowerCase();
+  if (temiz) kutu().konak = temiz;
+}
+
 export async function vitrinKonagi(): Promise<string> {
   if (SABIT_KONAK) return SABIT_KONAK;
-  const baslik = await headers();
-  /* Vercel özgün konağı x-forwarded-host'ta taşıyor; host, iç
+
+  const yoldan = kutu().konak;
+  if (yoldan) return yoldan;
+
+  /* Middleware'in dokunmadığı yerler (API uçları) için yedek.
+     Vercel özgün konağı x-forwarded-host'ta taşıyor; host, iç
      yönlendirmeden sonra dağıtım adresine dönüşebiliyor. */
+  const baslik = await headers();
   return (baslik.get("x-forwarded-host") ?? baslik.get("host") ?? "").toLowerCase();
 }
 

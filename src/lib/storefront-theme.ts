@@ -2,128 +2,10 @@ import "server-only";
 import { cache } from "react";
 import { env } from "@/lib/env";
 import { vitrinKurumu } from "@/lib/konak";
-export type StorefrontTheme = {
-  announcement: string;
-  hero_eyebrow: string;
-  hero_title: string;
-  hero_emphasis: string;
-  hero_description: string;
-  hero_image_url?: string;
-  primary_cta_label: string;
-  primary_cta_href: string;
-  secondary_cta_label: string;
-  secondary_cta_href: string;
-  featured_eyebrow: string;
-  featured_title: string;
-  campaign_title: string;
-  campaign_description: string;
-  campaign_image_url?: string;
-  primary_color: string;
-  accent_color: string;
-  background_color: string;
-  typography: string;
-  hero_style: string;
-  header_layout: string;
-  sticky_header: boolean;
-  show_search: boolean;
-  show_account: boolean;
-  product_card_style: string;
-  product_image_ratio: string;
-  products_per_row: number;
-  show_vendor: boolean;
-  show_badges: boolean;
-  show_quick_add: boolean;
-  show_manifest: boolean;
-  show_worlds: boolean;
-  show_featured: boolean;
-  show_campaign: boolean;
-  show_values: boolean;
-  order_manifest: number;
-  order_worlds: number;
-  order_featured: number;
-  order_campaign: number;
-  order_values: number;
-  manifest_title: string;
-  manifest_description: string;
-  apparel_title: string;
-  apparel_description: string;
-  beauty_title: string;
-  beauty_description: string;
-  trust_one: string;
-  trust_two: string;
-  trust_three: string;
-  trust_four: string;
-  footer_tagline: string;
-  instagram_url?: string;
-  facebook_url?: string;
-  logo_url?: string;
-  favicon_url?: string;
-  store_name?: string;
-};
-export const defaultTheme: StorefrontTheme = {
-  announcement: "2.000 TL üzeri ücretsiz kargo • İlk alışverişe ARVO10",
-  hero_eyebrow: "ARVOCULTURE · APPAREL & BEAUTY",
-  hero_title: "Seçtiğin şey,",
-  hero_emphasis: "senin hikâyen.",
-  hero_description:
-    "Tarzını, bakımını ve gündelik ritüellerini tek bir kültürde buluşturan özgün seçkiler.",
-  hero_image_url:
-    "https://cdn.shopify.com/s/files/1/0995/6740/3322/files/uN9qiyIinOoNTblcW4xwy_xsN8HDzN_00001.png?v=1782830698&width=1920",
-  primary_cta_label: "Giyimi keşfet",
-  primary_cta_href: "/koleksiyon/giyim",
-  secondary_cta_label: "Bakımı keşfet",
-  secondary_cta_href: "/koleksiyon/bakim",
-  featured_eyebrow: "ÖNE ÇIKANLAR",
-  featured_title: "Şimdi keşfet.",
-  campaign_title: "İlk seçimine özel.",
-  campaign_description: "İlk siparişinde ARVO10 koduyla %10 indirim.",
-  primary_color: "#111210",
-  accent_color: "#D9FF43",
-  background_color: "#F5F2EC",
-  typography: "editorial",
-  hero_style: "editorial-orbs",
-  header_layout: "centered",
-  sticky_header: true,
-  show_search: true,
-  show_account: true,
-  product_card_style: "editorial",
-  product_image_ratio: "square",
-  products_per_row: 4,
-  show_vendor: true,
-  show_badges: true,
-  show_quick_add: true,
-  show_manifest: true,
-  show_worlds: true,
-  show_featured: true,
-  show_campaign: true,
-  show_values: true,
-  order_manifest: 20,
-  order_worlds: 30,
-  order_featured: 40,
-  order_campaign: 50,
-  order_values: 60,
-  manifest_title: "İki dünya. Tek yaşam kültürü.",
-  manifest_description:
-    "Giydiğin parçadan günlük bakım ritüeline kadar her seçim, kendini anlatma biçimindir.",
-  apparel_title: "Kendini giy.",
-  apparel_description: "Zamansız parçalar. Özgün duruşlar.",
-  beauty_title: "Kendine iyi bak.",
-  beauty_description: "Günlük ritüelin için seçilmiş bakım.",
-  trust_one: "Seçilmiş ürünler",
-  trust_two: "Güvenli ödeme",
-  trust_three: "Özenli paketleme",
-  trust_four: "Kolay iade",
-  footer_tagline:
-    "Giyim, bakım ve gündelik ritüeller için seçilmiş bir yaşam kültürü.",
-  /*
-    VARSAYILAN AD YANSIZ. Önceden "ArvoCulture" yazıyordu ve tek
-    mağazalıyken doğruydu. Çok mağazalı vitrinde tema okunamadığında
-    ya da adres hiçbir mağazaya ait olmadığında bu ad YABANCI BİR
-    ADRESTE görünüyor: başka bir markanın sayfasına ArvoCulture'ın
-    adı düşüyordu (17.10.2026, deneme.shop.arvo-os.com).
-  */
-  store_name: "Mağaza",
-};
+import {
+  defaultTheme,
+  type StorefrontTheme,
+} from "@/lib/storefront-theme-varsayilan";
 const str = (v: unknown, f: string, max = 360) =>
   typeof v === "string" && v.trim() ? v.trim().slice(0, max) : f;
 const bool = (v: unknown, f: boolean) => (typeof v === "boolean" ? v : f);
@@ -269,3 +151,5 @@ export const getStorefrontTheme = cache(async (): Promise<StorefrontTheme> => {
     return defaultTheme;
   }
 });
+
+export { defaultTheme, type StorefrontTheme };

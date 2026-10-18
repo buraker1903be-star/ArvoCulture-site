@@ -3,6 +3,18 @@ import { env } from "@/lib/env";
 import { vitrinAdresi } from "@/lib/konak";
 
 /*
+  KÖK SÖZLEŞMESİ, KONAĞI KENDİSİ OKUYOR.
+
+  Next'in robots/manifest/sitemap sözleşmeleri yalnızca app
+  kökünde tanınıyor; `[konak]` altına taşındıklarında rota
+  listesinden düştüler. Bu yüzden kökte duruyorlar ve adres
+  `vitrinKonagi()` ile istek başlığından geliyor — dinamik bir
+  rotada bu sorun değil. Proxy de bu üç adresi yeniden
+  yazmıyor (src/proxy.ts).
+*/
+export const dynamic = "force-dynamic";
+
+/*
   Sepet, ödeme, hesap ve arama sayfalarının dizine girmesi hem
   anlamsız hem de arama sonuçlarında kalitesiz sonuç üretir.
   Favoriler de kişiye özel; sayfanın kendi meta etiketinde

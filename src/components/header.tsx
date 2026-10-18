@@ -315,13 +315,17 @@ export function Header({
     <>
       <div className="announcement" aria-label="Mağaza duyuruları">
         <div className="announcement-track">
+          {/* Duyuru boşsa o madde hiç çizilmiyor: varsayılan metin
+              ArvoCulture'ın kupon kodu ve kargo eşiğiydi, artık
+              yansız (boş). Boş bir span şeritte sessiz bir
+              boşluk bırakırdı. */}
           <div className="announcement-group">
-            <span>{theme.announcement}</span>
+            {theme.announcement && <span>{theme.announcement}</span>}
             <span>ÖZENLİ PAKETLEME</span>
             <span>GÜVENLİ ÖDEME</span>
           </div>
           <div className="announcement-group" aria-hidden="true">
-            <span>{theme.announcement}</span>
+            {theme.announcement && <span>{theme.announcement}</span>}
             <span>ÖZENLİ PAKETLEME</span>
             <span>GÜVENLİ ÖDEME</span>
           </div>
