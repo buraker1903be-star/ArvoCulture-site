@@ -412,6 +412,11 @@ export default async function RootLayout({
                     <Link href="/ticari-elektronik-ileti">
                       Ticari Elektronik İleti
                     </Link>
+                    {/* Silme talebinin yolu altbilgiden de görünür:
+                        KVKK metninde hak yazıyordu ama başvurunun
+                        nasıl yapılacağı hiçbir yerde yoktu. Sosyal
+                        giriş sağlayıcıları da bu adresi denetliyor. */}
+                    <Link href="/veri-silme">Hesap ve Veri Silme</Link>
                   </div>
                 </div>
               </div>
