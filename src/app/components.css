@@ -7243,6 +7243,17 @@ body.theme-modern .promo-eyebrow {
 body.theme-modern .promo-code {
   gap: var(--s4);
   padding: 8px 8px 8px 20px;
+  /*
+    HAP İÇERİĞİ KADAR.
+
+    Tabanda `min-width: min(100%, 21rem)` var ve editoryal sürümdeki
+    GENİŞ DİKDÖRTGEN kutudan kalma: hap o genişliğe zorlanınca
+    "Kopyala" düğmesinin sağında ~145px ölü alan kalıyor ve düğme
+    hapın ortasında duruyormuş gibi görünüyordu (canlıda görüldü).
+    Dar ekranda alttaki 640px kuralı yine tam genişlik veriyor;
+    orada düğme sağ uca yaslanıyor (space-between).
+  */
+  min-width: 0;
   border: 1px dashed rgba(255, 255, 255, 0.3);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
