@@ -53,9 +53,21 @@
   --gold-ink: #85692a;
   --gold-soft: rgba(169, 134, 52, 0.28);
 
-  /* Sabit arka plan katmanı. Paneller bunun üzerinde yüzer. */
+  /*
+    SABİT ARKA PLAN KATMANI. Paneller bunun üzerinde yüzer.
+
+    ZEMİN ARTIK PANELDEN GELİYOR (18.10.2026). `--paper` tema
+    ayarından (`theme.background_color`) <body> üzerine yazılıyordu
+    ama HİÇBİR YERDE KULLANILMIYORDU: panelde arka plan rengini
+    değiştirmek hiçbir şey yapmıyordu, yani her kiracı için
+    sessizce ölü bir ayardı.
+
+    Aşağıdaki iki değer artık yalnızca YEDEK: tema okunamazsa ya da
+    renk verilmemişse geçerli.
+  */
   --backdrop-1: #f7f4ed;
   --backdrop-2: #efeae0;
+
 
   /* --- Tipografi ---------------------------------------- */
   /*
@@ -148,4 +160,33 @@
     aynı eğri — aynı ailenin iki sitesi aynı ritimle hareket etsin.
   */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/*
+  ZEMİNDEN TÜREYEN DEĞERLER GÖVDEDE TANIMLI.
+
+  `--paper` tema ayarından <body> üzerine satır içi yazılıyor
+  (layout.tsx). Bu türetmeler önce `:root`taydı ve ÇALIŞMIYORDU:
+  özel değişken yalnızca aşağı doğru görünüyor, `:root`ta yazılan
+  bir kural <body>'de tanımlanan değeri göremiyor — hep yedeğe
+  düşüyordu (18.10.2026'da ölçüldü).
+*/
+body {
+  /*
+    Çizilen zemin. İkinci basamak ilkinden türetiliyor: hangi rengi
+    seçerse seçsin kiracının zemini düz plastik gibi durmasın diye
+    çok hafif bir eğim kalıyor. Beyaz seçildiğinde de çalışıyor —
+    #ffffff'ten türeyen ikinci basamak kırık beyaz oluyor.
+  */
+  --zemin-1: var(--paper, var(--backdrop-1));
+  --zemin-2: color-mix(in srgb, var(--zemin-1) 93%, var(--ink));
+
+  /*
+    Panel kenarı da zeminden türüyor. Sabit bir kıl payı çizgi
+    fildişi zeminde doğruydu ama BEYAZ zeminde beyaz panelin
+    kenarı kayboluyordu: bölümler birbirine yapışıyor ve sayfa
+    tek bir düz yüzeye dönüşüyordu.
+  */
+  --panel-kenar: color-mix(in srgb, var(--zemin-1) 90%, var(--ink));
 }
