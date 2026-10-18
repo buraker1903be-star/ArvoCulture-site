@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -45,9 +46,20 @@ const FACEBOOK_ACIK = false;
 export function AccountPanel({
   supabaseUrl,
   supabaseKey,
+  menuBicimi = false,
 }: {
   supabaseUrl: string;
   supabaseKey: string;
+  /**
+   * Başlıktaki hesap menüsü için KISA giriş sonrası görünüm.
+   *
+   * Menü, giriş yapılmış müşteriye hesap sayfasının TAMAMINI
+   * basıyordu: profil formu, adres defteri ve sipariş listesi
+   * 27rem'lik bir açılır menüye sıkışıyor, sütunlar üst üste
+   * biniyordu (canlıda görüldü). Menüde olması gereken şey sayfa
+   * değil, sayfaya giden kısa bir liste.
+   */
+  menuBicimi?: boolean;
 }) {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
@@ -472,106 +484,141 @@ export function AccountPanel({
         </div>
 
         {/*
+          MENÜDE SAYFA DEĞİL, LİSTE.
+
+          Açılır menüye hesap sayfasının tamamını basmak sütunları
+          üst üste bindiriyordu. Buradaki bağlantılar sayfanın
+          ilgili bölümüne iniyor (çapalar: #hesap-bilgilerim,
+          #adreslerim, #siparislerim).
+
+          "Kuponlarım" ve "Hediye çeklerim" BİLEREK YOK: vitrinde
+          böyle bir ekran yok ve olmayan bir sayfaya bağlantı
+          koymak, müşteriyi boş bir yere göndermek olurdu.
+
+          Beğenilen ürünler satırı "Favorilerim" adını taşıyor:
+          gittiği sayfanın (/favoriler) başlığı ve başlıktaki
+          kalp bağlantısı da öyle diyor. Aynı yere giden iki
+          bağlantının iki ayrı adı olması, müşteriye iki ayrı
+          liste varmış gibi gelirdi.
+        */}
+        {menuBicimi ? (
+          <nav className="account-links" aria-label="Hesap menüsü">
+            <Link href="/hesap#hesap-bilgilerim">Profilim</Link>
+            <Link href="/hesap#adreslerim">Adreslerim</Link>
+            <Link href="/hesap#siparislerim">Siparişlerim</Link>
+            <Link href="/favoriler">Favorilerim</Link>
+          </nav>
+        ) : (
+          <>
+            {/*
           Sekme yerine tek sayfa: hesap bilgileri ve adresler üstte
           yan yana, siparişler altta tam genişlikte. Müşteri
           aradığını sekme değiştirmeden görüyor.
         */}
-        <div className="account-top">
-          <section className="panel">
-            <div className="head">
-              <div>
-                <h2>Hesap bilgilerim</h2>
-                <p>Sipariş formlarında bu bilgiler önerilir.</p>
+            <div className="account-top">
+              {/* Çapa: hesap menüsündeki "Profilim" bağlantısı buraya
+              iniyor. */}
+              <section className="panel" id="hesap-bilgilerim">
+                <div className="head">
+                  <div>
+                    <h2>Hesap bilgilerim</h2>
+                    <p>Sipariş formlarında bu bilgiler önerilir.</p>
+                  </div>
+                </div>
+
+                <div className="fields">
+                  <label className="wide">
+                    Ad soyad
+                    <input
+                      type="text"
+                      autoComplete="name"
+                      value={profileName}
+                      onChange={(event) => setProfileName(event.target.value)}
+                    />
+                  </label>
+                  <label className="wide">
+                    Telefon
+                    <input
+                      type="tel"
+                      autoComplete="tel"
+                      value={profilePhone}
+                      onChange={(event) => setProfilePhone(event.target.value)}
+                    />
+                  </label>
+                  <label className="wide">
+                    E-posta
+                    <input
+                      type="email"
+                      value={session.user.email ?? ""}
+                      disabled
+                    />
+                  </label>
+                </div>
+
+                {profileSaved && (
+                  <p className="form-note">Bilgileriniz kaydedildi.</p>
+                )}
+
+                <button
+                  type="button"
+                  className="btn"
+                  style={{ justifySelf: "start" }}
+                  onClick={saveProfile}
+                >
+                  Kaydet
+                </button>
+              </section>
+
+              <AddressBook supabase={supabase} />
+            </div>
+
+            <section className="panel" id="siparislerim">
+              <div className="head">
+                <div>
+                  <h2>Siparişlerim</h2>
+                  <p>Geçmiş siparişleriniz ve tüm detayları.</p>
+                </div>
               </div>
-            </div>
 
-            <div className="fields">
-              <label className="wide">
-                Ad soyad
-                <input
-                  type="text"
-                  autoComplete="name"
-                  value={profileName}
-                  onChange={(event) => setProfileName(event.target.value)}
-                />
-              </label>
-              <label className="wide">
-                Telefon
-                <input
-                  type="tel"
-                  autoComplete="tel"
-                  value={profilePhone}
-                  onChange={(event) => setProfilePhone(event.target.value)}
-                />
-              </label>
-              <label className="wide">
-                E-posta
-                <input type="email" value={session.user.email ?? ""} disabled />
-              </label>
-            </div>
+              {orders === null && !siparisOkunamadi && (
+                <p className="hint">Siparişler yükleniyor…</p>
+              )}
 
-            {profileSaved && (
-              <p className="form-note">Bilgileriniz kaydedildi.</p>
-            )}
+              {siparisOkunamadi && (
+                <p className="form-error" role="alert">
+                  Siparişleriniz şu anda alınamadı; yerinde duruyorlar.{" "}
+                  <button
+                    type="button"
+                    className="link-button"
+                    onClick={() => void loadOrders()}
+                  >
+                    Tekrar dene
+                  </button>
+                </p>
+              )}
 
-            <button
-              type="button"
-              className="btn"
-              style={{ justifySelf: "start" }}
-              onClick={saveProfile}
-            >
-              Kaydet
-            </button>
-          </section>
+              {orders?.length === 0 && (
+                <p className="hint">
+                  Henüz siparişiniz görünmüyor. Misafir olarak sipariş
+                  verdiyseniz, aynı e-posta adresini doğruladığınızda
+                  siparişleriniz burada listelenir.
+                </p>
+              )}
 
-          <AddressBook supabase={supabase} />
-        </div>
-
-        <section className="panel">
-          <div className="head">
-            <div>
-              <h2>Siparişlerim</h2>
-              <p>Geçmiş siparişleriniz ve tüm detayları.</p>
-            </div>
-          </div>
-
-          {orders === null && !siparisOkunamadi && (
-            <p className="hint">Siparişler yükleniyor…</p>
-          )}
-
-          {siparisOkunamadi && (
-            <p className="form-error" role="alert">
-              Siparişleriniz şu anda alınamadı; yerinde duruyorlar.{" "}
-              <button
-                type="button"
-                className="link-button"
-                onClick={() => void loadOrders()}
-              >
-                Tekrar dene
-              </button>
-            </p>
-          )}
-
-          {orders?.length === 0 && (
-            <p className="hint">
-              Henüz siparişiniz görünmüyor. Misafir olarak sipariş verdiyseniz,
-              aynı e-posta adresini doğruladığınızda siparişleriniz burada
-              listelenir.
-            </p>
-          )}
-
-          {orders && orders.length > 0 && (
-            <div className="order-cards">
-              {orders.map((order) => (
-                <OrderCard
-                  key={order.order_number}
-                  order={order}
-                  supabaseUrl={supabaseUrl}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+              {orders && orders.length > 0 && (
+                <div className="order-cards">
+                  {orders.map((order) => (
+                    <OrderCard
+                      key={order.order_number}
+                      order={order}
+                      supabaseUrl={supabaseUrl}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </div>
     );
   }

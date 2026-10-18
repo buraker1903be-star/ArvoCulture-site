@@ -8944,3 +8944,61 @@ body.theme-modern .auth-alt .linklike:hover {
 .account-pop .auth-social {
   gap: 6px;
 }
+
+/* ==========================================================
+   HESAP MENÜSÜ — GİRİŞ SONRASI (18.10.2026)
+
+   Menü, giriş yapmış müşteriye hesap SAYFASININ TAMAMINI
+   basıyordu: profil formu, adres defteri ve sipariş listesi
+   27rem'lik bir açılır menüye sıkışıyor, sütunlar üst üste
+   biniyor ve metin kırpılıyordu (canlıda görüldü).
+
+   Menüde olması gereken şey sayfa değil, sayfaya giden kısa bir
+   liste. Bağlantılar hesap sayfasının ilgili bölümüne iniyor.
+   ========================================================== */
+
+.account-links {
+  display: grid;
+  gap: 2px;
+  margin-top: var(--s4);
+}
+
+.account-links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 14px;
+  margin: 0 -14px;
+  border-radius: 12px;
+  font-size: var(--t-lead);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  transition: background-color 160ms var(--ease);
+}
+
+/* Her satırın sonunda ok: satırın bir YER olduğunu, bir eylem
+   olmadığını söylüyor. */
+.account-links a::after {
+  content: "→";
+  font-size: 15px;
+  color: var(--ink-3);
+  transition: transform 260ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  .account-links a:hover {
+    background: var(--panel-2);
+  }
+
+  .account-links a:hover::after {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-links a,
+  .account-links a::after {
+    transition: none;
+  }
+}

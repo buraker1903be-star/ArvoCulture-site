@@ -18,7 +18,10 @@ import { useLayerBack } from "@/lib/use-layer-back";
 */
 const AccountPanel = dynamic(
   () => import("@/components/account-panel").then((m) => m.AccountPanel),
-  { ssr: false, loading: () => <p className="account-pop-loading">Yükleniyor…</p> },
+  {
+    ssr: false,
+    loading: () => <p className="account-pop-loading">Yükleniyor…</p>,
+  },
 );
 
 /**
@@ -99,7 +102,11 @@ export function AccountDrawer({
 
       {open && (
         <div className="account-pop" role="dialog" aria-label="Hesabım">
-          <AccountPanel supabaseUrl={supabaseUrl} supabaseKey={supabaseKey} />
+          <AccountPanel
+            supabaseUrl={supabaseUrl}
+            supabaseKey={supabaseKey}
+            menuBicimi
+          />
         </div>
       )}
     </div>
