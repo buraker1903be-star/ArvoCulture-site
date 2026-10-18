@@ -28,6 +28,10 @@ type HediyeCeki = {
   initial_amount: number;
   expires_at: string | null;
   status: string;
+  /* Asgari sepet tutarı (kuruş). Kural ArvoARC'ta ve son söz
+     orada; ekranda yazması müşterinin sepeti hazırladıktan sonra
+     duvara toslamaması için. */
+  minimum_subtotal: number;
 };
 
 type Durum =
@@ -160,6 +164,15 @@ export function HediyeCekleri({
             </div>
 
             <code className="cek-kod">{cek.code}</code>
+
+            {/* Asgari tutar, son kullanımdan ÖNCE: ödeme anında
+                çeki engelleyen ilk kural o. */}
+            {!bitti && cek.minimum_subtotal > 0 && (
+              <p className="cek-not">
+                {formatPrice(cek.minimum_subtotal / 100)} ve üzeri
+                siparişlerde geçerli.
+              </p>
+            )}
 
             <p className="cek-not">
               {bitti

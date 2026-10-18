@@ -10799,3 +10799,95 @@ body.theme-modern .auth-alt .linklike:hover {
   line-height: 1.55;
   color: var(--ink-3);
 }
+
+/* ==========================================================
+   ÖDEMEDE HEDİYE ÇEKİ SEÇİMİ (18.10.2026)
+
+   Kod kutusu YOK: çekler müşteriye e-postasıyla bağlı, yani
+   hangilerinin ona ait olduğunu zaten biliyoruz. Kutu koymak,
+   müşteriye kendi parasının şifresini sordurmak olurdu.
+
+   Eşiği geçmeyen çek seçilemiyor ve sebebi yazıyor; kuralı
+   yalnızca ödeme anında öğrenmek, sepeti hazırladıktan sonra
+   duvara toslamak olurdu.
+   ========================================================== */
+
+.cek-secici {
+  display: grid;
+  gap: var(--s2);
+  margin-top: var(--s5);
+  padding: 0;
+  border: 0;
+}
+
+.cek-secici legend {
+  padding: 0 0 var(--s2);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.cek-secenek {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: border-color 180ms var(--ease);
+}
+
+.cek-secenek span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cek-secenek strong {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--brand);
+}
+
+.cek-secenek code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--t-xs);
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+
+.cek-secenek small {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.cek-secenek:has(input:checked) {
+  border-color: var(--brand);
+  background: var(--panel-2);
+}
+
+/* Eşiği geçmeyen çek: kaybolmuyor, sebebi yazıyor. Gizlemek
+   müşteriye "çekin yok" demek olurdu. */
+.cek-secenek[data-pasif] {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.cek-secenek[data-pasif] strong {
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .cek-secenek:not([data-pasif]):hover {
+    border-color: color-mix(in srgb, var(--brand) 40%, var(--line));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cek-secenek {
+    transition: none;
+  }
+}

@@ -8,6 +8,7 @@ import { BankTransfer } from "@/components/bank-transfer";
 import { formatPrice } from "@/lib/product-types";
 import { readCoupon, readNote } from "@/lib/cart-extras";
 import { getAuthClient } from "@/lib/auth-client";
+import { HediyeCekiSecici } from "@/components/hediye-ceki-secici";
 import { formatPhone, isValidPhone, phoneDigits } from "@/lib/phone";
 import { eksikAlanlar, eksikMetni } from "@/lib/odeme-eksikleri";
 import { evaluateCoupon, kuponaTabiToplam } from "@/lib/coupon";
@@ -82,6 +83,9 @@ export function CheckoutForm({
   /* Havale panelden kapatılmışsa ArvoARC havaleli siparişi 422 ile
      reddediyor; seçenek hiç gösterilmez, seçili kalmışsa yok sayılır. */
   const useTransfer = transferChosen && salesRules.transferEnabled;
+  /* Seçilen hediye çekinin KODU. Tutarı burada hesaplanmıyor;
+     bkz. aşağıdaki özet satırı. */
+  const [hediyeCeki, setHediyeCeki] = useState<string | null>(null);
   const [state, setState] = useState<"idle" | "sending" | "error" | "paying">("idle");
   // Sepette girilen kupon ve not ödeme isteğine taşınır.
   const [coupon, setCoupon] = useState("");
@@ -329,6 +333,9 @@ export function CheckoutForm({
               : item.name,
           })),
           couponCode: coupon || null,
+          /* Kod gidiyor, TUTAR GİTMİYOR: ne kadar düşüleceğine
+             ArvoARC karar veriyor (arc_gift_card_apply). */
+          giftCardCode: hediyeCeki,
           note: note || null,
           /* Sipariş durumu bildirimleri için açık onay; ArvoARC
              siparişin kaydına yazıyor ve bildirim gönderirken
@@ -708,6 +715,20 @@ export function CheckoutForm({
             onSelect={setUseTransfer}
           />
 
+          {/*
+            Hediye çeki ödeme yönteminin ALTINDA: çek bir ödeme
+            yöntemi değil, ödenecek tutardan düşülen bir bakiye —
+            müşteri yine kartla ya da havaleyle ödüyor, yalnızca
+            daha azını.
+          */}
+          <HediyeCekiSecici
+            supabaseUrl={supabaseUrl}
+            supabaseKey={supabaseKey}
+            araToplam={total}
+            secili={hediyeCeki}
+            secildi={setHediyeCeki}
+          />
+
           <h2 style={{ marginTop: "var(--s5)" }}>Sipariş özeti</h2>
 
           <ul className="summary-items">
@@ -740,6 +761,20 @@ export function CheckoutForm({
               <div>
                 <dt>Havale indirimi (%{salesRules.transferDiscountPercent})</dt>
                 <dd>−{formatPrice(transferDiscount)}</dd>
+              </div>
+            )}
+            {/*
+              ÇEKİN TUTARI BURADA HESAPLANMIYOR, ÜST SINIRI
+              YAZILIYOR. Ne kadar düşüleceği ödenecek tutara bağlı
+              ve o tutar ArvoARC'ta kesinleşiyor (kupon, kargo ve
+              havale indirimi orada birleşiyor). Kesin bir rakam
+              yazmak, ödenenle çelişebilirdi — kod indiriminde de
+              aynı karar verilmişti.
+            */}
+            {hediyeCeki && (
+              <div>
+                <dt>Hediye çeki · {hediyeCeki}</dt>
+                <dd>Toplamdan düşülecek</dd>
               </div>
             )}
             <div className="grand">
