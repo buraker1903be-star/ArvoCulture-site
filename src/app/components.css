@@ -6708,3 +6708,19 @@ body.hero-editorial-orbs .hero-cta .btn:hover {
     padding-inline: var(--pad);
   }
 }
+
+/*
+  TAM GENİŞLİK KAPAK BAŞLIĞA YAPIŞIYOR (18.10.2026).
+
+  Kabuk üstten `var(--gap)` boşluk veriyor (18px) ve kapak onun
+  ilk çocuğu. Kapak panelken bu doğruydu — bölümler arasında
+  nefes olmalı. Tam genişliğe çıkınca aynı boşluk, başlıkla
+  fotoğraf arasında ince beyaz bir şerit bırakıyor ve kapağın
+  "ekranı kaplama" etkisini kırıyor.
+
+  Yalnızca kapak kabuğun İLK çocuğuysa: başka bir bölüm önüne
+  gelirse (duyuru paneli gibi) o nefes korunmalı.
+*/
+body.hero-editorial-orbs .shell > .hero:first-child {
+  margin-top: calc(var(--gap) * -1);
+}
