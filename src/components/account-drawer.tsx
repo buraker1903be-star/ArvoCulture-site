@@ -99,11 +99,7 @@ export function AccountDrawer({
 
       {open && (
         <div className="account-pop" role="dialog" aria-label="Hesabım">
-          <AccountPanel
-            supabaseUrl={supabaseUrl}
-            supabaseKey={supabaseKey}
-            kompakt
-          />
+          <AccountPanel supabaseUrl={supabaseUrl} supabaseKey={supabaseKey} />
         </div>
       )}
     </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { tarayiciKonagi } from "@/lib/tarayici-konak";
 import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -27,20 +26,9 @@ type Mode = "login" | "register" | "reset";
 export function AccountPanel({
   supabaseUrl,
   supabaseKey,
-  kompakt = false,
 }: {
   supabaseUrl: string;
   supabaseKey: string;
-  /**
-   * Başlıktaki hesap menüsü için kısa biçim.
-   *
-   * Menü, kapağın üstüne açılan küçük bir panel; sekmeler ve kayıt
-   * formu oraya sığmıyordu ve içerik kaydırma çubuğu çıkarıyordu.
-   * Kayıt KAYBOLMUYOR, yerini değiştiriyor: panelin altındaki
-   * bağlantı /hesap sayfasına götürüyor — hesap açmak alışverişin
-   * ortasında yapılan bir iş değil, bir kerelik bir adım.
-   */
-  kompakt?: boolean;
 }) {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
@@ -476,26 +464,24 @@ export function AccountPanel({
   /* --- Giriş formu --- */
   return (
     <section className="panel auth-panel">
-      {!kompakt && (
-        <div className="auth-tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === "login"}
-            onClick={() => setMode("login")}
-          >
-            Giriş yap
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === "register"}
-            onClick={() => setMode("register")}
-          >
-            Hesap oluştur
-          </button>
-        </div>
-      )}
+      <div className="auth-tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "login"}
+          onClick={() => setMode("login")}
+        >
+          Giriş yap
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "register"}
+          onClick={() => setMode("register")}
+        >
+          Hesap oluştur
+        </button>
+      </div>
 
       {/*
         GERÇEK BİR <form>.
@@ -524,10 +510,10 @@ export function AccountPanel({
       */}
       <p className="auth-lede">
         {mode === "register"
-          ? "Siparişlerinizi takip edin, adreslerinizi kaydedin; bir sonraki alışveriş tek adımda bitsin."
+          ? "Bir sonraki alışveriş tek adımda bitsin."
           : mode === "reset"
-            ? "E-posta adresinizi yazın; şifrenizi yenilemeniz için bağlantı gönderelim."
-            : "Siparişleriniz, adres defteriniz ve iade talepleriniz tek yerde."}
+            ? "Şifrenizi yenilemeniz için bağlantı gönderelim."
+            : "Siparişleriniz ve adres defteriniz tek yerde."}
       </p>
 
       <div className="fields auth-fields">
@@ -696,13 +682,6 @@ export function AccountPanel({
         </button>
       </div>
 
-      {/* Kayıt menüde değil ama ulaşılabilir: hesap açmak
-          alışverişin ortasında yapılan bir iş değil. */}
-      {kompakt && mode === "login" && (
-        <p className="auth-signup">
-          Hesabınız yok mu? <Link href="/hesap">Hesap oluşturun</Link>
-        </p>
-      )}
     </section>
   );
 }

@@ -8899,11 +8899,26 @@ body.theme-modern .auth-alt .linklike:hover {
 
   Menüde kaydırma çubuğu çıkıyordu: sekmeler, iki alan, düğme,
   "şifremi unuttum", ayraç ve iki sosyal düğme bir dropdown'a
-  sığmıyordu. Sekmeler kalktı (kayıt artık /hesap'ta, altta bir
-  bağlantıyla) ve aradaki boşluklar toplandı. `overflow-y: auto`
-  DURUYOR: kısa ekranda içeriğin ulaşılamaz kalmasındansa
-  kaydırılabilir olması iyi — ama olağan ekranda hiç çıkmıyor.
+  sığmıyordu.
+
+  ÖNCE SEKMELER KALDIRILMIŞTI, geri alındı: kayıt yolunu menüden
+  çıkarmak paneli kısaltıyor ama "hesap oluştur"u görünmez
+  kılıyordu — müşteri giriş yapamıyorsa yapacağı ilk şey o.
+  Kaydırma bu kez YERDEN kazanılarak çözüldü: amaç satırı tek
+  satıra indi, ayraç ve alan boşlukları toplandı, tavan biraz
+  yükseldi.
+
+  `overflow-y: auto` duruyor: kısa ekranda içeriğin ulaşılamaz
+  kalmasındansa kaydırılabilir olması iyi — ama olağan ekranda
+  çıkmıyor.
 */
+.account-pop {
+  max-height: min(84vh, 680px);
+}
+
+.account-pop .auth-tabs {
+  margin-bottom: 2px;
+}
 .account-pop .auth-lede {
   margin-top: 0;
 }
@@ -8920,21 +8935,12 @@ body.theme-modern .auth-alt .linklike:hover {
   margin-top: var(--s3);
 }
 
-/* Kayıt bağlantısı: menüde form yok, tek satırlık bir yol var. */
-.auth-signup {
-  margin-top: var(--s4);
-  text-align: center;
-  font-size: var(--t-sm);
-  color: var(--ink-2);
+/* Menüdeki sosyal düğmeler biraz daha alçak: iki düğme, panelin
+   boyunu belirleyen son parça. */
+.account-pop .auth-social .btn {
+  padding-block: 12px;
 }
 
-.auth-signup a {
-  font-weight: 600;
-  color: var(--ink);
-  border-bottom: 1px solid var(--line);
-  transition: border-color 160ms var(--ease);
-}
-
-.auth-signup a:hover {
-  border-color: var(--ink);
+.account-pop .auth-social {
+  gap: 6px;
 }
