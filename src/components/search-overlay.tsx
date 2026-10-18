@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { LiveSearch } from "@/components/live-search";
 import { useLayerBack } from "@/lib/use-layer-back";
 
@@ -35,6 +36,26 @@ export function SearchOverlay({
 }) {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
+
+  /*
+    KATMAN DOĞRUDAN <body> ALTINA BASILIYOR.
+
+    Başlıkta `backdrop-filter` var ve o, içindeki `position: fixed`
+    öğeler için YENİ BİR KAPSAYICI kuruyor: katman ekrana değil
+    başlığa göre konumlanıyor. Canlıda görüldü — büyüteçten
+    açılınca katman başlığın içinde, ince beyaz bir şerit olarak
+    çıktı ve perde hiç görünmedi.
+
+    Sepet çekmecesi aynı sebeple portal kullanıyor (cart-drawer).
+    `mounted` sunucu çizimi için: `document` yalnızca tarayıcıda
+    var.
+  */
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // Tek seferlik; zincirleme render riski yok.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -98,55 +119,58 @@ export function SearchOverlay({
         </button>
       )}
 
-      {open && (
-        <div
-          className="search-layer"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Arama"
-        >
-          <button
-            type="button"
-            className="search-veil"
-            aria-label="Aramayı kapat"
-            onClick={close}
-          />
+      {open &&
+        mounted &&
+        createPortal(
+          <div
+            className="search-layer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Arama"
+          >
+            <button
+              type="button"
+              className="search-veil"
+              aria-label="Aramayı kapat"
+              onClick={close}
+            />
 
-          <div className="search-sheet">
-            <div className="search-head">
-              <LiveSearch
-                autoFocus
-                onNavigate={close}
-                limit={10}
-                suggestions={terms}
-              />
-              {/*
+            <div className="search-sheet">
+              <div className="search-head">
+                <LiveSearch
+                  autoFocus
+                  onNavigate={close}
+                  limit={10}
+                  suggestions={terms}
+                />
+                {/*
                 Kapat yuvarlak ve çarpılı: "Temizle" ile aynı
                 biçimde iki soluk hap yan yana duruyordu ve hangisi
                 hangisi belli olmuyordu. Çarpı, katmanı kapatmanın
                 evrensel işareti; metin erişilebilir etikette
                 duruyor.
               */}
-              <button
-                type="button"
-                className="search-close"
-                onClick={close}
-                aria-label="Aramayı kapat"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 6l12 12M18 6 6 18" />
-                </svg>
-              </button>
-            </div>
+                <button
+                  type="button"
+                  className="search-close"
+                  onClick={close}
+                  aria-label="Aramayı kapat"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6 6 18" />
+                  </svg>
+                </button>
+              </div>
 
-            {/*
+              {/*
               Sık arananlar arama bileşeninin içinde: yazmaya
               başlayınca kayboluyor, sonuçları aşağı itmiyor.
               Tıklanan terim katmandan çıkmadan aramaya yazılıyor.
             */}
-          </div>
-        </div>
-      )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
