@@ -242,7 +242,7 @@ export default async function RootLayout({
     <html lang="tr">
       <body
         style={style}
-        className={`${sans.variable} ${display.variable} ${displayItalic.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio}`}
+        className={`${sans.variable} ${display.variable} ${displayItalic.variable} theme-${theme.typography} hero-${theme.hero_style} header-${theme.header_layout} ${theme.sticky_header ? "header-sticky" : "header-static"} cards-${theme.product_card_style} ratio-${theme.product_image_ratio} ${theme.show_badges ? "badges-on" : "badges-off"} ${theme.show_quick_add ? "quickadd-on" : "quickadd-off"} ${theme.show_vendor ? "vendor-on" : "vendor-off"}`}
       >
         {/*
           Favori listesi sayfanın her yerinden erişilebilir olmalı:

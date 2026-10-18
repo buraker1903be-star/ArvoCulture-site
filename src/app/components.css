@@ -7561,3 +7561,84 @@ body.theme-modern .promo-body::before {
     transition: none;
   }
 }
+
+/* ==========================================================
+   ÜRÜN GÖRSEL ORANI PANELDEN (18.10.2026)
+
+   `ratio-square` / `ratio-portrait` / `ratio-landscape` sınıfları
+   <html> üzerine 29.09.2026'dan beri basılıyordu (layout.tsx) ve
+   HİÇBİR CSS KURALI ONLARI OKUMUYORDU. Panelde "Ürün görsel oranı"
+   seçeneği vardı, seçim kaydediliyordu, ekranda hiçbir şey
+   değişmiyordu — `cards-*` ile birlikte iki ölü panel ayarı.
+
+   Görünen sonucu şuydu: oranı belirleyen şey mağaza sahibinin
+   seçimi değil, RAFIN İÇERİĞİ oluyordu. Bir rafta tek bir manken
+   fotoğrafı varsa aşağıdaki `:has` kuralı bütün kartları 4:5'e
+   çeviriyordu; yalnızca paket çekimi olan raf (indirimler) 1:1
+   kalıyordu. Yani aynı sayfadaki iki raf iki ayrı orandaydı ve
+   sebebi görünmüyordu.
+
+   `:has` kuralı kalıyor ama artık YEDEK: oran sınıfı olmayan bir
+   bağlamda (tema okunamadığında) karışık ızgarayı hâlâ tek orana
+   çekiyor. Oran sınıfı varsa — vitrinde her zaman var — panelin
+   seçimi kazanıyor.
+
+   Özgüllük: `:has` kuralı (0,4,0) ediyor; buradakiler `html` ve
+   oran sınıfıyla onu geçiyor.
+   ========================================================== */
+
+html.ratio-square .card-art,
+html.ratio-square .card-art[data-art="lifestyle"],
+html.ratio-square
+  :is(.grid, .product-grid, .rail):has(.card-art[data-art="lifestyle"])
+  .card-art {
+  aspect-ratio: 1;
+}
+
+html.ratio-portrait .card-art,
+html.ratio-portrait .card-art[data-art="lifestyle"],
+html.ratio-portrait
+  :is(.grid, .product-grid, .rail):has(.card-art[data-art="lifestyle"])
+  .card-art {
+  aspect-ratio: 3 / 4;
+}
+
+html.ratio-landscape .card-art,
+html.ratio-landscape .card-art[data-art="lifestyle"],
+html.ratio-landscape
+  :is(.grid, .product-grid, .rail):has(.card-art[data-art="lifestyle"])
+  .card-art {
+  aspect-ratio: 4 / 3;
+}
+
+/* ==========================================================
+   KART AYARLARI DA PANELDEN (18.10.2026)
+
+   `show_badges`, `show_quick_add` ve `show_vendor` temaya
+   okunuyordu ve KODUN HİÇBİR YERİNDE kullanılmıyordu: panelde üç
+   anahtar vardı, üçü de hiçbir şey yapmıyordu. Oran ayarıyla aynı
+   hikâye.
+
+   Çözüm CSS üzerinden, bileşene özellik geçirerek değil: ürün
+   kartı favoriler, öneriler ve son gezilenler gibi İSTEMCİ
+   bileşenlerinden de çiziliyor ve temayı oralara taşımak altı ayrı
+   imzayı değiştirmek olurdu. <html> üzerindeki sınıf hepsini aynı
+   anda kapsıyor.
+
+   Kapatma GÖRÜNÜRLÜK düzeyinde: düğme DOM'da kalıyor ama
+   çizilmiyor. `display: none` ekran okuyucudan da kaldırır, zaten
+   istenen bu — mağaza sahibi "hızlı ekleme olmasın" dediğinde
+   sepete eklemenin yolu ürün sayfası.
+   ========================================================== */
+
+html.badges-off .card-flags {
+  display: none;
+}
+
+html.quickadd-off .card-action {
+  display: none;
+}
+
+html.vendor-off .card-brand {
+  display: none;
+}
