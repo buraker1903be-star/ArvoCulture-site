@@ -10,7 +10,7 @@ import { readCoupon, readNote } from "@/lib/cart-extras";
 import { getAuthClient } from "@/lib/auth-client";
 import { formatPhone, isValidPhone, phoneDigits } from "@/lib/phone";
 import { eksikAlanlar, eksikMetni } from "@/lib/odeme-eksikleri";
-import { evaluateCoupon } from "@/lib/coupon";
+import { evaluateCoupon, kuponaTabiToplam } from "@/lib/coupon";
 import type { Address } from "@/components/address-book";
 import { CheckoutSteps } from "@/components/checkout-steps";
 import { amountToFreeShipping, shippingFor, transferDiscountFor } from "@/lib/order-quote";
@@ -176,7 +176,7 @@ export function CheckoutForm({
     Burada tahmini bir tutar göstermek, ödenen tutarla çelişebilirdi.
   */
   const appliedCoupon = coupon
-    ? evaluateCoupon(discounts, coupon, total)
+    ? evaluateCoupon(discounts, coupon, total, kuponaTabiToplam(items))
     : null;
 
   // Ücretsiz kargo kuponu kargoyu sıfırlar; eşik indirim öncesi ara toplam.

@@ -29,6 +29,17 @@ type CartItem = Pick<
   Product,
   "slug" | "name" | "price" | "image" | "eyebrow"
 > & {
+  /*
+    Üstü çizili fiyat; satırın İNDİRİMLİ olup olmadığını bu söylüyor
+    ("indirimdeki ürünlerde geçerli değildir" kuralı,
+    lib/coupon → kuponaTabiToplam).
+
+    Müşterinin tarayıcısında DURAN eski sepetlerde bu alan yok ve
+    orada satır indirimsiz sayılıyor: bilinmeyeni "indirimli" saymak
+    hak edilen indirimi vermemek olurdu. Yeni eklenen her satırda
+    alan var, yani sepet kendiliğinden tazeleniyor.
+  */
+  oldPrice?: number;
   quantity: number;
   sku?: string;
   variantLabel?: string;
@@ -149,6 +160,10 @@ export function CartProvider({
               name: product.name,
               // Varyant fiyatı ürün fiyatından farklı olabilir.
               price: variant?.price ?? product.price,
+              /* Varyant fiyatı farklıysa ürünün üstü çizili fiyatı o
+                 satır için anlamını yitiriyor; yalnızca ürün
+                 fiyatıyla eklenen satırda taşınıyor. */
+              oldPrice: variant?.price ? undefined : product.oldPrice,
               image: product.image,
               eyebrow: product.eyebrow,
               quantity: 1,

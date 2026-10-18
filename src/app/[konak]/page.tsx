@@ -158,7 +158,21 @@ export default async function Home({
                     : formatPrice(coupon.value / 100)}{" "}
                   indirim
                 </strong>
-                <small>Kodu sepette uygulayın</small>
+                {/*
+                  KOŞUL BURADA DA YAZIYOR.
+
+                  Kod iki yerde duyuruluyor (bu şerit ve kampanya
+                  bandı) ve koşul yalnızca birinde yazsaydı,
+                  müşterinin gördüğü yere bağlı olarak farklı bir
+                  söz vermiş olurduk. Metin panelden geliyor:
+                  "Diğer indirimlerle birleştirilebilir" kutusu
+                  işaretlenirse cümle kendiliğinden kalkıyor.
+                */}
+                <small>
+                  {coupon.combinable
+                    ? "Kodu sepette uygulayın"
+                    : "Kodu sepette uygulayın · indirimdeki ürünlerde geçerli değildir"}
+                </small>
               </div>
               <CouponCopy code={coupon.code} />
             </div>
@@ -250,6 +264,18 @@ export default async function Home({
               <p data-arvo-field="campaign_description">
                 {theme.campaign_description}
               </p>
+
+              {/*
+                Kampanya koşulu. Kural ArvoARC'ta indirim kaydının
+                `combinable` alanında duruyor ve panelde bir kutusu
+                var; buraya elle yazılsaydı kutu değiştiğinde sayfa
+                yalan söylerdi.
+              */}
+              {coupon && !coupon.combinable && (
+                <p className="promo-kosul">
+                  İndirimdeki ürünlerde geçerli değildir.
+                </p>
+              )}
 
               {/*
                 KUPON VE DÜĞME AYNI SATIRDA.

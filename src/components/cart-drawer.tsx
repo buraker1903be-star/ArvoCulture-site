@@ -6,7 +6,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { CartContext, cartKey } from "@/components/cart";
 import { formatPrice } from "@/lib/product-types";
-import { evaluateCoupon } from "@/lib/coupon";
+import { evaluateCoupon, kuponaTabiToplam } from "@/lib/coupon";
 import { readCoupon, writeCoupon, clearCoupon } from "@/lib/cart-extras";
 import { useLayerBack } from "@/lib/use-layer-back";
 import { amountToFreeShipping, shippingFor } from "@/lib/order-quote";
@@ -77,7 +77,13 @@ export function CartDrawer({
     yazmaz indirimi görüyor. Değerlendirme yalnızca gösterim
     içindir — gerçek tutarı ArvoARC hesaplar.
   */
-  const coupon = code.trim() ? evaluateCoupon(discounts, code, total) : null;
+  /* İndirimli satırlar kupona girmiyor (kupon "birleşebilir"
+     işaretli değilse); kural lib/coupon'da ve ArvoARC'ın sipariş
+     fonksiyonunda AYNI. */
+  const kuponaTabi = kuponaTabiToplam(items);
+  const coupon = code.trim()
+    ? evaluateCoupon(discounts, code, total, kuponaTabi)
+    : null;
   const discount = coupon?.ok ? coupon.amount : 0;
   const afterDiscount = Math.max(total - discount, 0);
   const freeShipping = coupon?.ok ? coupon.freeShipping : false;

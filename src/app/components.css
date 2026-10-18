@@ -7392,3 +7392,15 @@ body.theme-modern .promo-body::before {
     animation: none;
   }
 }
+
+/*
+  Kampanya koşulu: "indirimdeki ürünlerde geçerli değildir".
+
+  Açıklama metninden küçük ve daha soluk ama OKUNUR — koşulu
+  göstermeyip sepette uygulamamak, hiç göstermemekten kötü.
+*/
+.promo-kosul {
+  margin-top: calc(var(--s2) * -1);
+  font-size: var(--t-xs);
+  color: rgba(255, 255, 255, 0.56);
+}
