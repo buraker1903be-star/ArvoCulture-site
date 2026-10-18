@@ -95,6 +95,13 @@ export function DahaFazlaYukle({
           <p className="hint">Hepsi bu kadar.</p>
         ) : (
           <>
+            {/*
+              SAYFA SAYISI YAZMIYOR (kurum sahibinin kararı).
+              "3 / 14 sayfa" kalan işi büyük gösteriyordu; listeyi
+              kaydırmanın bitmeyeceğini söyleyen bir sayı,
+              müşteriyi durduran bir sayıdır. Kaç ürün olduğu
+              zaten süzgeç şeridinde yazıyor.
+            */}
             <button
               type="button"
               className="btn btn-ghost"
@@ -103,9 +110,6 @@ export function DahaFazlaYukle({
             >
               {durum === "yukleniyor" ? "Yükleniyor…" : "Daha fazla yükle"}
             </button>
-            <small>
-              {sayfa} / {sayfaSayisi} sayfa
-            </small>
           </>
         )}
 

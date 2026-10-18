@@ -11009,12 +11009,6 @@ body.theme-modern .auth-alt .linklike:hover {
   margin-top: var(--s6);
 }
 
-.daha-fazla small {
-  font-size: var(--t-xs);
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-}
-
 .daha-fazla .btn {
   min-width: 14rem;
 }

@@ -350,12 +350,20 @@ export const getStorefrontProduct = cache(
    2,7 saniyede açılıyordu.
 
    Filtreleme, sıralama ve sayfalama artık veritabanında
-   yapılıyor; buraya yalnızca gösterilecek 24 ürün geliyor
-   (26 KB). Toplam sayı da aynı sorgudan `total_count` olarak
+   yapılıyor; buraya yalnızca gösterilecek bir sayfalık ürün
+   geliyor. Toplam sayı da aynı sorgudan `total_count` olarak
    dönüyor, ayrıca sayım sorgusu gerekmiyor.
    ═══════════════════════════════════════════════════════════ */
 
-export const CATALOG_PAGE_SIZE = 24;
+/*
+  SAYFA BOYU 25 (19.10.2026, kurum sahibinin kararı).
+
+  Önce 24'tü; ızgara sütun sayısına (2/3/4) tam bölündüğü için
+  son satır hiç eksik kalmıyordu. Artık "daha fazla yükle"
+  düğmesi var, yani son satır zaten listenin sonu değil — eksik
+  bir hücre görünmüyor.
+*/
+export const CATALOG_PAGE_SIZE = 25;
 
 export type CatalogFilters = {
   brand?: string;
