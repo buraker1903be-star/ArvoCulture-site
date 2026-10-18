@@ -288,16 +288,10 @@ export default async function RootLayout({
           kalmak, yanlış gizlemekten iyi.
         */}
         {yurtdisiAcik && (
-          <script
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: paraBirimiOnYukleyici() }}
-          />
+          <script dangerouslySetInnerHTML={{ __html: paraBirimiOnYukleyici() }} />
         )}
         {gizlemeCss && (
-          <style
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: gizlemeCss }}
-          />
+          <style dangerouslySetInnerHTML={{ __html: gizlemeCss }} />
         )}
       </head>
       <body
