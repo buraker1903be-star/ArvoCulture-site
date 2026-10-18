@@ -74,3 +74,33 @@ test("gerçek beden ve ton birlikte yazılıyor", () => {
   const ozet = varyantOzeti([v({ sku: "TR-1", color: "pure-red", size: "M" })]);
   assert.equal(ozet.tek?.label, "Pure Red · M");
 });
+
+/*
+  KUPON KURALI SESSİZCE KAPANMIŞTI (18.10.2026).
+
+  Karttan hızlı eklenen her ürün bir varyantla geliyor ve sepet
+  satırı `oldPrice`'ı DÜŞÜRÜYORDU; satır indirimsiz sayılıyor,
+  "indirimdeki ürünlerde geçerli değildir" kuponu ona da
+  uygulanıyordu. Canlıda görüldü: ARVO10, %25 indirimli kreme de
+  indirim yaptı.
+*/
+test("tek varyantın üstü çizili fiyatı sepete taşınıyor", () => {
+  const ozet = varyantOzeti([
+    { sku: "A1", price: 1048.9, compare_at_price: 1399.9 },
+  ]);
+  assert.equal(ozet.tek?.oldPrice, 1399.9);
+});
+
+test("üstü çizili fiyat fiyattan büyük değilse taşınmıyor", () => {
+  /* Eşit ya da küçük bir "eski fiyat" indirim değil, gürültü. */
+  assert.equal(
+    varyantOzeti([{ sku: "A1", price: 100, compare_at_price: 100 }]).tek
+      ?.oldPrice,
+    undefined,
+  );
+  assert.equal(
+    varyantOzeti([{ sku: "A1", price: 100, compare_at_price: null }]).tek
+      ?.oldPrice,
+    undefined,
+  );
+});

@@ -126,6 +126,13 @@ export function ProductBuy({
           sku: selected.sku,
           label: displayVariantLabel(selected),
           price: selected.price,
+          /* Satırın indirimli sayılması buna bağlı ve ölçüt
+             ArvoARC'ınkiyle aynı (compare_at_price > price). */
+          oldPrice:
+            selected.compare_at_price &&
+            selected.compare_at_price > selected.price
+              ? selected.compare_at_price
+              : undefined,
         }
       : undefined;
 

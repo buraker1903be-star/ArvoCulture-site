@@ -8136,7 +8136,16 @@ body.theme-modern .footer-link-group a {
    arka planı beyaz" kararını bozmuyor.
    ========================================================== */
 
-body.theme-modern footer {
+/*
+  SINIFA BAĞLI, ETİKETE DEĞİL.
+
+  `body.theme-modern footer` yazıyordu ve özgüllüğü (0,2,1)
+  `.drawer-foot`un (0,1,0) üstündeydi: SEPET ÇEKMECESİNİN alt
+  bölümü de bir `<footer>` olduğu için koyu degradeyi ve açık
+  metin rengini alıyordu. Canlıda görüldü — beyaz çekmecenin
+  dibinde siyah bir blok.
+*/
+body.theme-modern .site-footer {
   position: relative;
   border-top: 0;
   background:
@@ -8149,7 +8158,7 @@ body.theme-modern footer {
 
 /* Üst kenarda altın saç teli: koyu yüzeyin beyaz sayfadan
    koptuğu çizgi (kampanya bandındakiyle aynı). */
-body.theme-modern footer::before {
+body.theme-modern .site-footer::before {
   content: "";
   position: absolute;
   top: 0;
@@ -10729,4 +10738,65 @@ body.theme-modern .auth-alt .linklike:hover {
   .drawer-text .quantity button {
     transition: none;
   }
+}
+
+/* ==========================================================
+   SEPET ÇEKMECESİ — İNCELTME (18.10.2026)
+
+   Çekmece bilgiyi veriyordu ama hiçbirini VURGULAMIYORDU:
+   başlıkta kaç ürün olduğu yoktu, indirimli satırın üstü çizili
+   fiyatı sepete girince kayboluyordu (müşteri kazancını
+   karttan hatırlamak zorundaydı) ve kupon beklenenden az
+   indirdiğinde sebebi hiçbir yerde yazmıyordu.
+   ========================================================== */
+
+.drawer-head h2 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+  margin: 0;
+}
+
+.drawer-sayi {
+  font-family: var(--font-sans);
+  font-size: var(--t-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--ink-3);
+}
+
+/* Ücretsiz kargo şeridi: en etkili sepet büyütme aracı ve
+   çekmecenin ilk okunan satırı. Altın zeminli, eşik geçilince
+   yeşil — "kazandın" demenin en kısa yolu. */
+.drawer-nudge {
+  background: color-mix(in srgb, var(--gold) 7%, transparent);
+}
+
+.drawer-nudge[data-ucretsiz] {
+  background: color-mix(in srgb, var(--ok) 8%, transparent);
+}
+
+.drawer-nudge[data-ucretsiz] p {
+  color: var(--ok);
+  font-weight: 500;
+}
+
+.drawer-nudge[data-ucretsiz] .drawer-progress i {
+  background: var(--ok);
+}
+
+/* Satırdaki üstü çizili fiyat: ürün kartındakiyle aynı dil. */
+.drawer-price s {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  text-decoration-thickness: 1px;
+}
+
+/* Kuponun neden daha az indirdiğini söyleyen not. Uyarı değil
+   açıklama: kupon ÇALIŞTI, yalnızca bir kısmına uygulandı. */
+.coupon-note {
+  margin: 0;
+  font-size: var(--t-xs);
+  line-height: 1.55;
+  color: var(--ink-3);
 }

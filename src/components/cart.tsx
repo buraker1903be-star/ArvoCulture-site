@@ -54,6 +54,16 @@ export type CartVariant = {
   /* Yer tutucu başlıklar etikete dönüşmediği için boş kalabilir. */
   label?: string;
   price?: number;
+  /*
+    VARYANTIN KENDİ ÜSTÜ ÇİZİLİ FİYATI (compare_at_price, TL).
+
+    Satırın indirimli sayılıp sayılmayacağını bu belirliyor ve
+    ölçüt ArvoARC'ınkiyle AYNI olmak zorunda: orada kupon
+    `v.compare_at_price > v.price` olan satırı dışarıda
+    bırakıyor (migration 20261018134829). Ürünün değil VARYANTIN
+    alanı, çünkü ArvoARC da varyanta bakıyor.
+  */
+  oldPrice?: number;
 };
 
 type CartValue = {
@@ -160,10 +170,33 @@ export function CartProvider({
               name: product.name,
               // Varyant fiyatı ürün fiyatından farklı olabilir.
               price: variant?.price ?? product.price,
-              /* Varyant fiyatı farklıysa ürünün üstü çizili fiyatı o
-                 satır için anlamını yitiriyor; yalnızca ürün
-                 fiyatıyla eklenen satırda taşınıyor. */
-              oldPrice: variant?.price ? undefined : product.oldPrice,
+              /*
+                ÜSTÜ ÇİZİLİ FİYAT: ÖNCE VARYANTIN KENDİSİ.
+
+                Burada `variant?.price ? undefined : product.oldPrice`
+                yazıyordu ve KURALI SESSİZCE KAPATIYORDU: karttan
+                hızlı eklenen her ürün bir varyantla geliyor, yani
+                `oldPrice` hep undefined kalıyor, satır indirimsiz
+                sayılıyor ve "indirimdeki ürünlerde geçerli
+                değildir" kuponu o satıra da uygulanıyordu
+                (18.10.2026'da canlıda görüldü: ARVO10, %25
+                indirimli kreme de indirim yaptı).
+
+                Gerekçesi kısmen doğruydu — varyant fiyatı ürün
+                fiyatından FARKLIYSA ürünün üstü çizili fiyatı o
+                satır için anlamsız. Ama o durumda yapılacak şey
+                alanı silmek değil, VARYANTIN kendi üstü çizili
+                fiyatını kullanmak; ArvoARC da ona bakıyor.
+
+                Ürünün alanına yalnızca varyant fiyatı ürün
+                fiyatıyla aynıysa düşülüyor.
+              */
+              oldPrice:
+                variant?.oldPrice ??
+                (!variant || variant.price === undefined ||
+                variant.price === product.price
+                  ? product.oldPrice
+                  : undefined),
               image: product.image,
               eyebrow: product.eyebrow,
               quantity: 1,

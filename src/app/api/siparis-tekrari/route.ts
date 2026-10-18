@@ -110,6 +110,10 @@ export async function POST(request: Request) {
         sku: varyant.sku,
         label: displayVariantLabel(varyant),
         price: varyant.price,
+        oldPrice:
+          varyant.compare_at_price && varyant.compare_at_price > varyant.price
+            ? varyant.compare_at_price
+            : undefined,
       },
       adet: kalem.quantity,
     });

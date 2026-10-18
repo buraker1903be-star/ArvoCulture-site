@@ -24,7 +24,7 @@ import type { Order } from "@/lib/order-types";
 type Yanit = {
   eklenecekler: Array<{
     urun: Product;
-    varyant: { sku: string; label?: string; price: number };
+    varyant: { sku: string; label?: string; price: number; oldPrice?: number };
     adet: number;
   }>;
   atlananlar: Array<{ ad: string; sebep: string }>;

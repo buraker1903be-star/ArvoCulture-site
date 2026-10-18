@@ -29,6 +29,9 @@ export type VaryantSatiri = {
   color?: string | null;
   size?: string | null;
   price: number;
+  /* Üstü çizili fiyat: satırın indirimli sayılması bunun üstünde
+     duruyor (bkz. CartVariant.oldPrice). */
+  compare_at_price?: number | null;
 };
 
 export type VaryantOzeti = {
@@ -46,6 +49,12 @@ export function varyantOzeti(varyantlar: VaryantSatiri[]): VaryantOzeti {
       sku: varyant.sku,
       label: displayVariantLabel(varyant),
       price: varyant.price,
+      /* Yalnızca gerçekten indirimliyse taşınıyor: eşit ya da
+         küçük bir "eski fiyat" indirim değil, gürültü. */
+      oldPrice:
+        varyant.compare_at_price && varyant.compare_at_price > varyant.price
+          ? varyant.compare_at_price
+          : undefined,
     },
   };
 }

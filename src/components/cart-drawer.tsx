@@ -80,6 +80,7 @@ export function CartDrawer({
   /* İndirimli satırlar kupona girmiyor (kupon "birleşebilir"
      işaretli değilse); kural lib/coupon'da ve ArvoARC'ın sipariş
      fonksiyonunda AYNI. */
+  const adet = items.reduce((t, satir) => t + satir.quantity, 0);
   const kuponaTabi = kuponaTabiToplam(items);
   const coupon = code.trim()
     ? evaluateCoupon(discounts, code, total, kuponaTabi)
@@ -114,7 +115,14 @@ export function CartDrawer({
 
       <aside className="drawer">
         <header className="drawer-head">
-          <h2>Sepetim</h2>
+          {/* Sayı başlıkta: müşteri kaç kalemi olduğunu listeyi
+              saymadan görüyor. */}
+          <h2>
+            Sepetim
+            {items.length > 0 && (
+              <span className="drawer-sayi">{adet} ürün</span>
+            )}
+          </h2>
           <button type="button" onClick={close}>
             Kapat
           </button>
@@ -135,7 +143,12 @@ export function CartDrawer({
               gösteriyor; eşik geçilince mesaj kaybolmak yerine
               müşteriye kargonun ücretsiz olduğunu söylüyor.
             */}
-            <div className="drawer-nudge">
+            <div
+              className="drawer-nudge"
+              /* Eşik geçilince şerit yeşile dönüyor: "kazandın"
+                 demenin en kısa yolu. */
+              data-ucretsiz={shipping === 0 ? "" : undefined}
+            >
               <p>
                 {shipping === 0 ? (
                   "Kargonuz ücretsiz."
@@ -201,6 +214,16 @@ export function CartDrawer({
 
                   <div className="drawer-price">
                     <b>{formatPrice(item.price * item.quantity)}</b>
+                    {/*
+                      ÜSTÜ ÇİZİLİ FİYAT SEPETTE DE GÖRÜNÜYOR.
+                      Müşteri indirimi karttan hatırlıyordu; sepete
+                      girince kazancı kayboluyordu. Aynı alan
+                      kuponun o satıra uygulanıp uygulanmayacağını
+                      da belirliyor (lib/coupon).
+                    */}
+                    {item.oldPrice && item.oldPrice > item.price && (
+                      <s>{formatPrice(item.oldPrice * item.quantity)}</s>
+                    )}
                     <button
                       type="button"
                       className="remove-item"
@@ -247,6 +270,22 @@ export function CartDrawer({
               )}
               {coupon?.ok && (
                 <p className="cart-saving">{coupon.label} uygulandı.</p>
+              )}
+
+              {/*
+                KUPON NEDEN DAHA AZ İNDİRDİ?
+
+                Kupon birleşmiyorsa indirimli satırlar hesaba
+                girmiyor (ArvoARC'ta da öyle) ama müşteri bunu
+                yalnızca rakamdan anlıyordu: "%10 girdim, %10
+                düşmedi". Sepette indirimli ürün VARSA ve kupon
+                uygulandıysa sebebi yazıyor.
+              */}
+              {coupon?.ok && kuponaTabi < total && (
+                <p className="coupon-note">
+                  İndirimdeki ürünler kupona dahil değil; kupon{" "}
+                  {formatPrice(kuponaTabi)} üzerinden uygulandı.
+                </p>
               )}
 
               <dl className="summary-totals">
