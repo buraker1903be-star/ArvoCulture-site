@@ -1,9 +1,14 @@
 "use client";
 
-import { useContext, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { flyToCart } from "@/lib/fly-to-cart";
-import { displayVariantLabel, renkAdi, type Product } from "@/lib/product-types";
+import {
+  displayVariantLabel,
+  formatPrice,
+  renkAdi,
+  type Product,
+} from "@/lib/product-types";
 import { bedenSecenekleri, renkSecenekleri, varyantBul } from "@/lib/variant-select";
 import type { Variant } from "@/lib/variants";
 
@@ -35,6 +40,48 @@ export function ProductBuy({
   const [warn, setWarn] = useState(false);
   const [done, setDone] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const kutuRef = useRef<HTMLDivElement>(null);
+  /*
+    SABİT SATIN ALMA ÇUBUĞU (18.10.2026).
+
+    Telefonda "Sepete ekle" ekranın ALTINDA kalıyordu: müşteri
+    görsel, künye, başlık, alt başlık ve fiyatı geçip kaydırmak
+    zorundaydı. Satın alma kutusu görüş alanından çıkınca ekranın
+    altında fiyat ve düğme beliriyor.
+
+    Ölçüt kutunun KENDİSİ, sayfa kaydırma miktarı değil: kaydırma
+    eşiği ekran boyuna ve ürünün görsel sayısına göre değişiyor ve
+    kısa sayfalarda çubuk hiç çıkmıyordu.
+  */
+  const [cubuk, setCubuk] = useState(false);
+
+  useEffect(() => {
+    const hedef = kutuRef.current;
+    if (!hedef) return;
+
+    const gozlemci = new IntersectionObserver(
+      ([giris]) => setCubuk(!giris.isIntersecting),
+      /* Kutunun son pikseli çıkınca değil, düğmesi çıkınca:
+         üstteki seçenekler görünürken çubuk gereksiz. */
+      { rootMargin: "-64px 0px 0px 0px" },
+    );
+    gozlemci.observe(hedef);
+    return () => gozlemci.disconnect();
+  }, []);
+
+  /*
+    Çubuk görünürken alt gezinme çubuğu iniyor: ikisi üst üste
+    ekranın dörtte birini kaplıyordu. Gezinme bir kaydırma
+    uzaklıkta; satın alma düğmesi parmağın altında kalmalı.
+  */
+  useEffect(() => {
+    const govde = document.body;
+    if (cubuk) govde.dataset.satinAlmaCubugu = "acik";
+    else delete govde.dataset.satinAlmaCubugu;
+    return () => {
+      delete govde.dataset.satinAlmaCubugu;
+    };
+  }, [cubuk]);
 
   /*
     RENK SEÇİMİ. Kutu tekstil için yazılmıştı ve yalnızca bedeni
@@ -65,6 +112,10 @@ export function ProductBuy({
        istemediği ton ya da beden gönderilirdi. */
     if ((needsColor || needsSize) && !selected) {
       setWarn(true);
+      /* Çubuktan basıldığında seçenekler ekranda değil: uyarıyı
+         göstermek tek başına yetmez, müşteriyi seçeneklere
+         götürüyoruz. */
+      kutuRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -118,8 +169,10 @@ export function ProductBuy({
     );
   }
 
+  const fiyat = selected?.price ?? product.price;
+
   return (
-    <div className="pdp-buy">
+    <div className="pdp-buy" ref={kutuRef}>
       {needsColor && (
         <>
           <label className="option-label" id="renk-etiketi">
@@ -238,6 +291,27 @@ export function ProductBuy({
           ? `Son ${selected.stock} adet`
           : "Stokta"}
       </p>
+
+      {/*
+        Sabit çubuk yalnızca TELEFONDA ve satın alma kutusu
+        ekrandan çıkınca (CSS + gözlemci). Fiyat da burada:
+        müşteri düğmeye basarken ne ödeyeceğini görmeli, seçilen
+        varyantın fiyatı ürün fiyatından farklı olabiliyor.
+      */}
+      <div className="pdp-sticky" data-acik={cubuk ? "evet" : "hayir"} aria-hidden={!cubuk}>
+        <span className="pdp-sticky-fiyat">
+          <small>{selected ? displayVariantLabel(selected) : "Fiyat"}</small>
+          <b>{formatPrice(fiyat)}</b>
+        </span>
+        <button
+          type="button"
+          className="btn"
+          onClick={handleAdd}
+          tabIndex={cubuk ? 0 : -1}
+        >
+          {done ? "Eklendi ✓" : "Sepete ekle"}
+        </button>
+      </div>
     </div>
   );
 }

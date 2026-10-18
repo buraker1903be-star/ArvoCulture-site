@@ -313,7 +313,24 @@ export function Header({
   );
   return (
     <>
-      <div className="announcement" aria-label="Mağaza duyuruları">
+      {/*
+        ŞERİTTE TELEFONDA TEK MADDE (18.10.2026).
+
+        Üç madde dar ekranda iki satıra taşıyor ve başlıkla
+        birlikte 812 piksellik ekranın %13'ünü yiyordu — ilk
+        ekranda ürün yerine kayan bir şerit duruyordu. Mağazanın
+        kendi duyurusu (kargo eşiği, kupon) ticari olarak değerli
+        olan; "özenli paketleme" ve "güvenli ödeme" zaten ana
+        sayfadaki güvence şeridinde ve altbilgide var.
+
+        Duyuru YOKSA ikisi kalıyor: boş bir şerit göstermektense
+        genel güvenceleri göstermek.
+      */}
+      <div
+        className="announcement"
+        data-duyuru={theme.announcement ? "var" : "yok"}
+        aria-label="Mağaza duyuruları"
+      >
         <div className="announcement-track">
           {/* Duyuru boşsa o madde hiç çizilmiyor: varsayılan metin
               ArvoCulture'ın kupon kodu ve kargo eşiğiydi, artık
@@ -321,13 +338,13 @@ export function Header({
               boşluk bırakırdı. */}
           <div className="announcement-group">
             {theme.announcement && <span>{theme.announcement}</span>}
-            <span>ÖZENLİ PAKETLEME</span>
-            <span>GÜVENLİ ÖDEME</span>
+            <span className="announcement-ikincil">ÖZENLİ PAKETLEME</span>
+            <span className="announcement-ikincil">GÜVENLİ ÖDEME</span>
           </div>
           <div className="announcement-group" aria-hidden="true">
             {theme.announcement && <span>{theme.announcement}</span>}
-            <span>ÖZENLİ PAKETLEME</span>
-            <span>GÜVENLİ ÖDEME</span>
+            <span className="announcement-ikincil">ÖZENLİ PAKETLEME</span>
+            <span className="announcement-ikincil">GÜVENLİ ÖDEME</span>
           </div>
         </div>
       </div>
