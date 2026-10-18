@@ -1523,3 +1523,33 @@ footer {
 }
 .store-closed h1 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
 .store-closed p { margin: 0; font-size: 15px; line-height: 1.6; opacity: .7; max-width: 42ch; }
+
+/*
+  LOGO YERİNE MAĞAZA ADI.
+
+  Kiracının logosu yoksa ya da dosyası yüklenemiyorsa (depodan
+  silinmiş, taşınmış, erişilemiyor) adı yazıyla yazılıyor —
+  18.10.2026'da canlıda tam bu oldu: panelde logo değiştirilince
+  eski dosya silindi, tema kaydı eskisini göstermeye devam etti ve
+  her sayfanın başında 404 veren bir görsel kaldı.
+
+  Çıplak metin gibi durmasın diye künye yazısı: büyük harf, seyrek
+  aralık. Yükseklik logonunkiyle aynı hizada.
+*/
+.logo [data-logo="ad"],
+.footer-logo[data-logo="ad"] {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  font-family: var(--font-display), "Iowan Old Style", Georgia, serif;
+  font-size: 17px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Koyu başlıkta logo ters çevriliyordu; yazı da açık renge. */
+.logo.light [data-logo="ad"] {
+  color: #fff;
+}
