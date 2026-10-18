@@ -493,3 +493,117 @@ strong {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================
+   ARVO EV STİLİ (tema → tipografi: "modern")
+
+   NEDEN VAR: `theme-${typography}` sınıfı <body> üzerine
+   yazılıyordu ama HİÇBİR CSS KURALI onu kullanmıyordu —
+   panelden tipografi seçmek hiçbir şey yapmıyordu, yani her
+   kiracı için sessizce ölü bir ayardı (18.10.2026).
+
+   NE OLDUĞU: arvo-os.com ve akademikmerkez.com'da ölçülen dil.
+   İkisi de aynı tarifi kullanıyor ve "elit" hissi oradan
+   geliyor — süsten değil, kısıttan:
+
+     zemin   beyaz / kırık beyaz        (ölçüldü: #fff, #fbfbfd)
+     metin   nötr koyu, siyah değil     (#1d1d1f, rgb(9,40,71))
+     yüzey   serin gri                  (#f5f5f7, #f2f2f7)
+     başlık  SANS, 700, sıkı aralık     (44–49px, -0.02em)
+     düğme   koyu, HAP (999px), cümle düzeni
+
+   "editorial" (varsayılan) dokunulmadı: serif başlık, fildişi
+   zemin, geniş aralıklı büyük harf düğme. İki stil birbirinin
+   zıddı ve ikisi de geçerli; seçim kiracının.
+
+   RENKLER BURADA YAZILMIYOR. Mürekkep ve vurgu panelden geliyor
+   (primary_color / accent_color) ve zemin de öyle. Burada
+   yalnızca NÖTR yüzeyler ve tipografi var — renk kararını koda
+   gömmek, bu gece kapatılan sızıntıların aynısı olurdu.
+   ========================================================== */
+
+body.theme-modern {
+  /* Serin gri yüzeyler: sıcak fildişi tonları Apple dilinde
+     sararmış duruyor. */
+  --panel-2: #f5f5f7;
+  --line: #e3e3e6;
+  --line-soft: #ececef;
+
+  /*
+    GÖSTERİ YAZISI SANS OLUYOR — TEK SATIRDA.
+
+    Serif, on beş ayrı kuralda `--font-display` ile çağrılıyor
+    (kategori kartı, rakamlar, fiyat künyesi, filigran…). Hepsini
+    tek tek ezmek yerine değişkenin kendisi yeniden tanımlanıyor:
+    yeni bir yerde serif çağrıldığında da kendiliğinden doğru
+    olur.
+
+    `--font-display-italic` DOKUNULMUYOR. İtalik serif vurgu
+    (başlığın ikinci satırı) ölçülen iki sitede de var ve "elit"
+    hissin kaynaklarından biri — akademikmerkez.com'da tam olarak
+    bu: kalın sans birinci satır, italik serif ikinci satır.
+  */
+  --font-display: var(--font-sans);
+}
+
+/*
+  Başlıklar sans ve kalın. Serif'in tersine sans sıkıştırılmak
+  ister: -0.022em bu ölçekte harfleri bir araya getirip "kurumsal
+  kalın başlık" hissini veriyor, dağıtmıyor.
+*/
+/*
+  Seçici <body>'ye bağlı: `.theme-modern h1` ile `.hero-body h1`
+  AYNI özgüllükte ve sonraki kazanıyordu — başlık Inter'e geçiyor
+  ama ağırlığı 500'de kalıyordu (ölçüldü). `body.theme-modern`
+  bir basamak yukarıda ve bölüme özel kuralları da aşıyor.
+*/
+body.theme-modern h1,
+body.theme-modern h2,
+body.theme-modern h3 {
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  line-height: 1.08;
+}
+
+/*
+  Üçüncü basamak biraz daha hafif: üç kademe de 700 olunca sayfa
+  tek bir ağırlığa düşüyor ve hiyerarşi kayboluyor.
+*/
+body.theme-modern h3 {
+  font-weight: 600;
+  letter-spacing: -0.014em;
+}
+
+/*
+  Düğme: hap biçimi ve CÜMLE DÜZENİ. Geniş aralıklı büyük harf
+  ("SEPETE EKLE") editoryal dilin parçası; Apple dilinde aynı
+  düğme bağırıyor. Ölçülen iki sitede de yarıçap 999px.
+*/
+body.theme-modern .btn {
+  border-radius: 999px;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+/*
+  Künye satırları (ÜRÜN · MARKA · "ÖNE ÇIKANLAR") editoryal
+  dilde büyük harf ve seyrek. Burada da kalıyorlar ama aralık
+  toplanıyor: -0.02em başlıkların yanında 0.18em bir künye,
+  iki ayrı siteden alınmış gibi duruyordu.
+*/
+.theme-modern .about-eyebrow,
+.theme-modern .head p,
+.theme-modern .card small {
+  letter-spacing: 0.08em;
+}
+
+/*
+  Panel köşeleri biraz daha yumuşak: hap düğmenin yanında keskin
+  köşeli kart uyumsuz duruyor.
+*/
+body.theme-modern .panel,
+body.theme-modern .card-art {
+  border-radius: 18px;
+}
