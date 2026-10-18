@@ -10,7 +10,7 @@ import { getStorefrontProduct, getStorefrontProducts } from "@/lib/products";
 import { getProductVariants } from "@/lib/variants";
 import { formatPrice } from "@/lib/product-types";
 import { breadcrumbSchema, productSchema } from "@/lib/seo";
-import { vitrinAdresi } from "@/lib/konak";
+import { tekMagazaKipi, vitrinAdresi } from "@/lib/konak";
 import { kategoriAdresi } from "@/lib/categories";
 import { getSalesRules } from "@/lib/store-settings";
 import { shippingTerms } from "@/lib/order-quote";
@@ -35,6 +35,39 @@ import { getStorefrontTheme } from "@/lib/storefront-theme";
  * Süre kısaltılmak istenirse değiştirilecek yer burası.
  */
 export const revalidate = 60;
+
+/*
+  ÇOK MAĞAZA KİPİNDE BU SAYFA STATİK ÜRETİLEMEZ — VE DERLEME DURUR.
+
+  Adres `VITRIN_KONAGI` tanımsızken istekten okunuyor, yani
+  `headers()` çağrılıyor (lib/konak). Next, `generateStaticParams`
+  olan bir rotayı statik üretmeye çalışıyor ve statik üretimde
+  `headers()` görünce DYNAMIC_SERVER_USAGE fırlatıyor. Sonuç:
+  BÜTÜN ürün sayfaları 500 veriyor. 18.10.2026'da canlıda böyle
+  oldu — 3.400 sayfa kapandı ve sebebi koddaki bir değişiklik
+  değil, üretimde değişkenin boşalmasıydı.
+
+  `export const dynamic` ile kipe göre karar VERİLEMİYOR: Next o
+  alanı derleme anında statik olarak okuyor ve hesaplanmış bir
+  değer "can't recognize the exported `dynamic` field" hatası
+  veriyor (denendi).
+
+  Bu yüzden karar şu: bu kipte derleme BAŞARISIZ olur. Sessizce
+  500 veren bir dağıtım yapmaktansa hiç dağıtmamak — eski dağıtım
+  yayında kalır ve sebep ilk satırda yazar.
+
+  Çok mağazalı kipte ürün sayfasını çalıştırmanın yolu adresi YOLA
+  taşımaktan geçiyor (middleware ile), `lib/konak`ta yazılı.
+*/
+if (!tekMagazaKipi()) {
+  throw new Error(
+    "VITRIN_KONAGI tanımsız. Ürün sayfası generateStaticParams ile statik " +
+      "üretiliyor ve statik üretimde adres istekten okunamıyor (headers) — " +
+      "bu kipte bütün ürün sayfaları 500 verir. Tek mağaza dağıtımında bu " +
+      "değişkeni mağazanın alan adına ayarlayın; çok mağazalı kipte adresin " +
+      "middleware ile yola taşınması gerekiyor (lib/konak).",
+  );
+}
 
 /**
  * Boş liste dönüyor ve bu bilinçli.
