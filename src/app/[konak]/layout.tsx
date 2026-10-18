@@ -293,6 +293,30 @@ export default async function RootLayout({
                   <p>{theme.footer_tagline}</p>
 
                   {/*
+                    İLETİŞİM ALTBİLGİDE.
+
+                    Altbilgide mağazaya ulaşmanın hiçbir yolu yoktu;
+                    "İletişim" bağlantısı vardı ama bir tık daha
+                    uzaktaydı. Numara ve e-posta SATICI KAYDINDAN
+                    geliyor (getStoreIdentity) — sayfaya yazılmıyor,
+                    yoksa ikinci bir kiracının altbilgisinde
+                    ArvoCulture'ın hattı görünürdü. Alan boşsa satır
+                    hiç çizilmiyor.
+                  */}
+                  {(kimlik.phone || kimlik.email) && (
+                    <p className="footer-contact">
+                      {kimlik.phone && (
+                        <a href={`tel:${kimlik.phone.replace(/[^+\d]/g, "")}`}>
+                          {kimlik.phone}
+                        </a>
+                      )}
+                      {kimlik.email && (
+                        <a href={`mailto:${kimlik.email}`}>{kimlik.email}</a>
+                      )}
+                    </p>
+                  )}
+
+                  {/*
                   Güven rozetleri. Logo dosyaları public/ altına
                   eklenmelidir; yoksa yalnızca metin görünür ve
                   sayfa bozulmaz.
