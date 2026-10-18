@@ -1,12 +1,13 @@
 "use client";
 
+import { useParaBirimi } from "@/components/para-birimi";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { CartContext, cartKey } from "@/components/cart";
 import { CheckoutSteps } from "@/components/checkout-steps";
 import { amountToFreeShipping, shippingFor, toKurus } from "@/lib/order-quote";
-import { formatPrice } from "@/lib/product-types";
 import {
   readCoupon,
   writeCoupon,
@@ -29,6 +30,8 @@ import {
  * hesaplanan bir indirim gerçek tutarla çelişebilirdi.
  */
 export function CartPageView() {
+  /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
+  const { yaz } = useParaBirimi();
   const { items, total, remove, setQuantity, salesRules } = useContext(CartContext);
 
   const [coupon, setCoupon] = useState("");
@@ -192,8 +195,8 @@ export function CartPageView() {
                   </div>
 
                   <div className="cart-item-price">
-                    <b>{formatPrice(item.price * item.quantity)}</b>
-                    <small>{formatPrice(item.price)} / adet</small>
+                    <b>{yaz(item.price * item.quantity)}</b>
+                    <small>{yaz(item.price)} / adet</small>
                     <button
                       type="button"
                       className="remove-item"
@@ -295,7 +298,7 @@ export function CartPageView() {
           {couponSaved && couponState !== "error" && (
             <p className="cart-saving">
               {couponDiscount > 0
-                ? `Kod uygulandı · ${formatPrice(couponDiscount)} indirim`
+                ? `Kod uygulandı · ${yaz(couponDiscount)} indirim`
                 : "Kod uygulandı."}
             </p>
           )}
@@ -303,21 +306,21 @@ export function CartPageView() {
           <dl className="summary-totals">
             <div>
               <dt>Ara toplam</dt>
-              <dd>{formatPrice(total)}</dd>
+              <dd>{yaz(total)}</dd>
             </div>
             <div>
               <dt>Kargo</dt>
-              <dd>{shipping === 0 ? "Ücretsiz" : formatPrice(shipping)}</dd>
+              <dd>{shipping === 0 ? "Ücretsiz" : yaz(shipping)}</dd>
             </div>
             <div className="grand">
               <dt>Toplam</dt>
-              <dd>{formatPrice(total + shipping)}</dd>
+              <dd>{yaz(total + shipping)}</dd>
             </div>
           </dl>
 
           {remaining > 0 && (
             <p className="hint">
-              {formatPrice(remaining)} daha ekleyin, kargo ücretsiz olsun.
+              {yaz(remaining)} daha ekleyin, kargo ücretsiz olsun.
             </p>
           )}
 

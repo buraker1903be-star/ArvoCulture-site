@@ -11029,3 +11029,60 @@ body.theme-modern .auth-alt .linklike:hover {
     transition: none;
   }
 }
+
+/* ==========================================================
+   PARA BİRİMİ SEÇİCİSİ (19.10.2026)
+
+   Yurtdışı modu kapalıyken ya da kur girilmemişken bileşen hiç
+   çizilmiyor (para-birimi.tsx): basılınca bir şey olmayan bir
+   düğme, olmayan düğmeden kötü.
+   ========================================================== */
+
+.para-secici {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.para-secici button {
+  padding: 5px 10px;
+  border: 0;
+  background: none;
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 160ms var(--ease),
+    color 160ms var(--ease);
+}
+
+.para-secici button[aria-pressed="true"] {
+  background: var(--brand);
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .para-secici button:not([aria-pressed="true"]):hover {
+    color: var(--ink);
+  }
+}
+
+/* Telefonda başlık dar: seçici daha küçük ama dokunulabilir
+   kalıyor. */
+@media (max-width: 620px) {
+  .para-secici button {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .para-secici button {
+    transition: none;
+  }
+}

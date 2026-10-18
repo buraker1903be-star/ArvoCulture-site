@@ -102,7 +102,50 @@ test("ArvoARC'tan gelen kuruş değerleri TL'ye çevrilir", () => {
     bank_transfer_enabled: true,
     bank_transfer_discount_percent: "2.5", // numeric metin olarak gelebilir
   });
-  assert.deepEqual(kurallar, { shippingFee: 149, freeShippingOver: 2500, transferEnabled: true, transferDiscountPercent: 2.5 });
+  assert.deepEqual(kurallar, {
+    shippingFee: 149,
+    freeShippingOver: 2500,
+    transferEnabled: true,
+    transferDiscountPercent: 2.5,
+    /* Alanlar ESKİ FONKSİYONDA YOK: migration uygulanana kadar
+       undefined geliyor ve mod kapalı sayılıyor. Varsayılanı açık
+       yapsaydık, alanı olmayan bir mağazada yurtdışı vitrini
+       kendiliğinden açılırdı. */
+    internationalEnabled: false,
+    usdRate: null,
+    usdMarginPercent: 0,
+  });
+});
+
+test("yurtdışı alanları geldiğinde kurallara yansıyor", () => {
+  const kurallar = toSalesRules({
+    shipping_fee: 12000,
+    free_shipping_threshold: 200000,
+    bank_transfer_enabled: true,
+    bank_transfer_discount_percent: 3,
+    international_enabled: true,
+    /* numeric sütun metin olarak gelebilir. */
+    usd_rate: "42.5000",
+    usd_margin_percent: "7.50",
+  });
+  assert.equal(kurallar.internationalEnabled, true);
+  assert.equal(kurallar.usdRate, 42.5);
+  assert.equal(kurallar.usdMarginPercent, 7.5);
+});
+
+test("kur sıfır ya da bozuksa YOK sayılıyor, sıfır değil", () => {
+  /* Sıfır olsaydı "kur 0" ile "kur yok" aynı şeye inerdi ve
+     bölme sonsuza giderdi. */
+  const satir = {
+    shipping_fee: 12000,
+    free_shipping_threshold: 200000,
+    bank_transfer_enabled: true,
+    bank_transfer_discount_percent: 3,
+    international_enabled: true,
+  };
+  assert.equal(toSalesRules({ ...satir, usd_rate: 0 }).usdRate, null);
+  assert.equal(toSalesRules({ ...satir, usd_rate: "abc" }).usdRate, null);
+  assert.equal(toSalesRules({ ...satir, usd_rate: null }).usdRate, null);
 });
 
 test("havaleyi yalnızca açık bir false kapatır (ArvoARC ile aynı)", () => {

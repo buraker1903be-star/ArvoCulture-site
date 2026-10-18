@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { QuickAdd } from "@/components/quick-add";
-import { formatPrice, type Product } from "@/lib/product-types";
+import { type Product } from "@/lib/product-types";
+import { Fiyat } from "@/components/para-birimi";
 import { FavouriteButton } from "@/components/favourite-button";
 import { CardGallery } from "@/components/card-gallery";
 
@@ -147,9 +148,12 @@ export function ProductCard({ product }: { product: Product }) {
       </h3>
 
       <div className="price">
-        <b>{formatPrice(product.price)}</b>
+        {/* Fiyat seçili para biriminde: dolar seçiliyse tarayıcı
+            çeviriyor, sunucu her zaman TL basıyor — ürün sayfasının
+            rota önbelleği bu yüzden bozulmuyor (para-birimi.tsx). */}
+        <b><Fiyat lira={product.price} /></b>
         {product.oldPrice && product.oldPrice > product.price && (
-          <del>{formatPrice(product.oldPrice)}</del>
+          <del><Fiyat lira={product.oldPrice} /></del>
         )}
         {/* İndirim oranı görselin üstündeki rozette; burada
             tekrarlanmıyor. */}

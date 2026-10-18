@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { asciiSlug } from "@/lib/categories";
 import { CartLink } from "./cart";
+import { ParaBirimiSecici } from "@/components/para-birimi";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
 import { useLayerBack } from "@/lib/use-layer-back";
@@ -505,6 +506,14 @@ export function Header({
             Panel sayfayla ortak; Supabase paketi tembel
             yükleniyor (bkz. account-drawer).
           */}
+          {/*
+            PARA BİRİMİ SEÇİCİSİ hesap ve sepetten ÖNCE: sırayla
+            "neyi, ne kadara, nereden" okunuyor. Yurtdışı modu
+            kapalıyken ya da kur girilmemişken hiç çizilmiyor —
+            basılınca bir şey olmayan düğme, olmayan düğmeden
+            kötü.
+          */}
+          <ParaBirimiSecici />
           {theme.show_account && (
             <AccountDrawer
               supabaseUrl={supabaseUrl}

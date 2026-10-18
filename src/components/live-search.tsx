@@ -1,12 +1,13 @@
 "use client";
 
+import { useParaBirimi } from "@/components/para-birimi";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { readRecent } from "@/lib/recent";
 import { useProductList } from "@/lib/use-product-list";
-import { formatPrice } from "@/lib/product-types";
 import type { SearchItem } from "@/lib/search-index";
 
 /**
@@ -59,6 +60,8 @@ function Kart({
   onNavigate?: () => void;
   onHover?: () => void;
 }) {
+  /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
+  const { yaz } = useParaBirimi();
   const off =
     eskiFiyat && eskiFiyat > fiyat
       ? Math.round((1 - fiyat / eskiFiyat) * 100)
@@ -102,8 +105,8 @@ function Kart({
       </h3>
 
       <div className="price">
-        <b>{formatPrice(fiyat)}</b>
-        {eskiFiyat && eskiFiyat > fiyat && <del>{formatPrice(eskiFiyat)}</del>}
+        <b>{yaz(fiyat)}</b>
+        {eskiFiyat && eskiFiyat > fiyat && <del>{yaz(eskiFiyat)}</del>}
         {/* Metin ürün kartındaki rozetle aynı: tek başına bir eksi
             işareti ve sayı ne olduğunu söylemiyordu. */}
         {off > 0 && <span className="price-off">%{off} indirim</span>}

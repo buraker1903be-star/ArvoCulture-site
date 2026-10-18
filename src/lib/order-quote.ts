@@ -39,6 +39,16 @@ export type SalesRules = {
   freeShippingOver: number;
   transferEnabled: boolean;
   transferDiscountPercent: number;
+  /*
+    YURTDIŞI SATIŞI. Kur ve kâr payı ArvoARC'tan geliyor; dolar
+    fiyatını VİTRİN hesaplıyor (lib/dolar). Mod kapalıyken kur da
+    gelmiyor: kapalı mod "dolar yok" demek ve o yokluk burada da
+    `null` olarak duruyor — sıfır olsaydı "kur 0" ile "kur yok"
+    aynı şeye inerdi.
+  */
+  internationalEnabled: boolean;
+  usdRate: number | null;
+  usdMarginPercent: number;
 };
 
 export const DEFAULT_SALES_RULES: SalesRules = {
@@ -46,6 +56,12 @@ export const DEFAULT_SALES_RULES: SalesRules = {
   freeShippingOver: FREE_SHIPPING_OVER,
   transferEnabled: true,
   transferDiscountPercent: SELLER.transferDiscountPercent,
+  /* Varsayılan KAPALI: ayar okunamadığında yurtdışı vitrini
+     açılmamalı — fiyatı bilinmeyen bir satış açmaktansa yalnızca
+     TL satmak doğru. */
+  internationalEnabled: false,
+  usdRate: null,
+  usdMarginPercent: 0,
 };
 
 /** get_arvoculture_storefront_settings satırı (tutarlar kuruş). */
@@ -54,6 +70,9 @@ export type SalesRulesRow = {
   free_shipping_threshold: number | string | null;
   bank_transfer_enabled: boolean | null;
   bank_transfer_discount_percent: number | string | null;
+  international_enabled?: boolean | null;
+  usd_rate?: number | string | null;
+  usd_margin_percent?: number | string | null;
 };
 
 export function toSalesRules(row: SalesRulesRow | undefined): SalesRules {
@@ -73,7 +92,23 @@ export function toSalesRules(row: SalesRulesRow | undefined): SalesRules {
       row.bank_transfer_discount_percent === null || !Number.isFinite(percent) || percent < 0 || percent > 100
         ? DEFAULT_SALES_RULES.transferDiscountPercent
         : percent,
+    /*
+      Alanlar ESKİ FONKSİYONDA YOK: migration uygulanana kadar
+      `undefined` geliyor ve mod kapalı sayılıyor. Varsayılanı
+      açık yapsaydık, alanı olmayan bir mağazada yurtdışı vitrini
+      kendiliğinden açılırdı.
+    */
+    internationalEnabled: row.international_enabled === true,
+    usdRate: pozitifSayi(row.usd_rate),
+    usdMarginPercent: pozitifSayi(row.usd_margin_percent) ?? 0,
   };
+}
+
+/** Sayıya çevrilemeyen ya da sıfır/eksi değer `null`. */
+function pozitifSayi(deger: number | string | null | undefined): number | null {
+  if (deger === null || deger === undefined) return null;
+  const n = Number(deger);
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
 /** Kargo ücreti (TL). Eşik indirim öncesi ara toplamla karşılaştırılır. */

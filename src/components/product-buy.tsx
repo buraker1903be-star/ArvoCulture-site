@@ -1,11 +1,12 @@
 "use client";
 
+import { useParaBirimi } from "@/components/para-birimi";
+
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { CartContext } from "@/components/cart";
 import { flyToCart } from "@/lib/fly-to-cart";
 import {
   displayVariantLabel,
-  formatPrice,
   renkAdi,
   type Product,
 } from "@/lib/product-types";
@@ -33,6 +34,8 @@ export function ProductBuy({
   /** Seçenekler ArvoARC'tan okunamadı; hangi varyant olduğu bilinmiyor. */
   varyantOkunamadi?: boolean;
 }) {
+  /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
+  const { yaz } = useParaBirimi();
   const { add } = useContext(CartContext);
   const [renk, setRenk] = useState<string | null>(null);
   const [beden, setBeden] = useState<string | null>(null);
@@ -308,7 +311,7 @@ export function ProductBuy({
       <div className="pdp-sticky" data-acik={cubuk ? "evet" : "hayir"} aria-hidden={!cubuk}>
         <span className="pdp-sticky-fiyat">
           <small>{selected ? displayVariantLabel(selected) : "Fiyat"}</small>
-          <b>{formatPrice(fiyat)}</b>
+          <b>{yaz(fiyat)}</b>
         </span>
         <button
           type="button"

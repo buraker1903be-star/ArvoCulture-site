@@ -1,11 +1,12 @@
 "use client";
 
+import { useParaBirimi } from "@/components/para-birimi";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { CartContext, cartKey } from "@/components/cart";
-import { formatPrice } from "@/lib/product-types";
 import { evaluateCoupon, kuponaTabiToplam } from "@/lib/coupon";
 import { readCoupon, writeCoupon, clearCoupon } from "@/lib/cart-extras";
 import { useLayerBack } from "@/lib/use-layer-back";
@@ -27,6 +28,8 @@ export function CartDrawer({
   open: boolean;
   onClose: () => void;
 }) {
+  /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
+  const { yaz } = useParaBirimi();
   const { items, total, remove, setQuantity, discounts, salesRules } =
     useContext(CartContext);
   const [code, setCode] = useState("");
@@ -154,7 +157,7 @@ export function CartDrawer({
                   "Kargonuz ücretsiz."
                 ) : (
                   <>
-                    <b>{formatPrice(remaining)}</b> daha ekleyin, kargo
+                    <b>{yaz(remaining)}</b> daha ekleyin, kargo
                     ücretsiz olsun.
                   </>
                 )}
@@ -213,7 +216,7 @@ export function CartDrawer({
                   </div>
 
                   <div className="drawer-price">
-                    <b>{formatPrice(item.price * item.quantity)}</b>
+                    <b>{yaz(item.price * item.quantity)}</b>
                     {/*
                       ÜSTÜ ÇİZİLİ FİYAT SEPETTE DE GÖRÜNÜYOR.
                       Müşteri indirimi karttan hatırlıyordu; sepete
@@ -222,7 +225,7 @@ export function CartDrawer({
                       da belirliyor (lib/coupon).
                     */}
                     {item.oldPrice && item.oldPrice > item.price && (
-                      <s>{formatPrice(item.oldPrice * item.quantity)}</s>
+                      <s>{yaz(item.oldPrice * item.quantity)}</s>
                     )}
                     <button
                       type="button"
@@ -284,30 +287,30 @@ export function CartDrawer({
               {coupon?.ok && kuponaTabi < total && (
                 <p className="coupon-note">
                   İndirimdeki ürünler kupona dahil değil; kupon{" "}
-                  {formatPrice(kuponaTabi)} üzerinden uygulandı.
+                  {yaz(kuponaTabi)} üzerinden uygulandı.
                 </p>
               )}
 
               <dl className="summary-totals">
                 <div>
                   <dt>Ara toplam</dt>
-                  <dd>{formatPrice(total)}</dd>
+                  <dd>{yaz(total)}</dd>
                 </div>
                 {discount > 0 && (
                   <div className="is-discount">
                     <dt>İndirim</dt>
-                    <dd>−{formatPrice(discount)}</dd>
+                    <dd>−{yaz(discount)}</dd>
                   </div>
                 )}
                 <div>
                   <dt>Kargo</dt>
                   <dd>
-                    {shipping === 0 ? "Ücretsiz" : formatPrice(shipping)}
+                    {shipping === 0 ? "Ücretsiz" : yaz(shipping)}
                   </dd>
                 </div>
                 <div className="grand">
                   <dt>Toplam</dt>
-                  <dd>{formatPrice(afterDiscount + shipping)}</dd>
+                  <dd>{yaz(afterDiscount + shipping)}</dd>
                 </div>
               </dl>
               <Link className="btn btn-block" href="/odeme" onClick={close}>

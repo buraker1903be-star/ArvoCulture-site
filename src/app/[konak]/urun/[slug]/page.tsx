@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fiyat } from "@/components/para-birimi";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
@@ -8,7 +9,6 @@ import { RecentProducts } from "@/components/recent-products";
 import { ProductCard, discountOf } from "@/components/product-card";
 import { getStorefrontProduct, getStorefrontProducts } from "@/lib/products";
 import { getProductVariants } from "@/lib/variants";
-import { formatPrice } from "@/lib/product-types";
 import { breadcrumbSchema, productSchema } from "@/lib/seo";
 import { konagiAyarla, vitrinAdresi } from "@/lib/konak";
 import { kategoriAdresi } from "@/lib/categories";
@@ -185,15 +185,15 @@ export default async function ProductPage({ params }: Params) {
           {product.subtitle && <p className="lead">{product.subtitle}</p>}
 
           <div className="pdp-price">
-            <b>{formatPrice(product.price)}</b>
+            <b><Fiyat lira={product.price} /></b>
             {product.oldPrice && product.oldPrice > product.price && (
               <>
-                <del>{formatPrice(product.oldPrice)}</del>
+                <del><Fiyat lira={product.oldPrice} /></del>
                 {off > 0 && <span className="price-off">−%{off}</span>}
                 {/* Tutar olarak tasarruf, pahalı ürünlerde yüzdeden
                     daha ikna edici; ikisi birlikte duruyor. */}
                 <span className="pdp-save">
-                  {formatPrice(product.oldPrice - product.price)} tasarruf
+                  <Fiyat lira={product.oldPrice - product.price} /> tasarruf
                 </span>
               </>
             )}

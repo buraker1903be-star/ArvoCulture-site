@@ -13,6 +13,7 @@ import { getPopularSearches } from "@/lib/popular-searches";
 import { BottomNav } from "@/components/bottom-nav";
 import { AppShell } from "@/components/app-shell";
 import { ZiyaretKaydi } from "@/components/ziyaret-kaydi";
+import { ParaBirimiSaglayici } from "@/components/para-birimi";
 import { PageTransition } from "@/components/page-transition";
 import { getStorefrontTheme } from "@/lib/storefront-theme";
 import { getStoreStage } from "@/lib/store-stage";
@@ -270,6 +271,9 @@ export default async function RootLayout({
           supabaseUrl={env.supabaseUrl}
           supabaseKey={env.supabaseKey}
         >
+          {/* Para birimi sepetin DIŞINDA değil İÇİNDE olamaz:
+              sepet de fiyat yazıyor ve aynı seçimi kullanıyor. */}
+          <ParaBirimiSaglayici salesRules={salesRules}>
           <CartProvider discounts={discounts} salesRules={salesRules}>
             <Header
               theme={theme}
@@ -562,6 +566,7 @@ export default async function RootLayout({
               })}
             />
           </CartProvider>
+          </ParaBirimiSaglayici>
         </FavouritesProvider>
       </body>
     </html>
