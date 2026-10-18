@@ -23,7 +23,6 @@ import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getSalesRules } from "@/lib/store-settings";
 import { shippingTerms } from "@/lib/order-quote";
 import { Reveal } from "@/components/reveal";
-import { ForYou } from "@/components/for-you";
 import { CATEGORIES } from "@/lib/categories";
 import { getKategoriVitrinleri } from "@/lib/kategori-vitrini";
 import { vitrinAdresi } from "@/lib/konak";
@@ -348,21 +347,16 @@ export default async function Home({
         sayfanın sonunda duruyordu ve oraya kadar inen müşteri
         zaten gezinmeyi seçmiş oluyordu.
 
-        Sayfada kişiselleştirme bitmiyor: "Senin için" rafı aynı
-        sinyalden (gezilen ürünler + favoriler) besleniyor ve
-        gezilenlerin KENDİSİNİ değil benzerlerini gösteriyor —
-        yani ana sayfada müşteriye yeni bir şey açıyor, aynı
-        kartları tekrar etmiyor.
+        "Senin için" rafı da kaldırıldı (aynı gün). İkisi de
+        sayfanın sonunda, dört rafın altında duruyordu ve oraya
+        inen müşteri zaten gezinmeyi seçmiş oluyordu; ana sayfanın
+        işi seçimi DARALTMAK, bir raf daha eklemek değil.
+
+        Bileşenler ve `/api/oneri` ucu duruyor: ikisi de çalışır
+        durumda ve ürün sayfasında ya da ileride başka bir yerde
+        kullanılabilir. "Son gezdikleriniz" zaten ürün sayfasında.
       */}
 
-      {/*
-        Vitrinin müşteriye göre değişen parçası. Yeni ziyaretçide
-        hiç görünmüyor; gösterecek bir şey olmadan "senin için"
-        demek süs olurdu.
-      */}
-      <Reveal>
-        <ForYou />
-      </Reveal>
 
       <Reveal>
         <HelpStrip />
