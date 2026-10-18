@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
   useEffect,
@@ -40,6 +41,16 @@ type CartItem = Pick<
     alan var, yani sepet kendiliğinden tazeleniyor.
   */
   oldPrice?: number;
+  /*
+    Üstü çizili fiyat SORULDU mu?
+
+    `oldPrice` yokluğu iki ayrı şey demek: "bu ürün indirimli
+    değil" ve "bu satır alan yazılmadan önce eklenmiş". İkincisi
+    kuponun indirimli üründe geçmesine yol açıyordu. Bayrak ikisini
+    ayırıyor ve onarımın her sayfa yüklenişinde tekrar istek
+    atmasını engelliyor.
+  */
+  oldPriceSoruldu?: true;
   quantity: number;
   sku?: string;
   variantLabel?: string;
@@ -149,6 +160,75 @@ export function CartProvider({
       return [];
     }
   }, [snapshot]);
+
+  /*
+    ESKİ SEPETLERİN ONARIMI (18.10.2026).
+
+    `oldPrice` alanı bugüne kadar karttan eklenen satırlara hiç
+    yazılmıyordu ve bu, "indirimdeki ürünlerde geçerli değildir"
+    kuralını sessizce kapatıyordu: satır indirimsiz sayılıyor,
+    kupon ona da uygulanıyordu. Kural düzeldi ama MÜŞTERİNİN
+    TARAYICISINDA DURAN sepetler düzelmiyor — kendiliğinden
+    tazelenmeleri için müşterinin o satırı silip yeniden eklemesi
+    gerekirdi.
+
+    Burada yapılan şey sepete müdahale DEĞİL: fiyat, adet ve
+    kalemler olduğu gibi kalıyor; yalnızca eksik olan üstü çizili
+    fiyat kaynağından tamamlanıyor. Bir kez soruluyor
+    (`oldPriceSoruldu`), yanıt alınamazsa bir dahaki açılışta
+    yeniden denenecek şekilde işaretlenmiyor.
+  */
+  const onarimYapildi = useRef(false);
+  useEffect(() => {
+    if (onarimYapildi.current) return;
+
+    const mevcut = JSON.parse(getSnapshot()) as CartItem[];
+    const eksikler = mevcut.filter(
+      (satir) => satir.sku && !satir.oldPriceSoruldu && satir.oldPrice === undefined,
+    );
+    if (eksikler.length === 0) return;
+    onarimYapildi.current = true;
+
+    void (async () => {
+      try {
+        const yanit = await fetch("/api/sepet-indirimleri", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kalemler: eksikler.map((s) => ({ slug: s.slug, sku: s.sku })),
+          }),
+        });
+        if (!yanit.ok) return;
+        const veri = (await yanit.json()) as {
+          satirlar: Array<{ sku: string; bilinen?: true; oldPrice?: number }>;
+        };
+        const harita = new Map(
+          veri.satirlar.filter((s) => s.bilinen).map((s) => [s.sku, s.oldPrice]),
+        );
+        if (harita.size === 0) return;
+
+        /* Arada başka sekmede değişmiş olabilir; en güncel hâl
+           okunup üstüne yazılıyor. */
+        const guncel = JSON.parse(getSnapshot()) as CartItem[];
+        write(
+          guncel.map((satir) =>
+            satir.sku && harita.has(satir.sku)
+              ? {
+                  ...satir,
+                  oldPrice: harita.get(satir.sku),
+                  oldPriceSoruldu: true as const,
+                }
+              : satir,
+          ),
+        );
+      } catch (hata) {
+        /* Onarım ikincil iş: başarısızlığı sepeti bozmuyor,
+           yalnızca kural eski satırlarda kapalı kalıyor. */
+        console.error(hata);
+      }
+    })();
+  }, []);
+
   const add = useCallback((product: Product, variant?: CartVariant) => {
     const current = JSON.parse(getSnapshot()) as CartItem[];
 
@@ -197,6 +277,8 @@ export function CartProvider({
                 variant.price === product.price
                   ? product.oldPrice
                   : undefined),
+              /* Kaynağından yazıldı; onarıma gerek yok. */
+              oldPriceSoruldu: true,
               image: product.image,
               eyebrow: product.eyebrow,
               quantity: 1,
