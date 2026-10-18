@@ -26,7 +26,6 @@ import { Reveal } from "@/components/reveal";
 import { RecentProducts } from "@/components/recent-products";
 import { ForYou } from "@/components/for-you";
 import { CATEGORIES } from "@/lib/categories";
-import { IADE_GUNU } from "@/lib/iade-penceresi";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
