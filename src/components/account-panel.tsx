@@ -7,6 +7,7 @@ import { getAuthClient } from "@/lib/auth-client";
 import { AddressBook } from "@/components/address-book";
 import { OrderCard } from "@/components/order-card";
 import { AccountMenuHome, selamAdi } from "@/components/account-menu-home";
+import { ProfilKarti } from "@/components/profil-karti";
 import type { Order } from "@/lib/order-types";
 
 type Mode = "login" | "register" | "reset";
@@ -90,7 +91,6 @@ export function AccountPanel({
   >(null);
   const [profileName, setProfileName] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
-  const [profileSaved, setProfileSaved] = useState(false);
 
   /*
     Şifre sıfırlama akışı. Supabase’in kurtarma bağlantısı
@@ -386,13 +386,36 @@ export function AccountPanel({
   if (session) {
     const supabase = getAuthClient(supabaseUrl, supabaseKey);
 
-    async function saveProfile() {
-      setProfileSaved(false);
+    /*
+      Sonuç ÇAĞIRANA dönüyor. Önceden hata yutuluyordu
+      (`if (!error) setProfileSaved(true)`): istek düşerse ekranda
+      hiçbir şey olmuyor, müşteri kaydettim sanıp çıkıyordu.
+    */
+    async function saveProfile(ad: string, telefon: string) {
       const { error } = await supabase.rpc("update_arvoculture_profile", {
-        p_full_name: profileName,
-        p_phone: profilePhone,
+        p_full_name: ad,
+        p_phone: telefon,
       });
-      if (!error) setProfileSaved(true);
+      if (error) console.error(error);
+      return { hata: Boolean(error) };
+    }
+
+    /*
+      Şifre değiştirme, giriş ekranındaki "şifremi unuttum" ile AYNI
+      yoldan geçiyor: bağlantıyı üretmek service_role istiyor ve o
+      anahtar tarayıcıya konulamaz.
+    */
+    async function sifreDegistir() {
+      try {
+        await requestAuthEmail({
+          islem: "sifirla",
+          email: session?.user.email ?? "",
+        });
+        return { hata: false };
+      } catch (error) {
+        console.error(error);
+        return { hata: true };
+      }
     }
 
     async function savePassword() {
@@ -510,58 +533,18 @@ export function AccountPanel({
           aradığını sekme değiştirmeden görüyor.
         */}
             <div className="account-top">
-              {/* Çapa: hesap menüsündeki "Profilim" bağlantısı buraya
-              iniyor. */}
-              <section className="panel" id="hesap-bilgilerim">
-                <div className="head">
-                  <div>
-                    <h2>Hesap bilgilerim</h2>
-                    <p>Sipariş formlarında bu bilgiler önerilir.</p>
-                  </div>
-                </div>
-
-                <div className="fields">
-                  <label className="wide">
-                    Ad soyad
-                    <input
-                      type="text"
-                      autoComplete="name"
-                      value={profileName}
-                      onChange={(event) => setProfileName(event.target.value)}
-                    />
-                  </label>
-                  <label className="wide">
-                    Telefon
-                    <input
-                      type="tel"
-                      autoComplete="tel"
-                      value={profilePhone}
-                      onChange={(event) => setProfilePhone(event.target.value)}
-                    />
-                  </label>
-                  <label className="wide">
-                    E-posta
-                    <input
-                      type="email"
-                      value={session.user.email ?? ""}
-                      disabled
-                    />
-                  </label>
-                </div>
-
-                {profileSaved && (
-                  <p className="form-note">Bilgileriniz kaydedildi.</p>
-                )}
-
-                <button
-                  type="button"
-                  className="btn"
-                  style={{ justifySelf: "start" }}
-                  onClick={saveProfile}
-                >
-                  Kaydet
-                </button>
-              </section>
+              {/* Çapa kartın içinde (id="hesap-bilgilerim"); hesap
+              menüsündeki "Profilim" bağlantısı buraya iniyor. */}
+              <ProfilKarti
+                ad={profileName}
+                telefon={profilePhone}
+                eposta={session.user.email}
+                uyelikTarihi={session.user.created_at}
+                adDegisti={setProfileName}
+                telefonDegisti={setProfilePhone}
+                kaydet={saveProfile}
+                sifreDegistir={sifreDegistir}
+              />
 
               <AddressBook supabase={supabase} />
             </div>

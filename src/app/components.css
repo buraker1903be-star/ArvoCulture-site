@@ -9310,3 +9310,144 @@ body.theme-modern .auth-alt .linklike:hover {
 .cek-kart-bitti .cek-bakiye {
   color: var(--ink-3);
 }
+
+/* ==========================================================
+   PROFİLİM KARTI (18.10.2026)
+
+   Önceki hâli başlıksız üç alan ve bir düğmeydi; hesap sayfasının
+   en üstünde durmasına rağmen müşteriye kim olduğunu
+   söylemiyordu. Başlık artık kimliği gösteriyor: baş harf, ad,
+   e-posta ve üyelik ayı — menüdeki selamla aynı dil.
+   ========================================================== */
+
+.profil-ust {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  padding-bottom: var(--s4);
+  margin-bottom: var(--s4);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.profil-monogram {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-pill);
+  background: var(--brand);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 22px;
+  box-shadow: 0 0 0 1px var(--gold-soft), 0 0 0 4px var(--panel);
+}
+
+.profil-kimlik {
+  /* Uzun e-posta kartın genişliğini belirlemesin. */
+  min-width: 0;
+  flex: 1;
+}
+
+.profil-kimlik h2 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.profil-kimlik p {
+  margin: 2px 0 0;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profil-uyelik {
+  flex: none;
+  align-self: flex-start;
+  padding: 5px 10px;
+  border: 1px solid var(--gold-soft);
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  letter-spacing: 0.04em;
+  color: var(--gold-ink);
+  white-space: nowrap;
+}
+
+/* Eksik alan uyarısı: altın değil, nötr. Kırmızı olsaydı bir
+   ARIZA gibi okunurdu; eksik telefon arıza değil, eksik. */
+.profil-eksik {
+  margin: 0 0 var(--s4);
+  padding: 11px 14px;
+  border-left: 2px solid var(--gold);
+  border-radius: 0 var(--r) var(--r) 0;
+  background: var(--panel-2);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.profil-eksik strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/*
+  Alan altı açıklama. `.fields label` BÜYÜK HARF ve seyrek aralıklı
+  (etiketler öyle); içine konan açıklama o mirası alınca
+  "SİPARİŞLERİNİZ BU ADRESE BAĞLI" diye bağırıyordu. Miras burada
+  kesiliyor. Konumu grid boşluğundan geliyor, ayrıca margin yok.
+*/
+.profil-ipucu {
+  display: block;
+  font-size: var(--t-xs);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-3);
+}
+
+.profil-ipucu a {
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.profil .fields input[aria-invalid="true"] {
+  border-color: var(--sale);
+}
+
+.profil-alt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s4);
+  margin-top: var(--s5);
+}
+
+/* Devre dışı "Kaydet": basılabilir görünmemeli ama kaybolmamalı
+   da — müşteri düğmenin nerede olduğunu biliyor olmalı. */
+.profil-alt .btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.profil-alt .linklike:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (max-width: 520px) {
+  .profil-ust {
+    flex-wrap: wrap;
+  }
+
+  /* Üyelik rozeti dar ekranda ada yapışıp sıkıştırıyordu. */
+  .profil-uyelik {
+    order: 3;
+    width: 100%;
+    text-align: center;
+  }
+}
