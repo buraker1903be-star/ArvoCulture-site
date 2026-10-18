@@ -46,6 +46,17 @@ export function AccountPanel({
 
   /* Şifre görünür mü: yazım hatasını görmenin tek yolu. */
   const [sifreAcik, setSifreAcik] = useState(false);
+  /*
+    Hangi sağlayıcıya yönlendiriliyoruz.
+
+    Düğme yalnızca PASİFLEŞİYORDU: müşteri tıklıyor, yazı değişmiyor
+    ve tarayıcı sayfadan ayrılana kadar bir-iki saniye hiçbir şey
+    olmuyormuş gibi duruyor — özellikle Facebook'un giriş sayfası
+    ağır yüklendiğinde. "Çalışmadı" sanıp tekrar tıklıyor.
+  */
+  const [yonlendirilen, setYonlendirilen] = useState<
+    "google" | "facebook" | null
+  >(null);
   const [profileName, setProfileName] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
   const [profileSaved, setProfileSaved] = useState(false);
@@ -239,6 +250,7 @@ export function AccountPanel({
   */
   async function sosyalGiris(saglayici: "google" | "facebook") {
     setBusy(true);
+    setYonlendirilen(saglayici);
     setMessage(null);
     try {
       const supabase = getAuthClient(supabaseUrl, supabaseKey);
@@ -268,6 +280,7 @@ export function AccountPanel({
         text: translateAuthError((error as Error).message),
       });
       setBusy(false);
+      setYonlendirilen(null);
     }
   }
 
@@ -703,7 +716,9 @@ export function AccountPanel({
               d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A11.5 11.5 0 0 0 12 0 12 12 0 0 0 1.4 6.7l4 3.1C6.3 6.9 8.9 4.8 12 4.8z"
             />
           </svg>
-          Google ile giriş yap
+          {yonlendirilen === "google"
+            ? "Google'a yönlendiriliyorsunuz…"
+            : "Google ile giriş yap"}
         </button>
 
         <button
@@ -718,7 +733,9 @@ export function AccountPanel({
               d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"
             />
           </svg>
-          Facebook ile giriş yap
+          {yonlendirilen === "facebook"
+            ? "Facebook'a yönlendiriliyorsunuz…"
+            : "Facebook ile giriş yap"}
         </button>
       </div>
 
