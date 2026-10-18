@@ -177,7 +177,10 @@ export default async function Home({
         />
       </Reveal>
 
-      {theme.show_campaign && (
+      {/* Başlıksız kampanya bloğu çizilmiyor: varsayılan metin
+          ArvoCulture'ın ARVO10 kuponuydu, artık boş. Boş bir
+          kampanya paneli müşteriye anlamsız bir kutu gösterirdi. */}
+      {theme.show_campaign && theme.campaign_title && (
         <Reveal>
           <section data-arvo-section="campaign" className="panel promo">
             {theme.campaign_image_url && (
@@ -311,12 +314,18 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
           >
             {theme.primary_cta_label}
           </Link>
-          <Link
-            data-arvo-field="secondary_cta_label"
-            href={theme.secondary_cta_href}
-          >
-            {theme.secondary_cta_label}
-          </Link>
+          {/* İkinci düğme ancak etiketi VE adresi varsa çiziliyor.
+              Varsayılanları "Bakımı keşfet" → /koleksiyon/bakim idi;
+              o koleksiyon başka mağazada yok, yani düğme 404'e
+              çıkıyordu. */}
+          {theme.secondary_cta_label && theme.secondary_cta_href && (
+            <Link
+              data-arvo-field="secondary_cta_label"
+              href={theme.secondary_cta_href}
+            >
+              {theme.secondary_cta_label}
+            </Link>
+          )}
         </div>
 
         {/*
