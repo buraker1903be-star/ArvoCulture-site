@@ -396,33 +396,30 @@ export function Header({
                   {menu.sections.map((section) => (
                     <div key={section.title}>
                       <p>{section.title}</p>
-                      {section.items.map((item) => (
-                        /*
+                      {/*
+                        Bağlantılar ayrı bir kapta: modern temada
+                        grup başlığı SOLDA, bağlantılar sağda hap
+                        olarak sarıyor. Sarmalayıcı olmadan CSS
+                        başlıkla bağlantıları iki ayrı hücreye
+                        ayıramıyordu (ikisi de aynı kabın doğrudan
+                        çocuğuydu).
+                      */}
+                      <div className="mega-chips">
+                        {section.items.map((item) => (
+                          /*
                           Önceden yükleme kapalı: mega menüdeki ~118
                           koleksiyon bağlantısı sayfa açılır açılmaz
                           sunucudan isteniyordu. Tıklayınca yükleniyor.
                         */
-                        <Link
-                          href={`/koleksiyon/${item.slug}`}
-                          key={item.slug}
-                          prefetch={false}
-                        >
-                          <b>{item.title}</b>
-                          {/*
-                            ÜRÜN SAYISI MENÜDE.
-
-                            Menü yüz on sekiz koleksiyon adından
-                            ibaretti; hangisinin üç, hangisinin üç
-                            yüz ürün olduğu ancak tıklayınca
-                            görülüyordu. Sayı koleksiyon listesinde
-                            ZATEN VAR (product_count, menü onunla
-                            sıralanıyor) — ek sorgu yok.
-                          */}
-                          {item.product_count > 0 && (
-                            <small>{item.product_count}</small>
-                          )}
-                        </Link>
-                      ))}
+                          <Link
+                            href={`/koleksiyon/${item.slug}`}
+                            key={item.slug}
+                            prefetch={false}
+                          >
+                            <b>{item.title}</b>
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>

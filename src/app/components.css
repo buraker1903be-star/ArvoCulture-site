@@ -8520,46 +8520,118 @@ body.theme-modern .mega-panel-head a::after {
 }
 
 /*
-  SÜTUNLAR PANELİ PAYLAŞIYOR.
+  ALT MENÜ: SÜTUN LİSTESİ DEĞİL, GRUPLANMIŞ HAPLAR.
 
-  Sütunlar 240px'le sınırlıydı ve geniş ekranda beşi toplam
-  1.300px tutuyordu; panel kenardan kenara olduğu için sağda
-  yüzlerce piksellik bir boşluk kalıyordu (canlıda görüldü:
-  "Kadın" menüsünde son sütunun sağı tamamen boş). Sınır kalkınca
-  beş sütun paneli eşit bölüyor ve uzun koleksiyon adları da daha
-  az kırpılıyor.
+  Panel beş sütunluk düz bir bağlantı listesiydi — menü değil SİTE
+  HARİTASI. Üç somut sorunu vardı:
+
+  * YÜKSEKLİK. "Kadın" menüsü 600 pikseli aşıyordu: en uzun sütun
+    (9 madde) panelin boyunu belirliyordu, yanındaki sütunda tek
+    bir madde varken.
+  * SAĞDA BOŞLUK. Sütunlar eşit genişlikteydi ama eşit dolu
+    değildi; son sütunun altı da sağı da boş kalıyordu.
+  * TIKLAMA HEDEFİ. Bağlantı yazının kendisi kadardı: 13 puntoluk
+    bir kelimeye nişan almak gerekiyordu.
+
+  Yeni düzen: her grup bir SATIR. Başlık solda sabit bir sütunda,
+  maddeler sağda hap olarak sarıyor. Panel genişliğini sonuna
+  kadar kullanıyor, yükseklik yarıya iniyor ve her madde gerçek
+  bir hedef oluyor. Haplar sayfanın geri kalanıyla aynı dil:
+  arama terimleri, kategori rozetleri ve düğmeler hep hap.
+
+  ÜRÜN SAYISI KALDIRILDI: yirmi sekiz maddenin yanındaki yirmi
+  sekiz rakam, okunacak şeyi ikiye katlıyordu.
 */
-body.theme-modern .mega-columns > div {
-  max-width: none;
+body.theme-modern .mega-columns {
+  display: grid;
+  gap: 0;
 }
 
-/*
-  Satır: ad solda, ürün sayısı sağda. Sayı koleksiyon listesinde
-  zaten vardı (menü onunla sıralanıyor) ve hiçbir yerde
-  gösterilmiyordu — menü yüz on sekiz addan ibaretti, hangisinin
-  üç hangisinin üç yüz ürün olduğu ancak tıklayınca görülüyordu.
-*/
-body.theme-modern .mega-columns a {
+body.theme-modern .mega-columns > div {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: var(--s3) var(--s5);
+  align-items: start;
+  max-width: none;
+  padding: var(--s4) 0;
+}
+
+/* Gruplar arasında kıl payı çizgi: yalnızca aralarda — en üstte
+   ve en altta yok, yoksa panel bir tabloya dönüyor. */
+body.theme-modern .mega-columns > div + div {
+  border-top: 1px solid var(--line-soft);
+}
+
+body.theme-modern .mega-columns > div > p:first-child {
+  margin: 7px 0 0;
+  padding: 0;
+  border: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+body.theme-modern .mega-chips {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s3);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+body.theme-modern .mega-columns a {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  transition:
+    background-color 160ms var(--ease),
+    border-color 160ms var(--ease),
+    transform 160ms var(--ease-out);
 }
 
 body.theme-modern .mega-columns a b {
   min-width: 0;
-}
-
-body.theme-modern .mega-columns a small {
-  flex: none;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
-  font-variant-numeric: lining-nums tabular-nums;
-  color: var(--ink-3);
+  color: var(--ink);
+  background-image: none;
 }
 
-/* Üzerine gelince sayı da koyulaşıyor: satır tek parça
-   davranıyor, yarısı sönük kalmıyor. */
-body.theme-modern .mega-columns a:hover small {
-  color: var(--ink-2);
+@media (hover: hover) {
+  body.theme-modern .mega-columns a:hover {
+    border-color: var(--ink);
+    background: var(--ink);
+    transform: translateY(-1px);
+  }
+
+  body.theme-modern .mega-columns a:hover b {
+    color: var(--panel);
+  }
+}
+
+/* Marka grubunun kalın yazısı kalktı: artık ayrı bir sütun değil
+   ve ilk grubun hapları ötekilerden kalın görünüyordu. */
+body.theme-modern .mega-columns > div:first-child a b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-modern .mega-columns a {
+    transition: none;
+  }
+  body.theme-modern .mega-columns a:hover {
+    transform: none;
+  }
+}
+
+/* Dar ekranda başlık üste çıkıyor: 148px'lik sütun tablette
+   hapların yerini yiyordu. */
+@media (max-width: 900px) {
+  body.theme-modern .mega-columns > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
