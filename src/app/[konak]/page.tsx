@@ -161,6 +161,17 @@ export default async function Home({
           href="/koleksiyon/firsatlar"
           hrefLabel="Tüm fırsatlar"
           products={deals}
+          /*
+            TEK SATIR, YATAY KAYDIRMALI (18.10.2026).
+
+            Izgarada on fırsat iki satıra yayılıyor ve ana sayfanın
+            dikey uzunluğunu şişiriyordu; müşteri "indirimdekiler"i
+            görmek için kaydırıyor, sonra kategorileri görmek için
+            yine kaydırıyordu. Rafta on ürün tek satırda duruyor ve
+            yanal kaydırma, listenin DEVAMI olduğunu kendiliğinden
+            söylüyor — telefonda alıştığımız hareket bu.
+          */
+          rail
         />
       </Reveal>
 

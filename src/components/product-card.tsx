@@ -62,10 +62,15 @@ export function ProductCard({ product }: { product: Product }) {
                 yazı, küçük. Göz önce ürünü görüyor, oranı hemen
                 sonra — ama kaydırırken fırsatı kaçırmıyor.
 
+                Metin "−%25" değil "%25 İNDİRİM": tek başına bir
+                eksi işareti ve sayı, ne olduğunu söylemiyordu.
+                Kelimeyi yazmak rozeti bir fiyat etiketinden
+                FIRSAT bildirimine çeviriyor.
+
                 Fiyatın yanındaki ikinci oran kaldırıldı: aynı
                 bilgiyi iki kez göstermek karta gürültü ekliyordu.
               */
-              <b className="tag tag-off">−%{off}</b>
+              <b className="tag tag-off">%{off} İNDİRİM</b>
             )}
           </span>
         )}
