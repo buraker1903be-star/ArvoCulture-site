@@ -2961,7 +2961,16 @@
 
 .drawer-items {
   flex: 1;
+  /*
+    MIN-HEIGHT: 0 ŞART. Flex öğesinin varsayılan `min-height:auto`
+    değeri onu içeriğinden küçültmüyor; kısa ekranda liste
+    büzülmek yerine alt bölümü aşağı itiyordu ve "Ödemeye geç"
+    ekranın dışında kalıyordu (554×364'te ölçüldü: başlık+şerit
+    133 + liste 32 + alt 286 = 451 > 364).
+  */
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   display: grid;
   align-content: start;
   gap: var(--s4);
@@ -3020,6 +3029,9 @@
 }
 
 .drawer-foot {
+  /* Alt bölüm KÜÇÜLMÜYOR: ödeme düğmesi her zaman görünmeli.
+     Kısalması gereken yer liste (yukarıda min-height:0). */
+  flex: none;
   display: grid;
   gap: var(--s3);
   padding: var(--s4) var(--s5) var(--s5);
@@ -10602,4 +10614,119 @@ body.theme-modern .auth-alt .linklike:hover {
 .detail-eylemler .form-error {
   flex-basis: 100%;
   margin: 0;
+}
+
+/* ==========================================================
+   SEPET ÇEKMECESİ — DÜZELTMELER VE İNCELTME (18.10.2026)
+
+   İki gerçek kusur vardı:
+
+   * ALT BÖLÜM ÇEKMECEDEN TAŞIYORDU. Kısa ekranda (554×364'te
+     ölçüldü) başlık+şerit 133 + liste 32 + alt bölüm 286 = 451
+     piksel, oysa çekmece 364. "Ödemeye geç" ekranın dışında
+     kalıyordu — dizüstünde ya da yatay tutulan telefonda sepeti
+     açan müşteri ödemeye geçemiyordu. Sebep listenin flex
+     varsayılanı `min-height: auto`: içeriğinden küçülmüyor.
+   * ÇEKMECENİN ALT BÖLÜMÜ SİTE ALT BİLGİSİNİN BİÇİMİNİ ALIYORDU.
+     `footer { … }` etiket seçicisiydi (bkz. layout.css).
+
+   Geri kalanı inceltme: adet düğmeleri, kaldır bağlantısı ve
+   toplam satırı sayfanın geri kalanıyla aynı dilde değildi.
+   ========================================================== */
+
+/* Adet: iki düğme ve bir sayı tek bir çerçevede. Önce üç ayrı
+   öğe gibi duruyordu ve dokunma hedefleri 20 pikselin altındaydı. */
+.drawer-text .quantity {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.drawer-text .quantity button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease),
+    color 160ms var(--ease);
+}
+
+.drawer-text .quantity b {
+  min-width: 26px;
+  text-align: center;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) {
+  .drawer-text .quantity button:hover {
+    background: var(--panel-2);
+    color: var(--ink);
+  }
+}
+
+/* "Kaldır" bir eylem değil, bir kaçış: en sessiz öğe. */
+.drawer-price .remove-item {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .drawer-price .remove-item:hover {
+    color: var(--sale);
+  }
+}
+
+/* Toplam satırı diğerlerinden ayrılsın: müşterinin aradığı rakam o. */
+.drawer-foot .summary-totals .grand {
+  margin-top: 4px;
+  padding-top: var(--s3);
+  border-top: 1px solid var(--line-soft);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+/*
+  KISA EKRAN. Alt bölüm küçülmüyor ama 286 piksel de fazla:
+  boşluklar toplanıyor, kupon alanı ile toplamlar sıkışıyor.
+  Liste yine de kaydırılabilir kalıyor.
+*/
+@media (max-height: 640px) {
+  .drawer-head {
+    padding-block: var(--s3);
+  }
+
+  .drawer-nudge {
+    padding-block: var(--s2) var(--s3);
+  }
+
+  .drawer-foot {
+    gap: var(--s2);
+    padding: var(--s3) var(--s5) var(--s4);
+  }
+
+  .drawer-items {
+    padding-block: var(--s3);
+    gap: var(--s3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-text .quantity button {
+    transition: none;
+  }
 }

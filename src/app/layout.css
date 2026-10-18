@@ -699,7 +699,21 @@
 
 /* ---------- Alt bilgi ------------------------------------- */
 
-footer {
+/*
+  SİTE ALT BİLGİSİ — ETİKETE DEĞİL SINIFA BAĞLI.
+
+  Kural `footer { … }` idi ve sayfadaki HER `<footer>`e
+  uyguluyordu. Sepet çekmecesinin alt bölümü de bir `<footer>`:
+  oraya sayfa payı (`--rail`), yarı saydam zemin ve
+  `backdrop-filter: blur(10px)` geçiyordu. Sonuncusu özellikle
+  zararlı — `backdrop-filter` yeni bir yığın bağlamı ve kapsayıcı
+  blok kuruyor; bu depoda aynı özellik başlıkta tam bu yüzden
+  arama katmanını kırmıştı.
+
+  Etiket seçicisi "bütün alt bilgiler aynıdır" diye bir varsayım
+  yapıyordu ve çekmece o varsayımı bozan ilk şey oldu.
+*/
+.site-footer {
   padding: var(--s8) var(--rail) var(--s5);
   border-top: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.72);

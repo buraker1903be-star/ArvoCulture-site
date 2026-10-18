@@ -287,7 +287,7 @@ export default async function RootLayout({
               hissini veren ayrım bu.
             */}
             <PageTransition>{children}</PageTransition>
-            <footer>
+            <footer className="site-footer">
               <div className="footer-top">
                 <div className="footer-brand">
                   <StoreLogo
