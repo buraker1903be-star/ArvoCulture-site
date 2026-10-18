@@ -204,7 +204,17 @@ export default async function Home({
           href="/koleksiyon/cok-satan-cilt-bakim-urunleri"
           hrefLabel="Tümünü gör"
           products={best}
-          alt
+          /*
+            GRİ ZEMİN KALKTI (18.10.2026).
+
+            Bölüm `panel-soft` ile gri zemindeydi; gerekçe sayfaya
+            ritim vermekti ve ızgaraların ardı ardına geldiği eski
+            düzende işe yarıyordu. Artık ritmi RAFLAR veriyor
+            (indirimler ve bu bölüm yatay kaydırmalı) ve beyaz bir
+            sayfanın ortasında tek bir gri kutu, ritim değil kesinti
+            oluyordu: aynı kartlar iki bölümde iki ayrı zemin
+            üzerinde duruyordu.
+          */
           rail
         />
       </Reveal>
