@@ -6860,3 +6860,166 @@ body.theme-modern .tag-out {
     transform: scale(1.03);
   }
 }
+
+/* ==========================================================
+   KATEGORİ ŞERİDİ — CANLI SÜRÜM (18.10.2026)
+
+   Dört eşit kart, 3px köşe, dibe kadar koyu bir karartma ve
+   altında "KEŞFET" yazan ince bir çizgi vardı. Dört sorun
+   ölçüldü:
+
+   * köşe yarıçapı sayfanın geri kalanıyla çelişiyordu — panel ve
+     ürün kartı 18px, kategori kartı 3px (globals.css'teki modern
+     listede `.cat-card` yoktu);
+   * karartma 0,82'ye çıkıyor ve fotoğrafı öldürüyordu: beyaz
+     sayfada yan yana dört koyu dikdörtgen duruyordu;
+   * kartlar BİLGİ TAŞIMIYORDU, her birinde aynı "KEŞFET" yazıyordu;
+   * altı çizili büyük harfli bağlantı, düğmelerin hap olduğu bir
+     sayfada eski bir dil.
+
+   Asimetri keyfi değil: katalogun büyük çoğunluğu ilk bölümde ve
+   kartın genişliği bunu söylüyor. Yükseklik farkı yok — satır
+   yüksekliğini ilk kart belirliyor, kalanlar ona uzuyor; hepsine
+   `aspect-ratio` verilseydi geniş kart daha uzun olur ve şerit
+   basamaklanırdı.
+   ========================================================== */
+
+/*
+  Ürün sayısı rozeti: ürün kartındaki indirim rozetiyle (.tag-off)
+  aynı cam hap. Tema bağımsız, çünkü bilgi tema bağımsız.
+*/
+.cat-card-flag {
+  position: absolute;
+  z-index: 2;
+  top: var(--s2);
+  left: var(--s2);
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-variant-numeric: lining-nums tabular-nums;
+  /* Açık fotoğrafta hap zemine karışmasın. */
+  box-shadow: 0 1px 2px rgba(16, 18, 15, 0.08);
+}
+
+body.theme-modern .cat-cards {
+  grid-template-columns: 1.55fr repeat(
+      calc(var(--cat-n, 4) - 1),
+      minmax(0, 1fr)
+    );
+}
+
+body.theme-modern .cat-card {
+  border-radius: 18px;
+  /* Beyaz sayfada fotoğrafın kenarı kaybolabiliyor; saç teli
+     kalınlığında bir çerçeve kartı yüzeyden ayırıyor. */
+  box-shadow: inset 0 0 0 1px rgba(16, 18, 15, 0.06);
+}
+
+/*
+  Geniş kartın oranı HESAPLANMIŞ: 1,55fr genişliğindeki kart,
+  3/4 oranındaki komşularıyla aynı yükseklikte dursun diye
+  1,55 ÷ (4/3) = 1,1625. Oran fr birimleri üzerinden kurulduğu
+  için boşluk (gap) ne olursa olsun yükseklikler eşit kalıyor.
+
+  Denenen ve BIRAKILAN yol: komşulara `height: 100%` verip satır
+  yüksekliğini ilk karta bıraktırmak. Çalışıyor ama yüzdelik
+  yükseklik ızgara satırı kesinleşmeden çözülmek zorunda ve
+  içindeki fotoğraf `position: absolute` — tek bir tarayıcı
+  farkında kartlar yüksekliğini kaybeder ve fotoğraflar yok olur.
+  Oran hesabı aynı sonucu veriyor ve hiçbir şeye bağlı değil.
+*/
+body.theme-modern .cat-cards > :first-child .cat-card-art {
+  aspect-ratio: 1.1625;
+}
+
+/*
+  Karartma hafifledi ve daha yukarıdan başlıyor: yazının arkası
+  okunur kalıyor, fotoğrafın üst üçte ikisi açık duruyor.
+*/
+body.theme-modern .cat-card-art::after {
+  background: linear-gradient(
+    to top,
+    rgba(12, 13, 12, 0.74) 0%,
+    rgba(12, 13, 12, 0.34) 26%,
+    rgba(12, 13, 12, 0.08) 50%,
+    transparent 72%
+  );
+}
+
+body.theme-modern .cat-card-body {
+  gap: 6px;
+  padding: var(--s4) var(--s4) calc(var(--s4) + 2px);
+}
+
+body.theme-modern .cat-card-body strong {
+  font-size: clamp(20px, 1.7vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  /* Açık fotoğraflarda beyaz yazı kenarını kaybediyordu. */
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-modern .cat-card-body em {
+  padding-bottom: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  opacity: 0.94;
+}
+
+/*
+  Çizgi yerine ok. Altı çizilen metin burada bir bağlantıyı değil
+  bir KAPIYI anlatıyor; ok yönü de söylüyor ve dokununca kayıyor.
+*/
+body.theme-modern .cat-card-body em::after {
+  content: "→";
+  position: static;
+  display: inline-block;
+  width: auto;
+  height: auto;
+  margin-left: 6px;
+  background: none;
+  transform: translateX(0);
+  transition: transform 320ms var(--ease-out);
+}
+
+body.theme-modern .cat-card:hover .cat-card-body em::after {
+  transform: translateX(5px);
+}
+
+/*
+  Dar ekranda asimetri yok: 1,55fr'lik kart telefonda iki sütunun
+  birini yiyip diğerini ezerdi. Geniş kartın oranı da geri
+  alınıyor, yoksa ilk kart yatık kalırdı.
+*/
+@media (max-width: 980px) {
+  body.theme-modern .cat-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.theme-modern .cat-cards > :first-child .cat-card-art {
+    aspect-ratio: 3 / 4;
+  }
+
+  /* Tek sayıda kartta ilk kart yine tam genişlik vitrin (bkz.
+     yukarıdaki `:has` kuralı); modern seçici onu da ezdiği için
+     burada tekrar yazılıyor. */
+  body.theme-modern .cat-cards:has(> :nth-child(odd):last-child)
+    > :first-child
+    .cat-card-art {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-modern .cat-card-body em::after {
+    transition: none;
+  }
+}

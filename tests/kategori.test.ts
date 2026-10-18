@@ -13,7 +13,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { inferCategory } from "../src/lib/product-types";
-import { asciiSlug, kategoriAdresi } from "../src/lib/categories";
+import {
+  asciiSlug,
+  kategoriAdresi,
+  kategoriSayilariyla,
+  urunSayisiYazisi,
+} from "../src/lib/categories";
 
 const kategori = (name: string, product_type = "") =>
   inferCategory({ name, product_type });
@@ -129,4 +134,44 @@ test("tanınmayan kategori tüm katalogla karşılanıyor", () => {
 test("büyük küçük harf ve boşluk kategoriyi bozmuyor", () => {
   /* Türkçe küçük harf kuralı: "KOZMETİK" → "kozmetik". */
   assert.equal(kategoriAdresi("  KOZMETİK "), "/koleksiyon/kozmetik");
+});
+
+/*
+ * KARTLARDAKİ ÜRÜN SAYISI.
+ *
+ * Sayı ArvoARC'tan geliyor ve eşleşme koleksiyon slug'ı üzerinden
+ * kuruluyor. Eşleşmeyen ya da sıfır olan kategori SAYISIZ çizilmeli:
+ * "0 ürün" yazan bir kart müşteriyi boş bir sayfaya çağırır.
+ */
+test("kategori sayıları slug üzerinden bağlanıyor", () => {
+  const kartlar = kategoriSayilariyla(
+    [
+      { label: "Giyim", href: "/koleksiyon/giyim" },
+      { label: "Parfüm", href: "/koleksiyon/parfum" },
+    ],
+    [
+      { slug: "giyim", product_count: 3225 },
+      { slug: "parfum", product_count: 43 },
+      { slug: "baska", product_count: 9 },
+    ],
+  );
+  assert.equal(kartlar[0].urunSayisi, 3225);
+  assert.equal(kartlar[1].urunSayisi, 43);
+});
+
+test("eşleşmeyen ve sıfır sayılı kategori sayısız kalıyor", () => {
+  const kartlar = kategoriSayilariyla(
+    [
+      { label: "Kozmetik", href: "/koleksiyon/kozmetik" },
+      { label: "Bakım", href: "/koleksiyon/bakim" },
+    ],
+    [{ slug: "kozmetik", product_count: 0 }],
+  );
+  assert.equal(kartlar[0].urunSayisi, undefined);
+  assert.equal(kartlar[1].urunSayisi, undefined);
+});
+
+test("sayı Türkçe binlik ayırıcıyla yazılıyor", () => {
+  assert.equal(urunSayisiYazisi(3225), "3.225 ürün");
+  assert.equal(urunSayisiYazisi(43), "43 ürün");
 });

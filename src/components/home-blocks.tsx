@@ -3,7 +3,10 @@ import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { Rail } from "@/components/rail";
 import type { Product } from "@/lib/product-types";
-import { categoryKey } from "@/lib/categories";
+import { categoryKey, urunSayisiYazisi } from "@/lib/categories";
+import type { KategoriKarti } from "@/lib/categories";
+import { JsonLd } from "@/components/json-ld";
+import { kategoriListesiSchema } from "@/lib/seo";
 
 /** Ürün ızgarası. Ana sayfada birden çok yerde kullanılır. */
 export function ProductBlock({
@@ -130,8 +133,13 @@ export function Perks({
 */
 export function CategoryStrip({
   items,
+  siteUrl,
 }: {
-  items: Array<{ label: string; href: string }>;
+  items: KategoriKarti[];
+  /* Şemadaki adresler TAM olmalı; göreli adres `ItemList` içinde
+     çözümlenmiyor. Okunamazsa şema hiç basılmıyor — yarım bir
+     işaretleme, işaretleme olmamasından kötü. */
+  siteUrl?: string;
 }) {
   /*
     Sütun sayısı kart sayısından geliyor (--cat-n). Izgara eskiden
@@ -177,6 +185,17 @@ export function CategoryStrip({
                   }
                 />
               </span>
+              {/*
+                Ürün sayısı rozeti ürün kartlarıyla AYNI cam hap
+                (bkz. .tag-off): sayfada iki ayrı rozet biçimi
+                olursa kart kendi içinde çelişir. Sayı yoksa rozet
+                hiç çizilmiyor.
+              */}
+              {item.urunSayisi ? (
+                <span className="cat-card-flag">
+                  {urunSayisiYazisi(item.urunSayisi)}
+                </span>
+              ) : null}
               <span className="cat-card-body">
                 <strong>{item.label}</strong>
                 <em>Keşfet</em>
@@ -185,6 +204,10 @@ export function CategoryStrip({
           );
         })}
       </div>
+
+      {/* Şema markup'ın YANINDA duruyor: kart listesi değiştiğinde
+          işaretlemenin de değişmesi gerektiği buradan görünüyor. */}
+      {siteUrl && <JsonLd data={kategoriListesiSchema(items, siteUrl)} />}
     </section>
   );
 }

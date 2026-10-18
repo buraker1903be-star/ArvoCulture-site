@@ -77,3 +77,44 @@ export const kategoriAdresi = (etiket: string): string => {
   )?.[0];
   return `/koleksiyon/${slug ?? "tumu"}`;
 };
+
+
+/*
+  KATEGORİ KARTINDAKİ ÜRÜN SAYISI.
+
+  Kartlarda her kategorinin altında aynı "Keşfet" yazıyordu: dört
+  kart dört ayrı fotoğraftan başka hiçbir şey söylemiyordu. Müşteri
+  bölümün büyüklüğünü ancak içine girince görüyordu — oysa "3.225
+  ürün" tek başına girme sebebi.
+
+  Sayı ArvoARC'tan geliyor (`arc_storefront_collections.product_count`,
+  menünün de kullandığı çağrı: aynı istekte `cache` ile bir kez
+  okunuyor, ek sorgu YOK). Koda "binlerce ürün" yazmak gerçeğe
+  bağlanmayan bir pazarlama cümlesi olurdu; katalog her gün
+  değişiyor.
+
+  Eşleşme kategori anahtarı ile koleksiyon slug'ı üzerinden: anahtar
+  `/koleksiyon/<slug>` adresinin son parçası, yani zaten aynı şey.
+  Eşleşme yoksa ya da sayı sıfırsa alan BOŞ kalıyor — "0 ürün" yazan
+  bir kart, kategoriyi hiç göstermemekten kötü.
+*/
+export type KategoriKarti = SiteCategory & { urunSayisi?: number };
+
+export function kategoriSayilariyla(
+  items: SiteCategory[],
+  koleksiyonlar: Array<{ slug: string; product_count: number }>,
+): KategoriKarti[] {
+  const sayilar = new Map(
+    koleksiyonlar.map((koleksiyon) => [koleksiyon.slug, koleksiyon.product_count]),
+  );
+  return items.map((item) => {
+    const sayi = sayilar.get(categoryKey(item.href));
+    return Number.isFinite(sayi) && (sayi ?? 0) > 0
+      ? { ...item, urunSayisi: sayi }
+      : item;
+  });
+}
+
+/** 3225 → "3.225 ürün". */
+export const urunSayisiYazisi = (sayi: number): string =>
+  `${sayi.toLocaleString("tr-TR")} ürün`;
