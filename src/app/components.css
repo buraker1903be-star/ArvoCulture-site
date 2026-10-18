@@ -10389,12 +10389,9 @@ body.theme-modern .auth-alt .linklike:hover {
   grid-column: 1 / -1;
 }
 
-/* Ticaret unvanı uzun; kendi satırında ve daha sessiz. Banka
-   IBAN'dan alıcıyı kendisi dolduruyor, bu alan doğrulama için. */
-.havale-alici {
-  grid-column: 1 / -1;
-}
-
+/* Ticaret unvanı uzun ama kendi SATIRINI hak etmiyor: bankanın
+   yanında, daha sessiz. Banka IBAN'dan alıcıyı kendisi
+   dolduruyor; bu alan doğrulama için. */
 .havale-alici dd {
   font-size: var(--t-xs);
   line-height: 1.5;
@@ -10470,10 +10467,12 @@ body.theme-modern .auth-alt .linklike:hover {
 
 /* Mağazanın kendi havale notu: bizim cümlemizden daha sessiz,
    çünkü o ne OLACAĞINI söylüyor, bu mağazanın koşulunu. */
-.havale-basi .havale-not {
-  margin-top: var(--s3);
-  padding-top: var(--s3);
-  border-top: 1px solid var(--line-soft);
+/* Mağazanın notu alanların altında bir dipnot: müşteri sipariş
+   numarasını etiketli alandan zaten gördü. */
+.havale-not {
+  margin: var(--s3) 0 0;
+  font-size: var(--t-xs);
+  line-height: 1.6;
   color: var(--ink-3);
 }
 

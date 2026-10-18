@@ -328,16 +328,6 @@ export function OrderDetail({
               Tutarı aşağıdaki hesaba gönderin; siparişiniz ödeme
               görüldüğünde hazırlanmaya başlar.
             </p>
-            {/*
-              Mağazanın KENDİ havale notu. Sessizce atılmıyor:
-              metin panelden yönetiliyor ve kiracı onu bilerek
-              yazmış oluyor (AGENTS.md: tanıtım metinleri
-              kiracının). Bizim cümlemiz ne OLACAĞINI söylüyor,
-              bu not mağazanın kendi koşulunu.
-            */}
-            {banka.transferInstructions && (
-              <p className="havale-not">{banka.transferInstructions}</p>
-            )}
           </div>
 
           <dl className="havale-alanlar">
@@ -345,6 +335,18 @@ export function OrderDetail({
               <div>
                 <dt>Banka</dt>
                 <dd>{banka.bankName}</dd>
+              </div>
+            )}
+            {/*
+              ALICI BANKANIN YANINDA. Tam satır kaplıyordu ve uzun
+              ticaret unvanı şeridi tek başına uzatıyordu. Banka
+              IBAN'dan alıcıyı kendisi dolduruyor; bu alan
+              doğrulama için — yani ikinci sütun yeri.
+            */}
+            {banka.accountHolder && (
+              <div className="havale-alici">
+                <dt>Alıcı</dt>
+                <dd>{banka.accountHolder}</dd>
               </div>
             )}
             <div className="havale-iban">
@@ -365,13 +367,22 @@ export function OrderDetail({
                 <KopyalaDugmesi deger={order.order_number} />
               </dd>
             </div>
-            {banka.accountHolder && (
-              <div className="havale-alici">
-                <dt>Alıcı</dt>
-                <dd>{banka.accountHolder}</dd>
-              </div>
-            )}
           </dl>
+
+          {/*
+            Mağazanın KENDİ havale notu. Sessizce atılmıyor: metin
+            panelden yönetiliyor ve kiracı onu bilerek yazmış
+            oluyor (AGENTS.md: tanıtım metinleri kiracının).
+
+            Sol sütundaydı ve orada bizim cümlemizle alt alta
+            duruyordu — iki paragraf, ikisi de açıklama alanından
+            söz ediyor, şerit uzuyordu. Alanların ALTINDA artık
+            tekrar değil dipnot: müşteri numarayı etiketli
+            alandan zaten gördü.
+          */}
+          {banka.transferInstructions && (
+            <p className="havale-not">{banka.transferInstructions}</p>
+          )}
         </section>
       )}
 
