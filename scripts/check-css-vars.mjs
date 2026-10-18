@@ -23,6 +23,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import postcss from "postcss";
 
 const root = process.argv[2] ?? "src";
 
@@ -44,6 +45,28 @@ const codeFiles = files.filter((file) => /\.(tsx?|jsx?|mjs)$/.test(file));
 // numaraları dosyadakiyle aynı kalsın.
 const stripComments = (text) =>
   text.replace(/\/\*[\s\S]*?\*\//g, (comment) => comment.replace(/[^\n]/g, " "));
+
+/*
+  SÖZDİZİMİ ÖNCE.
+
+  Bu betik yalnızca DEĞİŞKENLERE bakıyordu; dengesiz bir süslü
+  parantez ona görünmüyordu. 18.10.2026'da tam bu oldu: satır
+  numarasıyla yapılan bir kes-yapıştır dosyanın sonunda fazladan
+  bir `}` bıraktı, denetim "sorun yok" dedi, `tsc` ve `lint` CSS'e
+  bakmıyor — hata ancak VERCEL'DE ortaya çıktı ("Parsing CSS source
+  code failed: Unexpected end of input") ve dağıtım düştü.
+
+  Ayrıştırıcı Next'in zaten kullandığı postcss; ek bağımlılık yok.
+  Önce çalışıyor çünkü bozuk bir dosyada değişken araması anlamsız.
+*/
+for (const file of cssFiles) {
+  try {
+    postcss.parse(fs.readFileSync(file, "utf8"), { from: file });
+  } catch (hata) {
+    console.error(`\nCSS sözdizimi hatası:\n\n  ${file}:${hata.line}:${hata.column}  ${hata.reason}\n`);
+    process.exit(1);
+  }
+}
 
 const defined = new Set();
 const sources = cssFiles.map((file) => {
