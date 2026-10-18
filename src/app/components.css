@@ -7888,3 +7888,21 @@ body.theme-modern .live-thumb {
     transform: none;
   }
 }
+
+/*
+  Klavyeyle seçili satır. İmleçle gezilen satırla aynı görünüyor:
+  biri açık gri zemin, diğeri çerçeve olsaydı müşteri iki ayrı
+  vurgu dili öğrenmek zorunda kalırdı.
+
+  `:hover` kuralından AYRI yazılıyor ama aynı değeri veriyor;
+  dokunmatikte hover yok, klavye vurgusu ise her yerde olmalı.
+*/
+body.theme-modern .live-results a[data-aktif="true"] {
+  background: var(--panel-2);
+}
+
+/* Boş durumdaki "son gezdikleriniz" ile sık arananlar arasında
+   nefes: ikisi de başlıklı birer blok. */
+.live-recent + .live-suggest .search-heading {
+  margin-top: var(--s5);
+}

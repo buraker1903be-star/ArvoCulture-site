@@ -3,6 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { readRecent } from "@/lib/recent";
+import { useProductList } from "@/lib/use-product-list";
 import { formatPrice } from "@/lib/product-types";
 import type { SearchItem } from "@/lib/search-index";
 
@@ -20,6 +23,58 @@ import type { SearchItem } from "@/lib/search-index";
  */
 
 type Durum = "bos" | "yukleniyor" | "hazir" | "hata";
+
+/*
+  Sonuç satırı. Hem arama sonuçları hem de boş durumdaki "son
+  gezdikleriniz" aynı satırı kullanıyor: iki ayrı kopya,
+  birinde düzeltilen bir hizalamanın öbüründe kalması demekti.
+*/
+function Satir({
+  slug,
+  ad,
+  ust,
+  fiyat,
+  eskiFiyat,
+  gorsel,
+  aktif,
+  onNavigate,
+  onHover,
+}: {
+  slug: string;
+  ad: string;
+  ust?: string;
+  fiyat: number;
+  eskiFiyat?: number;
+  gorsel?: string;
+  aktif?: boolean;
+  onNavigate?: () => void;
+  onHover?: () => void;
+}) {
+  return (
+    <li>
+      <Link
+        href={`/urun/${slug}`}
+        onClick={onNavigate}
+        /* Seçili satır imleçle gezilen satırla AYNI görünüyor:
+           iki ayrı vurgu dili öğrenilmesi gereken bir şey olurdu. */
+        data-aktif={aktif ? "true" : undefined}
+        onMouseEnter={onHover}
+      >
+        <span className="live-thumb">
+          {gorsel && <Image src={gorsel} alt="" fill sizes="64px" />}
+        </span>
+        <span className="live-text">
+          <small>{ust}</small>
+          <strong>{ad}</strong>
+        </span>
+        <span className="live-price">
+          {formatPrice(fiyat)}
+          {eskiFiyat && eskiFiyat > fiyat && <del>{formatPrice(eskiFiyat)}</del>}
+        </span>
+      </Link>
+    </li>
+  );
+}
 
 export function LiveSearch({
   initialQuery = "",
@@ -44,7 +99,41 @@ export function LiveSearch({
    */
   suggestions?: string[];
 }) {
+  const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
+
+  /*
+    KLAVYEYLE GEZİNME.
+
+    Sonuçlar ilk harften beri geliyordu ama klavyeyle seçilemiyordu:
+    ok tuşları imleci yazı içinde gezdiriyor, Enter HİÇBİR ŞEY
+    yapmıyordu — form yok, tuş dinleyicisi yoktu. Yazıp Enter'a
+    basan müşteri hiçbir tepki alamıyordu.
+
+    -1 "hiçbiri seçili değil" demek; o durumda Enter arama
+    sayfasına gidiyor (listenin tamamı), seçiliyken ürüne.
+  */
+  const [aktif, setAktif] = useState(-1);
+  const listeRef = useRef<HTMLUListElement | null>(null);
+
+  /*
+    BOŞ DURUM BOŞ KALMIYOR.
+
+    Katman açıldığında ekranda yalnızca bir alan ve sık aranan
+    terimler vardı; sayfanın en çok tıklanan düğmesi müşteriyi boş
+    bir kutuya götürüyordu. Son gezdiği ürünler tarayıcısında zaten
+    duruyor (lib/recent) ve "kaldığı yere dönmek" aramanın en sık
+    sebeplerinden biri.
+
+    Ana sayfadan kaldırılan raf tam olarak bu: orada dört rafın
+    altında kimse görmüyordu, burada ilk görülen şey.
+  */
+  const [gezilen, setGezilen] = useState<string[] | null>(null);
+  useEffect(() => {
+    // Tek seferlik başlangıç değeri; zincirleme render riski yok.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGezilen(readRecent());
+  }, []);
 
   /*
     Sonuçlar ait oldukları sorguyla birlikte tutuluyor. Böylece
@@ -137,6 +226,56 @@ export function LiveSearch({
   const results = cevap.items;
 
   /*
+    Seçili satır listeden taşmasın: sonuç sayısı küçüldüğünde
+    (yeni sorgu, daha az sonuç) eski indis listenin dışında
+    kalıyordu ve Enter tanımsız bir ürüne gidiyordu.
+  */
+  const aktifGuvenli = aktif < results.length ? aktif : -1;
+
+  /* Yazmaya başlayınca istek atılmıyor: boş dizi "liste biliniyor
+     ve boş" demek, null "henüz okunmadı". */
+  const { durum: gezilenDurum, products: gezilenUrunler } = useProductList(
+    "/api/urunler",
+    typed ? [] : gezilen,
+  );
+
+  /* Seçili satır görünür alanda tutuluyor; ok tuşuyla aşağı inen
+     müşteri listenin görünmeyen kısmına "düşmüyor". */
+  useEffect(() => {
+    if (aktifGuvenli < 0) return;
+    listeRef.current?.children[aktifGuvenli]?.scrollIntoView({
+      block: "nearest",
+    });
+  }, [aktifGuvenli]);
+
+  function tusla(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      const secili = aktifGuvenli >= 0 ? results[aktifGuvenli] : null;
+      if (!secili && !aranan) return;
+      event.preventDefault();
+      onNavigate?.();
+      /* Seçim yoksa listenin tamamına: Enter bugüne kadar hiçbir
+         şey yapmıyordu ve "arama" denince beklenen ilk tuş o. */
+      router.push(
+        secili
+          ? `/urun/${secili.slug}`
+          : `/arama?q=${encodeURIComponent(aranan)}`,
+      );
+      return;
+    }
+
+    if (results.length === 0) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setAktif((i) => (i + 1 >= results.length ? 0 : i + 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setAktif((i) => (i <= 0 ? results.length - 1 : i - 1));
+    }
+  }
+
+  /*
     YAKIN SONUÇ AÇIKÇA SÖYLENİYOR. "kadın parfümü" aramasında
     katalogda "kadın" kelimesi hiç geçmiyor; dönen 43 parfüm
     aradığının tam karşılığıymış gibi sunulsaydı müşteri yanlış ürünü
@@ -171,7 +310,13 @@ export function LiveSearch({
           autoFocus={autoFocus}
           placeholder="Ürün, marka veya kategori ara"
           aria-label="Ürün ara"
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            /* Yeni harf yeni liste demek; eski satırın seçili
+               kalması Enter'ı yanlış ürüne gönderirdi. */
+            setAktif(-1);
+          }}
+          onKeyDown={tusla}
         />
         {typed && (
           <button type="button" onClick={() => setQuery("")}>
@@ -208,6 +353,38 @@ export function LiveSearch({
       )}
 
       {/*
+        Son gezilenler yalnızca katmanda ve alan boşken. Arama
+        sayfasında (variant="grid") gösterilmiyor: oraya zaten bir
+        sorguyla geliniyor.
+
+        İki üründen az varsa çizilmiyor; tek satırlık bir "son
+        gezdikleriniz" başlığı, başlığın kendisinden az bilgi
+        taşıyor.
+      */}
+      {!typed &&
+        variant === "list" &&
+        gezilenDurum === "hazir" &&
+        gezilenUrunler.length >= 2 && (
+          <div className="live-recent">
+            <p className="search-heading">Son gezdikleriniz</p>
+            <ul className="live-results">
+              {gezilenUrunler.slice(0, 4).map((urun) => (
+                <Satir
+                  key={urun.slug}
+                  slug={urun.slug}
+                  ad={urun.name}
+                  ust={urun.eyebrow}
+                  fiyat={urun.price}
+                  eskiFiyat={urun.oldPrice}
+                  gorsel={urun.image}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </ul>
+          </div>
+        )}
+
+      {/*
         Sık arananlar: alan boşken nereden başlanacağını, sonuç
         çıkmadığında ne denenebileceğini gösteriyor.
       */}
@@ -232,27 +409,20 @@ export function LiveSearch({
         )}
 
       {typed && results.length > 0 && variant === "list" && (
-        <ul className="live-results">
-          {results.map((item) => (
-            <li key={item.slug}>
-              <Link href={`/urun/${item.slug}`} onClick={onNavigate}>
-                <span className="live-thumb">
-                  {item.image && (
-                    <Image src={item.image} alt="" fill sizes="64px" />
-                  )}
-                </span>
-                <span className="live-text">
-                  <small>{item.brand}</small>
-                  <strong>{item.name}</strong>
-                </span>
-                <span className="live-price">
-                  {formatPrice(item.price)}
-                  {item.oldPrice && item.oldPrice > item.price && (
-                    <del>{formatPrice(item.oldPrice)}</del>
-                  )}
-                </span>
-              </Link>
-            </li>
+        <ul className="live-results" ref={listeRef}>
+          {results.map((item, index) => (
+            <Satir
+              key={item.slug}
+              slug={item.slug}
+              ad={item.name}
+              ust={item.brand}
+              fiyat={item.price}
+              eskiFiyat={item.oldPrice}
+              gorsel={item.image}
+              aktif={index === aktifGuvenli}
+              onNavigate={onNavigate}
+              onHover={() => setAktif(index)}
+            />
           ))}
         </ul>
       )}
