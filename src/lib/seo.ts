@@ -400,3 +400,48 @@ export function storeSchema({
     ...ustKurulus,
   };
 }
+
+/**
+ * Ana sayfadaki kategori şeridinin şeması.
+ *
+ * Ana sayfanın hiçbir `ItemList`i yoktu: mağaza ve site şeması
+ * (storeSchema/websiteSchema) "bu site kimin" sorusunu yanıtlıyor
+ * ama "bu sayfada ne var" sorusunu yanıtlayan bir işaretleme
+ * bulunmuyordu. Yanıt üreten sistemler bir mağazayı özetlerken
+ * önce bu listeye bakıyor; kategori adlarını fotoğrafın üstündeki
+ * yazıdan çıkarmaları gerekiyordu.
+ *
+ * Ürün sayısı da listeye giriyor: kategorinin ne kadar büyük
+ * olduğu metinde değil veride duruyor.
+ */
+export function kategoriListesiSchema(
+  items: Array<{ label: string; href: string; urunSayisi?: number }>,
+  siteUrl: string,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${siteUrl}/#kategoriler`,
+    name: "Kategoriler",
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.label,
+      url: `${siteUrl}${item.href}`,
+      ...(item.urunSayisi
+        ? {
+            item: {
+              "@type": "CollectionPage",
+              name: item.label,
+              url: `${siteUrl}${item.href}`,
+              mainEntity: {
+                "@type": "ItemList",
+                numberOfItems: item.urunSayisi,
+              },
+            },
+          }
+        : {}),
+    })),
+  };
+}

@@ -25,7 +25,9 @@ import { shippingTerms } from "@/lib/order-quote";
 import { Reveal } from "@/components/reveal";
 import { RecentProducts } from "@/components/recent-products";
 import { ForYou } from "@/components/for-you";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, kategoriSayilariyla } from "@/lib/categories";
+import { getStorefrontCollections } from "@/lib/collections";
+import { vitrinAdresi } from "@/lib/konak";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
@@ -109,7 +111,20 @@ export default async function Home({
   // Düzen (layout) zaten okuyor; cache ile aynı istekte tekrar sorgu yok.
   const shippingBadge = shippingTerms(await getSalesRules()).badge;
 
-  const categories = CATEGORIES;
+  /*
+    Kategori kartlarındaki ürün sayısı GERÇEK: koleksiyon listesinin
+    `product_count` alanından geliyor. O liste menü için zaten her
+    istekte okunuyor ve `cache` ile aynı istekte tek sorgu — kartlar
+    sayıyı bedavaya alıyor. Okunamazsa kart sayısız çiziliyor.
+
+    `siteUrl` kategori şemasının tam adresleri için; ana sayfanın
+    `ItemList`i yoktu (bkz. lib/seo → kategoriListesiSchema).
+  */
+  const [koleksiyonlar, siteUrl] = await Promise.all([
+    getStorefrontCollections(),
+    vitrinAdresi(),
+  ]);
+  const categories = kategoriSayilariyla(CATEGORIES, koleksiyonlar);
 
   return (
     <main className="shell">
@@ -176,7 +191,7 @@ export default async function Home({
       </Reveal>
 
       <Reveal>
-        <CategoryStrip items={categories} />
+        <CategoryStrip items={categories} siteUrl={siteUrl} />
       </Reveal>
 
       {/* Satış verisi yoksa bölüm hiç görünmez. Hiç satılmamış
