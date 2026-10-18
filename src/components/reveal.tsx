@@ -50,9 +50,21 @@ export function Reveal({
           observer.unobserve(entry.target);
         }
       },
-      // Bölümün beşte biri görününce başlat; kullanıcı
-      // animasyonu kaçırmasın.
-      { threshold: 0.15, rootMargin: "0px 0px -80px 0px" },
+      /*
+        BÖLÜM EKRANA GİRMEDEN ÖNCE BAŞLIYOR (18.10.2026).
+
+        Eşik beşte birdi ve alt kenar boşluğu NEGATİFTİ
+        (`-80px`): ikisi birlikte belirişi geciktiriyordu — uzun
+        bir bölümün beşte biri görünene kadar beklemek, telefonda
+        yüzlerce piksel boş alan demek. Hızlı kaydıran müşteri
+        "içerik yok" diye okuyordu (ölçüldü: 8.079 piksellik ana
+        sayfanın 19 bölümünden 8'i bir anda saydamdı).
+
+        Artık bölüm ekrana girmeden 160 piksel önce başlıyor ve
+        tek pikseli görününce tetikleniyor: animasyon kaydırmayı
+        KOVALAMIYOR, önünde gidiyor.
+      */
+      { threshold: 0, rootMargin: "0px 0px 160px 0px" },
     );
 
     observer.observe(node);

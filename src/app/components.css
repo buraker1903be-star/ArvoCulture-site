@@ -3847,12 +3847,20 @@
   "beliriyor" değil "zıplıyor" gibi duruyordu. 14px ve yumuşak
   duruşlu eğri, bölümü fark ettirmeden yerine oturtuyor.
 */
+/*
+  BELİRİŞ SÜRESİ (18.10.2026).
+
+  900 ms sinema hissi veriyordu ama kaydırma hızının gerisinde
+  kalıyordu: müşteri bölümün üstünden geçerken içerik hâlâ
+  saydamdı ve sayfa boş görünüyordu. 420 ms hâlâ yumuşak, ama
+  kaydırmayla aynı tempoda.
+*/
 .reveal[data-motion="on"] {
   opacity: 0;
   transform: translateY(14px);
   transition:
-    opacity 900ms var(--ease-out),
-    transform 900ms var(--ease-out);
+    opacity 420ms var(--ease-out),
+    transform 420ms var(--ease-out);
   will-change: opacity, transform;
 }
 
