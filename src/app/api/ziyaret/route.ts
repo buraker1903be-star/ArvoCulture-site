@@ -44,6 +44,18 @@ export async function POST(request: Request) {
      kişiye ait olabilecek değerler kayda girmesin. */
   const yol = ham.split("?")[0].split("#")[0];
 
+  /*
+    Kaynak TARAYICIDAN geliyor: sunucudaki `referer` başlığı bu
+    isteğin kendi sayfası olurdu (aynı köken), dış kaynağı
+    göstermezdi. Panel onu okunabilir platform adına çeviriyor
+    (ArvoARC lib/ziyaret-kaynagi).
+  */
+  const kaynakHam = (govde as { kaynak?: unknown })?.kaynak;
+  const kaynak =
+    typeof kaynakHam === "string" && kaynakHam.trim()
+      ? kaynakHam.trim().slice(0, 80)
+      : null;
+
   const bas = request.headers;
   const sayi = (deger: string | null) => {
     const n = Number(deger);
@@ -65,6 +77,7 @@ export async function POST(request: Request) {
         p_lat: sayi(bas.get("x-vercel-ip-latitude")),
         p_lon: sayi(bas.get("x-vercel-ip-longitude")),
         p_ip: bas.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+        p_source: kaynak,
       },
       { onbelleksiz: true },
     );
