@@ -199,6 +199,33 @@ export function AccountPanel({
   }
 
   /*
+    SAĞLAYICIDAN HATAYLA DÖNÜŞ.
+
+    Müşteri Google ekranında "iptal" derse ya da sağlayıcı reddederse
+    adrese `error_description` eklenerek geri dönülüyor. Panel bunu
+    okumazsa müşteri hiçbir şey olmamış gibi aynı formla karşılaşıyor
+    ve neden giremediğini anlamıyor.
+
+    İşaret adresten TEMİZLENİYOR: sayfa yenilendiğinde eski hata
+    yeniden görünmemeli.
+  */
+  useEffect(() => {
+    const kaynaklar = [window.location.hash.slice(1), window.location.search.slice(1)];
+    for (const kaynak of kaynaklar) {
+      if (!kaynak) continue;
+      const alanlar = new URLSearchParams(kaynak);
+      const aciklama = alanlar.get("error_description") ?? alanlar.get("error");
+      if (!aciklama) continue;
+      /* Tek seferlik: adresteki işaret hemen siliniyor, yani
+         zincirleme render doğmuyor. */
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMessage({ kind: "error", text: translateAuthError(aciklama) });
+      window.history.replaceState(null, "", window.location.pathname);
+      break;
+    }
+  }, []);
+
+  /*
     SOSYAL GİRİŞ.
 
     Supabase sağlayıcıyı kendi tarafında açtığı için burada yapılan
@@ -217,7 +244,20 @@ export function AccountPanel({
       const supabase = getAuthClient(supabaseUrl, supabaseKey);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: saglayici,
-        options: { redirectTo: `${window.location.origin}${window.location.pathname}` },
+        options: {
+          redirectTo: `${window.location.origin}${window.location.pathname}`,
+          /*
+            HESAP SEÇTİRİLİYOR. Google varsayılan olarak tarayıcıda
+            açık olan hesapla sessizce giriyor; ortak kullanılan bir
+            bilgisayarda müşteri başkasının hesabıyla giriş yapmış
+            oluyor ve bunu ancak siparişlerinde fark ediyor.
+            Facebook'ta karşılığı yok, bu yüzden yalnızca Google'a
+            veriliyor.
+          */
+          ...(saglayici === "google"
+            ? { queryParams: { prompt: "select_account" } }
+            : {}),
+        },
       });
       if (error) throw error;
       /* Yönlendirme başlıyor; `busy` açık kalıyor ki müşteri
@@ -700,6 +740,12 @@ function translateAuthError(message: string) {
     [
       /unsupported provider|provider is not enabled/i,
       "Bu giriş yöntemi şu anda kullanılamıyor. E-posta ile giriş yapabilirsiniz.",
+    ],
+    /* Müşteri sağlayıcı ekranında vazgeçti; bu bir arıza değil. */
+    [/access_denied|user denied|cancell?ed/i, "Giriş iptal edildi."],
+    [
+      /redirect|not allowed/i,
+      "Giriş tamamlanamadı. Lütfen tekrar deneyin ya da e-posta ile girin.",
     ],
     [/gecersiz_eposta/, "Geçerli bir e-posta adresi girin."],
     [/kisa_sifre/, "Şifreniz en az 8 karakter olmalı."],
