@@ -83,7 +83,33 @@ export const anahtarGecerli = (anahtar: string) => /^[0-9a-f]{32}$/.test(anahtar
 export function indirimTutari(
   s: Pick<SiparisDurumu, "ara_toplam" | "kargo" | "toplam">,
 ): number {
-  const fark = (s.ara_toplam ?? 0) + (s.kargo ?? 0) - (s.toplam ?? 0);
+  return toplamFarki(s.ara_toplam, s.kargo, s.toplam);
+}
+
+/**
+ * Aynı kural, sipariş listesindeki/hesap içindeki sipariş için.
+ *
+ * İKİ EKRAN AYNI SİPARİŞİ GÖSTERİYOR ve biri hesabı doğru, öbürü
+ * yanlış yapıyordu. Misafir takip sayfası (`/siparis/<anahtar>`)
+ * indirimi buradaki kuralla hesaplıyordu; hesap içindeki sipariş
+ * detayı (`/hesap/siparis/<numara>`) ise ArvoARC'ın `discount`
+ * alanına bakıyordu ve o alan HAVALE İNDİRİMİNİ TAŞIMIYOR.
+ *
+ * Sonuç canlıda görüldü (AC261017-F93525): ara toplam 470,90 +
+ * kargo 120,00 = 590,90 ama toplam 576,77. Aradaki 14,13 hiçbir
+ * satırda yazmıyordu. Müşteri topladığında tutmayan bir hesap
+ * görünce "benden fazla mı alındı" diye arar.
+ *
+ * Kural neden çıkarma: ArvoARC siparişte indirimi ayrı bir sütunda
+ * TUTMUYOR; kupon da havale indirimi de doğrudan toplamdan
+ * düşülüyor. Elimizdeki tek doğru kaynak farkın kendisi.
+ */
+export function toplamFarki(
+  araToplam: number | null | undefined,
+  kargo: number | null | undefined,
+  toplam: number | null | undefined,
+): number {
+  const fark = (araToplam ?? 0) + (kargo ?? 0) - (toplam ?? 0);
   return fark > 0 ? fark : 0;
 }
 

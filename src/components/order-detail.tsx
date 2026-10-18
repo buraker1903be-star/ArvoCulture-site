@@ -17,9 +17,11 @@ import {
   RETURN_STATUS,
   type ReturnRequestRow,
   initials,
+  siparisAdimlari,
   type Order,
   type OrderAddress,
 } from "@/lib/order-types";
+import { toplamFarki } from "@/lib/siparis-durumu";
 
 /*
   "okunamadi" AYRI BİR HÂL (17.10.2026).
@@ -170,6 +172,26 @@ export function OrderDetail({
     hiç görünmüyor.
   */
   const gonderiler = order.shipments ?? [];
+  const adimlar = siparisAdimlari(order);
+
+  /*
+    İNDİRİM ARVOARC'IN `discount` ALANINDAN OKUNAMIYOR.
+
+    O alan havale indirimini taşımıyor ve canlıda sonucu şuydu
+    (AC261017-F93525): ara toplam 470,90 + kargo 120,00 = 590,90
+    ama toplam 576,77 — aradaki 14,13 hiçbir satırda yazmıyordu.
+    Müşteri topladığında tutmayan bir hesap görünce "benden fazla
+    mı alındı" diye arar.
+
+    Misafir takip sayfası aynı siparişi DOĞRU gösteriyordu; kural
+    orada farktan hesaplanıyor. Artık ikisi de aynı fonksiyonu
+    çağırıyor (`toplamFarki`). `discount` yine de üstün: ArvoARC
+    bir gün alanı doldurursa onun rakamı kullanılır.
+  */
+  const indirim =
+    order.discount > 0
+      ? order.discount
+      : toplamFarki(order.subtotal, order.shipping, order.total);
 
   return (
     <>
@@ -190,7 +212,36 @@ export function OrderDetail({
           <time dateTime={order.created_at}>
             {formatOrderDate(order.created_at)}
           </time>
+          {/* Tutar başlıkta: sipariş sayfasını açan müşterinin ilk iki
+              sorusu "nerede" ve "ne kadardı". */}
+          <b className="detail-tutar">{formatPrice(order.total / 100)}</b>
         </div>
+
+        {/*
+          YOLCULUK ÇİZELGESİ.
+
+          Durum tek bir rozetti ve yalnızca ŞU ANI söylüyordu:
+          öncesi ne oldu, sonrası ne gelecek — hiçbiri yok. Oysa
+          sipariş sayfasına girmenin birinci sebebi tam bu soru.
+        */}
+        {adimlar && (
+          <ol className="siparis-cizelge">
+            {adimlar.map((adim) => (
+              <li
+                key={adim.ad}
+                data-durum={adim.durum}
+                /* Şu anki adımı ekran okuyucuya SÖYLEYEN tek şey bu:
+                   renk ve altın halka yalnızca görene bir şey
+                   anlatıyor. */
+                aria-current={adim.durum === "simdi" ? "step" : undefined}
+              >
+                <span className="siparis-cizelge-nokta" aria-hidden="true" />
+                <span className="siparis-cizelge-ad">{adim.ad}</span>
+                {adim.not && <small>{adim.not}</small>}
+              </li>
+            ))}
+          </ol>
+        )}
       </section>
 
       {/*
@@ -408,12 +459,12 @@ export function OrderDetail({
               <dt>Ara toplam</dt>
               <dd>{formatPrice(order.subtotal / 100)}</dd>
             </div>
-            {order.discount > 0 && (
+            {indirim > 0 && (
               <div className="is-discount">
                 <dt>
                   İndirim{order.coupon_code ? ` (${order.coupon_code})` : ""}
                 </dt>
-                <dd>−{formatPrice(order.discount / 100)}</dd>
+                <dd>−{formatPrice(indirim / 100)}</dd>
               </div>
             )}
             <div>

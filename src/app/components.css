@@ -9760,3 +9760,128 @@ body.theme-modern .auth-alt .linklike:hover {
     transform: none;
   }
 }
+
+/* ==========================================================
+   SİPARİŞ YOLCULUĞU ÇİZELGESİ (18.10.2026)
+
+   Sipariş detayında durum TEK BİR ROZETTİ ("HAZIRLANIYOR") ve
+   müşteriye yalnızca şu anı söylüyordu: öncesi ne oldu, sonrası
+   ne gelecek — hiçbiri yok. Oysa sipariş sayfasını açmanın
+   birinci sebebi tam bu soru.
+
+   Dört adım, yatay bir çizgi üzerinde. Geçilen adımlar zeytin,
+   şu anki adım altın halkalı, gelecek olanlar soluk.
+   ========================================================== */
+
+.siparis-cizelge {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--s2);
+  margin: var(--s5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.siparis-cizelge li {
+  position: relative;
+  padding-top: var(--s5);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+/* Adımları birleştiren çizgi. Son adımdan sonra çizgi yok:
+   yolculuk orada bitiyor. */
+.siparis-cizelge li::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: calc(-1 * var(--s2));
+  height: 1px;
+  background: var(--line);
+}
+
+.siparis-cizelge li:last-child::before {
+  display: none;
+}
+
+.siparis-cizelge-nokta {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.siparis-cizelge-ad {
+  display: block;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.siparis-cizelge small {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-3);
+}
+
+/* Geçilmiş adım: çizgi de nokta da dolu. */
+.siparis-cizelge li[data-durum="gecti"]::before {
+  background: var(--brand);
+}
+
+.siparis-cizelge li[data-durum="gecti"] .siparis-cizelge-nokta {
+  border-color: var(--brand);
+  background: var(--brand);
+}
+
+.siparis-cizelge li[data-durum="gecti"] .siparis-cizelge-ad {
+  color: var(--ink-2);
+}
+
+/* Şu anki adım: altın halka — sayfadaki tek vurgulu nokta. */
+.siparis-cizelge li[data-durum="simdi"] .siparis-cizelge-nokta {
+  border-color: var(--brand);
+  background: var(--brand);
+  box-shadow: 0 0 0 3px var(--gold-soft);
+}
+
+.siparis-cizelge li[data-durum="simdi"] .siparis-cizelge-ad {
+  color: var(--ink);
+}
+
+.detail-tutar {
+  font-size: var(--t-lead);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+/* Telefonda dört sütun 80 piksele düşüp adları kırpıyordu;
+   çizelge dikey akıyor. */
+@media (max-width: 620px) {
+  .siparis-cizelge {
+    grid-auto-flow: row;
+    gap: 0;
+  }
+
+  .siparis-cizelge li {
+    padding: 0 0 var(--s4) var(--s5);
+  }
+
+  .siparis-cizelge li:last-child {
+    padding-bottom: 0;
+  }
+
+  .siparis-cizelge li::before {
+    top: 11px;
+    bottom: -4px;
+    left: 5px;
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+}

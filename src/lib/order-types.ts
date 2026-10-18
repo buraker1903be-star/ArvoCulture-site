@@ -216,3 +216,74 @@ export function siparisDurumEtiketi(order: Order): string {
   }
   return STATUS_LABEL[order.status] ?? order.status;
 }
+
+/**
+ * Siparişin yolculuğu: hangi adımdayız?
+ *
+ * Detay sayfasında durum TEK BİR ROZETTİ ("HAZIRLANIYOR") ve
+ * müşteriye yalnızca şu anı söylüyordu: öncesi ne oldu, sonrası
+ * ne gelecek, ne kadar kaldı — hiçbiri yok. Sipariş sayfasına
+ * girmenin birinci sebebi tam da bu soru.
+ *
+ * Adımlar ArvoARC'ın durumundan ve GÖNDERİLERDEN türetiliyor;
+ * ikisi birden gerekiyor çünkü sipariş durumu "fulfilled"da
+ * kalıyor (orada "kargoya verildi" demek) ve paketler teslim
+ * edilse bile sipariş o durumda duruyor (bkz. siparisDurumEtiketi).
+ *
+ * İPTAL VE İADE ÇİZELGEYE GİRMEZ: onlar yolculuğun bir adımı
+ * değil, yolculuğun sonlanması. Dört adımlık bir çubuğun içine
+ * "iptal edildi" koymak, iptal edilmiş siparişi yoldaymış gibi
+ * gösterirdi; çağıran taraf `null` alınca tek satırlık bir durum
+ * gösteriyor.
+ */
+export type SiparisAdimi = {
+  ad: string;
+  /** Tamamlandı mı, şu an mı, yoksa henüz gelmedi mi? */
+  durum: "gecti" | "simdi" | "bekliyor";
+  not?: string;
+};
+
+export function siparisAdimlari(order: Order): SiparisAdimi[] | null {
+  if (order.status === "cancelled" || order.status === "refunded") return null;
+
+  const paketler = (order.shipments ?? []).filter(
+    (paket) => paket.status !== "cancelled",
+  );
+  const kargoda = paketler.length > 0 || order.status === "fulfilled";
+  const teslim =
+    paketler.length > 0 && paketler.every((paket) => paket.status === "delivered");
+
+  /*
+    "Hazırlanıyor" adımı ödeme bekleyen siparişte GEÇİLMİŞ
+    sayılmıyor: havale siparişi ödeme gelene kadar hazırlanmaya
+    başlamıyor ve çubuğu ilerletmek, olmayan bir ilerlemeyi
+    müjdelemek olurdu.
+  */
+  const odendi = ["paid", "authorized", "partially_refunded"].includes(
+    order.payment_status,
+  );
+  const hazirlaniyor = odendi || order.status !== "pending";
+
+  const sirali: Array<[string, boolean, string | undefined]> = [
+    ["Siparişiniz alındı", true, undefined],
+    [
+      "Hazırlanıyor",
+      hazirlaniyor,
+      odendi ? undefined : "Ödemeniz bekleniyor",
+    ],
+    ["Kargoda", kargoda, undefined],
+    ["Teslim edildi", teslim, undefined],
+  ];
+
+  /* Son "tamam" olan adım ŞU AN; ondan sonrası bekliyor. */
+  const sonTamam = sirali.reduce(
+    (son, [, tamam], sira) => (tamam ? sira : son),
+    0,
+  );
+
+  return sirali.map(([ad, , not], sira) => ({
+    ad,
+    not,
+    durum: sira < sonTamam ? "gecti" : sira === sonTamam ? "simdi" : "bekliyor",
+  }));
+}

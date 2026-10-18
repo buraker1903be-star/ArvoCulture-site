@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { anahtarGecerli, indirimTutari } from "@/lib/siparis-durumu";
+import {
+  anahtarGecerli,
+  indirimTutari,
+  toplamFarki,
+} from "@/lib/siparis-durumu";
 
 /*
   İLK GERÇEK SİPARİŞTE RAKAMLAR TUTMUYORDU: 470,90 + 120,00 = 590,90
@@ -42,4 +46,20 @@ test("anahtar biçimi sunucuda da denetleniyor", () => {
   /* Büyük harf üretmiyoruz; kabul de etmiyoruz. */
   assert.equal(anahtarGecerli("063396F0CC1B4A971E13315AAC29C323"), false);
   assert.equal(anahtarGecerli(""), false);
+});
+
+/*
+  Aynı siparişin iki ekranda farklı hesaplanması gerçek bir
+  kusurdu (AC261017-F93525: 470,90 + 120,00 ≠ 576,77 ve fark
+  hiçbir satırda yazmıyordu). Kural tek yerde.
+*/
+test("toplam farkı: havale indirimi ara toplam+kargo−toplam", () => {
+  assert.equal(toplamFarki(47090, 12000, 57677), 1413);
+});
+
+test("toplam farkı eksi çıkarsa sıfır sayılır", () => {
+  /* Vergi ya da yuvarlama yüzünden toplam büyük çıkabilir; eksi
+     bir "indirim" yazmak hesabı büsbütün bozardı. */
+  assert.equal(toplamFarki(10000, 0, 12000), 0);
+  assert.equal(toplamFarki(null, null, null), 0);
 });
