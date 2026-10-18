@@ -3,6 +3,7 @@ import { rpcOrEmpty } from "@/lib/arc";
 import { SELLER as FALLBACK } from "@/lib/seller";
 import { getSalesRules } from "@/lib/store-settings";
 import { vitrinKonagi } from "@/lib/konak";
+import type { MagazaKimligi } from "@/lib/seo";
 import { shippingTerms } from "@/lib/order-quote";
 
 /**
@@ -39,6 +40,8 @@ type SellerRow = {
   bank_iban: string | null;
   bank_account_holder: string | null;
   bank_transfer_instructions: string | null;
+  parent_organization_name: string | null;
+  parent_organization_url: string | null;
 };
 
 /*
@@ -240,5 +243,43 @@ export const getSellerBank = cache(async (): Promise<HavaleHesabi | null> => {
     accountHolder:
       row.bank_account_holder?.trim() || row.legal_name?.trim() || "",
     transferInstructions: row.bank_transfer_instructions?.trim() ?? "",
+  };
+});
+
+/*
+  YAPISAL VERİ İÇİN MAĞAZA KİMLİĞİ.
+
+  `lib/seo.ts` istemci tarafında da derleniyor, o yüzden satıcı
+  kaydını kendisi okuyamıyor; kimliği burada kuruyoruz ve oraya
+  parametre olarak geçiyoruz.
+
+  EKSİK ALAN BOŞ METİN. `seo.ts` boş alanı şemaya hiç yazmıyor.
+  Yedek sabitlere düşmek burada YANLIŞ olurdu: hukuki sayfada bir
+  şirket, yapısal veride başka bir şirket görünmesi çelişkili bir
+  kimlik sinyali üretir — tam bu dosyanın düzelttiği hata.
+*/
+export const getStoreIdentity = cache(async (): Promise<MagazaKimligi> => {
+  const rows = await rpcOrEmpty<SellerRow>(
+    "arc_storefront_seller",
+    { p_host: await vitrinKonagi() },
+    { revalidate: 3600, tags: ["seller"] },
+  );
+
+  const row = rows[0];
+  const metin = (deger: string | null | undefined) => deger?.trim() ?? "";
+
+  return {
+    brand: metin(row?.trade_name) || metin(row?.legal_name),
+    legalName: metin(row?.legal_name),
+    email: metin(row?.contact_email),
+    phone: metin(row?.contact_phone) || metin(row?.whatsapp_number),
+    taxNumber: metin(row?.tax_number),
+    addressLine: metin(row?.address_line),
+    addressDistrict: metin(row?.address_district),
+    addressCity: metin(row?.address_city),
+    addressCountry: metin(row?.address_country),
+    website: metin(row?.storefront_url),
+    parentOrganizationName: metin(row?.parent_organization_name),
+    parentOrganizationUrl: metin(row?.parent_organization_url),
   };
 });

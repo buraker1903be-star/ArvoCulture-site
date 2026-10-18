@@ -10,6 +10,7 @@ import { getStorefrontProduct, getStorefrontProducts } from "@/lib/products";
 import { getProductVariants } from "@/lib/variants";
 import { formatPrice } from "@/lib/product-types";
 import { breadcrumbSchema, productSchema } from "@/lib/seo";
+import { vitrinAdresi } from "@/lib/konak";
 import { kategoriAdresi } from "@/lib/categories";
 import { getSalesRules } from "@/lib/store-settings";
 import { shippingTerms } from "@/lib/order-quote";
@@ -88,7 +89,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
 
-  const [product, catalogue, varyantSonucu, salesRules] = await Promise.all([
+  const [product, catalogue, varyantSonucu, salesRules, adres] = await Promise.all([
     getStorefrontProduct(slug),
     getStorefrontProducts(120),
     /* Gerçek bedenler; sepete doğru SKU yazılabilsin. Okuma
@@ -98,6 +99,10 @@ export default async function ProductPage({ params }: Params) {
     getProductVariants(slug),
     // Yapısal verideki kargo ücreti mağazanın gerçek tarifesi olsun.
     getSalesRules(),
+    /* Şemadaki adresler kanonik adresten: önceden env.siteUrl
+       sabitiydi ve ikinci bir kiracının ürün şeması ArvoCulture'ın
+       adresini gösterirdi. */
+    vitrinAdresi(),
   ]);
 
   if (!product) notFound();
@@ -284,15 +289,18 @@ export default async function ProductPage({ params }: Params) {
           kesin fiyat, çok varyantlıda fiyat aralığı (AggregateOffer).
           Önceden SKU olarak ürün slug'ı, fiyat olarak kataloğun en
           düşük fiyatı yazılıyordu. */}
-      <JsonLd data={productSchema(product, salesRules, variants)} />
+      <JsonLd data={productSchema(product, adres, salesRules, variants)} />
       <JsonLd
-        data={breadcrumbSchema([
-          { name: "Ana sayfa", path: "/" },
-          /* Basamağın adı ile gittiği yer aynı olmalı: "Kozmetik"
-             yazıp tüm kataloğu açmak yanıltıcıydı (lib/categories). */
-          { name: product.category, path: kategoriAdresi(product.category) },
-          { name: product.name, path: `/urun/${product.slug}` },
-        ])}
+        data={breadcrumbSchema(
+          [
+            { name: "Ana sayfa", path: "/" },
+            /* Basamağın adı ile gittiği yer aynı olmalı: "Kozmetik"
+               yazıp tüm kataloğu açmak yanıltıcıydı (lib/categories). */
+            { name: product.category, path: kategoriAdresi(product.category) },
+            { name: product.name, path: `/urun/${product.slug}` },
+          ],
+          adres,
+        )}
       />
     </main>
   );

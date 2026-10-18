@@ -19,6 +19,7 @@ import { getSalesRules } from "@/lib/store-settings";
 import { getStorefrontCollections } from "@/lib/collections";
 import { JsonLd } from "@/components/json-ld";
 import { storeSchema, websiteSchema } from "@/lib/seo";
+import { getStoreIdentity } from "@/lib/seller-source";
 import { env } from "@/lib/env";
 import { vitrinAdresi } from "@/lib/konak";
 
@@ -140,13 +141,19 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, discounts, collections, stage, salesRules] = await Promise.all([
-    getStorefrontTheme(),
-    getStorefrontDiscounts(),
-    getStorefrontCollections(),
-    getStoreStage(),
-    getSalesRules(),
-  ]);
+  const [theme, discounts, collections, stage, salesRules, kimlik, adres] =
+    await Promise.all([
+      getStorefrontTheme(),
+      getStorefrontDiscounts(),
+      getStorefrontCollections(),
+      getStoreStage(),
+      getSalesRules(),
+      /* Yapısal verinin kimliği satıcı kaydından; önceden
+         lib/seller.ts sabitinden geliyordu ve her kiracının
+         sayfası "bu işletme ArvoCulture'dır" diyordu. */
+      getStoreIdentity(),
+      vitrinAdresi(),
+    ]);
   /*
     Abonelik ödenmediğinde mağaza kademe kademe kapanır; son kademede vitrin
     de kapanır (bkz. lib/store-stage.ts). Katalog, sepet ve ödeme hiç
@@ -381,10 +388,20 @@ export default async function RootLayout({
             */}
             <JsonLd
               data={storeSchema({
+                kimlik,
+                siteUrl: adres,
+                logoUrl: theme.logo_url ?? undefined,
                 instagramUrl: theme.instagram_url ?? undefined,
               })}
             />
-            <JsonLd data={websiteSchema()} />
+            <JsonLd
+              data={websiteSchema({
+                /* Marka adı temadan: mağaza adını panelden
+                   değiştirdiğinde yapısal veri de onunla gidiyor. */
+                brand: kimlik.brand || theme.store_name || "Mağaza",
+                siteUrl: adres,
+              })}
+            />
           </CartProvider>
         </FavouritesProvider>
       </body>

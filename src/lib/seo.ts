@@ -1,6 +1,5 @@
-import { env } from "@/lib/env";
 import type { Product } from "@/lib/product-types";
-import { SELLER } from "@/lib/seller";
+import { IADE_GUNU } from "@/lib/iade-penceresi";
 import { DEFAULT_SALES_RULES, shippingFor, type SalesRules } from "@/lib/order-quote";
 
 const CURRENCY = "TRY";
@@ -14,9 +13,20 @@ const LANGUAGE = "tr-TR";
   kimliğe bağlamak, arama motorlarının ve yanıt üreten sistemlerin
   sayfalar arasında aynı varlıktan söz edildiğini anlamasını
   sağlar. Dağınık tanımlar zayıf sinyal üretir.
+
+  ADRES PARAMETRE OLDU. Önceden `env.siteUrl` sabitinden kuruluyordu
+  ve iki sorun üretiyordu: ikinci bir kiracının yapısal verisi
+  ArvoCulture'ın adresini kendi kimliği ilan ediyordu, ve mağazanın
+  iki adresi (kendi alan adı + platform alt alan adı) olduğunda
+  kanonik adresle tutmuyordu. Çağıran taraf `vitrinAdresi()`
+  veriyor — kanonik adresi çözen tek yer orası.
+
+  BU DOSYA SAF KALIYOR: istemci tarafında da derleniyor, o yüzden
+  sunucuya özel okumaları (konak, satıcı) içe almıyor; veri
+  parametreyle geliyor.
 */
-export const STORE_ID = `${env.siteUrl}/#store`;
-export const WEBSITE_ID = `${env.siteUrl}/#website`;
+export const storeId = (siteUrl: string) => `${siteUrl}/#store`;
+export const websiteId = (siteUrl: string) => `${siteUrl}/#website`;
 
 /**
  * Product + Offer şeması.
@@ -39,10 +49,12 @@ export type SchemaVariant = {
 
 export function productSchema(
   product: Product,
+  /** Mağazanın kanonik adresi; `vitrinAdresi()` veriyor. */
+  siteUrl: string,
   rules: SalesRules = DEFAULT_SALES_RULES,
   variants: SchemaVariant[] = [],
 ) {
-  const url = `${env.siteUrl}/urun/${product.slug}`;
+  const url = `${siteUrl}/urun/${product.slug}`;
 
   /*
     Fiyat geçerlilik tarihi. Google bu alan yoksa uyarı veriyor.
@@ -126,7 +138,7 @@ export function productSchema(
         (variants.length ? !variants.some((varyant) => varyant.available) : product.available === false)
           ? "https://schema.org/OutOfStock"
           : "https://schema.org/InStock",
-      seller: { "@id": STORE_ID },
+      seller: { "@id": storeId(siteUrl) },
       /*
         Kargo. Google'ın ürün listelemeleri bu alan yokken uyarı
         veriyordu. Ücret ürünün kendi fiyatına göre: eşiğin üzerindeki
@@ -160,16 +172,19 @@ export function productSchema(
         applicableCountry: COUNTRY,
         returnPolicyCategory:
           "https://schema.org/MerchantReturnFiniteReturnWindow",
-        merchantReturnDays: SELLER.withdrawalDays,
+        merchantReturnDays: IADE_GUNU,
         returnMethod: "https://schema.org/ReturnByMail",
         returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
-        merchantReturnLink: `${env.siteUrl}/iptal-iade`,
+        merchantReturnLink: `${siteUrl}/iptal-iade`,
       },
     },
   };
 }
 
-export function breadcrumbSchema(trail: Array<{ name: string; path: string }>) {
+export function breadcrumbSchema(
+  trail: Array<{ name: string; path: string }>,
+  siteUrl: string,
+) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -177,7 +192,7 @@ export function breadcrumbSchema(trail: Array<{ name: string; path: string }>) {
       "@type": "ListItem",
       position: index + 1,
       name: step.name,
-      item: `${env.siteUrl}${step.path}`,
+      item: `${siteUrl}${step.path}`,
     })),
   };
 }
@@ -195,13 +210,15 @@ export function collectionSchema({
   description,
   path,
   products,
+  siteUrl,
 }: {
   title: string;
   description: string;
   path: string;
   products: Product[];
+  siteUrl: string;
 }) {
-  const url = `${env.siteUrl}${path}`;
+  const url = `${siteUrl}${path}`;
 
   return {
     "@context": "https://schema.org",
@@ -211,14 +228,14 @@ export function collectionSchema({
     description,
     url,
     inLanguage: LANGUAGE,
-    isPartOf: { "@id": WEBSITE_ID },
+    isPartOf: { "@id": websiteId(siteUrl) },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: products.length,
       itemListElement: products.map((product, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        url: `${env.siteUrl}/urun/${product.slug}`,
+        url: `${siteUrl}/urun/${product.slug}`,
         name: product.name,
       })),
     },
@@ -231,20 +248,26 @@ export function collectionSchema({
  * `SearchAction`, arama motorlarına sitenin kendi aramasını nasıl
  * çağıracağını söyler; sonuç sayfasında arama kutusu çıkabilir.
  */
-export function websiteSchema() {
+export function websiteSchema({
+  brand,
+  siteUrl,
+}: {
+  brand: string;
+  siteUrl: string;
+}) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "@id": WEBSITE_ID,
-    name: SELLER.brand,
-    url: env.siteUrl,
+    "@id": websiteId(siteUrl),
+    name: brand,
+    url: siteUrl,
     inLanguage: LANGUAGE,
-    publisher: { "@id": STORE_ID },
+    publisher: { "@id": storeId(siteUrl) },
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${env.siteUrl}/arama?q={search_term_string}`,
+        urlTemplate: `${siteUrl}/arama?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -257,51 +280,110 @@ export function websiteSchema() {
  * Önceden yalnızca ad, adres ve para birimi vardı. Kimlik
  * sinyalleri zayıf olduğu için arama motorları mağazayı gerçek bir
  * işletmeyle ilişkilendirmekte zorlanır. Ticari unvan, vergi
- * kimliği, adres ve iletişim noktası burada tek kaynaktan
- * (seller.ts) besleniyor — hukuki sayfalarla aynı veriden.
+ * kimliği, adres ve iletişim noktası bu yüzden burada.
+ *
+ * VERİ ARTIK SATICI KAYDINDAN. Hepsi `lib/seller.ts` sabitinden
+ * geliyordu, yani ikinci bir kiracının her sayfası arama motoruna
+ * "bu işletme ArvoCulture'dır" diyordu: unvan, vergi numarası,
+ * adres, e-posta, telefon ve holding bağı. Hukuki sayfalar bir
+ * şirketi, yapısal veri BAŞKA bir şirketi gösterirdi — çelişkili
+ * bir kimlik sinyali, hem güven hem sıralama açısından kötü.
+ *
+ * EKSİK ALAN BASILMIYOR. Vergi numarası, telefon ya da üst kuruluş
+ * bilgisi olmayan mağazada o alanlar şemaya hiç girmiyor. Yanlış ya
+ * da uydurma bir değer basmak, eksik bırakmaktan kötü: geri alınması
+ * zor bir varlık bağı kurar.
+ *
+ * POSTA KODU KALDIRILDI. Önceden "34524", "Beylikdüzü" ve "İstanbul"
+ * sabit basılıyordu. İlçe ve il satıcı kaydında var; posta kodu için
+ * kolon yok ve schema.org'da zorunlu değil — yanlış posta kodu
+ * basmaktansa hiç basmamak.
  */
-export function storeSchema(options: { instagramUrl?: string } = {}) {
-  const sameAs = [SELLER.website, options.instagramUrl].filter(
+export type MagazaKimligi = {
+  brand: string;
+  legalName: string;
+  email: string;
+  phone: string;
+  taxNumber: string;
+  addressLine: string;
+  addressDistrict: string;
+  addressCity: string;
+  addressCountry: string;
+  website: string;
+  parentOrganizationName: string;
+  parentOrganizationUrl: string;
+};
+
+export function storeSchema({
+  kimlik,
+  siteUrl,
+  logoUrl,
+  instagramUrl,
+}: {
+  kimlik: MagazaKimligi;
+  siteUrl: string;
+  /** Mağazanın logosu; yoksa alan basılmıyor. */
+  logoUrl?: string;
+  instagramUrl?: string;
+}) {
+  const sameAs = [kimlik.website, instagramUrl].filter(
     (value): value is string => Boolean(value),
   );
+
+  const adres = [
+    kimlik.addressLine && { streetAddress: kimlik.addressLine },
+    kimlik.addressDistrict && { addressLocality: kimlik.addressDistrict },
+    kimlik.addressCity && { addressRegion: kimlik.addressCity },
+  ].filter(Boolean);
+
+  const ustKurulus =
+    kimlik.parentOrganizationName && kimlik.parentOrganizationUrl
+      ? {
+          parentOrganization: {
+            "@type": "Organization",
+            name: kimlik.parentOrganizationName,
+            url: kimlik.parentOrganizationUrl,
+          },
+        }
+      : {};
 
   return {
     "@context": "https://schema.org",
     "@type": "OnlineStore",
-    "@id": STORE_ID,
-    name: SELLER.brand,
-    legalName: SELLER.legalName,
-    url: env.siteUrl,
-    logo: `${env.siteUrl}/arvoculture-logo-transparent.png`,
-    image: `${env.siteUrl}/arvoculture-logo-transparent.png`,
-    email: SELLER.email,
-    telephone: SELLER.phone,
+    "@id": storeId(siteUrl),
+    name: kimlik.brand,
+    ...(kimlik.legalName ? { legalName: kimlik.legalName } : {}),
+    url: siteUrl,
+    ...(logoUrl ? { logo: logoUrl, image: logoUrl } : {}),
+    ...(kimlik.email ? { email: kimlik.email } : {}),
+    ...(kimlik.phone ? { telephone: kimlik.phone } : {}),
     currenciesAccepted: CURRENCY,
     /* Vergi kimlik numarası; işletmeyi resmî kayıtlara bağlar. */
-    taxID: SELLER.taxNumber,
-    vatID: SELLER.taxNumber,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: SELLER.address,
-      addressLocality: "Beylikdüzü",
-      addressRegion: "İstanbul",
-      postalCode: "34524",
-      addressCountry: COUNTRY,
-    },
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "customer support",
-      email: SELLER.email,
-      telephone: SELLER.phone,
-      availableLanguage: ["tr"],
-      areaServed: COUNTRY,
-    },
+    ...(kimlik.taxNumber
+      ? { taxID: kimlik.taxNumber, vatID: kimlik.taxNumber }
+      : {}),
+    ...(adres.length > 0
+      ? {
+          address: Object.assign(
+            { "@type": "PostalAddress", addressCountry: COUNTRY },
+            ...adres,
+          ),
+        }
+      : {}),
+    ...(kimlik.email || kimlik.phone
+      ? {
+          contactPoint: {
+            "@type": "ContactPoint",
+            contactType: "customer support",
+            ...(kimlik.email ? { email: kimlik.email } : {}),
+            ...(kimlik.phone ? { telephone: kimlik.phone } : {}),
+            availableLanguage: ["tr"],
+            areaServed: COUNTRY,
+          },
+        }
+      : {}),
     ...(sameAs.length > 0 ? { sameAs } : {}),
     /** Holding ile varlık bağı. Tek yönlü bağ zayıf sinyal üretir. */
-    parentOrganization: {
-      "@type": "Organization",
-      name: "ArvoCulture Group",
-      url: "https://arvoculturegroup.com",
-    },
+    ...ustKurulus,
   };
 }

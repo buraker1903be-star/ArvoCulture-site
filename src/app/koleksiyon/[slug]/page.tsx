@@ -15,6 +15,8 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 import { SABIT_KOLEKSIYONLAR } from "@/lib/categories";
 import { breadcrumbSchema, collectionSchema } from "@/lib/seo";
+import { vitrinAdresi } from "@/lib/konak";
+import { getStorefrontTheme } from "@/lib/storefront-theme";
 
 /* Aynı liste yerleşimde 404 kararı için de okunuyor; tek yerde. */
 const labels = SABIT_KOLEKSIYONLAR;
@@ -163,7 +165,10 @@ export async function generateMetadata({
   const description =
     ownDescription && ownDescription.length > 40
       ? ownDescription.slice(0, 155)
-      : `ArvoCulture ${label} seçkisi. Güncel ürünler, fiyatlar ve stok durumu.`;
+      : /* Marka adı temadan: sabit "ArvoCulture", ikinci bir
+           kiracının arama sonucuna bizim markamızı yazardı. */
+        `${(await getStorefrontTheme()).store_name} ${label} seçkisi. ` +
+        "Güncel ürünler, fiyatlar ve stok durumu.";
 
   /*
     Birleştirmede yutulan koleksiyon, içeriğini artık hedef sayfada
@@ -235,6 +240,15 @@ export default async function Collection({
     /cocuk üçü de tam "200 ürün" diyordu.
   */
   const isFullCatalogue = slug === "tumu";
+
+  /* Yapısal veri ve açıklama metni için: kanonik adres ve mağaza
+     adı. Önceden ikisi de sabitti ("ArvoCulture", env.siteUrl) ve
+     ikinci bir kiracının koleksiyon sayfası arama motoruna bizim
+     markamızı ve adresimizi bildirirdi. */
+  const [theme, adres] = await Promise.all([
+    getStorefrontTheme(),
+    vitrinAdresi(),
+  ]);
 
   let visibleProducts: Product[];
   let pageCount: number;
@@ -471,16 +485,20 @@ export default async function Collection({
           title: label,
           description:
             exactCollection?.description ||
-            `ArvoCulture ${label} seçkisi. Güncel ürünler, fiyatlar ve stok durumu.`,
+            `${theme.store_name} ${label} seçkisi. Güncel ürünler, fiyatlar ve stok durumu.`,
           path: `/koleksiyon/${slug}`,
           products: visibleProducts,
+          siteUrl: adres,
         })}
       />
       <JsonLd
-        data={breadcrumbSchema([
-          { name: "Ana sayfa", path: "/" },
-          { name: label, path: `/koleksiyon/${slug}` },
-        ])}
+        data={breadcrumbSchema(
+          [
+            { name: "Ana sayfa", path: "/" },
+            { name: label, path: `/koleksiyon/${slug}` },
+          ],
+          adres,
+        )}
       />
     </main>
   );
