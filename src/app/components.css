@@ -6792,3 +6792,61 @@ body.theme-modern .perks strong {
   font-weight: 600;
   letter-spacing: -0.012em;
 }
+
+/* ==========================================================
+   İNDİRİM ROZETİ (18.10.2026)
+
+   Rozet görselden alınıp fiyatın yanına taşınmıştı; gerekçe
+   doğruydu ama sorun rozetin YERİ değil BİÇİMİYDİ — doygun
+   kırmızı dikdörtgenler ızgarada ürünlerin önüne geçiyordu.
+
+   Yeni biçim: cam hap. Beyaz yarı saydam zemin, indirim rengiyle
+   yazı, küçük. Her fotoğrafın üstünde okunuyor (ürün çekimleri
+   beyaz fonlu ama kampanya görselleri koyu olabiliyor), ızgarada
+   gürültü yapmıyor.
+   ========================================================== */
+
+.tag-off {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  color: var(--sale);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-variant-numeric: lining-nums tabular-nums;
+  /* Beyaz fonlu ürün çekimlerinde hap zemine karışmasın. */
+  box-shadow: 0 1px 2px rgba(16, 18, 15, 0.08);
+}
+
+/* "Tükendi" de aynı dile geçiyor: ikisi aynı köşede duruyor ve
+   biri hap biri dikdörtgen olursa kart kendi içinde çelişir. */
+body.theme-modern .tag-out {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/*
+  Kart üzerinde gezinirken görsel çok hafif büyüyor. Hareket
+  ürünün kendisinde: "canlı" hissi animasyondan değil,
+  dokunduğun şeyin karşılık vermesinden geliyor.
+
+  Dokunmatikte yok (`pointer: fine`): parmakla gezinme diye bir
+  şey yok ve dokunulan kart büyüyüp küçülürse kaydırma titrek
+  görünüyor.
+*/
+@media (pointer: fine) {
+  body.theme-modern .card-art img {
+    transition: transform 520ms var(--ease-out);
+  }
+
+  body.theme-modern .card:hover .card-art img {
+    transform: scale(1.03);
+  }
+}

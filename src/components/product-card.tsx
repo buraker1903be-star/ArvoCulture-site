@@ -44,9 +44,29 @@ export function ProductCard({ product }: { product: Product }) {
           satırına. Tükendi kalıyor: müşteri satın alamayacağı bir
           ürüne tıklamadan önce bunu görmeli.
         */}
-        {product.available === false && (
+        {(product.available === false || off > 0) && (
           <span className="card-flags">
-            <b className="tag tag-out">Tükendi</b>
+            {product.available === false ? (
+              <b className="tag tag-out">Tükendi</b>
+            ) : (
+              /*
+                İNDİRİM ROZETİ GÖRSELE GERİ DÖNDÜ (18.10.2026).
+
+                Rozet buradan alınıp fiyatın yanına taşınmıştı ve
+                gerekçesi doğruydu: dört DOYGUN KIRMIZI DİKDÖRTGEN
+                yan yana gelince sayfanın en gürültülü öğesi onlar
+                oluyor, göz ürünlerden önce rozetlere gidiyordu.
+
+                Sorun rozetin yeri değil BİÇİMİYDİ. Bu sefer cam
+                bir hap: beyaz yarı saydam zemin, indirim rengiyle
+                yazı, küçük. Göz önce ürünü görüyor, oranı hemen
+                sonra — ama kaydırırken fırsatı kaçırmıyor.
+
+                Fiyatın yanındaki ikinci oran kaldırıldı: aynı
+                bilgiyi iki kez göstermek karta gürültü ekliyordu.
+              */
+              <b className="tag tag-off">−%{off}</b>
+            )}
           </span>
         )}
         {/*
@@ -103,11 +123,8 @@ export function ProductCard({ product }: { product: Product }) {
         {product.oldPrice && product.oldPrice > product.price && (
           <del>{formatPrice(product.oldPrice)}</del>
         )}
-        {/* İndirim oranı: karar fiyatın yanında veriliyor, rozet
-            olarak görselin üzerinde değil. */}
-        {off > 0 && product.available !== false && (
-          <span className="price-off">−%{off}</span>
-        )}
+        {/* İndirim oranı görselin üstündeki rozette; burada
+            tekrarlanmıyor. */}
       </div>
 
       <div className="card-action">
