@@ -28,7 +28,20 @@ export function canOptimizeImage(url: string | null | undefined): boolean {
 
   if (parsed.protocol !== "https:") return false;
 
-  if (parsed.hostname === supabaseHostname) {
+  /*
+    Ayarlı adres ya da HERHANGİ bir supabase.co projesi.
+
+    İkincisi geçiş için: Supabase'e özel alan adı tanımlanıp
+    ARC_SUPABASE_URL değiştirildiğinde veritabanındaki görsel
+    adresleri eski `*.supabase.co` adresinde kalıyor. Yalnızca
+    ayarlı adrese bakılsaydı o görseller optimize edilemez
+    sayılır, `next/image` izin listesinde de olmadıkları için
+    ürün sayfaları hata verirdi (next.config.ts ile aynı liste).
+  */
+  if (
+    parsed.hostname === supabaseHostname ||
+    parsed.hostname.endsWith(".supabase.co")
+  ) {
     return SUPABASE_PATHS.some((path) => parsed.pathname.startsWith(path));
   }
   if (parsed.hostname === "cdn.shopify.com") {

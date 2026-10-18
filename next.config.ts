@@ -24,6 +24,27 @@ const nextConfig: NextConfig = {
         hostname: supabaseHostname,
         pathname: "/storage/v1/object/public/arc-product-images/**",
       },
+      /*
+        ESKİ PROJE ADRESİ DE İZİNLİ.
+
+        `supabaseHostname` ortam değişkeninden türüyor. Supabase'e
+        özel alan adı tanımlanıp ARC_SUPABASE_URL değiştirildiğinde
+        VERİTABANINDAKİ görsel adresleri eskisinde kalıyor (logo,
+        tema görselleri, ürün fotoğrafları) ve liste dışı bir
+        adres gören `next/image` HATA FIRLATIYOR — ürün sayfaları
+        500 verirdi. İki adres birden izinli olunca geçiş sırasında
+        ve sonrasında hiçbir şey kırılmıyor.
+      */
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+        pathname: "/storage/v1/object/public/organization-assets/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+        pathname: "/storage/v1/object/public/arc-product-images/**",
+      },
       // Tarzyeri ürün görselleri. Görseller kopyalanmıyor,
       // tedarikçinin CDN'inden sunuluyor.
       {
