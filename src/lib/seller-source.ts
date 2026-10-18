@@ -140,7 +140,19 @@ export const getSeller = cache(async (): Promise<Seller> => {
     rpcOrEmpty<SellerRow>(
       "arc_storefront_seller",
       { p_host: await vitrinKonagi() },
-      { revalidate: 3600, tags: ["seller"] },
+      /* BEŞ DAKİKA, BİR SAAT DEĞİL.
+
+         Satıcı kimliği yavaş değişiyor ama bir saatlik önbellek iki
+         kez somut olarak canlıyı geride bıraktı (17–18.10.2026):
+         fonksiyon yeni alan döndürmeye başladığında (banka
+         bilgileri, üst kuruluş) saklanan yanıt o alanları
+         taşımıyordu ve sayfa, veritabanı doğru olduğu hâlde eksik
+         basıyordu. Bir saatlik bayatlığın karşılığı yok — çağrı
+         tek satırlık bir RPC.
+
+         Hesap bilgisi buradan DEĞİL okunuyor: o önbelleksiz
+         (getSellerBank). */
+      { revalidate: 300, tags: ["seller"] },
     ),
     salesFields(),
   ]);
@@ -264,7 +276,8 @@ export const getStoreIdentity = cache(async (): Promise<MagazaKimligi> => {
   const rows = await rpcOrEmpty<SellerRow>(
     "arc_storefront_seller",
     { p_host: await vitrinKonagi() },
-    { revalidate: 3600, tags: ["seller"] },
+    /* Beş dakika: gerekçe yukarıda (getSeller). */
+    { revalidate: 300, tags: ["seller"] },
   );
 
   const row = rows[0];

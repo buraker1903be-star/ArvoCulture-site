@@ -326,9 +326,17 @@ export function storeSchema({
   logoUrl?: string;
   instagramUrl?: string;
 }) {
-  const sameAs = [kimlik.website, instagramUrl].filter(
-    (value): value is string => Boolean(value),
-  );
+  /*
+    sameAs BAŞKA PLATFORMLARDAKİ PROFİLLER İÇİN. Mağazanın kendi
+    adresi `url` alanında zaten var; `storefront_url` ona eşitse
+    sameAs "ben benim" diyen boş bir atıf olurdu (canlıda böyleydi).
+  */
+  const sameAs = [
+    kimlik.website && kimlik.website.replace(/\/$/, "") !== siteUrl.replace(/\/$/, "")
+      ? kimlik.website
+      : "",
+    instagramUrl,
+  ].filter((value): value is string => Boolean(value));
 
   const adres = [
     kimlik.addressLine && { streetAddress: kimlik.addressLine },

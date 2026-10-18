@@ -102,3 +102,24 @@ test("site şeması mağazanın kendi adresine bağlanıyor", () => {
   assert.equal(sema.publisher["@id"], storeId(ADRES));
   assert.match(sema.potentialAction.target.urlTemplate, /^https:\/\/ornek-magaza\.test\/arama/);
 });
+
+test("sameAs mağazanın kendi adresini tekrarlamıyor", () => {
+  /* sameAs başka platformlardaki profiller için; kendi adresi
+     zaten `url` alanında. Canlıda storefront_url siteUrl'e eşitti
+     ve şema "ben benim" diyen bir atıf basıyordu. */
+  const kendisi = storeSchema({
+    kimlik: dolu({ website: `${ADRES}/` }),
+    siteUrl: ADRES,
+  }) as never as Record<string, unknown>;
+  assert.equal("sameAs" in kendisi, false);
+
+  const baska = storeSchema({
+    kimlik: dolu({ website: "https://baska-platform.test/magaza" }),
+    siteUrl: ADRES,
+    instagramUrl: "https://instagram.com/ornek",
+  }) as never as { sameAs: string[] };
+  assert.deepEqual(baska.sameAs, [
+    "https://baska-platform.test/magaza",
+    "https://instagram.com/ornek",
+  ]);
+});
