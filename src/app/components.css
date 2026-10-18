@@ -2160,24 +2160,8 @@
   Planlanan giriş yöntemleri. Tıklanabilir değil — çalışmayan bir
   butona basmak, hiç göstermemekten daha kötü bir deneyim.
 */
-.soon-social {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--s3);
-  padding-top: var(--s4);
-  border-top: 1px solid var(--line-soft);
-}
-
-.soon-social span {
-  font-size: var(--t-xs);
-  color: var(--ink-3);
-}
-
-.soon-social span + span::before {
-  content: "·";
-  margin-right: var(--s3);
-}
+/* "Yakında" yer tutucuları kalktı: Google ve Facebook düğmeleri
+   gerçek (bkz. .auth-social). */
 
 
 /* ---------- Hesap: giriş ve sipariş listesi --------------- */
@@ -8698,4 +8682,97 @@ body.theme-modern .mega-columns > div:first-child a b {
     padding: var(--s4);
     max-height: 72vh;
   }
+}
+
+/* ==========================================================
+   GİRİŞ FORMU VE SOSYAL GİRİŞ (18.10.2026)
+
+   Formda iki sessiz kusur vardı:
+
+   * ENTER YALNIZCA ŞİFRE ALANINDA çalışıyordu — oraya elle bir
+     tuş dinleyicisi konmuştu. E-posta alanında Enter'a basan
+     müşteriye hiçbir şey olmuyordu. Alanlar gerçek bir <form>'a
+     alındı; Enter her alanda gönderiyor ve şifre yöneticileri de
+     alanları doğru tanıyor.
+   * DÜĞME BOŞ ŞİFREYLE AÇIKTI: yalnızca e-posta yeterliydi ve
+     gönderilen istek "bilgiler hatalı" dönüyordu; müşteri neyin
+     eksik olduğunu göremiyordu.
+
+   Sosyal giriş yerinde iki "yakında" yazısı duruyordu. Şifresiz
+   giriş terk oranını düşüren en somut şey: hesabı olmayan müşteri
+   şifre uydurmak, olan müşteri hatırlamak zorunda kalmıyor.
+   ========================================================== */
+
+.auth-form {
+  display: grid;
+  gap: var(--s4);
+}
+
+/* Şifre alanının içinde "Göster": telefonda yazılan şifrenin
+   doğruluğunu görmenin tek yolu ve "bilgiler hatalı" hatalarının
+   önemli bir kısmı yazım hatası. */
+.auth-password {
+  position: relative;
+}
+
+.auth-eye {
+  position: absolute;
+  right: 10px;
+  bottom: 9px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--panel-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.auth-eye:hover {
+  background: color-mix(in srgb, var(--panel-2) 76%, var(--ink));
+  color: var(--ink);
+}
+
+/* "ya da": iki yolun ayrımı. Çizgi yazının iki yanından geçiyor,
+   altından değil — altından geçen çizgi metni bir başlık gibi
+   gösteriyordu. */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  margin: var(--s5) 0 var(--s4);
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.auth-social {
+  display: grid;
+  gap: var(--s2);
+}
+
+.auth-social .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/*
+  Marka logoları KENDİ RENKLERİNDE. Tek renge indirmek Google'ın
+  da Facebook'un da marka kurallarına aykırı; üstelik tanınırlığı
+  sağlayan şey tam olarak o renkler.
+*/
+.auth-logo {
+  flex: none;
+  width: 18px;
+  height: 18px;
 }

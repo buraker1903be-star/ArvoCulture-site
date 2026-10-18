@@ -44,6 +44,8 @@ export function AccountPanel({
   */
   const [siparisOkunamadi, setSiparisOkunamadi] = useState(false);
 
+  /* Şifre görünür mü: yazım hatasını görmenin tek yolu. */
+  const [sifreAcik, setSifreAcik] = useState(false);
   const [profileName, setProfileName] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
   const [profileSaved, setProfileSaved] = useState(false);
@@ -192,6 +194,39 @@ export function AccountPanel({
         text: translateAuthError((error as Error).message),
       });
     } finally {
+      setBusy(false);
+    }
+  }
+
+  /*
+    SOSYAL GİRİŞ.
+
+    Supabase sağlayıcıyı kendi tarafında açtığı için burada yapılan
+    tek şey yönlendirme. Dönüş adresi MÜŞTERİNİN BULUNDUĞU SAYFA:
+    giriş alışverişin ortasında yapılıyor ve /hesap'a düşürmek,
+    menüyü sayfa yerine açmakla kazanılanı geri verirdi.
+
+    Sağlayıcı Supabase'de açık değilse dönen hata İngilizce ve
+    teknik ("Unsupported provider"); müşteriye ne yapacağını
+    söylemiyor, bu yüzden çevriliyor (translateAuthError).
+  */
+  async function sosyalGiris(saglayici: "google" | "facebook") {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const supabase = getAuthClient(supabaseUrl, supabaseKey);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: saglayici,
+        options: { redirectTo: `${window.location.origin}${window.location.pathname}` },
+      });
+      if (error) throw error;
+      /* Yönlendirme başlıyor; `busy` açık kalıyor ki müşteri
+         ikinci kez tıklamasın. */
+    } catch (error) {
+      setMessage({
+        kind: "error",
+        text: translateAuthError((error as Error).message),
+      });
       setBusy(false);
     }
   }
@@ -448,34 +483,63 @@ export function AccountPanel({
         </button>
       </div>
 
-      <div className="fields auth-fields">
-        <label className="wide">
-          E-posta
-          <input
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </label>
+      {/*
+        GERÇEK BİR <form>.
 
-        {mode !== "reset" && (
+        Alanlar ve düğme serbest duruyordu; Enter yalnızca ŞİFRE
+        alanında işe yarıyordu (oraya elle bir tuş dinleyicisi
+        konmuştu) ve e-posta alanında Enter'a basan müşteriye
+        hiçbir şey olmuyordu. Form olunca Enter her alanda
+        gönderiyor, tarayıcı ve şifre yöneticileri de alanları
+        doğru tanıyor.
+      */}
+      <form
+        className="auth-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void submit();
+        }}
+      >
+        <div className="fields auth-fields">
           <label className="wide">
-            Şifre
+            E-posta
             <input
-              type="password"
-              autoComplete={
-                mode === "register" ? "new-password" : "current-password"
-              }
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") void submit();
-              }}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoFocus
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
             />
           </label>
-        )}
-      </div>
+
+          {mode !== "reset" && (
+            <label className="wide auth-password">
+              Şifre
+              <input
+                type={sifreAcik ? "text" : "password"}
+                autoComplete={
+                  mode === "register" ? "new-password" : "current-password"
+                }
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+              {/*
+                Şifreyi görmek: telefonda yazılan şifrenin
+                doğruluğunu görmenin tek yolu. "Giriş bilgileri
+                hatalı" hatalarının önemli bir kısmı yazım hatası.
+              */}
+              <button
+                type="button"
+                className="auth-eye"
+                onClick={() => setSifreAcik((acik) => !acik)}
+                aria-label={sifreAcik ? "Şifreyi gizle" : "Şifreyi göster"}
+              >
+                {sifreAcik ? "Gizle" : "Göster"}
+              </button>
+            </label>
+          )}
+        </div>
 
       {message && (
         <p
@@ -506,10 +570,12 @@ export function AccountPanel({
       )}
 
       <button
-        type="button"
+        type="submit"
         className="btn btn-block"
-        disabled={busy || !email}
-        onClick={submit}
+        /* Şifre de zorunlu: eskiden yalnızca e-posta yeterliydi ve
+           boş şifreyle gönderilen giriş "bilgiler hatalı" dönüyordu
+           — müşteri neyin eksik olduğunu göremiyordu. */
+        disabled={busy || !email || (mode !== "reset" && !password)}
       >
         {busy
           ? "Bekleyin…"
@@ -519,6 +585,7 @@ export function AccountPanel({
               ? "Sıfırlama bağlantısı gönder"
               : "Giriş yap"}
       </button>
+      </form>
 
       <div className="auth-alt">
         {mode === "reset" ? (
@@ -533,13 +600,64 @@ export function AccountPanel({
       </div>
 
       {/*
-        Sosyal giriş. Supabase Auth destekliyor ama her sağlayıcı
-        için OAuth uygulaması açılıp anahtarların Supabase’e
-        girilmesi gerekiyor. Hazır olmadan buton koymuyoruz.
+        SOSYAL GİRİŞ.
+
+        Burada "yakında" yazan iki yer tutucu duruyordu. Supabase
+        sağlayıcıyı kendi tarafında yönettiği için vitrinde yapılan
+        tek şey yönlendirme; sağlayıcı panelde açık değilse dönen
+        hata çevriliyor ve müşteriye e-posta ile girmesi söyleniyor
+        (translateAuthError).
+
+        Şifresiz giriş terk oranını düşüren en somut şey: hesabı
+        olmayan müşteri şifre uydurmak, olan müşteri hatırlamak
+        zorunda kalmıyor.
       */}
-      <div className="soon-social" aria-label="Yakında eklenecek giriş yöntemleri">
-        <span>Google ile giriş — yakında</span>
-        <span>Facebook ile giriş — yakında</span>
+      <div className="auth-divider">
+        <span>ya da</span>
+      </div>
+
+      <div className="auth-social">
+        <button
+          type="button"
+          className="btn btn-ghost btn-block"
+          disabled={busy}
+          onClick={() => void sosyalGiris("google")}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="auth-logo">
+            <path
+              fill="#4285F4"
+              d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.9z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.9-3c-1.1.7-2.4 1.2-4 1.2-3.1 0-5.7-2.1-6.6-4.9H1.4v3.1A12 12 0 0 0 12 24z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.4 14.4a7.2 7.2 0 0 1 0-4.6V6.7H1.4a12 12 0 0 0 0 10.8l4-3.1z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A11.5 11.5 0 0 0 12 0 12 12 0 0 0 1.4 6.7l4 3.1C6.3 6.9 8.9 4.8 12 4.8z"
+            />
+          </svg>
+          Google ile giriş yap
+        </button>
+
+        <button
+          type="button"
+          className="btn btn-ghost btn-block"
+          disabled={busy}
+          onClick={() => void sosyalGiris("facebook")}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="auth-logo">
+            <path
+              fill="#1877F2"
+              d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"
+            />
+          </svg>
+          Facebook ile giriş yap
+        </button>
       </div>
     </section>
   );
@@ -554,6 +672,12 @@ function translateAuthError(message: string) {
     [/password should be at least/i, "Şifreniz en az 8 karakter olmalı."],
     [/rate limit|too many/i, "Çok fazla deneme yapıldı. Biraz sonra tekrar deneyin."],
     [/invalid email/i, "Geçerli bir e-posta adresi girin."],
+    /* Sağlayıcı Supabase'de açılmamış. Müşteriye "desteklenmeyen
+       sağlayıcı" demek bir şey anlatmıyor; sorun onda değil. */
+    [
+      /unsupported provider|provider is not enabled/i,
+      "Bu giriş yöntemi şu anda kullanılamıyor. E-posta ile giriş yapabilirsiniz.",
+    ],
     [/gecersiz_eposta/, "Geçerli bir e-posta adresi girin."],
     [/kisa_sifre/, "Şifreniz en az 8 karakter olmalı."],
     [/islem_basarisiz/, "E-posta gönderilemedi. Lütfen tekrar deneyin."],
