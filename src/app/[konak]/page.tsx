@@ -17,6 +17,7 @@ import {
   getStorefrontProducts,
   getStorefrontCollectionProducts,
   getStorefrontDeals,
+  getStorefrontFacets,
 } from "@/lib/products";
 import { getStorefrontDiscounts } from "@/lib/discounts";
 import { getSalesRules } from "@/lib/store-settings";
@@ -25,6 +26,7 @@ import { Reveal } from "@/components/reveal";
 import { RecentProducts } from "@/components/recent-products";
 import { ForYou } from "@/components/for-you";
 import { CATEGORIES } from "@/lib/categories";
+import { IADE_GUNU } from "@/lib/iade-penceresi";
 import {
   getStorefrontTheme,
   type StorefrontTheme,
@@ -52,7 +54,7 @@ export default async function Home({
      güvenilemiyor (lib/konak). */
   konagiAyarla((await params).konak);
 
-  const [theme, products, discounts, curatedBest, dealItems] =
+  const [theme, products, discounts, curatedBest, dealItems, facets] =
     await Promise.all([
       getStorefrontTheme(),
       getStorefrontProducts(200),
@@ -75,6 +77,11 @@ export default async function Home({
       hiç giremiyordu.
     */
       getStorefrontDeals(10),
+      /* Kapaktaki kanıt satırının ürün sayısı buradan: katalog
+         listesi ilk 200 ile sınırlı ve onu saymak kataloğu
+         olduğundan küçük gösteriyordu ("200+" yazarken 3.407 ürün
+         vardı). */
+      getStorefrontFacets(),
     ]);
 
   const coupon = discounts.find((discount) => discount.code);
@@ -109,7 +116,7 @@ export default async function Home({
     <main className="shell">
       <ThemePreviewBridge />
 
-      <Hero theme={theme} />
+      <Hero theme={theme} urunSayisi={facets.total || products.length} />
 
       {/*
         Arama, kupon ve güvence tek panelde. Önceden iki ayrı bant
@@ -264,7 +271,15 @@ export default async function Home({
   );
 }
 
-function Hero({ theme }: { theme: StorefrontTheme }) {
+function Hero({
+  theme,
+  urunSayisi,
+}: {
+  theme: StorefrontTheme;
+  /* Kapaktaki kanıt satırı için: katalogdan gelen gerçek sayı.
+     Yuvarlanmış bir pazarlama rakamı yazmıyoruz. */
+  urunSayisi: number;
+}) {
   return (
     <section data-arvo-section="hero" className="panel hero">
       {theme.hero_image_url && (
@@ -327,6 +342,36 @@ function Hero({ theme }: { theme: StorefrontTheme }) {
             </Link>
           )}
         </div>
+
+        {/*
+          KANIT SATIRI (18.10.2026).
+
+          Kapakta yalnızca slogan ve iki düğme vardı: ne kadar ürün
+          olduğu, kargonun ne zaman ücretsiz olduğu, iadenin kaç gün
+          olduğu ilk ekranda hiç görünmüyordu — müşteri "bu mağaza
+          ciddi mi" sorusunu yanıtsız geçiyordu.
+
+          Rakamlar GERÇEK: ürün sayısı katalogdan, kargo eşiği ve
+          iade süresi satış kurallarından (lib/order-quote,
+          lib/iade-penceresi). Sabit yazılsaydı mağaza tarifesini
+          değiştirdiği gün kapak yalan söylerdi — bu depoda daha
+          önce tam olarak bu oldu (AGENTS.md: "Sayfaya 120 TL /
+          2.000 TL yazmayın").
+        */}
+        <dl className="hero-kanit">
+          <div>
+            <dt>{urunSayisi.toLocaleString("tr-TR")}</dt>
+            <dd>seçilmiş ürün</dd>
+          </div>
+          <div>
+            <dt>{IADE_GUNU} gün</dt>
+            <dd>koşulsuz iade</dd>
+          </div>
+          <div>
+            <dt>3D Secure</dt>
+            <dd>güvenli ödeme</dd>
+          </div>
+        </dl>
 
         {/*
           Kategori kısayolları. Hero’nun altında, kaydırmadan

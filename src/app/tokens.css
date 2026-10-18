@@ -180,7 +180,14 @@ body {
     #ffffff'ten türeyen ikinci basamak kırık beyaz oluyor.
   */
   --zemin-1: var(--paper, var(--backdrop-1));
-  --zemin-2: color-mix(in srgb, var(--zemin-1) 93%, var(--ink));
+  /*
+    İkinci basamak ÇOK HAFİF. Önce %93'tü ve beyaz seçilince zemin
+    gözle görülür bir griye dönüyordu — "beyaz yaptım ama beyaz
+    değil" (18.10.2026, canlıda görüldü). %98 ile eğim yalnızca
+    hissediliyor; renkli bir zemin seçen kiracıda da derinlik
+    kalıyor ama beyaz, beyaz kalıyor.
+  */
+  --zemin-2: color-mix(in srgb, var(--zemin-1) 98%, var(--ink));
 
   /*
     Panel kenarı da zeminden türüyor. Sabit bir kıl payı çizgi
