@@ -359,8 +359,27 @@ export function LiveSearch({
           onKeyDown={tusla}
         />
         {typed && (
-          <button type="button" onClick={() => setQuery("")}>
-            Temizle
+          /*
+            TEMİZLE ALANA AİT, KATMANA DEĞİL.
+
+            "Temizle" ile "Kapat" yan yana ve AYNI hapta duruyordu;
+            ikisi de aynı ağırlıkta görünüyor ama biri yazıyı
+            siliyor, diğeri aramadan çıkıyor. Yanlışlıkla kapatan
+            müşteri aramasını baştan yazmak zorunda kalıyordu.
+
+            Temizle artık alanın içinde küçük bir çarpı: alanın
+            parçası olduğu yerinden belli oluyor ve kapatmayla
+            karışmıyor.
+          */
+          <button
+            type="button"
+            className="live-clear"
+            onClick={() => setQuery("")}
+            aria-label="Aramayı temizle"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 7l10 10M17 7 7 17" />
+            </svg>
           </button>
         )}
       </div>

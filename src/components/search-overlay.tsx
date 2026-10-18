@@ -76,8 +76,22 @@ export function SearchOverlay({
                 limit={10}
                 suggestions={terms}
               />
-              <button type="button" className="search-close" onClick={close}>
-                Kapat
+              {/*
+                Kapat yuvarlak ve çarpılı: "Temizle" ile aynı
+                biçimde iki soluk hap yan yana duruyordu ve hangisi
+                hangisi belli olmuyordu. Çarpı, katmanı kapatmanın
+                evrensel işareti; metin erişilebilir etikette
+                duruyor.
+              */}
+              <button
+                type="button"
+                className="search-close"
+                onClick={close}
+                aria-label="Aramayı kapat"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
               </button>
             </div>
 

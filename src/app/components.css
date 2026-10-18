@@ -7871,3 +7871,104 @@ body.theme-modern .live-thumb {
 .search-sheet {
   margin-bottom: clamp(12px, 6vh, 64px);
 }
+
+/* ==========================================================
+   ARAMA KATMANININ DÜĞMELERİ (18.10.2026)
+
+   "Temizle" ve "Kapat" yan yana, aynı soluk hapta ve aynı
+   ağırlıktaydı. İkisi çok farklı iş yapıyor: biri yazıyı siler,
+   diğeri aramadan çıkar. Yanlışlıkla kapatan müşteri aramasını
+   baştan yazmak zorunda kalıyordu.
+
+   Ayrım artık biçimde: temizleme ALANIN İÇİNDE küçük bir çarpı,
+   kapatma katmanın köşesinde büyük ve yuvarlak bir çarpı. İkisi
+   de çarpı ama ölçüleri ve yerleri ne yaptıklarını söylüyor.
+   ========================================================== */
+
+body.theme-modern .live-clear {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--ink-3);
+  transition:
+    background-color 180ms var(--ease),
+    color 180ms var(--ease);
+}
+
+body.theme-modern .live-clear svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+body.theme-modern .live-clear:hover {
+  background: color-mix(in srgb, var(--panel-2) 78%, var(--ink));
+  color: var(--ink);
+}
+
+/*
+  Kapat: katmanın tek "çıkış" eylemi, o yüzden en belirgin düğme.
+  Çerçeveli ve büyük; üzerine gelince mürekkebe dönüyor — aramaya
+  devam etmekle çıkmak arasındaki farkı renk de söylüyor.
+*/
+body.theme-modern .search-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: var(--s4);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--ink-2);
+  transition:
+    background-color 180ms var(--ease),
+    border-color 180ms var(--ease),
+    color 180ms var(--ease),
+    transform 180ms var(--ease-out);
+}
+
+body.theme-modern .search-close svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+@media (hover: hover) {
+  body.theme-modern .search-close:hover {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--panel);
+    transform: scale(1.04);
+  }
+}
+
+/* Klavyeyle gezen için odak halkası: ikisi de metinsiz düğme ve
+   odakta oldukları başka türlü anlaşılmıyor. */
+body.theme-modern .search-close:focus-visible,
+body.theme-modern .live-clear:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-modern .search-close,
+  body.theme-modern .live-clear {
+    transition: none;
+  }
+  body.theme-modern .search-close:hover {
+    transform: none;
+  }
+}
