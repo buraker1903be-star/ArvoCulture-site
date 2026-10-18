@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { brandCard, productCard, OG_SIZE } from "@/app/_og/cards";
-import { ogFonts, ogLogo, ogProductImage } from "@/app/_og/load";
+import { ogFonts, ogMarka, ogProductImage } from "@/app/_og/load";
 import { getStorefrontProduct } from "@/lib/products";
 import { formatPrice } from "@/lib/product-types";
 
@@ -12,7 +12,10 @@ import { formatPrice } from "@/lib/product-types";
   görünmüyordu. Kart bir saat önbellekte tutuluyor; fiyat değişirse
   en geç bir saat içinde yenileniyor.
 */
-export const alt = "ArvoCulture ürün kartı";
+/* `alt` statik olmak zorunda: Next bu değeri derlemede okuyor,
+   mağaza adı yazamıyoruz. Önceden "ArvoCulture ürün kartı"
+   yazıyordu ve her kiracının kartına bizim adımızı koyuyordu. */
+export const alt = "Ürün paylaşım kartı";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 export const revalidate = 3600;
@@ -28,17 +31,17 @@ export default async function Image({
     marka kartına dönülüyor. Hata fırlatılsaydı rota 500 verir ve
     paylaşılan bağlantıda hiç önizleme çıkmazdı.
   */
-  const [product, fonts, logo] = await Promise.all([
+  const [product, fonts, marka] = await Promise.all([
     getStorefrontProduct(slug).catch((error) => {
       console.error("Paylaşım kartı için ürün okunamadı:", error);
       return null;
     }),
     ogFonts(),
-    ogLogo(),
+    ogMarka(),
   ]);
 
   if (!product) {
-    return new ImageResponse(brandCard({ logo }), { ...size, fonts });
+    return new ImageResponse(brandCard(marka.kart), { ...size, fonts });
   }
 
   const image = await ogProductImage(product.image);
@@ -52,9 +55,11 @@ export default async function Image({
 
   return new ImageResponse(
     productCard({
-      logo,
+      logo: marka.logo,
       image,
-      brand: product.eyebrow || "ArvoCulture",
+      /* Marka adı mağazanın temasından; sabit "ArvoCulture" her
+         kiracının ürün kartına bizim markamızı yazıyordu. */
+      brand: product.eyebrow || marka.storeName,
       name: product.name,
       priceText: formatPrice(product.price),
       oldPriceText: oldPrice ? formatPrice(oldPrice) : undefined,

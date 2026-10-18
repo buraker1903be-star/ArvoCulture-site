@@ -74,8 +74,36 @@ function eyebrow(text: string) {
   );
 }
 
-/** Varsayılan kart: ana sayfa, koleksiyonlar ve ürünü bulunamayan adres. */
-export function brandCard({ logo: logoSrc }: { logo: string | null }) {
+/**
+ * Varsayılan kart: ana sayfa, koleksiyonlar ve ürünü bulunamayan adres.
+ *
+ * METİNLER TEMADAN. Dört cümle burada sabitti ve hepsi
+ * ArvoCulture'ın kendi anlatısıydı: "Giyim · Bakım · Koku",
+ * "Seçtiğin şey, / senin hikâyen.", "Seçilmiş giyim, bakım ve koku"
+ * ve "arvoculture.com". İkinci bir kiracının paylaşım kartında —
+ * WhatsApp'ta, Twitter'da, Slack'te — bizim markamız ve adresimiz
+ * görünüyordu. Paylaşılan bağlantı geri alınamaz: kart bir kez
+ * önbelleklenince platformda öyle kalıyor.
+ *
+ * Başlık iki satır ve ikisi de panelde ayrı alan (hero_title,
+ * hero_emphasis), yani kiracı kendi cümlesini zaten yazıyor.
+ */
+export function brandCard({
+  logo: logoSrc,
+  eyebrow: eyebrowText,
+  title,
+  emphasis,
+  tagline,
+  host,
+}: {
+  logo: string | null;
+  eyebrow: string;
+  title: string;
+  emphasis: string;
+  tagline: string;
+  /** Kartın altındaki adres; mağazanın kanonik konağı. */
+  host: string;
+}) {
   return h(
     "div",
     {
@@ -93,7 +121,7 @@ export function brandCard({ logo: logoSrc }: { logo: string | null }) {
     h(
       "div",
       { style: { display: "flex", flexDirection: "column" } },
-      eyebrow("Giyim · Bakım · Koku"),
+      eyebrow(eyebrowText),
       h(
         "div",
         {
@@ -107,7 +135,7 @@ export function brandCard({ logo: logoSrc }: { logo: string | null }) {
             color: C.ink,
           },
         },
-        "Seçtiğin şey,",
+        title,
       ),
       h(
         "div",
@@ -121,7 +149,7 @@ export function brandCard({ logo: logoSrc }: { logo: string | null }) {
             color: C.ink,
           },
         },
-        "senin hikâyen.",
+        emphasis,
       ),
     ),
     h(
@@ -138,11 +166,11 @@ export function brandCard({ logo: logoSrc }: { logo: string | null }) {
           color: C.ink2,
         },
       },
-      h("div", { style: { display: "flex" } }, "Seçilmiş giyim, bakım ve koku"),
+      h("div", { style: { display: "flex" } }, tagline),
       h(
         "div",
         { style: { display: "flex", letterSpacing: 2.5, color: C.ink } },
-        "arvoculture.com",
+        host,
       ),
     ),
   );

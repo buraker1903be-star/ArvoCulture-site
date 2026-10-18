@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { env } from "@/lib/env";
 import { canOptimizeImage } from "@/lib/image-hosts";
 import { vitrinAdresi } from "@/lib/konak";
+import { getStorefrontTheme } from "@/lib/storefront-theme";
 
 /*
   Paylaşım kartlarının malzemesi: fontlar, logo ve ürün görseli.
@@ -31,7 +32,25 @@ export async function ogFonts() {
   ];
 }
 
-export async function ogLogo(): Promise<string | null> {
+/**
+ * Kartın logosu.
+ *
+ * ÖNCE MAĞAZANIN KENDİ LOGOSU. Burada yalnızca depodaki
+ * `public/arvoculture-logo-transparent.png` okunuyordu: ikinci bir
+ * kiracının paylaşım kartında — WhatsApp'ta, Twitter'da, Slack'te —
+ * BİZİM logomuz görünüyordu. Paylaşılan bağlantı geri alınamaz;
+ * kart bir kez önbelleklenince platformda öyle kalıyor.
+ *
+ * Panele yüklenen logo uzak bir adres (Supabase depolama), o yüzden
+ * ürün görseliyle aynı yoldan geçiyor. Okunamazsa depodaki dosyaya
+ * düşülüyor: logosuz bir kart da çiziliyor ama tanınmaz oluyor.
+ */
+export async function ogLogo(url?: string): Promise<string | null> {
+  if (url) {
+    const uzak = await ogProductImage(url);
+    if (uzak) return uzak;
+  }
+
   try {
     const data = await readFile(
       join(process.cwd(), "public/arvoculture-logo-transparent.png"),
@@ -78,4 +97,34 @@ export async function ogProductImage(url?: string): Promise<string | null> {
     }
   }
   return null;
+}
+
+/*
+  MARKA KARTININ MALZEMESİ TEK YERDE.
+
+  İki rota da varsayılan kartı çiziyor (ana sayfa/koleksiyonlar ve
+  ürünü bulunamayan adres). Metinleri iki yerde kurmak, birini
+  güncelleyip diğerini unutmak demekti; kart metinleri zaten
+  panelden geliyor.
+
+  Adres kanonik konaktan ve şema atılıyor: kartın altında
+  "https://" göstermek bir adres satırı değil, bağlantı gibi
+  görünen bir gürültü.
+*/
+export async function ogMarka() {
+  const [theme, adres] = await Promise.all([getStorefrontTheme(), vitrinAdresi()]);
+  const logo = await ogLogo(theme.logo_url);
+
+  return {
+    logo,
+    storeName: theme.store_name || "Mağaza",
+    kart: {
+      logo,
+      eyebrow: theme.hero_eyebrow,
+      title: theme.hero_title,
+      emphasis: theme.hero_emphasis,
+      tagline: theme.footer_tagline,
+      host: adres.replace(/^https?:\/\//, "").replace(/\/$/, ""),
+    },
+  };
 }

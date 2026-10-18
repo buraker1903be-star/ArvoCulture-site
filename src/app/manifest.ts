@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getStorefrontTheme } from "@/lib/storefront-theme";
 
 /**
  * Uygulama bildirimi (PWA manifest).
@@ -9,13 +10,27 @@ import type { MetadataRoute } from "next";
  *
  * `display: standalone` adres çubuğunu gizler — asıl "uygulama
  * gibi" hissini veren şey budur.
+ *
+ * AD, METİN VE RENKLER TEMADAN. Önceden "ArvoCulture" ve bizim
+ * tanıtım cümlemiz koda yazılıydı: ikinci bir kiracının müşterisi
+ * siteyi telefonuna kurduğunda ana ekranında BİZİM markamızın adı
+ * ve ikonu duruyordu. Üstelik geri alınması zor — kurulu uygulamanın
+ * adı ancak müşteri yeniden kurduğunda güncelleniyor.
+ *
+ * İkonlar hâlâ depodaki dosyalar (`public/icon/*`): maskelenebilir
+ * ikon, güvenli boşluğu ayarlanmış ayrı bir kesim gerektiriyor ve
+ * panele yüklenen logodan otomatik üretilemiyor. Kiracının kendi
+ * ikonunu yüklemesi ayrı bir iş; o zamana kadar yüklediği logo
+ * `favicon_url` üzerinden sekmede görünüyor.
  */
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const theme = await getStorefrontTheme();
+  const ad = theme.store_name || "Mağaza";
+
   return {
-    name: "ArvoCulture",
-    short_name: "ArvoCulture",
-    description:
-      "Giyim, bakım ve gündelik ritüeller için seçilmiş bir yaşam kültürü.",
+    name: ad,
+    short_name: ad,
+    description: theme.footer_tagline,
     /*
       Uygulamanın kalıcı kimliği. Verilmezse tarayıcı start_url'ü
       kimlik olarak kullanır; ileride açılış sayfası değişirse
@@ -34,11 +49,14 @@ export default function manifest(): MetadataRoute.Manifest {
     */
     display_override: ["standalone", "minimal-ui"],
     orientation: "portrait",
-    background_color: "#f4f3ee",
-    theme_color: "#10120f",
+    /* Kurulum ekranının ve durum çubuğunun rengi mağazanın
+       temasından; sabit değerler başka bir markanın uygulamasına
+       bizim paletimizi giydiriyordu. */
+    background_color: theme.background_color,
+    theme_color: theme.primary_color,
     lang: "tr",
     dir: "ltr",
-    categories: ["shopping", "lifestyle"],
+    categories: ["shopping"],
     icons: [
       {
         src: "/icon/icon-192.png",
