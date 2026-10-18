@@ -10270,50 +10270,162 @@ body.theme-modern .auth-alt .linklike:hover {
   color: var(--ok);
 }
 
-.odeme-havale {
+
+
+/* ==========================================================
+   HAVALE ŞERİDİ (18.10.2026)
+
+   Havale hesabı önce ÖZET'in yanındaki dar sütundaydı ve orada
+   bozuluyordu: şirket unvanı üç, IBAN iki satıra kırılıyor, kutu
+   tek başına ekran boyu uzuyordu (canlıda görüldü).
+
+   Oysa ödenmemiş havale siparişinde müşterinin yapacağı TEK iş
+   para göndermek — sayfadaki en acil şey bu. Şerit artık
+   başlığın hemen altında, tam genişlikte ve YATAY: alanlar yan
+   yana durduğu için kutu kısa kalıyor, IBAN tek satıra sığıyor.
+   ========================================================== */
+
+.havale-serit {
   display: grid;
-  gap: var(--s3);
-  padding: var(--s4);
-  border: 1px dashed var(--gold-soft);
-  border-radius: var(--r);
-  background: var(--panel-2);
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: var(--gap);
+  align-items: start;
+  /* Altın kenar: sayfadaki tek "senden bir şey bekleniyor"
+     işareti. Kırmızı olsaydı hata gibi okunurdu — bekleyen bir
+     ödeme hata değil, yapılacak iş. */
+  border-left: 3px solid var(--gold);
 }
 
-.odeme-havale > p {
-  margin: 0;
+.havale-basi strong {
+  display: block;
+  font-size: var(--t-lead);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.havale-basi p {
+  margin: 6px 0 0;
   font-size: var(--t-xs);
   line-height: 1.6;
   color: var(--ink-2);
 }
 
-.odeme-havale dl {
+.havale-alanlar {
   display: grid;
-  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s3) var(--gap);
   margin: 0;
 }
 
-.odeme-havale dl div {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--s3);
-  font-size: var(--t-xs);
+.havale-alanlar > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
 }
 
-.odeme-havale dt {
+.havale-alanlar dt {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
   color: var(--ink-3);
 }
 
-.odeme-havale dd {
+.havale-alanlar dd {
   margin: 0;
+  font-size: var(--t-sm);
   color: var(--ink);
-  text-align: right;
 }
 
-/* IBAN tek dokunuşla seçilsin: müşteri kopyalayıp bankasına
-   yapıştırıyor ve elle yazılan her hane bir hata ihtimali. */
-.odeme-iban {
+/* IBAN tek satıra sığsın diye kendi satırını alıyor. */
+.havale-iban {
+  grid-column: 1 / -1;
+}
+
+/* Ticaret unvanı uzun; kendi satırında ve daha sessiz. Banka
+   IBAN'dan alıcıyı kendisi dolduruyor, bu alan doğrulama için. */
+.havale-alici {
+  grid-column: 1 / -1;
+}
+
+.havale-alici dd {
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* --- Kopyalanabilir değer --- */
+
+.kopyala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--panel-2);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 180ms var(--ease),
+    background-color 180ms var(--ease);
+}
+
+.kopyala span {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: var(--t-sm);
   letter-spacing: 0.02em;
-  user-select: all;
+  /* Dar ekranda IBAN taşmasın; kırpmak yerine küçülüyor. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kopyala em {
+  flex: none;
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .kopyala:hover {
+    border-color: var(--gold);
+    background: var(--panel);
+  }
+
+  .kopyala:hover em {
+    color: var(--gold-ink);
+  }
+}
+
+@media (max-width: 760px) {
+  .havale-serit {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s4);
+  }
+
+  .havale-alanlar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kopyala {
+    transition: none;
+  }
+}
+
+/* Mağazanın kendi havale notu: bizim cümlemizden daha sessiz,
+   çünkü o ne OLACAĞINI söylüyor, bu mağazanın koşulunu. */
+.havale-basi .havale-not {
+  margin-top: var(--s3);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--line-soft);
+  color: var(--ink-3);
 }

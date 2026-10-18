@@ -30,7 +30,13 @@ const BOLUMLER = [
   { href: "/hesap", ad: "Özet" },
   { href: "/hesap/bilgilerim", ad: "Hesap bilgilerim" },
   { href: "/hesap/adreslerim", ad: "Adreslerim" },
-  { href: "/hesap/siparislerim", ad: "Siparişlerim" },
+  /*
+    Sipariş DETAYI da (/hesap/siparis/<numara>) bu bölüme ait.
+    Önce yalnızca tam eşleşme aranıyordu ve detaya girince menüde
+    hiçbir satır seçili kalmıyordu: müşteri hesabın neresinde
+    olduğunu kaybediyordu.
+  */
+  { href: "/hesap/siparislerim", ad: "Siparişlerim", onek: "/hesap/siparis" },
   { href: "/hesap/kuponlarim", ad: "Kuponlarım" },
   { href: "/hesap/hediye-ceklerim", ad: "Hediye çeklerim" },
 ];
@@ -56,9 +62,12 @@ export function HesapYanMenu() {
       {BOLUMLER.map((bolum) => {
         /*
           "/hesap" her bölümün önekine uyuyor; tam eşleşme
-          aranmazsa Özet satırı her sayfada seçili görünürdü.
+          aranmazsa Özet satırı her sayfada seçili görünürdü. Bu
+          yüzden önek YALNIZCA açıkça yazan bölümde kullanılıyor.
         */
-        const secili = yol === bolum.href;
+        const secili =
+          yol === bolum.href ||
+          (bolum.onek !== undefined && yol.startsWith(`${bolum.onek}/`));
         return (
           <Link
             key={bolum.href}

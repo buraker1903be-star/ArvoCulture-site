@@ -255,6 +255,73 @@ export function OrderDetail({
       </section>
 
       {/*
+        HAVALE ŞERİDİ — SAYFANIN EN ÜSTÜNDE.
+
+        Ödenmemiş havale siparişinde müşterinin yapacağı TEK iş
+        para göndermek; sayfadaki en acil şey bu. Hesap bilgisi
+        yan sütundayken hem aranıyor hem de dar sütunda
+        kırılıyordu (şirket unvanı üç, IBAN iki satır).
+
+        Yatay düzen kısa tutuyor: alanlar yan yana, IBAN tek
+        satırda ve kopyalanabilir — elle yazılan her hane bir
+        hata ihtimali.
+      */}
+      {odeme.havale && !odendi && banka && (
+        <section className="panel havale-serit">
+          <div className="havale-basi">
+            <strong>Ödemenizi bekliyoruz</strong>
+            <p>
+              Tutarı aşağıdaki hesaba gönderin; siparişiniz ödeme
+              görüldüğünde hazırlanmaya başlar.
+            </p>
+            {/*
+              Mağazanın KENDİ havale notu. Sessizce atılmıyor:
+              metin panelden yönetiliyor ve kiracı onu bilerek
+              yazmış oluyor (AGENTS.md: tanıtım metinleri
+              kiracının). Bizim cümlemiz ne OLACAĞINI söylüyor,
+              bu not mağazanın kendi koşulunu.
+            */}
+            {banka.transferInstructions && (
+              <p className="havale-not">{banka.transferInstructions}</p>
+            )}
+          </div>
+
+          <dl className="havale-alanlar">
+            {banka.bankName && (
+              <div>
+                <dt>Banka</dt>
+                <dd>{banka.bankName}</dd>
+              </div>
+            )}
+            <div className="havale-iban">
+              <dt>IBAN</dt>
+              <dd>
+                <KopyalaDugmesi deger={banka.iban} />
+              </dd>
+            </div>
+            {/*
+              AÇIKLAMA DA BİR ALAN, CÜMLE DEĞİL. Önce "açıklamaya
+              AC261017-F93525 yazmayı unutmayın" diye yazıyordu ve
+              mağazanın kendi havale notu da aynı şeyi söylüyordu;
+              müşteri aynı uyarıyı iki kez okuyordu.
+            */}
+            <div>
+              <dt>Açıklama</dt>
+              <dd>
+                <KopyalaDugmesi deger={order.order_number} />
+              </dd>
+            </div>
+            {banka.accountHolder && (
+              <div className="havale-alici">
+                <dt>Alıcı</dt>
+                <dd>{banka.accountHolder}</dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      )}
+
+      {/*
         KARGO TAKİBİ. Numara yalnızca e-postada vardı; e-postayı silen ya
         da bulamayan müşteri kargosunu takip edemiyor, destek kanalına
         yazıyordu.
@@ -461,14 +528,13 @@ export function OrderDetail({
 
         <aside className="panel detail-side">
           {/*
-            ÖDEME KUTUSU.
+            YAN SÜTUNDA YALNIZCA "NE" VE "NEREDE".
 
-            Sayfa ödemenin DURUMUNU bile göstermiyordu, yöntemini
-            hiç: müşteri kartla mı havaleyle mi ödediğini
-            hatırlamak zorundaydı. Havalede daha kötüsü vardı —
-            "ödeme bekleniyor" diyorduk ama parayı nereye
-            göndereceğini söylemiyorduk; müşteri onay e-postasını
-            aramaya gidiyordu.
+            Havale hesabı da buradaydı ve 300 piksellik sütunda
+            şirket unvanı üç, IBAN iki satıra kırılıyordu; kutu
+            tek başına ekran boyu uzuyordu. Hesap bilgisi artık
+            başlığın altındaki tam genişlikte şeritte — hem
+            kırılmıyor hem müşteri onu aramadan buluyor.
           */}
           <div className="odeme-kutu">
             <p className="about-eyebrow">Ödeme</p>
@@ -483,38 +549,6 @@ export function OrderDetail({
                   order.payment_status}
               </span>
             </div>
-
-            {odeme.havale && !odendi && banka && (
-              <div className="odeme-havale">
-                <p>
-                  Tutarı aşağıdaki hesaba gönderin; açıklamaya{" "}
-                  <b>{order.order_number}</b> yazmayı unutmayın.
-                </p>
-                <dl>
-                  {banka.bankName && (
-                    <div>
-                      <dt>Banka</dt>
-                      <dd>{banka.bankName}</dd>
-                    </div>
-                  )}
-                  {banka.accountHolder && (
-                    <div>
-                      <dt>Alıcı</dt>
-                      <dd>{banka.accountHolder}</dd>
-                    </div>
-                  )}
-                  <div>
-                    <dt>IBAN</dt>
-                    {/* Seçilebilir: müşteri kopyalayıp bankasına
-                        yapıştırıyor. */}
-                    <dd className="odeme-iban">{banka.iban}</dd>
-                  </div>
-                </dl>
-                {banka.transferInstructions && (
-                  <p className="hint">{banka.transferInstructions}</p>
-                )}
-              </div>
-            )}
           </div>
 
           <div className="head">
@@ -618,5 +652,37 @@ function AddressBlock({
         )}
       </p>
     </div>
+  );
+}
+
+/**
+ * Tek tıkla kopyalanan değer (IBAN, sipariş numarası).
+ *
+ * Önce `user-select: all` ile seçilebiliyordu; müşteri yine de
+ * seçip kopyalamak zorundaydı ve telefonda bu, metni seçmeye
+ * çalışırken sayfayı kaydırmak demek. Elle yazılan her hane de
+ * bir hata ihtimali — yanlış IBAN'a giden para geri gelmiyor.
+ */
+function KopyalaDugmesi({ deger }: { deger: string }) {
+  const [kopyalandi, setKopyalandi] = useState(false);
+
+  return (
+    <button
+      type="button"
+      className="kopyala"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(deger);
+          setKopyalandi(true);
+          setTimeout(() => setKopyalandi(false), 2000);
+        } catch {
+          /* Pano izni yoksa değer zaten ekranda duruyor. */
+        }
+      }}
+      aria-label={`${deger} kopyala`}
+    >
+      <span>{deger}</span>
+      <em>{kopyalandi ? "Kopyalandı" : "Kopyala"}</em>
+    </button>
   );
 }

@@ -45,14 +45,20 @@ export default async function OrderPage({
   */
   const banka = await getSellerBank();
 
+  /*
+    <main> YOK: bu sayfa /hesap altında, yani hesap düzeninin
+    (layout.tsx) içinde çiziliyor ve `main` orada. İkisi birden
+    olunca iç içe iki `main` çıkıyordu — geçersiz HTML ve ekran
+    okuyucuda iki "ana içerik".
+  */
   return (
-    <main className="shell">
+    <>
       <OrderDetail
         orderNumber={decodeURIComponent(numara)}
         supabaseUrl={env.supabaseUrl}
         supabaseKey={env.supabaseKey}
         banka={banka}
       />
-    </main>
+    </>
   );
 }
