@@ -26,9 +26,20 @@ type Mode = "login" | "register" | "reset";
 export function AccountPanel({
   supabaseUrl,
   supabaseKey,
+  kompakt = false,
 }: {
   supabaseUrl: string;
   supabaseKey: string;
+  /**
+   * Başlıktaki hesap menüsü için kısa biçim.
+   *
+   * Menü, kapağın üstüne açılan küçük bir panel; sekmeler ve kayıt
+   * formu oraya sığmıyordu ve içerik kaydırma çubuğu çıkarıyordu.
+   * Kayıt KAYBOLMUYOR, yerini değiştiriyor: panelin altındaki
+   * bağlantı /hesap sayfasına götürüyor — hesap açmak alışverişin
+   * ortasında yapılan bir iş değil, bir kerelik bir adım.
+   */
+  kompakt?: boolean;
 }) {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
@@ -464,24 +475,26 @@ export function AccountPanel({
   /* --- Giriş formu --- */
   return (
     <section className="panel auth-panel">
-      <div className="auth-tabs" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === "login"}
-          onClick={() => setMode("login")}
-        >
-          Giriş yap
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === "register"}
-          onClick={() => setMode("register")}
-        >
-          Hesap oluştur
-        </button>
-      </div>
+      {!kompakt && (
+        <div className="auth-tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "login"}
+            onClick={() => setMode("login")}
+          >
+            Giriş yap
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "register"}
+            onClick={() => setMode("register")}
+          >
+            Hesap oluştur
+          </button>
+        </div>
+      )}
 
       {/*
         GERÇEK BİR <form>.
@@ -681,6 +694,14 @@ export function AccountPanel({
           Facebook ile giriş yap
         </button>
       </div>
+
+      {/* Kayıt menüde değil ama ulaşılabilir: hesap açmak
+          alışverişin ortasında yapılan bir iş değil. */}
+      {kompakt && mode === "login" && (
+        <p className="auth-signup">
+          Hesabınız yok mu? <a href="/hesap">Hesap oluşturun</a>
+        </p>
+      )}
     </section>
   );
 }

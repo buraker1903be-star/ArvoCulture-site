@@ -8893,3 +8893,48 @@ body.theme-modern .auth-alt .linklike:hover {
   color: var(--ink);
   border-color: var(--ink);
 }
+
+/*
+  HESAP MENÜSÜ SIĞIYOR (18.10.2026).
+
+  Menüde kaydırma çubuğu çıkıyordu: sekmeler, iki alan, düğme,
+  "şifremi unuttum", ayraç ve iki sosyal düğme bir dropdown'a
+  sığmıyordu. Sekmeler kalktı (kayıt artık /hesap'ta, altta bir
+  bağlantıyla) ve aradaki boşluklar toplandı. `overflow-y: auto`
+  DURUYOR: kısa ekranda içeriğin ulaşılamaz kalmasındansa
+  kaydırılabilir olması iyi — ama olağan ekranda hiç çıkmıyor.
+*/
+.account-pop .auth-lede {
+  margin-top: 0;
+}
+
+.account-pop .auth-fields {
+  gap: var(--s3);
+}
+
+.account-pop .auth-divider {
+  margin: var(--s4) 0 var(--s3);
+}
+
+.account-pop .auth-alt {
+  margin-top: var(--s3);
+}
+
+/* Kayıt bağlantısı: menüde form yok, tek satırlık bir yol var. */
+.auth-signup {
+  margin-top: var(--s4);
+  text-align: center;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.auth-signup a {
+  font-weight: 600;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  transition: border-color 160ms var(--ease);
+}
+
+.auth-signup a:hover {
+  border-color: var(--ink);
+}
