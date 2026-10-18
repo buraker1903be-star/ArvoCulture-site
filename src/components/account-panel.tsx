@@ -500,7 +500,23 @@ export function AccountPanel({
           void submit();
         }}
       >
-        <div className="fields auth-fields">
+        {/*
+        NE İŞE YARADIĞI YAZIYOR.
+
+        Panelde yalnızca iki alan ve bir düğme vardı; üye olmanın
+        ne kazandırdığı hiçbir yerde söylenmiyordu. Üyelik zorunlu
+        değil — misafir alışveriş açık — yani bu satır bir uyarı
+        değil, davet.
+      */}
+      <p className="auth-lede">
+        {mode === "register"
+          ? "Siparişlerinizi takip edin, adreslerinizi kaydedin; bir sonraki alışveriş tek adımda bitsin."
+          : mode === "reset"
+            ? "E-posta adresinizi yazın; şifrenizi yenilemeniz için bağlantı gönderelim."
+            : "Siparişleriniz, adres defteriniz ve iade talepleriniz tek yerde."}
+      </p>
+
+      <div className="fields auth-fields">
           <label className="wide">
             E-posta
             <input
@@ -508,6 +524,9 @@ export function AccountPanel({
               inputMode="email"
               autoComplete="email"
               autoFocus
+              /* Yer tutucu biçimi gösteriyor: boş bir kutu neyin
+                 beklendiğini söylemiyordu. */
+              placeholder="ornek@eposta.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
@@ -520,6 +539,9 @@ export function AccountPanel({
                 type={sifreAcik ? "text" : "password"}
                 autoComplete={
                   mode === "register" ? "new-password" : "current-password"
+                }
+                placeholder={
+                  mode === "register" ? "En az 8 karakter" : "Şifreniz"
                 }
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
