@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { dolara, dolarYazisi } from "@/lib/dolar";
 import { ceviri, type Dil, type SozlukAnahtari } from "@/lib/sozluk";
 import { formatPrice } from "@/lib/product-types";
@@ -153,24 +154,44 @@ export function useParaBirimi(): Deger {
 /** Başlıktaki TR₺ / EN$ seçici. */
 export function ParaBirimiSecici() {
   const { paraBirimi, dolarVar, secildi } = useParaBirimi();
+  const yol = usePathname();
+  const router = useRouter();
 
   /* Mod kapalıyken ya da kur yokken düğme HİÇ çizilmiyor: basılınca
      hiçbir şey olmayan bir düğme, olmayan düğmeden kötü. */
   if (!dolarVar) return null;
+
+  /*
+    ANA SAYFADA SEÇİM ADRES DEĞİŞTİRİR.
+
+    İngilizce ana sayfanın içeriği Türkçesinden farklı: raflar
+    yalnızca yurtdışına gönderilebilen ürünlerden kuruluyor. Aynı
+    adreste kalıp yalnızca fiyatı çevirmek, "Çok satanlar" rafını boş
+    bir şeride çeviriyordu — o raf tamamen gönderilemeyen cilt bakım
+    kataloğundan kurulu.
+
+    Öteki sayfalarda adres değişmiyor: orada çeviri gerçekten yalnızca
+    fiyat ve arayüz metni.
+  */
+  const sec = (birim: ParaBirimi) => {
+    secildi(birim);
+    if (birim === "USD" && yol === "/") router.push("/en");
+    else if (birim === "TRY" && yol === "/en") router.push("/");
+  };
 
   return (
     <div className="para-secici" role="group" aria-label="Para birimi">
       <button
         type="button"
         aria-pressed={paraBirimi === "TRY"}
-        onClick={() => secildi("TRY")}
+        onClick={() => sec("TRY")}
       >
         TR ₺
       </button>
       <button
         type="button"
         aria-pressed={paraBirimi === "USD"}
-        onClick={() => secildi("USD")}
+        onClick={() => sec("USD")}
       >
         EN $
       </button>

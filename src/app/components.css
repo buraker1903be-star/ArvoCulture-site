@@ -11090,3 +11090,25 @@ body.theme-modern .auth-alt .linklike:hover {
     transition: none;
   }
 }
+
+/*
+  YURTDIŞI MODUNDA TAMAMI GİZLİ KOLEKSIYON (22.10.2026).
+
+  Not yalnızca dolar modunda görünüyor: Türkçe vitrinde o ürünler
+  zaten satılıyor ve "yurtdışına gönderilemiyor" cümlesi orada
+  yanlış bir uyarı olurdu. Niteliği satır içi betik boyamadan önce
+  koyuyor (lib/yurtdisi-gizleme), yani not göz kırpmıyor.
+*/
+.yurtdisi-bos{display:none}
+html[data-para="usd"] .yurtdisi-bos{
+  display:block;
+  margin:var(--s4) 0 0;
+  padding:var(--s4);
+  border:1px dashed var(--line);
+  border-radius:var(--r-sm);
+  /* `--muted` ArvoARC'ın jetonu, vitrinde yok; buradaki ikincil
+     metin rengi `--ink-3`. Denetim bunu yakaladı — tanımsız bir
+     var() sessizce geçersiz sayılıp renk mirasa düşüyordu. */
+  color:var(--ink-3);
+  text-align:center;
+}

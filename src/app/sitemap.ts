@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { env } from "@/lib/env";
 import { getStorefrontProductSlugs } from "@/lib/products";
 import { getStorefrontCollections } from "@/lib/collections";
+import { getSalesRules } from "@/lib/store-settings";
 import { vitrinAdresi } from "@/lib/konak";
 
 const staticPaths = [
@@ -36,10 +37,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const adres = await vitrinAdresi();
   const now = new Date();
 
-  const [products, collections] = await Promise.all([
+  const [products, collections, rules] = await Promise.all([
     getStorefrontProductSlugs(),
     getStorefrontCollections(),
+    getSalesRules(),
   ]);
+
+  /*
+    İNGİLİZCE ANA SAYFA YALNIZCA MOD AÇIKKEN listelenir: kapalı modda
+    o adres 404 ve sitemap'e 404 yazmak, arama motoruna olmayan bir
+    sayfayı taramasını söylemek olurdu.
+  */
+  const ingilizce = rules.internationalEnabled && rules.usdRate ? ["/en"] : [];
 
   /*
     Ürünsüz sitemap yayımlanmaz.
@@ -57,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   return [
-    ...staticPaths.map((path) => ({
+    ...[...staticPaths, ...ingilizce].map((path) => ({
       url: `${adres}${path}`,
       lastModified: now,
       changeFrequency: "monthly" as const,

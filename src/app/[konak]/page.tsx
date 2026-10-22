@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { konagiAyarla } from "@/lib/konak";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import {
   HelpStrip,
 } from "@/components/home-blocks";
 import { ThemePreviewBridge } from "@/components/theme-preview-bridge";
+import { IngilizceyeGonder } from "@/components/para-birimi-koprusu";
 import { formatPrice } from "@/lib/product-types";
 import {
   getStorefrontProducts,
@@ -44,6 +46,45 @@ import {
  * `data-arvo-section` / `data-arvo-field` nitelikleri ArvoARC panelinin
  * canlı düzenleme bağlantılarıdır; kaldırılırsa panel bölümü seçemez.
  */
+
+/*
+  ALTMIŞ SANİYE: aşağıdaki `generateMetadata` yurtdışı modunu okuyor
+  ve mod kapalıyken dil etiketini hiç yazmıyor. Süre olmasaydı
+  sayfanın bir kez üretilmiş hâli (etiketsiz) kalıcı olurdu ve mod
+  açıldıktan sonra arama motoru İngilizce sayfayı hiç duymazdı.
+  Raflardaki fiyat da en çok bu kadar bayat olabilir; taahhüt eden
+  rakam sepet ve ödeme sayfalarında (onlar dinamik).
+*/
+export const revalidate = 60;
+
+/*
+  İNGİLİZCE EŞİ BİLDİRİLİYOR (22.10.2026).
+
+  Düzen her sayfaya `canonical: "/"` veriyor; burada ona karşılıklı
+  dil etiketi ekleniyor. Etiket DÜZENE yazılmadı: orada olsaydı ürün
+  ve koleksiyon sayfaları da "İngilizce karşılığım /en" derdi ve
+  arama motoru İngilizce ana sayfayı o sayfaların çevirisi sanardı.
+
+  Mod kapalıysa etiket HİÇ yazılmıyor: /en o durumda 404 ve 404'e
+  işaret eden bir hreflang, arama motoruna olmayan bir sayfayı
+  göstermek olurdu.
+*/
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ konak: string }>;
+}): Promise<Metadata> {
+  konagiAyarla((await params).konak);
+  const rules = await getSalesRules();
+  if (!rules.internationalEnabled || !rules.usdRate) return {};
+  const adres = await vitrinAdresi();
+  return {
+    alternates: {
+      canonical: "/",
+      languages: { "tr-TR": `${adres}/`, en: `${adres}/en` },
+    },
+  };
+}
 
 export default async function Home({
   params,
@@ -132,6 +173,11 @@ export default async function Home({
   return (
     <main className="shell">
       <ThemePreviewBridge />
+      {/* Dolar seçiliyse İngilizce ana sayfaya geçiliyor: buradaki
+          raflar yurtdışına gönderilemeyen ürünlerden kurulu ve
+          dolar modunda kartlar gizlenince başlığı duran boş şeritler
+          kalıyordu (components/para-birimi-koprusu). */}
+      <IngilizceyeGonder />
 
       <Hero theme={theme} />
 

@@ -11,6 +11,7 @@ import {
   type Product,
 } from "@/lib/products";
 import Link from "next/link";
+import { getBlockedProducts } from "@/lib/engelli-urunler";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/json-ld";
 import { KATEGORI_MENU_GRUPLARI, SABIT_KOLEKSIYONLAR } from "@/lib/categories";
@@ -197,9 +198,13 @@ export default async function Collection({
      adı. Önceden ikisi de sabitti ("ArvoCulture", env.siteUrl) ve
      ikinci bir kiracının koleksiyon sayfası arama motoruna bizim
      markamızı ve adresimizi bildirirdi. */
-  const [theme, adres] = await Promise.all([
+  const [theme, adres, engelliSluglar] = await Promise.all([
     getStorefrontTheme(),
     vitrinAdresi(),
+    /* Yurtdışına gönderilemeyen ürünler: aşağıdaki not için. Liste
+       beş dakika önbellekli ve para biriminden bağımsız, yani rota
+       önbelleğini bozmuyor (lib/engelli-urunler). */
+    getBlockedProducts(),
   ]);
 
   let visibleProducts: Product[];
@@ -372,6 +377,30 @@ export default async function Collection({
             <ProductCard key={product.slug} product={product} />
           ))}
         </div>
+
+        {/*
+          DOLAR MODUNDA HEPSİ GİZLİYSE SEBEBİ YAZIYOR (22.10.2026).
+
+          Gönderilemeyen ürünlerin kartları yurtdışı modunda CSS ile
+          gizleniyor (lib/yurtdisi-gizleme) ve tamamı gönderilemeyen
+          bir koleksiyonda — "çok satan cilt bakım" gibi — ızgara
+          bomboş kalıyordu: filtreler duruyor, "24 ürün" yazıyor,
+          ekranda hiçbir şey yok. Müşteri bunu arıza sanıyor.
+
+          Karar SUNUCUDA verilebiliyor çünkü "hangi ürün
+          gönderilemez" para biriminden bağımsız; gösterilip
+          gösterilmeyeceğine CSS karar veriyor, yani rota önbelleği
+          bozulmuyor. Not yalnızca gerçekten HEPSİ gizliyse
+          basılıyor — bir kart bile görünüyorsa müşteri zaten
+          görüyor.
+        */}
+        {visibleProducts.length > 0 &&
+        visibleProducts.every((product) => engelliSluglar.includes(product.slug)) ? (
+          <p className="yurtdisi-bos">
+            None of the items in this collection can be shipped outside
+            Türkiye. <Link href="/en">See what we ship worldwide</Link>.
+          </p>
+        ) : null}
 
         {/*
           Var olmayan bir sayfa numarası istendiğinde boş bir ızgara
