@@ -156,7 +156,24 @@ export default async function IngilizceAnaSayfa({
       : null;
 
   return (
-    <main className="shell">
+    /*
+      lang="en" ŞART, SÜS DEĞİL — canlıda ölçüldü (22.10.2026).
+
+      Düzen `<html lang="tr">` basıyor ve CSS'in `text-transform:
+      uppercase` dönüşümü İÇERİĞİN DİLİNE göre harf eşlemesi
+      yapıyor: Türkçe kuralında "i" → "İ" olduğu için kapaktaki
+      etiket "INTERNATİONAL", yardım kartları "DELİVERY" diye
+      çıkıyordu. İngilizce bir sayfada göze ilk batan şey.
+
+      Ekran okuyucu da bu niteliği okuyor; Türkçe seslendirmeyle
+      İngilizce metin dinlemek aynı kusurun duyulabilir hâli.
+
+      `<html>`'in kendisi Türkçe kalıyor: düzen bütün rotalarda
+      ortak ve rotaya göre değişmesi için her sayfanın kendi
+      düzenini açması gerekirdi. Dil sinyalini arama motoruna
+      karşılıklı hreflang veriyor (generateMetadata).
+    */
+    <main className="shell" lang="en">
       <DolarZorla />
 
       <section className="panel hero">
