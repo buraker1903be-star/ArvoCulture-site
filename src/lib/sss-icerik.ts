@@ -233,6 +233,37 @@ const EN: SssGrubu[] = [
   },
 ];
 
+/*
+  KARGO YANITI DİLE GÖRE BAŞKA KAYNAKTAN — ÇEVİRİ DEĞİL.
+
+  CANLIDA YANLIŞ YAZIYORDU (23.10.2026): İngilizce SSS'te kargo
+  yanıtı yurt içi cümlesiydi — "Kargo ücreti 120 TL'dir. 2.000 TL ve
+  üzeri siparişlerde kargo ücretsizdir." Hem Türkçe hem de YURT İÇİ
+  tarifesi: yurtdışı müşterisine 2.000 TL (≈41 $) üzeri ücretsiz
+  kargo vaat ediyordu, oysa gerçek eşik bölgeye göre 250–500 $.
+
+  Çeviri bunu ÇÖZMEZDİ: cümlenin rakamları yanlıştı, dili değil.
+
+  Yurt içinde tek bir tarife var ve cümle `shippingTerms`'ten
+  geliyor; yurtdışında ücret ülkeye VE ağırlığa bağlı, o yüzden tek
+  rakam verilmiyor — yalnızca başlangıç ücreti söyleniyor.
+*/
+export function kargoYaniti({
+  dil,
+  yurtIciCumle,
+  tabanSent,
+  kaliplar,
+}: {
+  dil: Dil;
+  yurtIciCumle: string;
+  tabanSent: number | null;
+  kaliplar: { tarifeli: string; tarifesiz: string };
+}): string {
+  if (dil !== "en") return yurtIciCumle;
+  if (!tabanSent) return kaliplar.tarifesiz;
+  return kaliplar.tarifeli.replace("{taban}", `$${(tabanSent / 100).toFixed(2)}`);
+}
+
 /** Varsayılan soru-cevaplar; kiracının kendi listesi varsa o geçerli. */
 export function sssVarsayilanlari(dil: Dil): SssGrubu[] {
   return dil === "en" ? EN : TR;

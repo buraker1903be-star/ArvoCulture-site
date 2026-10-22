@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { sssBloklari } from "@/lib/magaza-sayfasi";
-import { sssVarsayilanlari, KARGO_YERI, EPOSTA_YERI } from "@/lib/sss-icerik";
+import { sssVarsayilanlari, kargoYaniti, KARGO_YERI, EPOSTA_YERI } from "@/lib/sss-icerik";
 import { shippingTerms } from "@/lib/order-quote";
+import { enDusukKargoSenti, type Bolge } from "@/lib/kargo-bolgesi";
 import { ceviri, type SozlukAnahtari } from "@/lib/sozluk";
 import { dilOneki, type Dil } from "@/lib/dil-onek";
 import type { SayfaMetni } from "@/lib/magaza-sayfasi";
@@ -27,17 +28,28 @@ export function SssGovdesi({
   rules,
   seller,
   sayfa,
+  bolgeler,
   dil,
 }: {
   rules: Parameters<typeof shippingTerms>[0];
   seller: { email: string; phone: string; phoneLink: string };
   sayfa: SayfaMetni | null;
+  bolgeler: Bolge[];
   dil: Dil;
 }) {
   const onek = dilOneki(dil);
   const t = (anahtar: SozlukAnahtari) => ceviri(anahtar, dil);
 
-  const shipping = shippingTerms(rules).sentence;
+  /* Karar saf işlevde ve testli (lib/sss-icerik → kargoYaniti). */
+  const shipping = kargoYaniti({
+    dil,
+    yurtIciCumle: shippingTerms(rules).sentence,
+    tabanSent: enDusukKargoSenti(bolgeler),
+    kaliplar: {
+      tarifeli: t("yurtdisiKargoYaniti"),
+      tarifesiz: t("yurtdisiKargoTarifesiz"),
+    },
+  });
   const kiraci = sayfa ? sssBloklari(sayfa.govde) : [];
 
   /*
@@ -74,7 +86,7 @@ export function SssGovdesi({
   return (
     <main className="shell" lang={dil}>
       <section className="panel about-hero">
-        <p className="about-eyebrow">Müşteri desteği</p>
+        <p className="about-eyebrow">{t("musteriDestegi")}</p>
         <h1>{sayfa?.baslik || t("sssVarsayilanBaslik")}</h1>
         <p className="about-lede">{t("sssVarsayilanGiris")}</p>
       </section>

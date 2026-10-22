@@ -51,7 +51,21 @@ export const SOZLUK = {
     sayfasında doğru duracak yansız metin.
   */
   hakkimizdaEyebrow: ["Hakkımızda", "About us"],
+  musteriDestegi: ["Müşteri desteği", "Customer support"],
   sssVarsayilanBaslik: ["Sıkça sorulan sorular.", "Frequently asked questions."],
+  /*
+    YURTDIŞI KARGO CÜMLESİ. Tek rakam verilmiyor: ücret ülkeye VE
+    sepetin ağırlığına bağlı. `{taban}` en düşük bölge ücretiyle
+    doldurulur (lib/kargo-bolgesi → enDusukKargoSenti).
+  */
+  yurtdisiKargoYaniti: [
+    "Yurt dışı kargo ücreti {taban} tutarından başlar; kesin tutar ülkenize ve sepetinizin ağırlığına göre ödeme adımında hesaplanır.",
+    "International shipping starts at {taban}; the exact amount is calculated at checkout from your country and the weight of your basket.",
+  ],
+  yurtdisiKargoTarifesiz: [
+    "Kargo ücreti ülkenize ve sepetinizin ağırlığına göre ödeme adımında hesaplanır.",
+    "Shipping is calculated at checkout from your country and the weight of your basket.",
+  ],
   sssVarsayilanGiris: [
     "Sipariş, kargo, iade, ödeme ve ürünlerle ilgili en çok merak edilenler. Aradığınızı bulamazsanız bize yazın.",
     "The questions we are asked most about orders, shipping, returns, payment and the products. If yours is not here, write to us.",

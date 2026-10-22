@@ -1,6 +1,7 @@
 import { SssGovdesi } from "@/components/sss-govdesi";
 import type { Metadata } from "next";
 import { getSalesRules } from "@/lib/store-settings";
+import { getShippingZones } from "@/lib/kargo-bolgeleri";
 import { getSeller } from "@/lib/seller-source";
 import { magazaSayfasi } from "@/lib/magaza-sayfasi-oku";
 import { konagiAyarla } from "@/lib/konak";
@@ -54,11 +55,12 @@ export default async function FAQ({
      güvenilemiyor (lib/konak). */
   konagiAyarla((await params).konak);
 
-  const [rules, seller, sayfa] = await Promise.all([
+  const [rules, seller, sayfa, bolgeler] = await Promise.all([
     getSalesRules(),
     getSeller(),
     magazaSayfasi("sss"),
+    getShippingZones(),
   ]);
 
-  return <SssGovdesi rules={rules} seller={seller} sayfa={sayfa} dil="tr" />;
+  return <SssGovdesi rules={rules} seller={seller} sayfa={sayfa} bolgeler={bolgeler} dil="tr" />;
 }
