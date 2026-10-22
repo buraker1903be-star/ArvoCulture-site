@@ -51,6 +51,17 @@ type Deger = {
   dil: Dil;
   /** Arayüz metni, seçili dilde. */
   t: (anahtar: SozlukAnahtari) => string;
+  /*
+    KAYITLI SEÇİM OKUNDU MU?
+
+    Seçim localStorage'da ve bir etkide okunuyor, yani ilk render'da
+    para birimi HER ZAMAN "TRY". Buna bakıp karar veren bir bileşen
+    (ana sayfadan İngilizceye yönlendirme) kayıtlı dolar seçimini hiç
+    görmüyordu — tek seferlik koşulu okuma bitmeden harcıyordu.
+    Dolar kipi kapalıysa okunacak bir şey yok, o yüzden doğrudan
+    `true`.
+  */
+  hazir: boolean;
 };
 
 const Baglam = createContext<Deger | null>(null);
@@ -63,6 +74,7 @@ export function ParaBirimiSaglayici({
   children: React.ReactNode;
 }) {
   const [paraBirimi, setParaBirimi] = useState<ParaBirimi>("TRY");
+  const [okundu, setOkundu] = useState(false);
 
   const dolarVar =
     salesRules.internationalEnabled && (salesRules.usdRate ?? 0) > 0;
@@ -82,6 +94,9 @@ export function ParaBirimiSaglayici({
       } catch {
         /* yok sayılıyor */
       }
+      /* Okuma DENENDİ: başarısız olsa da bekleyen bileşenler
+         sonsuza kadar beklemesin. */
+      setOkundu(true);
     });
   }, [dolarVar]);
 
@@ -114,6 +129,8 @@ export function ParaBirimiSaglayici({
       secildi,
       dil,
       t: (anahtar: SozlukAnahtari) => ceviri(anahtar, dil),
+      /* Kipi kapalıysa okunacak seçim yok. */
+      hazir: dolarVar ? okundu : true,
       yaz: (lira: number) => {
         if (!dolarda) return formatPrice(lira);
         const usd = dolara(lira, salesRules.usdRate, salesRules.usdMarginPercent);
@@ -123,7 +140,7 @@ export function ParaBirimiSaglayici({
         return usd === null ? formatPrice(lira) : dolarYazisi(usd);
       },
     };
-  }, [paraBirimi, dolarVar, secildi, salesRules.usdRate, salesRules.usdMarginPercent]);
+  }, [paraBirimi, dolarVar, okundu, secildi, salesRules.usdRate, salesRules.usdMarginPercent]);
 
   return <Baglam.Provider value={deger}>{children}</Baglam.Provider>;
 }
@@ -147,6 +164,7 @@ export function useParaBirimi(): Deger {
          sessiz bir hata olurdu. */
       dil: "tr" as const,
       t: (anahtar: SozlukAnahtari) => ceviri(anahtar, "tr"),
+      hazir: true,
     }
   );
 }
