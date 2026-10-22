@@ -10,6 +10,11 @@ import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
 import { dilOneki, yoldanDil } from "@/lib/dil-onek";
 import { ceviri, type SozlukAnahtari } from "@/lib/sozluk";
+import {
+  menuEtiketiCevir,
+  menuBasligiBuyut,
+  cinsiyetOnekiniAt,
+} from "@/lib/menu-cevirisi";
 import { useLayerBack } from "@/lib/use-layer-back";
 import { StoreLogo } from "@/components/store-logo";
 import { SearchOverlay } from "@/components/search-overlay";
@@ -182,7 +187,10 @@ export function Header({
         return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
       })
       .map(([title, items]) => ({
-        title: title.toLocaleUpperCase("tr-TR"),
+        /* Sütun başlığı `menu_group`'tan geliyor ve ÇEVRİLMİYORDU:
+           yapraklar İngilizceyken üstlerindeki başlık Türkçe
+           duruyordu (lib/menu-cevirisi). */
+        title: menuBasligiBuyut(menuEtiketiCevir(title, dil, collections), dil),
         items: items
           .sort((a, b) => b.product_count - a.product_count)
           .map((item) => ({
@@ -190,6 +198,13 @@ export function Header({
             /* Sütun başlığı zaten cinsiyeti söylüyor; başlıktaki
                tekrarı atıyoruz: "Erkek T-Shirt" → "T-Shirt". */
             title: item.title.replace(new RegExp(`^${gender}\\s+`), ""),
+            /* İngilizce yaprak `title_en`'den geliyor ve öneki de
+               İngilizce: Türkçe desen onu bulamıyordu, menüde
+               "Men's T-Shirt / Men's Sweatshirt" diye tekrar
+               ediyordu (lib/menu-cevirisi). */
+            title_en: item.title_en
+              ? cinsiyetOnekiniAt(item.title_en, gender, dil)
+              : item.title_en,
           })),
       }))
       .filter((section) => section.items.length > 0);
@@ -336,31 +351,31 @@ export function Header({
       title: "Kişisel Bakım",
       href: "/koleksiyon/bakim",
       sections: [
-        { title: "MARKA KOLEKSİYONLARI", items: brandItems(BRAND_NAMES.care) },
+        { title: menuBasligiBuyut(menuEtiketiCevir("MARKA KOLEKSİYONLARI", dil, collections), dil), items: brandItems(BRAND_NAMES.care) },
         {
-          title: "CİLT BAKIMI",
+          title: menuBasligiBuyut(menuEtiketiCevir("CİLT BAKIMI", dil, collections), dil),
           items: withoutBrands(["Cilt Bakımı", "Kişisel Bakım"]),
         },
-        { title: "SAÇ BAKIMI", items: withoutBrands(["Saç Bakımı"]) },
-        { title: "VÜCUT BAKIMI", items: withoutBrands(["Vücut Bakımı"]) },
-        { title: "DİĞER BAKIMLAR", items: withoutBrands(["Diğer Bakımlar"]) },
-        { title: "İHTİYACA GÖRE", items: withoutBrands(["Sorununa Göre"]) },
+        { title: menuBasligiBuyut(menuEtiketiCevir("SAÇ BAKIMI", dil, collections), dil), items: withoutBrands(["Saç Bakımı"]) },
+        { title: menuBasligiBuyut(menuEtiketiCevir("VÜCUT BAKIMI", dil, collections), dil), items: withoutBrands(["Vücut Bakımı"]) },
+        { title: menuBasligiBuyut(menuEtiketiCevir("DİĞER BAKIMLAR", dil, collections), dil), items: withoutBrands(["Diğer Bakımlar"]) },
+        { title: menuBasligiBuyut(menuEtiketiCevir("İHTİYACA GÖRE", dil, collections), dil), items: withoutBrands(["Sorununa Göre"]) },
       ],
     },
     {
       title: "Kozmetik",
       href: "/koleksiyon/kozmetik",
-      sections: [{ title: "MAKYAJ", items: byGroup(["Kozmetik"]) }],
+      sections: [{ title: menuBasligiBuyut(menuEtiketiCevir("MAKYAJ", dil, collections), dil), items: byGroup(["Kozmetik"]) }],
     },
     {
       title: "Parfüm",
       href: "/koleksiyon/parfum",
       sections: [
         {
-          title: "MARKA KOLEKSİYONLARI",
+          title: menuBasligiBuyut(menuEtiketiCevir("MARKA KOLEKSİYONLARI", dil, collections), dil),
           items: brandItems(BRAND_NAMES.fragrance),
         },
-        { title: "KİME GÖRE", items: withoutBrands(["Parfüm"]) },
+        { title: menuBasligiBuyut(menuEtiketiCevir("KİME GÖRE", dil, collections), dil), items: withoutBrands(["Parfüm"]) },
       ],
     },
   ]
@@ -455,21 +470,21 @@ export function Header({
                 bestSeller ? `/koleksiyon/${bestSeller.slug}` : "/koleksiyon/tumu"
               }`}
             >
-              Yeni &amp; Çok Satan
+              {t("yeniCokSatan")}
             </Link>
           </div>
           {navigation.map((menu) => (
             <div className="mega-menu" key={menu.title}>
               <Link href={`${onek}${menu.href}`} className="mega-trigger">
-                {menu.title}
+                {menuEtiketiCevir(menu.title, dil, collections)}
               </Link>
               <div
                 className={`mega-panel mega-panel-sections-${menu.sections.length}`}
               >
                 <div className="mega-panel-head">
-                  <p>{menu.title}</p>
+                  <p>{menuEtiketiCevir(menu.title, dil, collections)}</p>
                   <Link href={`${onek}${menu.href}`} prefetch={false}>
-                    Tümünü gör
+                    {t("tumunuGor")}
                   </Link>
                 </div>
                 <div className="mega-columns">
@@ -595,7 +610,7 @@ export function Header({
               className="mobile-featured"
               onClick={close}
             >
-              Yeni &amp; Çok Satan <span aria-hidden="true">↗</span>
+              {t("yeniCokSatan")} <span aria-hidden="true">↗</span>
             </Link>
             <Link
               href={`${onek}${offers ? `/koleksiyon/${offers.slug}` : "/koleksiyon/tumu"}`}

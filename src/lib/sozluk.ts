@@ -42,6 +42,8 @@ export const SOZLUK = {
     yarıda kalmış olduğunu söylüyor.
   */
   menuEtiketi: ["MENÜ", "MENU"],
+  tumunuGor: ["Tümünü gör", "See all"],
+  yeniCokSatan: ["Yeni & Çok Satan", "New & bestsellers"],
   /*
     HAKKIMIZDA VE SSS'İN YANSIZ VARSAYILANLARI.
 
