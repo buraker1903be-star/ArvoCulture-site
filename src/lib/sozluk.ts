@@ -42,6 +42,74 @@ export const SOZLUK = {
     yarıda kalmış olduğunu söylüyor.
   */
   menuEtiketi: ["MENÜ", "MENU"],
+  /*
+    HAKKIMIZDA VE SSS'İN YANSIZ VARSAYILANLARI.
+
+    Kiracı panelden kendi metnini yazmadıysa sayfa bunları çiziyor.
+    İngilizce karşılık Türkçenin çevirisi değil, aynı şeyi İngilizce
+    söylemek — ArvoCulture'ın cümleleri değil, herhangi bir kiracının
+    sayfasında doğru duracak yansız metin.
+  */
+  hakkimizdaEyebrow: ["Hakkımızda", "About us"],
+  sssVarsayilanBaslik: ["Sıkça sorulan sorular.", "Frequently asked questions."],
+  sssVarsayilanGiris: [
+    "Sipariş, kargo, iade, ödeme ve ürünlerle ilgili en çok merak edilenler. Aradığınızı bulamazsanız bize yazın.",
+    "The questions we are asked most about orders, shipping, returns, payment and the products. If yours is not here, write to us.",
+  ],
+  cevabiniBulamadiniz: ["Cevabını bulamadınız mı?", "Did not find your answer?"],
+  bizeYazinDonelim: [
+    "Bize yazın, en kısa sürede dönüş yapalım.",
+    "Write to us and we will come back to you shortly.",
+  ],
+  whatsapptanYaz: ["WhatsApp’tan yaz", "Message on WhatsApp"],
+  epostaGonder: ["E-posta gönder", "Send an e-mail"],
+  tumIletisimKanallari: ["Tüm iletişim kanalları", "All contact channels"],
+  hakkimizdaBaslik: ["Seçkimiz hakkında", "About our selection"],
+  hakkimizdaGiris: [
+    "Kataloğumuzu bir liste değil, bir seçki olarak kuruyoruz. Aşağıda nasıl çalıştığımızı ve her siparişte verdiğimiz sözleri bulabilirsiniz.",
+    "We build our catalogue as a selection, not a list. Below is how we work and what we promise with every order.",
+  ],
+  seckiyiKesfet: ["Seçkiyi keşfet", "Browse the selection"],
+  bizeUlasinBag: ["Bize ulaşın", "Get in touch"],
+  secilmisUrun: ["Seçilmiş ürün", "Selected products"],
+  koleksiyonSayisi: ["Koleksiyon", "Collections"],
+  kategoriSayisi: ["Kategori", "Categories"],
+  nasilCalisiyoruz: ["Nasıl çalışıyoruz", "How we work"],
+  ucIlke: ["Üç ilke, her karar noktasında geçerli.", "Three principles, applied at every decision."],
+  ilkeSeckiBaslik: ["Seçki", "Selection"],
+  ilkeSeckiGovde: [
+    "Kataloğa ürün eklemiyoruz; seçki kuruyoruz. Bir ürün tasarımı, içeriği ve gündelik kullanımdaki karşılığıyla birlikte değerlendirilmeden rafa girmiyor.",
+    "We do not add products to a catalogue; we build a selection. Nothing reaches the shelf until its design, its materials and how it behaves in daily use have all been weighed together.",
+  ],
+  ilkeSeffaflikBaslik: ["Şeffaflık", "Transparency"],
+  ilkeSeffaflikGovde: [
+    "Ürün açıklamaları abartılı vaat değil, kullanım bilgisi taşır. Fiyat neyse odur; sepette sürpriz kalem çıkmaz.",
+    "Product descriptions carry usage information, not inflated promises. The price is the price; no surprise line appears in your basket.",
+  ],
+  ilkeOzenBaslik: ["Özen", "Care"],
+  ilkeOzenGovde: [
+    "Sipariş, ilk keşiften teslimata kadar aynı dikkatle ele alınır. Paketleme bir lojistik adımı değil, deneyimin parçası.",
+    "An order is handled with the same attention from the first click to the doorstep. Packaging is part of the experience, not a logistics step.",
+  ],
+  magazaSozu: ["Mağaza sözü", "Our promise"],
+  magazaSozuBaslik: [
+    "Aldığınız şeyin arkasında duruyoruz.",
+    "We stand behind what you buy.",
+  ],
+  magazaSozuGovde: [
+    "Her ürün yetkili tedarik zincirinden gelir, her ödeme 3D Secure ile korunur, her sipariş aynı özenle paketlenir. Bir şey ters giderse tek bir mesaj yeterli.",
+    "Every item comes through an authorised supply chain, every payment is 3D Secure protected and every order is packed with the same care. If something goes wrong, one message is enough.",
+  ],
+  sozOrijinal: ["Orijinal ürün", "Genuine products"],
+  sozOrijinalNot: ["Yetkili tedarik zinciri", "Authorised supply chain"],
+  sozOdeme: ["3D Secure ödeme", "3D Secure payment"],
+  sozOdemeNot: ["Kart bilgisi saklanmaz", "Card details are never stored"],
+  sozIade: ["14 gün iade", "14-day returns"],
+  sozIadeNot: ["Kullanılmamış ürünlerde", "On unused items"],
+  sozPaketleme: ["Özenli paketleme", "Careful packaging"],
+  sozPaketlemeNot: ["Her siparişte", "With every order"],
+  seckiden: ["Seçkiden", "From the selection"],
+  bugunOneCikan: ["Bugün öne çıkardıklarımız.", "What we are highlighting today."],
   alisverisseDevam: ["Alışverişe devam et", "Continue shopping"],
   ucretsizKargoyaKalan: [
     "{tutar} daha ekleyin, kargo ücretsiz olsun.",

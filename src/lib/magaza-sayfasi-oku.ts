@@ -4,6 +4,7 @@ import { rpcDeger } from "@/lib/arc";
 import { ttlCache } from "@/lib/ttl-cache";
 import { vitrinKonagi } from "@/lib/konak";
 import { metinVar, type SayfaMetni } from "@/lib/magaza-sayfasi";
+import type { Dil } from "@/lib/dil-onek";
 
 /*
   MAĞAZANIN KENDİ SAYFA METNİNİ OKUMA.
@@ -28,7 +29,21 @@ import { metinVar, type SayfaMetni } from "@/lib/magaza-sayfasi";
   Varsayılan metinle çalışan bir mağaza (bugün ArvoCulture) aksi
   halde her sayfa çiziminde boşuna sorgu atardı.
 */
-type SayfaKumesi = Record<string, SayfaMetni>;
+/*
+  RPC SATIRI DÖRT ALAN TAŞIYOR. `baslik`/`govde` kiracının Türkçe
+  metni, `baslik_en`/`govde_en` İngilizcesi (ArvoARC migration
+  20261022221425). İngilizce alanlar YOKSA eski bir dağıtıma
+  bakıyoruz demektir ve `undefined` geliyor — tip bunu söylüyor ki
+  kod "boş İngilizce" ile "alan hiç yok"u aynı yerden geçirsin.
+*/
+type SayfaSatiri = {
+  baslik?: string | null;
+  govde?: string | null;
+  baslik_en?: string | null;
+  govde_en?: string | null;
+};
+
+type SayfaKumesi = Record<string, SayfaSatiri>;
 
 const yukle = ttlCache<SayfaKumesi>(
   async (konak) =>
@@ -57,9 +72,31 @@ const kume = cache(async (): Promise<SayfaKumesi> => {
   }
 });
 
-/** Mağazanın yazdığı metin; yoksa null (sayfa varsayılanını çizer). */
-export async function magazaSayfasi(anahtar: string): Promise<SayfaMetni | null> {
+/*
+  DİLE GÖRE METİN — TÜRKÇEYE DÜŞMÜYOR.
+
+  İngilizce istenip İngilizcesi yazılmamışsa `null` dönüyor ve sayfa
+  KENDİ İngilizce varsayılanını çiziyor. Türkçe metne düşmek kolay
+  olurdu ama İngilizce bir sayfada Türkçe bir paragraf, çevirinin
+  yarıda kaldığını göstermekten başka bir şey yapmaz — üstelik
+  kiracının marka anlatısı, okuyamayan bir ziyaretçiye hiçbir şey
+  anlatmıyor.
+
+  Ters yön de aynı: Türkçe istenip Türkçesi boşsa İngilizceye
+  DÜŞMÜYOR.
+*/
+export async function magazaSayfasi(
+  anahtar: string,
+  dil: Dil = "tr",
+): Promise<SayfaMetni | null> {
   const sayfa = (await kume())[anahtar];
-  if (!metinVar(sayfa)) return null;
-  return { baslik: sayfa.baslik.trim(), govde: sayfa.govde.trim() };
+  if (!sayfa) return null;
+
+  const secilen: SayfaMetni | null =
+    dil === "en"
+      ? { baslik: sayfa.baslik_en ?? "", govde: sayfa.govde_en ?? "" }
+      : { baslik: sayfa.baslik ?? "", govde: sayfa.govde ?? "" };
+
+  if (!metinVar(secilen)) return null;
+  return { baslik: secilen.baslik.trim(), govde: secilen.govde.trim() };
 }
