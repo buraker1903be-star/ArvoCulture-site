@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ceviri, type SozlukAnahtari } from "@/lib/sozluk";
+import { yoldanDil } from "@/lib/dil-onek";
 import { useContext, useSyncExternalStore } from "react";
 import { CartContext } from "@/components/cart";
 
@@ -74,6 +76,9 @@ const subscribeNothing = () => () => {};
 
 export function BottomNav() {
   const pathname = usePathname();
+  /* Erişilebilirlik etiketi de dile bağlı: İngilizce sayfada ekran
+     okuyucu "Ana gezinme" diyordu. */
+  const t = (anahtar: SozlukAnahtari) => ceviri(anahtar, yoldanDil(pathname));
   const { count } = useContext(CartContext);
   /*
     Etkin sekme hidrasyondan sonra işaretleniyor. Ana sayfa önceden
@@ -90,7 +95,7 @@ export function BottomNav() {
   );
 
   return (
-    <nav className="bottom-nav" aria-label="Ana gezinme">
+    <nav className="bottom-nav" aria-label={t("anaGezinme")}>
       {TABS.map((tab) => {
         /*
           Bazı sekmeler sayfaya gitmez, bir katman açar. İletişim

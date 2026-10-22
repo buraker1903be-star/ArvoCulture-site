@@ -222,7 +222,7 @@ export default async function IngilizceAnaSayfa({
             </Link>
             {/* İkincil bağlantı sınıfsız: Türkçe kapakta da öyle,
                 `.hero-cta > a:not(.btn)` kuralı onu biçimliyor. */}
-            <Link href="/teslimat">Delivery &amp; returns</Link>
+            <Link href="/en/teslimat">Delivery &amp; returns</Link>
           </div>
         </div>
       </section>
@@ -334,7 +334,7 @@ export default async function IngilizceAnaSayfa({
           </div>
         </div>
         <div className="help-cards">
-          <Link href="/teslimat" className="help-card">
+          <Link href="/en/teslimat" className="help-card">
             <small>Delivery</small>
             <strong>When does my parcel leave?</strong>
             <span>
@@ -342,13 +342,13 @@ export default async function IngilizceAnaSayfa({
             </span>
             <em aria-hidden="true">&rarr;</em>
           </Link>
-          <Link href="/iptal-iade" className="help-card">
+          <Link href="/en/iptal-iade" className="help-card">
             <small>Returns</small>
             <strong>Can I return an item?</strong>
             <span>{rules.internationalEnabled ? "See the return terms" : "See the terms"}</span>
             <em aria-hidden="true">&rarr;</em>
           </Link>
-          <Link href="/iletisim" className="help-card">
+          <Link href="/en/iletisim" className="help-card">
             <small>Contact</small>
             <strong>Reach us</strong>
             <span>Write with your order number</span>

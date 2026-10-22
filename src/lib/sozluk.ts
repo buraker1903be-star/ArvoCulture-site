@@ -35,6 +35,62 @@ export const SOZLUK = {
      görüldü) — İngilizce bir sayfanın yarısını Türkçe bırakmak. */
   bedenSecKisa: ["Beden seç", "Choose size"],
   ozenliPaketleme: ["ÖZENLİ PAKETLEME", "CAREFUL PACKAGING"],
+  /*
+    İSKELET METİNLERİ — başlık, altbilgi, alt gezinme. Bunlar HER
+    sayfada görünüyor ve İngilizce rotalarda Türkçe duruyordu; sayfa
+    gövdesi İngilizceyken çerçevenin Türkçe kalması, çevirinin
+    yarıda kalmış olduğunu söylüyor.
+  */
+  menuEtiketi: ["MENÜ", "MENU"],
+  anaMenu: ["Ana menü", "Main menu"],
+  menuyuAc: ["Menüyü aç", "Open menu"],
+  menuyuKapat: ["Menüyü kapat", "Close menu"],
+  magazaDuyurulari: ["Mağaza duyuruları", "Store announcements"],
+  anaGezinme: ["Ana gezinme", "Main navigation"],
+  anaSayfaBaglantisi: ["ana sayfa", "home"],
+  hakkimizdaBag: ["Hakkımızda", "About us"],
+  iletisimBag: ["İletişim", "Contact"],
+  sssBag: ["Sık Sorulan Sorular", "Frequently asked questions"],
+  musteriHizmetleri: ["Müşteri Hizmetleri", "Customer service"],
+  teslimatPolitikasi: ["Teslimat Politikası", "Delivery policy"],
+  iptalIadeBag: ["İptal ve İade", "Cancellation & returns"],
+  yasalBaslik: ["Yasal", "Legal"],
+  gizlilikCerez: ["Gizlilik ve Çerez Politikası", "Privacy & cookie policy"],
+  uyelikSozlesmesi: ["Üyelik Sözleşmesi", "Membership agreement"],
+  kullanimKosullari: ["Kullanım Koşulları", "Terms of use"],
+  yasalBildirim: ["Yasal Bildirim", "Legal notice"],
+  ticariIleti: ["Ticari Elektronik İleti", "Commercial electronic messages"],
+  veriSilme: ["Hesap ve Veri Silme", "Account & data deletion"],
+  /*
+    YASAL BELGELER TÜRKÇE KALIYOR ve bunu SÖYLÜYORUZ. Mesafeli satış
+    sözleşmesi, KVKK metni ve üyelik sözleşmesi Türk hukukuna göre
+    yazılmış belgeler; makine çevirisi bağlayıcı metni değiştirmek
+    olurdu. Bağlantı İngilizce adlandırılıyor, belgenin dili
+    belirtiliyor — tıklayınca Türkçe bir sayfayla karşılaşmak,
+    önceden söylenmediğinde kusur gibi görünüyor.
+  */
+  yasalBelgeDili: ["Bu belgeler Türkçedir.", "These documents are in Turkish."],
+  etbisKayit: ["ETBİS’e kayıtlıdır", "Registered with ETBİS"],
+  etbisAciklama: [
+    "Elektronik Ticaret Bilgi Sistemi",
+    "Turkish e-commerce registry",
+  ],
+  lrIsOrtagi: ["bağımsız iş ortağıdır", "independent partner"],
+  odemeGuvenligi: [
+    "Ödemeler 3D Secure korumalı ödeme altyapısı üzerinden alınır. Kart bilgileriniz mağazamıza iletilmez.",
+    "Payments are taken through a 3D Secure protected provider. Your card details are never passed to us.",
+  ],
+  kabulEdilenKartlar: ["Kabul edilen kartlar", "Accepted cards"],
+  tumHaklariSakli: ["Tüm hakları saklıdır.", "All rights reserved."],
+  grupKunyesi: [
+    "Bir ArvoCulture Group markasıdır.",
+    "An ArvoCulture Group brand.",
+  ],
+  magazaKapali: ["Mağazamız şu anda kapalı", "Our store is currently closed"],
+  magazaKapaliAlt: [
+    "Kısa süre içinde tekrar hizmetinizdeyiz. İlginiz için teşekkür ederiz.",
+    "We will be back shortly. Thank you for your interest.",
+  ],
   guvenliOdemeSerit: ["GÜVENLİ ÖDEME", "SECURE PAYMENT"],
   ekleniyor: ["Ekleniyor…", "Adding…"],
   stoktaYok: ["Şu anda stokta yok", "Currently out of stock"],

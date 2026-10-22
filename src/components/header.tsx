@@ -416,7 +416,7 @@ export function Header({
       <div
         className="announcement"
         data-duyuru={dil === "tr" && theme.announcement ? "var" : "yok"}
-        aria-label="Mağaza duyuruları"
+        aria-label={t("magazaDuyurulari")}
       >
         <div className="announcement-track">
           {/* Duyuru boşsa o madde hiç çizilmiyor: varsayılan metin
@@ -448,7 +448,7 @@ export function Header({
             priority
           />
         </Link>
-        <nav className="desktop-nav" aria-label="Ana menü">
+        <nav className="desktop-nav" aria-label={t("anaMenu")}>
           <div className="mega-menu menu-featured">
             <Link
               href={`${onek}${
@@ -564,7 +564,7 @@ export function Header({
           <button
             type="button"
             className="menu-toggle"
-            aria-label="Menüyü aç"
+            aria-label={t("menuyuAc")}
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
           >
@@ -576,7 +576,7 @@ export function Header({
       </header>
       <div className={`mobile-menu ${open ? "open" : ""}`} aria-hidden={!open}>
         <div className="mobile-menu-head">
-          <span>MENÜ</span>
+          <span>{t("menuEtiketi")}</span>
           <button type="button" onClick={close}>
             Kapat ×
           </button>
@@ -683,7 +683,7 @@ export function Header({
         <button
           type="button"
           className="menu-backdrop"
-          aria-label="Menüyü kapat"
+          aria-label={t("menuyuKapat")}
           onClick={close}
         />
       )}

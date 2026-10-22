@@ -64,9 +64,19 @@ export default async function DeliveryPage({
       </InfoSection>
 
       <InfoSection title="Teslimat Bölgesi">
+        {/*
+          ÖNCEDEN "yalnızca Türkiye içine gönderim yapılmaktadır"
+          yazıyordu ve yurtdışı satışı açıldıktan sonra bu YANLIŞ
+          oldu: İngilizce ana sayfa "ships worldwide" derken Türkçe
+          sayfa gönderim yapılmadığını söylüyordu. İki sayfa
+          çelişince hangisinin doğru olduğu müşteriye kalıyor.
+        */}
         <p>
-          Şu anda yalnızca Türkiye içine gönderim yapılmaktadır. Yurt dışı
-          gönderim talepleriniz için {SELLER.email} adresinden bize
+          Türkiye içine gönderim yapılmaktadır. Yurt dışı siparişleri
+          de kabul edilmektedir; ülkenize göre kargo ücreti ödeme
+          adımında hesaplanır. Ayrıntılar için{" "}
+          <Link href="/en/teslimat">İngilizce teslimat sayfasına</Link>{" "}
+          bakabilir ya da {SELLER.email} adresinden bize
           ulaşabilirsiniz.
         </p>
       </InfoSection>

@@ -1,14 +1,13 @@
 import type { CSSProperties } from "react";
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
-import Image from "next/image";
-import Link from "next/link";
 import "../globals.css";
 import "../components.css";
 import "../layout.css";
 import { CartProvider } from "@/components/cart";
 import { FavouritesProvider } from "@/components/favourites";
 import { Header } from "@/components/header";
+import { Altbilgi } from "@/components/altbilgi";
 import { getPopularSearches } from "@/lib/popular-searches";
 import { BottomNav } from "@/components/bottom-nav";
 import { AppShell } from "@/components/app-shell";
@@ -27,7 +26,6 @@ import { storeSchema, websiteSchema } from "@/lib/seo";
 import { getStoreIdentity } from "@/lib/seller-source";
 import { env } from "@/lib/env";
 import { konagiAyarla, vitrinAdresi } from "@/lib/konak";
-import { StoreLogo } from "@/components/store-logo";
 
 /**
  * İki font, iki iş.
@@ -329,246 +327,19 @@ export default async function RootLayout({
               hissini veren ayrım bu.
             */}
             <PageTransition>{children}</PageTransition>
-            <footer className="site-footer">
-              <div className="footer-top">
-                <div className="footer-brand">
-                  <StoreLogo
-                    className="footer-logo"
-                    logoUrl={theme.logo_url}
-                    storeName={theme.store_name ?? "Mağaza"}
-                  />
-                  <p>{theme.footer_tagline}</p>
-
-                  {/*
-                    İLETİŞİM ALTBİLGİDE.
-
-                    Altbilgide mağazaya ulaşmanın hiçbir yolu yoktu;
-                    "İletişim" bağlantısı vardı ama bir tık daha
-                    uzaktaydı. Numara ve e-posta SATICI KAYDINDAN
-                    geliyor (getStoreIdentity) — sayfaya yazılmıyor,
-                    yoksa ikinci bir kiracının altbilgisinde
-                    ArvoCulture'ın hattı görünürdü. Alan boşsa satır
-                    hiç çizilmiyor.
-                  */}
-                  {(kimlik.phone || kimlik.email) && (
-                    <p className="footer-contact">
-                      {/*
-                        Numara WHATSAPP'a bağlı (kimlik.phoneLink).
-                        `tel:` masaüstünde çoğu tarayıcıda hiçbir
-                        şey yapmıyordu; mağazanın hattı zaten
-                        WhatsApp hattı ve sohbet, müşterinin sipariş
-                        numarasını yazabildiği, yanıtın kayda
-                        geçtiği tek kanal. WhatsApp numarası
-                        tanımlı değilse bağlantı yine `tel:`.
-                      */}
-                      {kimlik.phone && kimlik.phoneLink && (
-                        <a
-                          href={kimlik.phoneLink}
-                          {...(kimlik.phoneLink.startsWith("http")
-                            ? { target: "_blank", rel: "noopener noreferrer" }
-                            : {})}
-                        >
-                          {kimlik.phone}
-                        </a>
-                      )}
-                      {kimlik.email && (
-                        <a href={`mailto:${kimlik.email}`}>{kimlik.email}</a>
-                      )}
-                    </p>
-                  )}
-
-                  {/*
-                  Güven rozetleri. Logo dosyaları public/ altına
-                  eklenmelidir; yoksa yalnızca metin görünür ve
-                  sayfa bozulmaz.
-                */}
-                  <div className="footer-badges">
-                    <span className="badge-card">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src="/rozet/etbis.png"
-                        loading="lazy"
-                        decoding="async"
-                        alt=""
-                        width={34}
-                        height={34}
-                      />
-                      <small>
-                        ETBİS’e kayıtlıdır
-                        <br />
-                        Elektronik Ticaret Bilgi Sistemi
-                      </small>
-                    </span>
-                    <span className="badge-card">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src="/rozet/lr.png"
-                        loading="lazy"
-                        decoding="async"
-                        alt=""
-                        width={34}
-                        height={34}
-                      />
-                      <small>
-                        LR Health &amp; Beauty
-                        <br />
-                        bağımsız iş ortağıdır
-                      </small>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="footer-links">
-                  <div className="footer-link-group">
-                    {/* Mağazanın kendi adı: sabit marka, çok mağazalı
-                        vitrinde başka bir mağazanın altbilgisine
-                        ArvoCulture yazıyordu. */}
-                    <strong>{theme.store_name ?? "Mağaza"}</strong>
-                    <Link href="/hakkimizda">Hakkımızda</Link>
-                    <Link href="/iletisim">İletişim</Link>
-                    <Link href="/sss">Sık Sorulan Sorular</Link>
-                    {theme.instagram_url && (
-                      <a href={theme.instagram_url}>Instagram</a>
-                    )}
-                  </div>
-                  <div className="footer-link-group">
-                    <strong>Müşteri Hizmetleri</strong>
-                    <Link href="/teslimat">Teslimat Politikası</Link>
-                    <Link href="/iptal-iade">İptal ve İade</Link>
-                    <Link href="/on-bilgilendirme-formu">
-                      Ön Bilgilendirme Formu
-                    </Link>
-                    <Link href="/mesafeli-satis-sozlesmesi">
-                      Mesafeli Satış Sözleşmesi
-                    </Link>
-                  </div>
-                  <div className="footer-link-group">
-                    <strong>Yasal</strong>
-                    <Link href="/kvkk-aydinlatma-metni">
-                      KVKK Aydınlatma Metni
-                    </Link>
-                    <Link href="/gizlilik">Gizlilik ve Çerez Politikası</Link>
-                    <Link href="/uyelik-sozlesmesi">Üyelik Sözleşmesi</Link>
-                    <Link href="/kullanim-kosullari">Kullanım Koşulları</Link>
-                    <Link href="/yasal-bildirim">Yasal Bildirim</Link>
-                    <Link href="/ticari-elektronik-ileti">
-                      Ticari Elektronik İleti
-                    </Link>
-                    {/* Silme talebinin yolu altbilgiden de görünür:
-                        KVKK metninde hak yazıyordu ama başvurunun
-                        nasıl yapılacağı hiçbir yerde yoktu. Sosyal
-                        giriş sağlayıcıları da bu adresi denetliyor. */}
-                    <Link href="/veri-silme">Hesap ve Veri Silme</Link>
-                  </div>
-                </div>
-              </div>
-
-              {/*
-              Sağlayıcı logosu YOK. Önceden PayTR'ın resmi logo bandı
-              duruyordu; ödeme sağlayıcısı artık siparişe göre
-              seçiliyor (checkout-form.tsx), yani alt bilgide tek bir
-              sağlayıcının markasını göstermek yanıltıcı. Kart markası
-              logoları tescilli olduğu için hâlâ elle çizilmiyor,
-              resmi dosyalardan geliyor; dosya yoksa sayfa bozulmaz.
-            */}
-              {/* Alt bilgi görselleri ekranın dışında: sayfa açılırken
-                  CSS ve ürün görseliyle bant genişliği paylaşmasınlar. */}
-              <div className="footer-pay">
-                <div className="pay-provider">
-                  <small>
-                    Ödemeler 3D Secure korumalı ödeme altyapısı üzerinden
-                    alınır. Kart bilgileriniz mağazamıza iletilmez.
-                  </small>
-                </div>
-
-                <ul className="pay-cards" aria-label="Kabul edilen kartlar">
-                  {[
-                    { file: "visa", label: "Visa" },
-                    { file: "mastercard", label: "Mastercard" },
-                    { file: "troy", label: "Troy" },
-                    { file: "maestro", label: "Maestro" },
-                    { file: "americanexpress", label: "American Express" },
-                  ].map((card) => (
-                    <li key={card.file}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`/rozet/${card.file}.png`}
-                        alt={card.label}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/*
-                KAPANIŞ İMZASI.
-
-                Altbilginin en altında, mağazanın adı çok büyük ve
-                çok soluk. Hiçbir bilgi taşımıyor — süs değil,
-                NOKTA: sayfanın bittiğini söyleyen şey. Altbilgi
-                bunsuz bir bağlantı listesi gibi bitiyordu.
-
-                Ekran okuyucudan gizli; ad zaten logoda ve telif
-                satırında var, üçüncü kez okunması gerekmiyor.
-              */}
-              <span className="footer-mark" aria-hidden="true">
-                {/*
-                  İmza MAĞAZANIN LOGOSU, adı değil: düz sansla
-                  yazılmış bir ad, markanın kendi harf biçimini
-                  taşımıyordu — ArvoCulture'ın wordmark'ında "ARVO"
-                  kalın, "CULTURE" ince ve italik, ve imzanın
-                  tamamı o ayrımdan doğuyor.
-
-                  StoreLogo logosu olmayan kiracıda mağaza ADINA
-                  düşüyor; yani ikinci bir mağaza logosuz da olsa
-                  imza çiziliyor ve kimsenin logosu başkasının
-                  altbilgisinde görünmüyor.
-                */}
-                <StoreLogo
-                  logoUrl={theme.logo_url}
-                  storeName={theme.store_name ?? "Mağaza"}
-                />
-              </span>
-
-              <div className="footer-legal">
-                <small>
-                  © 2026 {theme.store_name ?? "Mağaza"}. Tüm hakları
-                  saklıdır.
-                </small>
-                {/* Grup künyesi yalnızca ArvoCulture'ın kendi
-                    mağazasında: başka bir kiracının altbilgisinde
-                    yabancı bir grup adı görünmemeli. */}
-                {theme.store_name === "ArvoCulture" && (
-                  <small>Bir ArvoCulture Group markasıdır.</small>
-                )}
-
-                {/*
-                  Tasarım künyesi. Logo dosyası kaynağındaki
-                  1920×1080’lik tuvalden içerik sınırına kırpıldı;
-                  olduğu gibi kullanılsaydı altında ve üstünde
-                  312’şer piksel boşlukla gelirdi.
-
-                  Dış siteye açıldığı için rel="noreferrer" var;
-                  künye bağlantısının referrer taşımasına gerek yok.
-                */}
-                <a
-                  className="footer-credit"
-                  href="https://arvo-os.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span>Design by</span>
-                  <Image
-                    src="/arvoos-logo.png"
-                    alt="ARVOOS"
-                    width={232}
-                    height={44}
-                  />
-                </a>
-              </div>
-            </footer>
+            <Altbilgi
+              theme={{
+                logo_url: theme.logo_url,
+                store_name: theme.store_name,
+                footer_tagline: theme.footer_tagline,
+                instagram_url: theme.instagram_url,
+              }}
+              kimlik={{
+                phone: kimlik.phone,
+                phoneLink: kimlik.phoneLink,
+                email: kimlik.email,
+              }}
+            />
             {/* Mobil alt gezinme; masaüstünde CSS ile gizlenir. */}
             <BottomNav />
 
