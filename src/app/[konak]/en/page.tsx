@@ -216,7 +216,7 @@ export default async function IngilizceAnaSayfa({
             charged in Turkish lira at checkout.
           </p>
           <div className="hero-cta">
-            <Link className="btn" href="/koleksiyon/tumu">
+            <Link className="btn" href="/en/koleksiyon/tumu">
               Shop all
             </Link>
             {/* İkincil bağlantı sınıfsız: Türkçe kapakta da öyle,
@@ -268,9 +268,10 @@ export default async function IngilizceAnaSayfa({
           <ProductBlock
             title="On sale"
             note="Current reductions available for international delivery."
-            href="/koleksiyon/firsatlar"
+            href="/en/koleksiyon/firsatlar"
             hrefLabel="See all"
             products={indirimliEn}
+            onek="/en"
             rail
           />
         </Reveal>
@@ -281,9 +282,10 @@ export default async function IngilizceAnaSayfa({
           <ProductBlock
             title="Most wanted"
             note="The pieces our customers choose most often."
-            href="/koleksiyon/tumu"
+            href="/en/koleksiyon/tumu"
             hrefLabel="See all"
             products={onerilenEn}
+            onek="/en"
             rail
           />
         </Reveal>
@@ -294,9 +296,10 @@ export default async function IngilizceAnaSayfa({
           <ProductBlock
             title="New arrivals"
             note="Recently added to the collection."
-            href="/koleksiyon/tumu"
+            href="/en/koleksiyon/tumu"
             hrefLabel="See all"
             products={yeniEn}
+            onek="/en"
             rail
           />
         </Reveal>

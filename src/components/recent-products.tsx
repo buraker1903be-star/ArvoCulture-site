@@ -1,5 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+import { dilOneki, yoldanDil } from "@/lib/dil-onek";
+
 import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { Rail } from "@/components/rail";
@@ -32,6 +35,9 @@ export function RecentProducts({
   title?: string;
 }) {
   const [slugs, setSlugs] = useState<string[] | null>(null);
+  /* Dil öneki yoldan: İngilizce sayfadaki raf da İngilizce ürün
+     sayfalarına gitmeli (lib/dil-onek). */
+  const onek = dilOneki(yoldanDil(usePathname()));
 
   useEffect(() => {
     // Önce mevcut listeyi oku, sonra bu ürünü ekle: aksi hâlde
@@ -64,7 +70,9 @@ export function RecentProducts({
 
       <Rail>
         {products.map((product) => (
-          <ProductCard key={product.slug} product={product} />
+          /* Önek yoldan: İngilizce sayfadaki "son gezilenler" de
+             İngilizce ürün sayfalarına gitmeli (lib/dil-onek). */
+          <ProductCard key={product.slug} product={product} onek={onek} />
         ))}
       </Rail>
     </section>

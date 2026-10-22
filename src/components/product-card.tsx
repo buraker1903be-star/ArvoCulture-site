@@ -15,7 +15,23 @@ export function discountOf(product: Product) {
   return 0;
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  onek = "",
+}: {
+  product: Product;
+  /*
+    DİL ÖNEKİ ("" ya da "/en"). İngilizce ağacın içindeki kart
+    İngilizce ürün sayfasına gitmeli; Türkçe sayfaya düşerse ayrı
+    adres kurmanın bütün anlamı kaybolur (lib/dil-onek).
+
+    Varsayılan boş: Türkçe çağıranların hiçbiri değişmedi. Sunucu
+    bileşeni olduğu için yolu kendisi okuyamıyor — istemci
+    bileşenleri (quick-add, son gezilenler) `usePathname` ile
+    çıkarıyor.
+  */
+  onek?: string;
+}) {
   const off = discountOf(product);
   /* Tükenen üründe "çok satan" yazmak alay gibi duruyor: müşteri
      satın alamayacağı bir ürünün ne kadar sevildiğini okuyor. */
@@ -28,7 +44,7 @@ export function ProductCard({ product }: { product: Product }) {
      değil; koleksiyon boşsa işaretli ürünlere düşülüyor.
   */
   const cokSatan = product.bestSeller && product.available !== false;
-  const href = `/urun/${product.slug}`;
+  const href = `${onek}/urun/${product.slug}`;
   const second = product.images?.[1];
 
   return (

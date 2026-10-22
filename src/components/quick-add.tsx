@@ -1,5 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+import { dilOneki, yoldanDil } from "@/lib/dil-onek";
+
 import Link from "next/link";
 import { useContext, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -28,6 +31,7 @@ import type { VaryantOzeti } from "@/lib/varyant-ozeti";
 export function QuickAdd({ product }: { product: Product }) {
   const { add } = useContext(CartContext);
   const router = useRouter();
+  const yol = usePathname();
   const [durum, setDurum] = useState<"hazir" | "sorguluyor" | "eklendi">("hazir");
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -39,7 +43,10 @@ export function QuickAdd({ product }: { product: Product }) {
     );
   }
 
-  const urunSayfasi = `/urun/${product.slug}`;
+  /* Dil önekini yoldan çıkarıyor: istemci bileşeni olduğu için
+     kanca kullanabiliyor ve prop zincirine gerek kalmıyor
+     (lib/dil-onek). */
+  const urunSayfasi = `${dilOneki(yoldanDil(yol))}/urun/${product.slug}`;
 
   /*
     Giyimde seçenek sorulmadan karttan ekleme yapılmıyor: bedensiz

@@ -163,6 +163,50 @@ export const SOZLUK = {
     "You will be charged in Turkish lira.",
   ],
   yaklasik: ["Yaklaşık", "Approximately"],
+
+  /* --- Ürün sayfası (sunucuda çiziliyor: `ceviri()` doğrudan çağrılıyor,
+         kanca kullanılmıyor) --- */
+  anaSayfa: ["Ana sayfa", "Home"],
+  konum: ["Konum", "Breadcrumb"],
+  cokSatanRozet: ["Çok satan", "Bestseller"],
+  tasarrufEki: ["tasarruf", "saved"],
+  urunAciklamasi: ["Ürün açıklaması", "Product description"],
+  urunOzellikleri: ["Ürün özellikleri", "Specifications"],
+  bedenTablosu: ["Beden tablosu", "Size guide"],
+  teslimatBaslik: ["Teslimat", "Delivery"],
+  teslimatMetni: [
+    "Siparişiniz ödeme onayının ardından hazırlanır ve kargoya verildiğinde e-posta ile bilgilendirilirsiniz.",
+    "Your order is prepared once the payment is confirmed; we email you when it ships.",
+  ],
+  iadeKosullari: ["İade koşulları", "Returns"],
+  iadeMetni: [
+    "Kullanılmamış ve yeniden satılabilir durumdaki ürünler teslimattan itibaren 14 gün içinde iade edilebilir. Ambalajı açılmış kozmetik ve kişisel bakım ürünleri hijyen gerekçesiyle iade kapsamı dışındadır.",
+    "Unused items in resalable condition can be returned within 14 days of delivery. Opened cosmetics and personal care products are excluded for hygiene reasons.",
+  ],
+  iadeGunu: ["14 gün içinde iade", "14-day returns"],
+  guvenliOdeme3d: ["3D Secure ile güvenli ödeme", "Secure payment with 3D Secure"],
+  benzerUrunler: ["Benzer ürünler", "You may also like"],
+  benzerUrunlerAlt: [
+    "{kategori} kategorisinden seçtiklerimiz.",
+    "Our picks from {kategori}.",
+  ],
+  tumUrunler: ["Tüm ürünler", "All products"],
+
+  /* --- Koleksiyon sayfası --- */
+  koleksiyonSeckisi: ["{magaza} SEÇKİSİ", "{magaza} SELECTION"],
+  koleksiyonAciklama: [
+    "Kendine ait olanı keşfet. Her ürün; tasarım, nitelik ve kullanım deneyimi gözetilerek seçildi.",
+    "Find what is yours. Every piece is chosen for its design, quality and everyday wear.",
+  ],
+  secimBos: ["Bu seçimle ürün bulunamadı.", "No products match this selection."],
+  /*
+    Yasal sayfalar İngilizce vitrinde de TÜRKÇE açılıyor ve bu bilinçli
+    (sözleşmeyi makineyle çevirip "okudum" dedirtmek olmazdı). Uyarı
+    ödeme adımındaki onay satırlarında duruyor — orada hukuki olarak
+    gerekiyor. Burada ayrı bir anahtar YOK: bilerek boş bırakılmış bir
+    karşılık "çeviri" değil ve sözlüğün testi onu haklı olarak
+    reddediyor.
+  */
   odeme: ["Ödeme", "Payment"],
   odemeBosSepet: [
     "Ödeme adımına geçmek için sepetinize ürün ekleyin.",

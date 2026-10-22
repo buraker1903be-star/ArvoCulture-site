@@ -19,6 +19,7 @@ export function ProductBlock({
   products,
   alt,
   rail,
+  onek = "",
 }: {
   title: string;
   /**
@@ -32,6 +33,10 @@ export function ProductBlock({
   hrefLabel: string;
   products: Product[];
   alt?: boolean;
+  /* Dil öneki: İngilizce raftaki kart İngilizce ürün sayfasına
+     gitmeli (lib/dil-onek). Varsayılan boş — Türkçe çağıranların
+     hiçbiri değişmedi. */
+  onek?: string;
   /**
    * Izgara yerine yatay kaydırmalı raf. Sekiz özdeş ızgaranın
    * ardı ardına gelmesi sayfayı düzleştiriyordu; bir bölümü
@@ -54,13 +59,13 @@ export function ProductBlock({
       {rail ? (
         <Rail>
           {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+            <ProductCard key={product.slug} product={product} onek={onek} />
           ))}
         </Rail>
       ) : (
         <div className="grid">
           {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+            <ProductCard key={product.slug} product={product} onek={onek} />
           ))}
         </div>
       )}
