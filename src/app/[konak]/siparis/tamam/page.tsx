@@ -1,7 +1,4 @@
-import Link from "next/link";
-import { BankDetails } from "@/components/bank-details";
-import { OrderCleanup } from "@/components/order-cleanup";
-import { Metin } from "@/components/para-birimi";
+import { SiparisTamam } from "@/components/siparis-tamam";
 import { getSellerBank } from "@/lib/seller-source";
 import { konagiAyarla } from "@/lib/konak";
 
@@ -54,47 +51,5 @@ export default async function OrderDone({
   */
   const havale = await getSellerBank();
 
-  return (
-    <main className="shell">
-      <OrderCleanup orderNumber={no} />
-      <section className="panel about-hero order-result">
-        {/* Metinler <Metin> ile: sunucu Türkçe basıyor, İngilizce
-            vitrinde tarayıcı çeviriyor (components/para-birimi). */}
-        <p className="about-eyebrow"><Metin anahtar="tesekkurler" /></p>
-        <h1><Metin anahtar="siparisAlindiBaslik" /></h1>
-
-        {/* Sipariş numarası künye etiketi ve başlık yazısıyla:
-            müşterinin not alacağı tek bilgi bu. */}
-        {no && (
-          <p className="order-number">
-            <small><Metin anahtar="siparisNumarasi" /></small>
-            <b>{no}</b>
-          </p>
-        )}
-
-        <p className="about-lede">
-          <Metin anahtar="siparisAlindiAciklama" />
-        </p>
-
-        {/*
-          Havale siparişinde banka bilgileri onay sayfasında da
-          gösteriliyor: müşteri e-postayı beklemeden ödeyebilsin.
-        */}
-        {yontem === "havale" && havale && (
-          <BankDetails seller={havale}>
-            <p className="hint">
-              <Metin anahtar="havaleTalimati" />
-            </p>
-          </BankDetails>
-        )}
-
-        <div className="order-actions">
-          <Link className="btn" href="/koleksiyon/tumu">
-            <Metin anahtar="alisverisiSurdur" />
-          </Link>
-          <Link href="/iletisim"><Metin anahtar="bizeUlasin" /></Link>
-        </div>
-      </section>
-    </main>
-  );
+  return <SiparisTamam no={no} yontem={yontem} havale={havale} />;
 }

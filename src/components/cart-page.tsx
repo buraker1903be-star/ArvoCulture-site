@@ -1,6 +1,7 @@
 "use client";
 
 import { useParaBirimi } from "@/components/para-birimi";
+import { dilOneki } from "@/lib/dil-onek";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +32,15 @@ import {
  */
 export function CartPageView() {
   /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
-  const { yaz, paraBirimi, t } = useParaBirimi();
+  const { yaz, paraBirimi, t, dil } = useParaBirimi();
+  /*
+    BAĞLANTI ÖNEKİ DE DİLE BAĞLI. Sepet ve ödeme metinleri zaten
+    İngilizceydi (dil para birimi seçiminden geliyor), ama
+    bağlantılar öneksizdi: İngilizce sepetten "ödemeye geç" diyen
+    müşteri TÜRKÇE ödeme sayfasına düşüyordu. Yarım çeviri değil,
+    akışın ortasında dil değiştirmek.
+  */
+  const onek = dilOneki(dil);
   const { items, total, remove, setQuantity, salesRules } = useContext(CartContext);
 
   const [coupon, setCoupon] = useState("");
@@ -126,10 +135,10 @@ export function CartPageView() {
         <h1>{t("sepetBosBaslik")}</h1>
         <p>{t("sepetBosAciklama")}</p>
         <div className="order-actions">
-          <Link className="btn" href="/koleksiyon/tumu">
+          <Link className="btn" href={`${onek}/koleksiyon/tumu`}>
             {t("alisverisBasla")}
           </Link>
-          <Link href="/koleksiyon/firsatlar">{t("indirimdekiUrunler")}</Link>
+          <Link href={`${onek}/koleksiyon/firsatlar`}>{t("indirimdekiUrunler")}</Link>
         </div>
       </section>
     );
@@ -334,16 +343,16 @@ export function CartPageView() {
 
           {!kargoSonra && remaining > 0 && (
             <p className="hint">
-              {yaz(remaining)} daha ekleyin, kargo ücretsiz olsun.
+              {t("ucretsizKargoyaKalan").replace("{tutar}", yaz(remaining))}
             </p>
           )}
 
-          <Link className="btn btn-block" href="/odeme">
+          <Link className="btn btn-block" href={`${onek}/odeme`}>
             {t("odemeyeGec")}
           </Link>
 
-          <Link className="drawer-link" href="/koleksiyon/tumu">
-            Alışverişe devam et
+          <Link className="drawer-link" href={`${onek}/koleksiyon/tumu`}>
+            {t("alisverisseDevam")}
           </Link>
         </aside>
       </div>

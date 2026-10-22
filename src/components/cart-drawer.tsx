@@ -1,6 +1,7 @@
 "use client";
 
 import { useParaBirimi } from "@/components/para-birimi";
+import { dilOneki } from "@/lib/dil-onek";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -29,7 +30,15 @@ export function CartDrawer({
   onClose: () => void;
 }) {
   /* Fiyatlar seçili para biriminde (para-birimi.tsx). */
-  const { yaz, paraBirimi, t } = useParaBirimi();
+  const { yaz, paraBirimi, t, dil } = useParaBirimi();
+  /*
+    BAĞLANTI ÖNEKİ DE DİLE BAĞLI. Sepet ve ödeme metinleri zaten
+    İngilizceydi (dil para birimi seçiminden geliyor), ama
+    bağlantılar öneksizdi: İngilizce sepetten "ödemeye geç" diyen
+    müşteri TÜRKÇE ödeme sayfasına düşüyordu. Yarım çeviri değil,
+    akışın ortasında dil değiştirmek.
+  */
+  const onek = dilOneki(dil);
   const { items, total, remove, setQuantity, discounts, salesRules } =
     useContext(CartContext);
   const [code, setCode] = useState("");
@@ -155,7 +164,7 @@ export function CartDrawer({
         {items.length === 0 ? (
           <div className="drawer-empty">
             <p>{t("sepetBos")}</p>
-            <Link className="btn" href="/koleksiyon/tumu" onClick={close}>
+            <Link className="btn" href={`${onek}/koleksiyon/tumu`} onClick={close}>
               {t("alisverisBasla")}
             </Link>
           </div>
@@ -178,9 +187,16 @@ export function CartDrawer({
                 {shipping === 0 ? (
                   t("kargonuzUcretsiz")
                 ) : (
+                  /* Tutar KALIN: şeridin işi eşiğe ne kadar
+                     kaldığını söylemek, cümleyi okutmak değil. */
                   <>
-                    <b>{yaz(remaining)}</b> daha ekleyin, kargo
-                    ücretsiz olsun.
+                    {t("ucretsizKargoyaKalan")
+                      .split("{tutar}")
+                      .flatMap((parca, sira) =>
+                        sira === 0
+                          ? [parca]
+                          : [<b key="tutar">{yaz(remaining)}</b>, parca],
+                      )}
                   </>
                 )}
               </p>
@@ -339,10 +355,10 @@ export function CartDrawer({
                   <dd>{yaz(afterDiscount + (kargoSonra ? 0 : shipping))}</dd>
                 </div>
               </dl>
-              <Link className="btn btn-block" href="/odeme" onClick={close}>
+              <Link className="btn btn-block" href={`${onek}/odeme`} onClick={close}>
                 {t("odemeyeGec")}
               </Link>
-              <Link className="drawer-link" href="/sepet" onClick={close}>
+              <Link className="drawer-link" href={`${onek}/sepet`} onClick={close}>
                 {t("sepetDetayi")}
               </Link>
             </footer>

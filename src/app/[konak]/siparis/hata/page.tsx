@@ -1,6 +1,5 @@
-import Link from "next/link";
+import { SiparisHata } from "@/components/siparis-hata";
 import { konagiAyarla } from "@/lib/konak";
-import { Metin } from "@/components/para-birimi";
 
 /*
   BU SAYFA DİNAMİK KALMALI.
@@ -36,32 +35,5 @@ export default async function OrderFailed({
 
   const { no } = await searchParams;
 
-  return (
-    <main className="shell">
-      <section className="panel about-hero order-result">
-        {/* Metinler <Metin> ile: sunucu Türkçe basıyor, İngilizce
-            vitrinde tarayıcı çeviriyor (components/para-birimi). */}
-        <p className="about-eyebrow"><Metin anahtar="odeme" /></p>
-        <h1><Metin anahtar="odemeTamamlanamadi" /></h1>
-        <p className="about-lede">
-          <Metin anahtar="odemeHataAciklama" />
-        </p>
-        {no && (
-          <p className="order-number">
-            <small><Metin anahtar="ilgiliSiparisNo" /></small>
-            <b>{no}</b>
-          </p>
-        )}
-        <p>
-          <Metin anahtar="sepetDuruyor" />
-        </p>
-        <div className="order-actions">
-          <Link className="btn" href="/odeme">
-            <Metin anahtar="tekrarDene" />
-          </Link>
-          <Link href="/iletisim"><Metin anahtar="yardimAlin" /></Link>
-        </div>
-      </section>
-    </main>
-  );
+  return <SiparisHata no={no} />;
 }

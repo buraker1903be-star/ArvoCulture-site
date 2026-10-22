@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParaBirimi } from "@/components/para-birimi";
+import { dilOneki } from "@/lib/dil-onek";
 
 /*
   Sipariş adımları: sepet, teslimat, ödeme.
@@ -27,7 +28,10 @@ export function CheckoutSteps({
 }: {
   current: (typeof STEPS)[number]["key"];
 }) {
-  const { t } = useParaBirimi();
+  const { t, dil } = useParaBirimi();
+  /* Adım bağlantısı da dile bağlı: İngilizce ödeme sayfasından
+     "Basket" adımına tıklayan müşteri Türkçe sepete düşüyordu. */
+  const onek = dilOneki(dil);
   const currentIndex = STEPS.findIndex((step) => step.key === current);
 
   return (
@@ -38,7 +42,7 @@ export function CheckoutSteps({
           aria-current={index === currentIndex ? "step" : undefined}
         >
           {index < currentIndex && step.href ? (
-            <Link href={step.href}>{t(step.etiket)}</Link>
+            <Link href={`${onek}${step.href}`}>{t(step.etiket)}</Link>
           ) : (
             t(step.etiket)
           )}

@@ -42,6 +42,11 @@ export const SOZLUK = {
     yarıda kalmış olduğunu söylüyor.
   */
   menuEtiketi: ["MENÜ", "MENU"],
+  alisverisseDevam: ["Alışverişe devam et", "Continue shopping"],
+  ucretsizKargoyaKalan: [
+    "{tutar} daha ekleyin, kargo ücretsiz olsun.",
+    "Add {tutar} more for free shipping.",
+  ],
   anaMenu: ["Ana menü", "Main menu"],
   menuyuAc: ["Menüyü aç", "Open menu"],
   menuyuKapat: ["Menüyü kapat", "Close menu"],

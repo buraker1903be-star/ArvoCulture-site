@@ -31,6 +31,7 @@ import {
 import type { Bolge } from "@/lib/kargo-bolgesi";
 import { teslimatUlkeleri, ulkeAdi } from "@/lib/ulkeler";
 import { useParaBirimi } from "@/components/para-birimi";
+import { dilOneki } from "@/lib/dil-onek";
 import { dolarYazisi } from "@/lib/dolar";
 
 /**
@@ -129,6 +130,14 @@ export function CheckoutForm({
   /* Seçili para birimi: dolar seçiliyse tutarın dolar karşılığı da
      yazılıyor — ama ASIL rakam lira, çünkü tahsilat lira (aşağıda). */
   const { paraBirimi, t, dil } = useParaBirimi();
+  /*
+    BAĞLANTI ÖNEKİ DE DİLE BAĞLI. Sepet ve ödeme metinleri zaten
+    İngilizceydi (dil para birimi seçiminden geliyor), ama
+    bağlantılar öneksizdi: İngilizce sepetten "ödemeye geç" diyen
+    müşteri TÜRKÇE ödeme sayfasına düşüyordu. Yarım çeviri değil,
+    akışın ortasında dil değiştirmek.
+  */
+  const onek = dilOneki(dil);
   const router = useRouter();
   const [saved, setSaved] = useState<Address[]>([]);
   const [selected, setSelected] = useState<string | "manual">("manual");
@@ -644,7 +653,7 @@ export function CheckoutForm({
       */
       if (useTransfer) {
         router.push(
-          `/siparis/tamam?no=${encodeURIComponent(data.orderNumber)}&yontem=havale`,
+          `${onek}/siparis/tamam?no=${encodeURIComponent(data.orderNumber)}&yontem=havale`,
         );
         return;
       }
@@ -667,10 +676,10 @@ export function CheckoutForm({
           <h1>{t("sepetBosBaslik")}</h1>
           <p className="about-lede">{t("odemeBosSepet")}</p>
           <div className="order-actions">
-            <Link className="btn" href="/koleksiyon/tumu">
+            <Link className="btn" href={`${onek}/koleksiyon/tumu`}>
               {t("alisverisBasla")}
             </Link>
-            <Link href="/koleksiyon/firsatlar">{t("indirimdekiUrunler")}</Link>
+            <Link href={`${onek}/koleksiyon/firsatlar`}>{t("indirimdekiUrunler")}</Link>
           </div>
         </section>
       </main>
