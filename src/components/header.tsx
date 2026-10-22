@@ -9,6 +9,7 @@ import { ParaBirimiSecici } from "@/components/para-birimi";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
 import { dilOneki, yoldanDil } from "@/lib/dil-onek";
+import { ceviri, type SozlukAnahtari } from "@/lib/sozluk";
 import { useLayerBack } from "@/lib/use-layer-back";
 import { StoreLogo } from "@/components/store-logo";
 import { SearchOverlay } from "@/components/search-overlay";
@@ -44,6 +45,7 @@ export function Header({
   */
   const dil = yoldanDil(usePathname());
   const onek = dilOneki(dil);
+  const t = (anahtar: SozlukAnahtari) => ceviri(anahtar, dil);
   /*
     GÖSTERİM İngilizce, EŞLEŞME Türkçe. Menünün gruplandırması ve
     marka eşleşmesi Türkçe başlığa bakıyor ("Çok Satanlar",
@@ -395,10 +397,25 @@ export function Header({
 
         Duyuru YOKSA ikisi kalıyor: boş bir şerit göstermektense
         genel güvenceleri göstermek.
+
+        İNGİLİZCE SAYFADA MAĞAZA DUYURUSU GÖSTERİLMİYOR (22.10.2026,
+        canlıda görüldü). İki sebep, ikisi de yeterli:
+
+        - Metin panelden geliyor ve serbest Türkçe; çevirisi yok ve
+          olamaz. Şerit "2.000 TL ÜZERİ ÜCRETSİZ KARGO" diyordu.
+        - O eşik YURT İÇİ eşiği. Yurtdışında ücretsiz kargo bölgeye
+          göre 250–500 $; 2.000 TL (≈41 $) harcayan müşteri ücretsiz
+          kargo bekler ve ödemede kargo ücreti görür. Yanlış vaat,
+          vaat etmemekten kötü.
+
+        Tek bir dolar rakamı da yazılamaz: eşik bölgeye göre değişiyor.
+        Güvenceler kalıyor, kargo vaadi ana sayfadaki "Shipping to
+        your country" bölümünde ve ödeme adımında — ikisi de bölgeyi
+        bilerek konuşuyor.
       */}
       <div
         className="announcement"
-        data-duyuru={theme.announcement ? "var" : "yok"}
+        data-duyuru={dil === "tr" && theme.announcement ? "var" : "yok"}
         aria-label="Mağaza duyuruları"
       >
         <div className="announcement-track">
@@ -407,14 +424,14 @@ export function Header({
               yansız (boş). Boş bir span şeritte sessiz bir
               boşluk bırakırdı. */}
           <div className="announcement-group">
-            {theme.announcement && <span>{theme.announcement}</span>}
-            <span className="announcement-ikincil">ÖZENLİ PAKETLEME</span>
-            <span className="announcement-ikincil">GÜVENLİ ÖDEME</span>
+            {dil === "tr" && theme.announcement && <span>{theme.announcement}</span>}
+            <span className="announcement-ikincil">{t("ozenliPaketleme")}</span>
+            <span className="announcement-ikincil">{t("guvenliOdemeSerit")}</span>
           </div>
           <div className="announcement-group" aria-hidden="true">
-            {theme.announcement && <span>{theme.announcement}</span>}
-            <span className="announcement-ikincil">ÖZENLİ PAKETLEME</span>
-            <span className="announcement-ikincil">GÜVENLİ ÖDEME</span>
+            {dil === "tr" && theme.announcement && <span>{theme.announcement}</span>}
+            <span className="announcement-ikincil">{t("ozenliPaketleme")}</span>
+            <span className="announcement-ikincil">{t("guvenliOdemeSerit")}</span>
           </div>
         </div>
       </div>

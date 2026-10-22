@@ -34,6 +34,8 @@ export const SOZLUK = {
      sabitti ve kart "Beden seç" diyordu (22.10.2026, canlıda
      görüldü) — İngilizce bir sayfanın yarısını Türkçe bırakmak. */
   bedenSecKisa: ["Beden seç", "Choose size"],
+  ozenliPaketleme: ["ÖZENLİ PAKETLEME", "CAREFUL PACKAGING"],
+  guvenliOdemeSerit: ["GÜVENLİ ÖDEME", "SECURE PAYMENT"],
   ekleniyor: ["Ekleniyor…", "Adding…"],
   stoktaYok: ["Şu anda stokta yok", "Currently out of stock"],
   secenekYuklenemedi: ["Seçenekler yüklenemedi", "Options unavailable"],
