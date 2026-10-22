@@ -192,3 +192,36 @@ export function Fiyat({ lira }: { lira: number }) {
   const { yaz } = useParaBirimi();
   return <>{yaz(lira)}</>;
 }
+
+/**
+ * Arayüz metni, seçili dilde — `Fiyat`'ın metin karşılığı.
+ *
+ * Sipariş onayı, ödeme hatası ve sipariş takibi SUNUCU sayfaları:
+ * kancayı doğrudan çağıramıyorlar. Sunucu Türkçe basıyor, İngilizce
+ * seçiliyse tarayıcı çeviriyor — aynı gerekçe, aynı bedel (sayfa bir
+ * an Türkçe görünüp dönüyor; rota önbelleği bozulmuyor).
+ */
+export function Metin({ anahtar }: { anahtar: SozlukAnahtari }) {
+  const { t } = useParaBirimi();
+  return <>{t(anahtar)}</>;
+}
+
+/*
+  Tarih, seçili dilde. Dilim her iki dilde de TÜRKİYE: sipariş Türkiye
+  saatiyle kaydediliyor ve müşteriye gönderilen e-postalar da o saati
+  yazıyor; yurtdışındaki müşterinin kendi saatine çevirmek, aynı
+  siparişe iki ayrı zaman yazmak olurdu.
+*/
+const TARIH_BICIMI = {
+  timeZone: "Europe/Istanbul",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+} as const;
+
+export function Tarih({ iso }: { iso: string }) {
+  const { dil } = useParaBirimi();
+  return <>{new Intl.DateTimeFormat(dil === "en" ? "en-GB" : "tr-TR", TARIH_BICIMI).format(new Date(iso))}</>;
+}

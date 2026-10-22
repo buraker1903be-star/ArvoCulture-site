@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useParaBirimi } from "@/components/para-birimi";
 
 /**
  * Havale bilgileri: alıcı unvanı, banka ve IBAN, kopyala
@@ -31,6 +32,9 @@ export function BankDetails({
   children?: React.ReactNode;
 }) {
   const [copied, setCopied] = useState<string | null>(null);
+  /* İngilizce vitrinde etiketler de İngilizce (lib/sozluk); IBAN ve
+     banka adı veri, çevrilmiyor. */
+  const { t } = useParaBirimi();
 
   async function copy(label: string, value: string) {
     try {
@@ -49,7 +53,7 @@ export function BankDetails({
 
       <div className="pay-bank-row">
         <div>
-          <small>ALICI UNVANI</small>
+          <small>{t("aliciUnvani")}</small>
           <b>{seller.accountHolder}</b>
         </div>
         <button
@@ -57,13 +61,13 @@ export function BankDetails({
           className="linklike"
           onClick={() => copy("unvan", seller.accountHolder)}
         >
-          {copied === "unvan" ? "Kopyalandı ✓" : "Kopyala"}
+          {copied === "unvan" ? t("kopyalandi") : t("kopyala")}
         </button>
       </div>
 
       <div className="pay-bank-row">
         <div>
-          <small>BANKA</small>
+          <small>{t("banka")}</small>
           <b>{seller.bankName}</b>
         </div>
       </div>
@@ -78,7 +82,7 @@ export function BankDetails({
           className="linklike"
           onClick={() => copy("iban", seller.iban.replace(/\s/g, ""))}
         >
-          {copied === "iban" ? "Kopyalandı ✓" : "Kopyala"}
+          {copied === "iban" ? t("kopyalandi") : t("kopyala")}
         </button>
       </div>
 
@@ -89,10 +93,7 @@ export function BankDetails({
         <p className="hint">{seller.transferInstructions.trim()}</p>
       )}
 
-      <p className="hint">
-        IBAN kopyalandığında boşluklar kaldırılır. Havale ücreti bankanıza
-        aittir.
-      </p>
+      <p className="hint">{t("ibanNotu")}</p>
     </div>
   );
 }

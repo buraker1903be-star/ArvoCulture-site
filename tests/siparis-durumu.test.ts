@@ -63,3 +63,31 @@ test("toplam farkı eksi çıkarsa sıfır sayılır", () => {
   assert.equal(toplamFarki(10000, 0, 12000), 0);
   assert.equal(toplamFarki(null, null, null), 0);
 });
+
+/*
+  İNGİLİZCE VİTRİN (sipariş takibi): durum ve ödeme adları sözlükten
+  geliyor. Sözlüğün TÜRKÇE karşılığı eski metinle (durumMetni /
+  odemeMetni) aynı kalmalı — ayrışırsa Türkçe vitrinde durum adı
+  sessizce değişir.
+*/
+import { durumAnahtari, durumMetni, odemeAnahtari, odemeMetni } from "@/lib/siparis-durumu";
+import { ceviri } from "@/lib/sozluk";
+
+test("durum ve ödeme anahtarları eski Türkçe metinlerle aynı", () => {
+  for (const kod of ["pending", "confirmed", "processing", "fulfilled", "cancelled", "refunded"]) {
+    const anahtar = durumAnahtari(kod);
+    assert.ok(anahtar, `durum anahtarı yok: ${kod}`);
+    assert.equal(ceviri(anahtar, "tr"), durumMetni(kod), kod);
+    assert.notEqual(ceviri(anahtar, "en"), durumMetni(kod), `${kod} çevrilmemiş`);
+  }
+  for (const kod of ["pending", "authorized", "paid", "partially_refunded", "refunded", "failed"]) {
+    const anahtar = odemeAnahtari(kod);
+    assert.ok(anahtar, `ödeme anahtarı yok: ${kod}`);
+    assert.equal(ceviri(anahtar, "tr"), odemeMetni(kod), kod);
+  }
+});
+
+test("tanınmayan kod için anahtar yok (sayfa boş geçiyor)", () => {
+  assert.equal(durumAnahtari("awaiting_restock"), null);
+  assert.equal(odemeAnahtari("awaiting_restock"), null);
+});

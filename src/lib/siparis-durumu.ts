@@ -1,3 +1,4 @@
+import type { SozlukAnahtari } from "./sozluk";
 
 /*
   SİPARİŞ DURUM SAYFASININ TİPLERİ VE BİÇİMLENDİRMESİ.
@@ -139,6 +140,30 @@ const ODEME_METNI: Record<string, string> = {
 */
 export const durumMetni = (kod: string) => DURUM_METNI[kod] ?? null;
 export const odemeMetni = (kod: string) => ODEME_METNI[kod] ?? null;
+
+/*
+  Aynı kodların SÖZLÜK anahtarları (lib/sozluk): İngilizce vitrinde
+  sipariş takip sayfası durumu tarayıcıda çeviriyor. Tanınmayan kod
+  null — yukarıdaki metinlerle aynı kural, sayfa onu boş geçiyor.
+*/
+const DURUM_ANAHTARI: Record<string, SozlukAnahtari> = {
+  pending: "durumPending",
+  confirmed: "durumConfirmed",
+  processing: "durumProcessing",
+  fulfilled: "durumFulfilled",
+  cancelled: "durumCancelled",
+  refunded: "durumRefunded",
+};
+const ODEME_ANAHTARI: Record<string, SozlukAnahtari> = {
+  pending: "odemePending",
+  authorized: "odemeAuthorized",
+  paid: "odemePaid",
+  partially_refunded: "odemePartiallyRefunded",
+  refunded: "odemeRefunded",
+  failed: "odemeFailed",
+};
+export const durumAnahtari = (kod: string): SozlukAnahtari | null => DURUM_ANAHTARI[kod] ?? null;
+export const odemeAnahtari = (kod: string): SozlukAnahtari | null => ODEME_ANAHTARI[kod] ?? null;
 
 /*
   Tutarlar ArvoARC'tan KURUŞ olarak geliyor; vitrin TL gösteriyor.

@@ -4,12 +4,12 @@ import { notFound } from "next/navigation";
 import { ArcError } from "@/lib/arc";
 import { getSiparisDurumu } from "@/lib/siparis-durumu-oku";
 import {
-  durumMetni,
+  durumAnahtari,
   indirimTutari,
   liraYazisi,
-  odemeMetni,
-  tarihYazisi,
+  odemeAnahtari,
 } from "@/lib/siparis-durumu";
+import { Metin, Tarih } from "@/components/para-birimi";
 
 export const metadata = {
   title: "Sipariş durumu",
@@ -53,8 +53,10 @@ export default async function SiparisDurumSayfasi({
 
   if (!siparis) notFound();
 
-  const durum = durumMetni(siparis.durum);
-  const odeme = odemeMetni(siparis.odeme_durumu);
+  /* Durum ve ödeme metni sözlükten (İngilizce vitrinde tarayıcıda
+     çevriliyor); tanınmayan kod boş geçiliyor. */
+  const durum = durumAnahtari(siparis.durum);
+  const odeme = odemeAnahtari(siparis.odeme_durumu);
   const gonderiler = siparis.gonderiler.filter((g) => g.takip_no || g.firma);
 
   const indirim = indirimTutari(siparis);
@@ -62,28 +64,28 @@ export default async function SiparisDurumSayfasi({
   return (
     <main className="shell">
       <section className="panel order-status">
-        <p className="about-eyebrow">Sipariş durumu</p>
-        <h1>{durum ?? "Siparişiniz"}</h1>
+        <p className="about-eyebrow"><Metin anahtar="siparisDurumu" /></p>
+        <h1><Metin anahtar={durum ?? "siparisiniz"} /></h1>
 
         <p className="order-number">
-          <small>Sipariş numarası</small>
+          <small><Metin anahtar="siparisNumarasi" /></small>
           <b>{siparis.siparis_no}</b>
         </p>
 
         <dl className="order-status-meta">
           <div>
-            <dt>Sipariş tarihi</dt>
-            <dd>{tarihYazisi(siparis.tarih)}</dd>
+            <dt><Metin anahtar="siparisTarihi" /></dt>
+            <dd><Tarih iso={siparis.tarih} /></dd>
           </div>
           {odeme && (
             <div>
-              <dt>Ödeme</dt>
-              <dd>{odeme}</dd>
+              <dt><Metin anahtar="odeme" /></dt>
+              <dd><Metin anahtar={odeme} /></dd>
             </div>
           )}
           {siparis.musteri && (
             <div>
-              <dt>Alıcı</dt>
+              <dt><Metin anahtar="alici" /></dt>
               <dd>{siparis.musteri}</dd>
             </div>
           )}
@@ -91,7 +93,7 @@ export default async function SiparisDurumSayfasi({
 
         {gonderiler.length > 0 && (
           <div className="order-status-kargo">
-            <h2>Kargo</h2>
+            <h2><Metin anahtar="kargo" /></h2>
             {gonderiler.map((g, i) => (
               <p key={`${g.takip_no ?? "gonderi"}-${i}`}>
                 {g.firma && <strong>{g.firma}</strong>}
@@ -108,13 +110,13 @@ export default async function SiparisDurumSayfasi({
                     )}
                   </>
                 )}
-                {g.teslim && <> · Teslim edildi: {tarihYazisi(g.teslim)}</>}
+                {g.teslim && <> · <Metin anahtar="teslimEdildiTarih" />: <Tarih iso={g.teslim} /></>}
               </p>
             ))}
           </div>
         )}
 
-        <h2>Siparişiniz</h2>
+        <h2><Metin anahtar="siparisiniz" /></h2>
         <ul className="order-status-kalemler">
           {siparis.kalemler.map((k, i) => (
             <li key={`${k.sku ?? k.ad}-${i}`}>
@@ -128,22 +130,26 @@ export default async function SiparisDurumSayfasi({
         </ul>
 
         <dl className="order-status-toplam">
+          {/* Tutarlar LİRA, İngilizce vitrinde de: tahsilat lira
+              üzerinden yapıldı ve siparişin gerçek tutarı bu. Dolara
+              çevirmek, o günkü kurla ödenenden farklı bir sayı yazmak
+              olurdu. Ödeme adımı da bunu söylüyor (tahsilatLira). */}
           <div>
-            <dt>Ara toplam</dt>
+            <dt><Metin anahtar="araToplam" /></dt>
             <dd>{liraYazisi(siparis.ara_toplam)}</dd>
           </div>
           <div>
-            <dt>Kargo</dt>
-            <dd>{siparis.kargo > 0 ? liraYazisi(siparis.kargo) : "Ücretsiz"}</dd>
+            <dt><Metin anahtar="kargo" /></dt>
+            <dd>{siparis.kargo > 0 ? liraYazisi(siparis.kargo) : <Metin anahtar="ucretsiz" />}</dd>
           </div>
           {indirim > 0 && (
             <div>
-              <dt>İndirim</dt>
+              <dt><Metin anahtar="indirim" /></dt>
               <dd>−{liraYazisi(indirim)}</dd>
             </div>
           )}
           <div className="buyuk">
-            <dt>Toplam</dt>
+            <dt><Metin anahtar="toplam" /></dt>
             <dd>{liraYazisi(siparis.toplam)}</dd>
           </div>
           {/*
@@ -154,16 +160,15 @@ export default async function SiparisDurumSayfasi({
           */}
           {siparis.vergi > 0 && (
             <div className="dahil">
-              <dt>Fiyatlara dahil KDV</dt>
+              <dt><Metin anahtar="kdvDahil" /></dt>
               <dd>{liraYazisi(siparis.vergi)}</dd>
             </div>
           )}
         </dl>
 
         <p className="order-status-not">
-          Bu sayfa siparişinizin güncel durumunu gösterir; bağlantıyı
-          saklayabilirsiniz. Sorularınız için sipariş numaranızla{" "}
-          <Link href="/iletisim">bize ulaşın</Link>.
+          <Metin anahtar="takipSayfaNotu" />{" "}
+          <Link href="/iletisim"><Metin anahtar="bizeUlasinKucuk" /></Link>.
         </p>
       </section>
     </main>

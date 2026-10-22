@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { konagiAyarla } from "@/lib/konak";
+import { Metin } from "@/components/para-birimi";
 
 /*
   BU SAYFA DİNAMİK KALMALI.
@@ -38,28 +39,27 @@ export default async function OrderFailed({
   return (
     <main className="shell">
       <section className="panel about-hero order-result">
-        <p className="about-eyebrow">Ödeme</p>
-        <h1>Ödeme tamamlanamadı.</h1>
+        {/* Metinler <Metin> ile: sunucu Türkçe basıyor, İngilizce
+            vitrinde tarayıcı çeviriyor (components/para-birimi). */}
+        <p className="about-eyebrow"><Metin anahtar="odeme" /></p>
+        <h1><Metin anahtar="odemeTamamlanamadi" /></h1>
         <p className="about-lede">
-          İşlem sırasında bir sorun oluştu ve ödemeniz alınamadı. Kartınızdan
-          herhangi bir tutar çekilmediyse endişelenmeyin; provizyon alındıysa
-          bankanız tarafından iade edilir.
+          <Metin anahtar="odemeHataAciklama" />
         </p>
         {no && (
           <p className="order-number">
-            <small>İlgili sipariş numarası</small>
+            <small><Metin anahtar="ilgiliSiparisNo" /></small>
             <b>{no}</b>
           </p>
         )}
         <p>
-          Sepetiniz duruyor. Tekrar denemek isterseniz ödeme adımından devam
-          edebilirsiniz.
+          <Metin anahtar="sepetDuruyor" />
         </p>
         <div className="order-actions">
           <Link className="btn" href="/odeme">
-            Tekrar dene
+            <Metin anahtar="tekrarDene" />
           </Link>
-          <Link href="/iletisim">Yardım alın</Link>
+          <Link href="/iletisim"><Metin anahtar="yardimAlin" /></Link>
         </div>
       </section>
     </main>

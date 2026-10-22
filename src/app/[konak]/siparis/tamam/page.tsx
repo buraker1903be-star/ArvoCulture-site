@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BankDetails } from "@/components/bank-details";
 import { OrderCleanup } from "@/components/order-cleanup";
+import { Metin } from "@/components/para-birimi";
 import { getSellerBank } from "@/lib/seller-source";
 import { konagiAyarla } from "@/lib/konak";
 
@@ -57,22 +58,22 @@ export default async function OrderDone({
     <main className="shell">
       <OrderCleanup orderNumber={no} />
       <section className="panel about-hero order-result">
-        <p className="about-eyebrow">Teşekkür ederiz</p>
-        <h1>Siparişiniz alındı.</h1>
+        {/* Metinler <Metin> ile: sunucu Türkçe basıyor, İngilizce
+            vitrinde tarayıcı çeviriyor (components/para-birimi). */}
+        <p className="about-eyebrow"><Metin anahtar="tesekkurler" /></p>
+        <h1><Metin anahtar="siparisAlindiBaslik" /></h1>
 
         {/* Sipariş numarası künye etiketi ve başlık yazısıyla:
             müşterinin not alacağı tek bilgi bu. */}
         {no && (
           <p className="order-number">
-            <small>Sipariş numarası</small>
+            <small><Metin anahtar="siparisNumarasi" /></small>
             <b>{no}</b>
           </p>
         )}
 
         <p className="about-lede">
-          Ödemeniz onaylandığında sipariş özetiniz e-posta adresinize
-          gönderilecek. Siparişinizle ilgili sorularınız için sipariş
-          numaranızla bize ulaşabilirsiniz.
+          <Metin anahtar="siparisAlindiAciklama" />
         </p>
 
         {/*
@@ -82,18 +83,16 @@ export default async function OrderDone({
         {yontem === "havale" && havale && (
           <BankDetails seller={havale}>
             <p className="hint">
-              Aşağıdaki hesaba havale veya EFT yaptığınızda siparişiniz
-              hazırlanmaya başlanacak. Açıklama kısmına sipariş numaranızı
-              yazın.
+              <Metin anahtar="havaleTalimati" />
             </p>
           </BankDetails>
         )}
 
         <div className="order-actions">
           <Link className="btn" href="/koleksiyon/tumu">
-            Alışverişe devam et
+            <Metin anahtar="alisverisiSurdur" />
           </Link>
-          <Link href="/iletisim">Bize ulaşın</Link>
+          <Link href="/iletisim"><Metin anahtar="bizeUlasin" /></Link>
         </div>
       </section>
     </main>

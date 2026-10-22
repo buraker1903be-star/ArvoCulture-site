@@ -271,6 +271,71 @@ export const SOZLUK = {
     "Seçtiğiniz ülkeye henüz gönderim yapamıyoruz. Başka bir ülke seçebilir ya da bizimle iletişime geçebilirsiniz.",
     "We cannot ship to the country you selected yet. You can choose another country or contact us.",
   ],
+
+  /*
+    --- Sipariş sonrası: onay, ödeme hatası, sipariş takibi ---
+    Bu sayfalar SUNUCUDA çiziliyor; metinler <Metin> ile tarayıcıda
+    çevriliyor (components/para-birimi). Tutarlar burada da LİRA:
+    tahsilat lira üzerinden yapıldı, siparişin gerçek tutarı o.
+  */
+  tesekkurler: ["Teşekkür ederiz", "Thank you"],
+  siparisAlindiBaslik: ["Siparişiniz alındı.", "Your order has been received."],
+  siparisNumarasi: ["Sipariş numarası", "Order number"],
+  siparisAlindiAciklama: [
+    "Ödemeniz onaylandığında sipariş özetiniz e-posta adresinize gönderilecek. Siparişinizle ilgili sorularınız için sipariş numaranızla bize ulaşabilirsiniz.",
+    "Once your payment is confirmed, your order summary will be sent to your email address. For any questions about your order, contact us with your order number.",
+  ],
+  havaleTalimati: [
+    "Aşağıdaki hesaba havale veya EFT yaptığınızda siparişiniz hazırlanmaya başlanacak. Açıklama kısmına sipariş numaranızı yazın.",
+    "Your order will be prepared once you transfer the amount to the account below. Please write your order number in the transfer description.",
+  ],
+  bizeUlasin: ["Bize ulaşın", "Contact us"],
+  odemeTamamlanamadi: ["Ödeme tamamlanamadı.", "Payment could not be completed."],
+  odemeHataAciklama: [
+    "İşlem sırasında bir sorun oluştu ve ödemeniz alınamadı. Kartınızdan herhangi bir tutar çekilmediyse endişelenmeyin; provizyon alındıysa bankanız tarafından iade edilir.",
+    "Something went wrong and your payment was not taken. If no amount was charged to your card, there is nothing to worry about; if a pre-authorisation was placed, your bank will release it.",
+  ],
+  ilgiliSiparisNo: ["İlgili sipariş numarası", "Related order number"],
+  sepetDuruyor: [
+    "Sepetiniz duruyor. Tekrar denemek isterseniz ödeme adımından devam edebilirsiniz.",
+    "Your cart is still saved. If you would like to try again, you can continue from the payment step.",
+  ],
+  tekrarDene: ["Tekrar dene", "Try again"],
+  yardimAlin: ["Yardım alın", "Get help"],
+  siparisDurumu: ["Sipariş durumu", "Order status"],
+  siparisiniz: ["Siparişiniz", "Your order"],
+  siparisTarihi: ["Sipariş tarihi", "Order date"],
+  alici: ["Alıcı", "Recipient"],
+  teslimEdildiTarih: ["Teslim edildi", "Delivered"],
+  kdvDahil: ["Fiyatlara dahil KDV", "VAT included in prices"],
+  takipSayfaNotu: [
+    "Bu sayfa siparişinizin güncel durumunu gösterir; bağlantıyı saklayabilirsiniz. Sorularınız için sipariş numaranızla",
+    "This page shows the current status of your order; you can keep the link. For questions, quote your order number and",
+  ],
+  bizeUlasinKucuk: ["bize ulaşın", "contact us"],
+  /* Sipariş ve ödeme durumları (lib/siparis-durumu'daki kodlar). */
+  durumPending: ["Siparişiniz alındı", "Order received"],
+  durumConfirmed: ["Siparişiniz onaylandı", "Order confirmed"],
+  durumProcessing: ["Hazırlanıyor", "Being prepared"],
+  durumFulfilled: ["Kargoya verildi", "Shipped"],
+  durumCancelled: ["İptal edildi", "Cancelled"],
+  durumRefunded: ["İade edildi", "Refunded"],
+  odemePending: ["Ödeme bekleniyor", "Awaiting payment"],
+  odemeAuthorized: ["Ödeme onaylandı", "Payment authorised"],
+  odemePaid: ["Ödendi", "Paid"],
+  odemePartiallyRefunded: ["Kısmen iade edildi", "Partially refunded"],
+  odemeRefunded: ["İade edildi", "Refunded"],
+  odemeFailed: ["Ödeme alınamadı", "Payment failed"],
+
+  /* --- Havale bilgisi kutusu (components/bank-details) --- */
+  aliciUnvani: ["ALICI UNVANI", "ACCOUNT HOLDER"],
+  banka: ["BANKA", "BANK"],
+  kopyala: ["Kopyala", "Copy"],
+  kopyalandi: ["Kopyalandı ✓", "Copied ✓"],
+  ibanNotu: [
+    "IBAN kopyalandığında boşluklar kaldırılır. Havale ücreti bankanıza aittir.",
+    "Spaces are removed when the IBAN is copied. Any transfer fee is charged by your bank.",
+  ],
 } as const;
 
 export type SozlukAnahtari = keyof typeof SOZLUK;
