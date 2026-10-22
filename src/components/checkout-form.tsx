@@ -26,7 +26,6 @@ import {
   malBedeli,
   shippingFor,
   transferDiscountFor,
-  yurtdisiKargo,
   yurtIci,
 } from "@/lib/order-quote";
 import type { Bolge } from "@/lib/kargo-bolgesi";
@@ -44,6 +43,15 @@ import { dolarYazisi } from "@/lib/dolar";
  */
 
 const ARC_URL = "https://arc.arvo-os.com";
+
+/** `api/storefront/kargo` yanıtı; tutarlar sent ve KURUŞ. */
+type KargoTeklifi = {
+  sent?: number | null;
+  kurus?: number | null;
+  agirlikGram?: number | null;
+  malKurus?: number | null;
+  engel?: string | null;
+};
 
 /*
   KARGO ENGELİNİN SEBEBİ SÖYLENİYOR.
@@ -269,21 +277,85 @@ export function CheckoutForm({
     içermemesi, ödeme özetinin ArvoARC'ın tahsil ettiğinden DÜŞÜK
     görünmesi olurdu.
   */
-  const mal = malBedeli(total, form.country, salesRules);
-  const yurtdisiSonuc = yurtDisi
-    ? yurtdisiKargo(mal, form.country, bolgeler, salesRules)
-    : null;
+  /*
+    YURTDIŞI KARGOSU ARVOARC'TAN SORULUYOR, BURADA HESAPLANMIYOR.
+
+    Vitrin bu ücreti kendisi hesaplıyordu ve bu, ArvoARC'ın SQL'deki
+    hesabının ikiziydi. Ağırlık kademesi eklenince ikizin bedeli
+    görünür oldu: sepetteki ürünlerin AĞIRLIĞI burada bilinmiyor —
+    ürün kartı ve sepet kalemi ağırlık taşımıyor — yani taban ücret
+    gösterilecek, ArvoARC kademeli ücreti tahsil edecekti. Müşteri
+    22 $ görüp 45 $ ödeyecekti; ekranla tahsilatın ayrışması bu
+    depodaki en pahalı kusur.
+
+    Mal bedelini de yanıttan alıyoruz: kâr paylı tutarı iki yerde
+    yuvarlamak kuruş farkı üretirdi. Yanıt gelmeden önce yerel
+    hesaba düşülüyor (aynı kural, lib/order-quote → malBedeli) ki
+    özet bir an boş kalmasın.
+  */
+  const [teklif, setTeklif] = useState<KargoTeklifi | null>(null);
+  const [teklifYukleniyor, setTeklifYukleniyor] = useState(false);
+  /* Sepetin kimliği: dizi her render'da yeni, SKU+adet aynı kalıyor. */
+  const sepetAnahtari = items.map((item) => `${item.sku ?? item.slug}x${item.quantity}`).join("|");
+
+  useEffect(() => {
+    let acik = true;
+
+    /*
+      DURUM DEĞİŞİKLİKLERİ ETKİNİN GÖVDESİNDE DEĞİL, bir söz
+      zincirinde: etki içinde eşzamanlı setState zincirleme render
+      riski sayılıyor (lint react-hooks). Bu depoda aynı kalıp para
+      birimi sağlayıcısında da böyle çözüldü.
+    */
+    if (yurtIci(form.country) || items.length === 0) {
+      void Promise.resolve().then(() => {
+        if (acik) setTeklif(null);
+      });
+      return () => {
+        acik = false;
+      };
+    }
+
+    void Promise.resolve().then(() => {
+      if (acik) setTeklifYukleniyor(true);
+    });
+
+    fetch(`${ARC_URL}/api/storefront/kargo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        country: form.country,
+        items: items.map((item) => ({ sku: item.sku ?? item.slug, quantity: item.quantity })),
+      }),
+    })
+      .then((yanit) => yanit.json())
+      .then((veri: KargoTeklifi) => {
+        if (acik) setTeklif(veri);
+      })
+      .catch(() => {
+        /* Bağlantı kurulamadıysa SIFIR KARGO GÖSTERİLMİYOR: engel
+           yazılıyor ve sipariş durduruluyor. Sıfır göstermek o
+           siparişin maliyetini üstlenmek olurdu. */
+        if (acik) setTeklif({ engel: "kur" });
+      })
+      .finally(() => {
+        if (acik) setTeklifYukleniyor(false);
+      });
+    return () => {
+      acik = false;
+    };
+    /* eslint-disable-next-line react-hooks/exhaustive-deps -- sepet kimliği diziyi temsil ediyor */
+  }, [form.country, sepetAnahtari, items.length]);
+
+  const mal =
+    teklif?.malKurus != null ? teklif.malKurus / 100 : malBedeli(total, form.country, salesRules);
   /* Engel varsa sipariş hiç geçmiyor; sebebi aşağıda yazıyor. */
-  const kargoEngeli =
-    yurtdisiSonuc && "engel" in yurtdisiSonuc ? yurtdisiSonuc.engel : null;
+  const kargoEngeli = (teklif?.engel ?? null) as "mod" | "kur" | "bolge" | null;
 
   // Ücretsiz kargo kuponu kargoyu sıfırlar; eşik indirim öncesi ara toplam.
-  const shipping =
-    yurtdisiSonuc && "tl" in yurtdisiSonuc
-      ? yurtdisiSonuc.tl
-      : yurtDisi
-        ? 0
-        : shippingFor(total, appliedCoupon?.ok === true && appliedCoupon.freeShipping, salesRules);
+  const shipping = yurtDisi
+    ? (teklif?.kurus ?? 0) / 100
+    : shippingFor(total, appliedCoupon?.ok === true && appliedCoupon.freeShipping, salesRules);
   const grand = mal + shipping;
 
   /*
@@ -924,9 +996,11 @@ export function CheckoutForm({
               <dd>
                 {kargoEngeli
                   ? "—"
-                  : shipping === 0
-                    ? t("ucretsiz")
-                    : formatPrice(shipping)}
+                  : yurtDisi && teklifYukleniyor
+                    ? t("kontrolEdiliyor")
+                    : shipping === 0
+                      ? t("ucretsiz")
+                      : formatPrice(shipping)}
               </dd>
             </div>
             {appliedCoupon?.ok && (

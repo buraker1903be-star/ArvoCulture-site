@@ -48,27 +48,21 @@ export function bolgeBul(
   return sirali.find((b) => b.countries.length === 0) ?? null;
 }
 
-/**
- * Kargo ücreti (sent).
- *
- * BÖLGE BULUNAMAZSA `null` — sıfır DEĞİL. Sıfır "kargo ücretsiz"
- * demek olurdu; tarifesi tanımlanmamış bir ülkeye bedava kargo
- * sözü vermek, o siparişin maliyetini üstlenmek demek. Çağıran
- * taraf null görünce o ülkeye satış yapmıyor.
- */
-export function kargoSenti(
-  bolgeler: Bolge[],
-  ulkeKodu: string | null | undefined,
-  sepetSenti: number,
-): number | null {
-  const bolge = bolgeBul(bolgeler, ulkeKodu);
-  if (!bolge) return null;
+/*
+  ÜCRET HESABI BURADA DEĞİL.
 
-  if (bolge.free_over_cents > 0 && sepetSenti >= bolge.free_over_cents) {
-    return 0;
-  }
-  return bolge.fee_cents;
-}
+  `kargoSenti()` buradaydı ve ArvoARC'ın SQL'deki hesabının ikiziydi.
+  Ağırlık kademesi eklenince (ArvoARC 20261022191631) ikizin bedeli
+  görünür oldu: vitrin sepetteki ürünlerin AĞIRLIĞINI bilmiyor, yani
+  taban ücreti gösterecek, ArvoARC kademeli ücreti tahsil edecekti.
+  Ödeme adımı artık ücreti ArvoARC'tan soruyor
+  (`api/storefront/kargo`).
+
+  `bolgeBul` DURUYOR: ücret hesaplamıyor, "bu ülkenin bölgesi var mı"
+  ve "örnek ücret kaç" sorularını yanıtlıyor (İngilizce ana sayfadaki
+  "Shipping from $22" satırı ve ülke seçeneği). O satırda "from"
+  yazması ağırlık kademesiyle de doğru: taban ücret bir ALT SINIR.
+*/
 
 /** `arc_storefront_shipping_zones` satırı (sent alanları metin gelebilir). */
 export type BolgeSatiri = {

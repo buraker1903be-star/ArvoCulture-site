@@ -1,6 +1,5 @@
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "./shipping";
 import { SELLER } from "./seller";
-import { kargoSenti, type Bolge } from "./kargo-bolgesi";
 
 /*
   Sepet ve ödeme ekranındaki tutar hesapları — ArvoARC'ın aynası.
@@ -192,51 +191,26 @@ export function dolarKarsiligi(lira: number, rules: SalesRules = DEFAULT_SALES_R
   return Math.ceil((lira / kur) * 100) / 100;
 }
 
-/**
- * Yurtdışı kargosu (TL) — ArvoARC'ın sipariş fonksiyonunun aynası.
- *
- * TL EŞİĞİ VE ÜCRETSİZ KARGO KUPONU BURADA HİÇ GEÇMİYOR: ikisi de
- * yurt içi maliyetine göre konmuş sözler ve yurtdışı tarifesi onun
- * on katı. ArvoARC da aynı kuralı uyguluyor
- * (migration 20261018223636).
- *
- * ENGEL SEBEBİYLE DÖNÜYOR, boş tutarla değil: müşteriye "kargo
- * hesaplanamadı" demek yetmiyor — bu ülkeye hiç gönderilmiyorsa
- * başka bir ülke seçmesi, mod kapalıysa Türkçe vitrine dönmesi
- * gerekiyor. Sıfır dönmek ise "bedava kargo" sözü vermek olurdu.
- */
-export type YurtdisiKargo =
-  | { tl: number; usdSent: number }
-  | { engel: "mod" | "kur" | "bolge" };
+/*
+  YURTDIŞI KARGOSUNU VİTRİN ARTIK HESAPLAMIYOR, SORUYOR.
 
-export function yurtdisiKargo(
-  subtotal: number,
-  ulke: string,
-  bolgeler: Bolge[],
-  rules: SalesRules = DEFAULT_SALES_RULES,
-): YurtdisiKargo {
-  if (!rules.internationalEnabled) return { engel: "mod" };
+  Burada `yurtdisiKargo()` vardı: bölge seçimi, ağırlık kademesi ve
+  ücretsiz eşiği TypeScript'te yazılı ve ArvoARC'ın SQL'deki
+  hesabının ikiziydi. Ağırlık kademesi eklenince (ArvoARC migration
+  20261022191631) ikizin bedeli görünür oldu — vitrin sepetteki
+  ürünlerin AĞIRLIĞINI bilmiyor, yani taban ücreti gösterecek ve
+  ArvoARC kademeli ücreti tahsil edecekti: müşteri 22 $ görüp 45 $
+  ödeyecekti.
 
-  const kur = rules.usdRate;
-  if (!kur || kur <= 0) return { engel: "kur" };
+  Hesap artık tek yerde (`arc_kargo_senti`) ve ödeme adımı onu
+  ArvoARC'ın ucundan soruyor (`api/storefront/kargo`). İşlevi burada
+  BIRAKMADIM: duran ölü bir para kuralı, bir gün yeniden
+  çağrılmanın ve iki hesabın ayrışmasının en kolay yolu.
 
-  /*
-    EŞİK MÜŞTERİNİN GÖRDÜĞÜ dolar tutarıyla karşılaştırılıyor.
-
-    GELEN `subtotal` KÂR PAYINI ZATEN İÇERİYOR (çağıran `malBedeli`
-    ile veriyor), bu yüzden çevrimde kâr payı uygulanmıyor —
-    uygulansaydı iki kez işler ve eşik müşterinin gördüğünden ÖNCE
-    aşılırdı. ArvoARC'ta aynı düzeltme 20261022190527'de yapıldı.
-  */
-  const dolarSepet = dolarKarsiligi(subtotal, rules);
-  if (dolarSepet === null) return { engel: "kur" };
-
-  const sent = kargoSenti(bolgeler, ulke, Math.round(dolarSepet * 100));
-  if (sent === null) return { engel: "bolge" };
-
-  /* Sent × kur = kuruş: (USD×100) × (TL/USD) = TL×100. */
-  return { tl: Math.round(sent * kur) / 100, usdSent: sent };
-}
+  `malBedeli` ve `dolarKarsiligi` duruyor: ilki ürün kartıyla aynı
+  kuralı taşıyor (kâr payı yurtdışı fiyatının içinde), ikincisi
+  gösterimi tahsilata bağlıyor.
+*/
 
 /** Ücretsiz kargoya kalan tutar (TL). Kargo zaten ücretsizse 0. */
 export function amountToFreeShipping(
