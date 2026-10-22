@@ -70,17 +70,33 @@ test("toplam farkı eksi çıkarsa sıfır sayılır", () => {
   odemeMetni) aynı kalmalı — ayrışırsa Türkçe vitrinde durum adı
   sessizce değişir.
 */
-import { durumAnahtari, durumMetni, odemeAnahtari, odemeMetni } from "@/lib/siparis-durumu";
+import {
+  DURUM_KODLARI,
+  durumAnahtari,
+  durumMetni,
+  ODEME_KODLARI,
+  odemeAnahtari,
+  odemeMetni,
+} from "@/lib/siparis-durumu";
 import { ceviri } from "@/lib/sozluk";
 
 test("durum ve ödeme anahtarları eski Türkçe metinlerle aynı", () => {
-  for (const kod of ["pending", "confirmed", "processing", "fulfilled", "cancelled", "refunded"]) {
+  /*
+    KOD LİSTESİ TÜRKÇE TABLODAN OKUNUYOR, elle yazılmıyor: elle
+    yazılı bir listede yeni bir durum kodu eklenip sözlük anahtarı
+    atlanırsa İngilizce vitrin o durumu sessizce boş geçer ve test
+    yeşil kalır.
+  */
+  assert.ok(DURUM_KODLARI.length >= 6);
+  assert.ok(ODEME_KODLARI.length >= 6);
+
+  for (const kod of DURUM_KODLARI) {
     const anahtar = durumAnahtari(kod);
     assert.ok(anahtar, `durum anahtarı yok: ${kod}`);
     assert.equal(ceviri(anahtar, "tr"), durumMetni(kod), kod);
     assert.notEqual(ceviri(anahtar, "en"), durumMetni(kod), `${kod} çevrilmemiş`);
   }
-  for (const kod of ["pending", "authorized", "paid", "partially_refunded", "refunded", "failed"]) {
+  for (const kod of ODEME_KODLARI) {
     const anahtar = odemeAnahtari(kod);
     assert.ok(anahtar, `ödeme anahtarı yok: ${kod}`);
     assert.equal(ceviri(anahtar, "tr"), odemeMetni(kod), kod);

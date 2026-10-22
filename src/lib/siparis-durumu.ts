@@ -166,6 +166,19 @@ export const durumAnahtari = (kod: string): SozlukAnahtari | null => DURUM_ANAHT
 export const odemeAnahtari = (kod: string): SozlukAnahtari | null => ODEME_ANAHTARI[kod] ?? null;
 
 /*
+  TÜRKÇE LİSTE KODLARIN KAYNAĞI, test de onu okuyor.
+
+  Önceden testteki kod listesi ELLE yazılıydı: ArvoARC'a yeni bir
+  durum eklenip buradaki Türkçe metne yazılsa ama sözlük anahtarı
+  atlansa, İngilizce vitrin o durumu sessizce boş geçerdi ve test
+  yeşil kalırdı — listesinde o kod yok çünkü. Kapsam insan
+  hafızasına bırakılmıyor (aynı gerekçe ArvoARC'ın kiracı sızıntısı
+  ölçüm planında da var).
+*/
+export const DURUM_KODLARI = Object.keys(DURUM_METNI);
+export const ODEME_KODLARI = Object.keys(ODEME_METNI);
+
+/*
   Tutarlar ArvoARC'tan KURUŞ olarak geliyor; vitrin TL gösteriyor.
   Bu sınır bu depoda iki kez hata üretti, o yüzden çevrim tek yerde.
 */
