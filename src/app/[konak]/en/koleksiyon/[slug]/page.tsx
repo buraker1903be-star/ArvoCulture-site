@@ -38,22 +38,14 @@ export async function generateMetadata({
   if (!rules.internationalEnabled || !(rules.usdRate ?? 0)) return {};
 
   /*
-    BAŞLIK ŞİMDİLİK TÜRKÇE KOLEKSİYON ADI.
-
-    Koleksiyon adlarının İngilizcesi veritabanında var
-    (`arc_collections.title_en`, ArvoARC 20261022194731) ama vitrine
-    AÇILMADI: adı getiren `arc_storefront_collections` fonksiyonuna
-    sütun eklemek gerekiyor ve o fonksiyon başlıktaki menüyü de
-    besliyor — yani menü ve koleksiyon sayfası aynı turda
-    değişmeli. Ayrı bir artırım.
-
-    Yedek başlık "Koleksiyon" gibi tek tip bir şey DEĞİL: Türkçe
-    tarafta 118 sayfanın hepsi aynı başlığı taşıdığı için arama
-    sonucunda ayırt edilemiyorlardı; aynı kusuru İngilizcede
-    tekrarlamıyoruz.
+    BAŞLIK ÇEVİRİDEN, yoksa Türkçe adıyla. Yedek başlığı
+    "Collection" gibi tek tip bir şey yapmak, 118 sayfanın arama
+    sonucunda ayırt edilemez olması demekti — bu kusur Türkçe
+    tarafta bir kez yaşandı ve başlıkların koleksiyon adından
+    gelmesi o yüzden düzeltilmişti.
   */
   const koleksiyon = koleksiyonlar.find((item) => item.slug === slug);
-  const baslik = koleksiyon?.title;
+  const baslik = koleksiyon?.title_en || koleksiyon?.title;
 
   return {
     ...(baslik ? { title: baslik } : {}),

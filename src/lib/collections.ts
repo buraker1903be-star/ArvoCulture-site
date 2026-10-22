@@ -11,6 +11,14 @@ export type StorefrontCollection = {
   /** Ana kategori: Erkek, Kadın, Çocuk, Aksesuar. */
   parent: string;
   product_count: number;
+  /*
+    İNGİLİZCE BAŞLIK VE AÇIKLAMA. Çevirisi olmayan koleksiyonda
+    `null`: Türkçe başlık KOPYALANMIYOR, çünkü o zaman "çevirisi var
+    mı" sorusu yanıtlanamaz olurdu. Çağıran taraf `title_en ?? title`
+    ile düşüyor.
+  */
+  title_en: string | null;
+  description_en: string | null;
 };
 
 /**

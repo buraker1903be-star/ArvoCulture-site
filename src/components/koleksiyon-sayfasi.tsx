@@ -137,7 +137,18 @@ export async function KoleksiyonSayfasi({
   const exactCollection = collections.find(
     (collection) => collection.slug === slug,
   );
-  const label = exactCollection?.title ?? labels[slug] ?? "Tüm Ürünler";
+  /*
+    BAŞLIK İNGİLİZCE AĞAÇTA ÇEVİRİDEN. Çevirisi olmayan koleksiyon
+    Türkçe başlığıyla kalıyor: 118 koleksiyonun çevirisi kademeli
+    yürüyor ve yedek başlığı "Collection" gibi tek tip bir şey
+    yapmak, sayfaların arama sonucunda ayırt edilemez olması
+    demekti — bu kusur Türkçe tarafta bir kez yaşandı.
+  */
+  const label =
+    (dil === "en" ? exactCollection?.title_en : null) ??
+    exactCollection?.title ??
+    labels[slug] ??
+    (dil === "en" ? "All products" : "Tüm Ürünler");
 
   /*
     "Tüm Ürünler" kataloğun tamamını kapsar ve 3.400’ü aşkın ürün
@@ -325,7 +336,11 @@ export async function KoleksiyonSayfasi({
           {t("koleksiyonSeckisi").replace("{magaza}", (theme.store_name ?? "").toLocaleUpperCase("tr"))}
         </p>
         <h1>{label}</h1>
-        <p>{exactCollection?.description || t("koleksiyonAciklama")}</p>
+        <p>
+          {(dil === "en" ? exactCollection?.description_en : null) ||
+            exactCollection?.description ||
+            t("koleksiyonAciklama")}
+        </p>
       </section>
       <section className="panel">
         <CollectionFilters

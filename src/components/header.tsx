@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { asciiSlug } from "@/lib/categories";
 import { CartLink } from "./cart";
 import { ParaBirimiSecici } from "@/components/para-birimi";
 import type { StorefrontTheme } from "@/lib/storefront-theme";
 import type { StorefrontCollection } from "@/lib/collections";
+import { dilOneki, yoldanDil } from "@/lib/dil-onek";
 import { useLayerBack } from "@/lib/use-layer-back";
 import { StoreLogo } from "@/components/store-logo";
 import { SearchOverlay } from "@/components/search-overlay";
@@ -30,6 +32,29 @@ export function Header({
   supabaseUrl: string;
   supabaseKey: string;
 }) {
+  /*
+    DİL VE ÖNEK YOLDAN. Başlık düzende çiziliyor ve düzen bütün
+    rotalarda ortak — rotaya göre değişmesi için her sayfanın kendi
+    düzenini açması gerekirdi. İstemci bileşeni olduğu için yolu
+    kendisi okuyabiliyor (lib/dil-onek).
+
+    İngilizce ağaçtaki menü bağlantıları ağacın İÇİNDE kalmalı:
+    bir menü tıklamasının müşteriyi Türkçe sayfaya atması, ayrı
+    adres kurmanın bütün anlamını götürürdü.
+  */
+  const dil = yoldanDil(usePathname());
+  const onek = dilOneki(dil);
+  /*
+    GÖSTERİM İngilizce, EŞLEŞME Türkçe. Menünün gruplandırması ve
+    marka eşleşmesi Türkçe başlığa bakıyor ("Çok Satanlar",
+    cinsiyet öneki); İngilizce başlıkla eşleştirmek menünün yapısını
+    bozardı. O yüzden burada yalnızca YAZILAN ad değişiyor.
+
+    Çevirisi olmayan koleksiyon Türkçe adıyla kalıyor: 118
+    koleksiyonun çevirisi kademeli yürüyor.
+  */
+  const ad = (oge: { title: string; title_en?: string | null }) =>
+    dil === "en" ? (oge.title_en ?? oge.title) : oge.title;
   const [open, setOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const close = () => setOpen(false);
@@ -395,7 +420,7 @@ export function Header({
       </div>
       <header className="site-header">
         <Link
-          href="/"
+          href={onek || "/"}
           className="logo"
           aria-label={`${theme.store_name ?? "Mağaza"} ana sayfa`}
           onClick={close}
@@ -409,18 +434,16 @@ export function Header({
         <nav className="desktop-nav" aria-label="Ana menü">
           <div className="mega-menu menu-featured">
             <Link
-              href={
-                bestSeller
-                  ? `/koleksiyon/${bestSeller.slug}`
-                  : "/koleksiyon/tumu"
-              }
+              href={`${onek}${
+                bestSeller ? `/koleksiyon/${bestSeller.slug}` : "/koleksiyon/tumu"
+              }`}
             >
               Yeni &amp; Çok Satan
             </Link>
           </div>
           {navigation.map((menu) => (
             <div className="mega-menu" key={menu.title}>
-              <Link href={menu.href} className="mega-trigger">
+              <Link href={`${onek}${menu.href}`} className="mega-trigger">
                 {menu.title}
               </Link>
               <div
@@ -428,7 +451,7 @@ export function Header({
               >
                 <div className="mega-panel-head">
                   <p>{menu.title}</p>
-                  <Link href={menu.href} prefetch={false}>
+                  <Link href={`${onek}${menu.href}`} prefetch={false}>
                     Tümünü gör
                   </Link>
                 </div>
@@ -452,11 +475,11 @@ export function Header({
                           sunucudan isteniyordu. Tıklayınca yükleniyor.
                         */
                           <Link
-                            href={`/koleksiyon/${item.slug}`}
+                            href={`${onek}/koleksiyon/${item.slug}`}
                             key={item.slug}
                             prefetch={false}
                           >
-                            <b>{item.title}</b>
+                            <b>{ad(item)}</b>
                           </Link>
                         ))}
                       </div>
@@ -549,18 +572,16 @@ export function Header({
           */}
           <div className="mobile-featured-list">
             <Link
-              href={
-                bestSeller
-                  ? `/koleksiyon/${bestSeller.slug}`
-                  : "/koleksiyon/tumu"
-              }
+              href={`${onek}${
+                bestSeller ? `/koleksiyon/${bestSeller.slug}` : "/koleksiyon/tumu"
+              }`}
               className="mobile-featured"
               onClick={close}
             >
               Yeni &amp; Çok Satan <span aria-hidden="true">↗</span>
             </Link>
             <Link
-              href={offers ? `/koleksiyon/${offers.slug}` : "/koleksiyon/tumu"}
+              href={`${onek}${offers ? `/koleksiyon/${offers.slug}` : "/koleksiyon/tumu"}`}
               className="mobile-featured"
               onClick={close}
             >
@@ -582,7 +603,7 @@ export function Header({
                 {expanded && (
                   <div className="mobile-submenu">
                     <Link
-                      href={menu.href}
+                      href={`${onek}${menu.href}`}
                       className="mobile-submenu-all"
                       onClick={close}
                     >
@@ -600,7 +621,7 @@ export function Header({
                         <div className="mobile-chips">
                           {section.items.map((item) => (
                             <Link
-                              href={`/koleksiyon/${item.slug}`}
+                              href={`${onek}/koleksiyon/${item.slug}`}
                               key={item.slug}
                               onClick={close}
                             >
