@@ -1,6 +1,5 @@
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from "./shipping";
 import { SELLER } from "./seller";
-import { dolara } from "./dolar";
 import { kargoSenti, type Bolge } from "./kargo-bolgesi";
 
 /*
@@ -153,6 +152,47 @@ export function yurtIci(ulke: string | null | undefined): boolean {
 }
 
 /**
+ * Yurtdışı mal bedeli (TL) — kâr payı dahil.
+ *
+ * ARVOARC BUNU TAHSİL EDİYOR (migration 20261022190527): yurtdışı
+ * teslimatında kalemin birim fiyatı kâr payını içeriyor. Önceden kâr
+ * payı yalnızca GÖSTERİME uygulanıyordu; ekranda 1.000 TL'lik ürün
+ * 27,71 $ yazıyor, karttan 1.000 TL (20,53 $) çekiliyordu — kâr payı
+ * hiçbir şey kazandırmıyor, ekranla tahsilat %35 ayrışıyordu.
+ *
+ * Kural tek cümle: **gösterilen dolar = tahsil edilen TL ÷ kur.**
+ * Çevrimde kâr payı yok; kâr payı yurtdışı FİYATININ içinde. Ürün
+ * kartındaki dolar fiyatı (lib/dolar → `dolara`) kâr payını
+ * uyguluyor ve o rakam, buradaki TL'nin kura bölümüyle aynı.
+ *
+ * Yuvarlama ArvoARC'takiyle aynı yerde: KALEM bazında değil, burada
+ * sepet toplamında — vitrin kalem fiyatlarını zaten `dolara` ile
+ * kalem bazında gösteriyor ve ödeme özetindeki tek rakam toplam.
+ */
+export function malBedeli(
+  subtotal: number,
+  ulke: string,
+  rules: SalesRules = DEFAULT_SALES_RULES,
+): number {
+  if (yurtIci(ulke)) return subtotal;
+  const carpan = 1 + (rules.usdMarginPercent || 0) / 100;
+  return Math.round(toKurus(subtotal) * carpan) / 100;
+}
+
+/**
+ * TL tutarın dolar karşılığı — KÂR PAYI UYGULAMADAN.
+ *
+ * Ödeme özetindeki "≈ $X" satırı bunu kullanıyor: oradaki TL tutar
+ * yurtdışı siparişinde kâr payını ZATEN içeriyor ve `dolara` ile
+ * çevirmek onu iki kez uygulamak olurdu.
+ */
+export function dolarKarsiligi(lira: number, rules: SalesRules = DEFAULT_SALES_RULES): number | null {
+  const kur = rules.usdRate;
+  if (!kur || kur <= 0 || !Number.isFinite(lira)) return null;
+  return Math.ceil((lira / kur) * 100) / 100;
+}
+
+/**
  * Yurtdışı kargosu (TL) — ArvoARC'ın sipariş fonksiyonunun aynası.
  *
  * TL EŞİĞİ VE ÜCRETSİZ KARGO KUPONU BURADA HİÇ GEÇMİYOR: ikisi de
@@ -180,11 +220,15 @@ export function yurtdisiKargo(
   const kur = rules.usdRate;
   if (!kur || kur <= 0) return { engel: "kur" };
 
-  /* Eşik MÜŞTERİNİN GÖRDÜĞÜ dolar tutarıyla karşılaştırılıyor, yani
-     kâr payı dahil — ArvoARC da öyle. Ham tutarla karşılaştırmak,
-     sepette "100,80 $" yazan müşteriye eşiği 100 $ olan bölgede
-     kargo ücreti göstermek olurdu. */
-  const dolarSepet = dolara(subtotal, kur, rules.usdMarginPercent);
+  /*
+    EŞİK MÜŞTERİNİN GÖRDÜĞÜ dolar tutarıyla karşılaştırılıyor.
+
+    GELEN `subtotal` KÂR PAYINI ZATEN İÇERİYOR (çağıran `malBedeli`
+    ile veriyor), bu yüzden çevrimde kâr payı uygulanmıyor —
+    uygulansaydı iki kez işler ve eşik müşterinin gördüğünden ÖNCE
+    aşılırdı. ArvoARC'ta aynı düzeltme 20261022190527'de yapıldı.
+  */
+  const dolarSepet = dolarKarsiligi(subtotal, rules);
   if (dolarSepet === null) return { engel: "kur" };
 
   const sent = kargoSenti(bolgeler, ulke, Math.round(dolarSepet * 100));

@@ -22,6 +22,8 @@ import type { Address } from "@/components/address-book";
 import { CheckoutSteps } from "@/components/checkout-steps";
 import {
   amountToFreeShipping,
+  dolarKarsiligi,
+  malBedeli,
   shippingFor,
   transferDiscountFor,
   yurtdisiKargo,
@@ -30,7 +32,7 @@ import {
 import type { Bolge } from "@/lib/kargo-bolgesi";
 import { teslimatUlkeleri, ulkeAdi } from "@/lib/ulkeler";
 import { useParaBirimi } from "@/components/para-birimi";
-import { dolara, dolarYazisi } from "@/lib/dolar";
+import { dolarYazisi } from "@/lib/dolar";
 
 /**
  * Ödeme sayfası.
@@ -259,8 +261,17 @@ export function CheckoutForm({
     ekranda görünen rakam tahsil edilenle aynı olmak zorunda.
   */
   const yurtDisi = !yurtIci(form.country);
+  /*
+    MAL BEDELİ YURTDIŞINDA KÂR PAYLI — ve ArvoARC bunu TAHSİL EDİYOR
+    (migration 20261022190527). Önceden kâr payı yalnızca gösterime
+    uygulanıyordu: ürün kartında 27,71 $ yazıyor, karttan 20,53 $
+    karşılığı TL çekiliyordu. Buradaki TL rakamın kâr payını
+    içermemesi, ödeme özetinin ArvoARC'ın tahsil ettiğinden DÜŞÜK
+    görünmesi olurdu.
+  */
+  const mal = malBedeli(total, form.country, salesRules);
   const yurtdisiSonuc = yurtDisi
-    ? yurtdisiKargo(total, form.country, bolgeler, salesRules)
+    ? yurtdisiKargo(mal, form.country, bolgeler, salesRules)
     : null;
   /* Engel varsa sipariş hiç geçmiyor; sebebi aşağıda yazıyor. */
   const kargoEngeli =
@@ -273,7 +284,7 @@ export function CheckoutForm({
       : yurtDisi
         ? 0
         : shippingFor(total, appliedCoupon?.ok === true && appliedCoupon.freeShipping, salesRules);
-  const grand = total + shipping;
+  const grand = mal + shipping;
 
   /*
     TELEFON BİÇİMİ DE ÜLKEYE GÖRE. Türkiye biçimlendirmesi baştaki
@@ -307,7 +318,9 @@ export function CheckoutForm({
     liraya yuvarlanıyordu. Kod indirimi burada bilerek düşülmüyor
     (aşağıdaki not); kodsuz siparişte gösterilen tutar ödenenle birebir.
   */
-  const availableTransferDiscount = transferDiscountFor(total, salesRules.transferDiscountPercent);
+  /* Havale indiriminin tabanı MAL BEDELİ (kargo girmiyor); yurtdışında
+     o bedel kâr paylı, yani indirim de ödenen tutara göre. */
+  const availableTransferDiscount = transferDiscountFor(mal, salesRules.transferDiscountPercent);
   const transferDiscount = useTransfer ? availableTransferDiscount : 0;
   const payable = grand - transferDiscount;
 
@@ -904,7 +917,7 @@ export function CheckoutForm({
           <dl className="summary-totals">
             <div>
               <dt>{t("araToplam")}</dt>
-              <dd>{formatPrice(total)}</dd>
+              <dd>{formatPrice(mal)}</dd>
             </div>
             <div>
               <dt>{t("kargo")}</dt>
@@ -957,13 +970,16 @@ export function CheckoutForm({
             dolandırıldığını sanabilirdi — ekranda $ yazıp lira
             çekmek, söylenmediğinde sessiz bir sapma.
           */}
-          {paraBirimi === "USD" && dolara(payable, salesRules.usdRate, salesRules.usdMarginPercent) !== null && (
+          {/*
+            ÇEVRİMDE KÂR PAYI YOK: yukarıdaki TL tutar yurtdışı
+            siparişinde kâr payını ZATEN içeriyor ve `dolara` ile
+            çevirmek onu iki kez uygulardı. Kural tek cümle:
+            gösterilen dolar = tahsil edilen TL ÷ kur.
+          */}
+          {paraBirimi === "USD" && dolarKarsiligi(payable, salesRules) !== null && (
             <p className="hint">
-              Yaklaşık{" "}
-              {dolarYazisi(
-                dolara(payable, salesRules.usdRate, salesRules.usdMarginPercent)!,
-              )}
-              . Tahsilat Türk lirası olarak yapılır.
+              {t("yaklasik")} {dolarYazisi(dolarKarsiligi(payable, salesRules)!)}.{" "}
+              {t("tahsilatLira")}
             </p>
           )}
 

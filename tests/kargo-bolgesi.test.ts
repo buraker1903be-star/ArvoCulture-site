@@ -9,7 +9,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { bolgeBul, kargoSenti, toBolgeler } from "@/lib/kargo-bolgesi";
-import { yurtIci, yurtdisiKargo, DEFAULT_SALES_RULES } from "@/lib/order-quote";
+import {
+  dolarKarsiligi,
+  malBedeli,
+  yurtIci,
+  yurtdisiKargo,
+  DEFAULT_SALES_RULES,
+} from "@/lib/order-quote";
 
 const DUNYA = { label: "Dünya", countries: [], fee_cents: 2500, free_over_cents: 0, sira: 9 };
 const AVRUPA = { label: "Avrupa", countries: ["DE", "FR"], fee_cents: 1500, free_over_cents: 0, sira: 0 };
@@ -41,16 +47,21 @@ test("bölge eşiği sent cinsinden karşılaştırılıyor", () => {
   assert.equal(kargoSenti([ESIKLI], "US", 10_000), 0);
 });
 
-test("eşik MÜŞTERİNİN GÖRDÜĞÜ dolar tutarıyla karşılaştırılıyor", () => {
+test("eşik GELEN TUTARIN dolar karşılığıyla karşılaştırılıyor", () => {
   /*
-    İki sepet de ham karşılıkta eşiğin ALTINDA (95,00 ve 96,00 $) ama
-    kâr payıyla biri üstüne çıkıyor:
-      3.800 TL → 95,00 × 1,05 =  99,75 $  → kargo var
-      3.840 TL → 96,00 × 1,05 = 100,80 $  → kargo yok
-    ArvoARC'ta aynı iki rakam ölçülüyor.
+    SÖZLEŞME DEĞİŞTİ (22.10.2026): kâr payını artık ÇAĞIRAN uyguluyor
+    (`malBedeli`) ve bu işlev çevrimde kâr payı kullanmıyor. Önceden
+    ham tutar veriliyor ve kâr payı burada uygulanıyordu; ArvoARC kâr
+    payını tahsil etmeye başlayınca (20261022190527) aynı çarpım iki
+    yerde olurdu.
+
+    Ham karşılıkla eşik: 3.800 TL ÷ 40 = 95 $ < 100 → kargo var.
+    Kâr paylı tutarla aynı sepet: aşağıdaki "iki kez uygulamıyor"
+    testinde ölçülüyor.
   */
   assert.deepEqual(yurtdisiKargo(3800, "US", [ESIKLI], KURALLAR), { tl: 1000, usdSent: 2500 });
-  assert.deepEqual(yurtdisiKargo(3840, "US", [ESIKLI], KURALLAR), { tl: 0, usdSent: 0 });
+  /* 4.000 TL ÷ 40 = 100 $: eşiğe tam oturuyor, kargo bedava. */
+  assert.deepEqual(yurtdisiKargo(4000, "US", [ESIKLI], KURALLAR), { tl: 0, usdSent: 0 });
 });
 
 test("tarife kurla liraya çevriliyor", () => {
@@ -103,4 +114,63 @@ test("satırlardaki metin sayılar bölgeye çevriliyor", () => {
   assert.deepEqual(bolgeler, [
     { label: "Dünya", countries: [], fee_cents: 2500, free_over_cents: 0, sira: 9 },
   ]);
+});
+
+/*
+  KÂR PAYI TAHSİL EDİLİYOR — ArvoARC'ın aynası (20261022190527).
+
+  Kâr payı yalnızca gösterime uygulanıyordu: ürün kartında 1.000 TL'lik
+  ürün 27,71 $ yazıyor, karttan 1.000 TL (20,53 $) çekiliyordu. Kâr
+  payı hiçbir şey kazandırmıyor, üstelik ekranla tahsilat %35
+  ayrışıyordu — bu depoda "en pahalı kusur" diye yazılı olan şey.
+
+  Ölçüt tek cümle: gösterilen dolar = tahsil edilen TL ÷ kur.
+*/
+test("mal bedeli yurtdışında kâr paylı, yurt içinde değil", () => {
+  assert.equal(malBedeli(1000, "US", KURALLAR), 1050);
+  assert.equal(malBedeli(1000, "TR", KURALLAR), 1000);
+  /* "Türkiye" yazımı da yurt içi. */
+  assert.equal(malBedeli(1000, "Türkiye", KURALLAR), 1000);
+  /* Kâr payı sıfırsa fark yok. */
+  assert.equal(malBedeli(1000, "US", { ...KURALLAR, usdMarginPercent: 0 }), 1000);
+});
+
+test("dolar karşılığı çevrimde kâr payı UYGULAMIYOR", () => {
+  /*
+    Gelen TL tutar kâr payını zaten içeriyor; `dolara` ile çevirmek
+    onu iki kez uygulardı (ödeme özetindeki "≈ $X" satırı bu yüzden
+    ayrı bir işlev kullanıyor).
+  */
+  assert.equal(dolarKarsiligi(1050, KURALLAR), 26.25);
+  assert.equal(dolarKarsiligi(1000, { ...KURALLAR, usdRate: null }), null);
+});
+
+test("ArvoARC ile aynı rakam: 3.800 TL sepet, kur 40, kâr %5", () => {
+  /*
+    ArvoARC'ın veritabanı testiyle (tests/db/yurtdisi-kargo) AYNI
+    sayılar: mal 399.000 kuruş, kargo 100.000, toplam 499.000 ve
+    124,75 $. İki taraf ayrışırsa müşteri ödemede başka tutar görür.
+  */
+  const mal = malBedeli(3800, "US", KURALLAR);
+  assert.equal(mal, 3990);
+  const kargo = yurtdisiKargo(mal, "US", [DUNYA], KURALLAR);
+  assert.deepEqual(kargo, { tl: 1000, usdSent: 2500 });
+  assert.equal(dolarKarsiligi(mal + 1000, KURALLAR), 124.75);
+});
+
+test("bölge eşiği kâr payını iki kez uygulamıyor", () => {
+  /*
+    Eşik 100 $. Kâr paylı mal 3.990 TL → 99,75 $, eşiğin ALTINDA.
+    Eski kod burada bir kez daha 1,05 ile çarpıyordu (104,74 $) ve
+    eşiği müşterinin gördüğünden ÖNCE aşıyordu.
+  */
+  assert.deepEqual(yurtdisiKargo(malBedeli(3800, "US", KURALLAR), "US", [ESIKLI], KURALLAR), {
+    tl: 1000,
+    usdSent: 2500,
+  });
+  /* 3.840 × 1,05 = 4.032 TL → 100,80 $: eşiğin üstünde. */
+  assert.deepEqual(yurtdisiKargo(malBedeli(3840, "US", KURALLAR), "US", [ESIKLI], KURALLAR), {
+    tl: 0,
+    usdSent: 0,
+  });
 });
