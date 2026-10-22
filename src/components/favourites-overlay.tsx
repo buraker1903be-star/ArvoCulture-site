@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useParaBirimi } from "@/components/para-birimi";
 import { Layer } from "@/components/layer";
 import { FavouritesView } from "@/components/favourites-view";
 
@@ -20,6 +21,7 @@ import { FavouritesView } from "@/components/favourites-view";
  * adresten açılabiliyor.
  */
 export function FavouritesOverlay() {
+  const { t } = useParaBirimi();
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
 
@@ -30,18 +32,18 @@ export function FavouritesOverlay() {
         className="header-action-link"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        aria-label="Beğendiklerim"
+        aria-label={t("begendiklerim")}
       >
         <svg aria-hidden="true" viewBox="0 0 24 24">
           <path d="M12 20.4 4.6 13a4.6 4.6 0 0 1 6.5-6.5l.9.9.9-.9A4.6 4.6 0 0 1 19.4 13z" />
         </svg>
-        <span>Beğendiklerim</span>
+        <span>{t("begendiklerim")}</span>
       </button>
 
       <Layer
         open={open}
         onClose={close}
-        label="Beğendiklerim"
+        label={t("begendiklerim")}
         head={
           <div className="layer-title">
             <h2>Beğendiklerim</h2>

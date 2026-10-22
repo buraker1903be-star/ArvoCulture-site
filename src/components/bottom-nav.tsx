@@ -17,27 +17,27 @@ import { CartContext } from "@/components/cart";
  * Yalnızca mobilde görünür; masaüstünde CSS ile gizlenir.
  */
 const TABS = [
-  { href: "/", label: "Ana sayfa", icon: "home", event: null },
+  { href: "/", label: "anaSayfaEtiketi", icon: "home", event: null },
   /*
     "Ara" da gezinmiyor: başlıktaki arama katmanını açıyor (menü ve
     sepet gibi). Telefonda arama sayfasına gitmek, müşterinin
     baktığı listeyi kaybetmesi demekti.
   */
-  { href: null, label: "Ara", icon: "search", event: "arvo:search" },
+  { href: null, label: "aramaEtiketi", icon: "search", event: "arvo:search" },
   /*
     "Katalog" gezinmez, kategori menüsünü açar. Etiket "Menü"ydü;
     müşteri için belirsizdi — uygulamalarda "Menü" genelde ayarlar
     ya da hesap demek. Burada açılan şey ürün ağacı.
   */
-  { href: null, label: "Katalog", icon: "menu", event: "arvo:menu" },
+  { href: null, label: "katalogEtiketi", icon: "menu", event: "arvo:menu" },
   /*
     Sepet de gezinmiyor: çekmeceyi açıyor. Telefonda sepete bakmak
     için sayfadan çıkmak, alışverişin akışını kesiyordu — müşteri
     baktığı ürünü kaybediyor ve geri tuşuyla dönmek zorunda
     kalıyordu. Çekmecede "Sepete git" bağlantısı duruyor.
   */
-  { href: null, label: "Sepet", icon: "bag", event: "arvo:cart" },
-  { href: "/hesap", label: "Hesabım", icon: "user", event: null },
+  { href: null, label: "sepetEtiketi", icon: "bag", event: "arvo:cart" },
+  { href: "/hesap", label: "hesabim", icon: "user", event: null },
 ] as const;
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -120,7 +120,7 @@ export function BottomNav() {
                   <em aria-hidden="true">{count > 9 ? "9+" : count}</em>
                 )}
               </span>
-              <small>{tab.label}</small>
+              <small>{t(tab.label)}</small>
             </button>
           );
         }
@@ -147,7 +147,7 @@ export function BottomNav() {
                 {ICONS[tab.icon]}
               </svg>
             </span>
-            <small>{tab.label}</small>
+            <small>{t(tab.label)}</small>
           </Link>
         );
       })}

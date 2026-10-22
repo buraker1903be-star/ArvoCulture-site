@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useParaBirimi } from "@/components/para-birimi";
 import { useFavourites } from "@/components/favourites";
 
 /**
@@ -32,16 +33,17 @@ export function FavouriteButton({
     "şu an ekledin" — o yüzden tıklamaya bağlı.
   */
   const [vurgu, setVurgu] = useState(false);
+  const { t } = useParaBirimi();
 
   return (
     <button
       type="button"
       className={`fav-button${vurgu ? " is-pop" : ""}`}
       aria-pressed={active}
-      aria-label={
-        active ? `${label} favorilerden çıkar` : `${label} favorilere ekle`
-      }
-      title={active ? "Favorilerden çıkar" : "Favorilere ekle"}
+      /* Etiket de dile bağlı: İngilizce sayfada ekran okuyucu
+         "… favorilere ekle" diyordu. */
+      aria-label={`${label} — ${active ? t("favorilerdenCikar") : t("favorilereEkle")}`}
+      title={active ? t("favorilerdenCikar") : t("favorilereEkle")}
       onClick={(event) => {
         // Kart bağlantısının içinde; tıklama ürüne gitmesin.
         event.preventDefault();

@@ -118,7 +118,9 @@ export function Altbilgi({
                       height={34}
                     />
                     <small>
-                      {t("etbisKayit")}\1{t("etbisAciklama")}
+                      {t("etbisKayit")}
+                      <br />
+                      {t("etbisAciklama")}
                     </small>
                   </span>
                   <span className="badge-card">
@@ -132,7 +134,9 @@ export function Altbilgi({
                       height={34}
                     />
                     <small>
-                      \1{t("lrIsOrtagi")}
+                      LR Health &amp; Beauty
+                      <br />
+                      {t("lrIsOrtagi")}
                     </small>
                   </span>
                 </div>

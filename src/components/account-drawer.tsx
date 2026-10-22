@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useParaBirimi } from "@/components/para-birimi";
 import { useLayerBack } from "@/lib/use-layer-back";
 
 /*
@@ -52,6 +53,7 @@ export function AccountDrawer({
   supabaseUrl: string;
   supabaseKey: string;
 }) {
+  const { t } = useParaBirimi();
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
   const kap = useRef<HTMLDivElement>(null);
@@ -91,17 +93,17 @@ export function AccountDrawer({
         onClick={() => setOpen((acik) => !acik)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label="Hesabım"
+        aria-label={t("hesabim")}
       >
         <svg aria-hidden="true" viewBox="0 0 24 24">
           <circle cx="12" cy="8.5" r="3.5" />
           <path d="M5 20c.7-3.7 3.5-5.5 7-5.5s6.3 1.8 7 5.5" />
         </svg>
-        <span>Hesabım</span>
+        <span>{t("hesabim")}</span>
       </button>
 
       {open && (
-        <div className="account-pop" role="dialog" aria-label="Hesabım">
+        <div className="account-pop" role="dialog" aria-label={t("hesabim")}>
           <AccountPanel
             supabaseUrl={supabaseUrl}
             supabaseKey={supabaseKey}

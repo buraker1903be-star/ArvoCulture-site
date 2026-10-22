@@ -43,6 +43,19 @@ export const SOZLUK = {
   */
   menuEtiketi: ["MENÜ", "MENU"],
   tumunuGor: ["Tümünü gör", "See all"],
+  /*
+    SİMGE VE ALT ÇUBUK ETİKETLERİ. Çoğu yalnızca ekran okuyucuya
+    görünüyor ve gözle fark edilmiyor — İngilizce sayfada aylarca
+    Türkçe kalabilirdi (23.10.2026'da canlıda DOM taranarak bulundu).
+  */
+  begendiklerim: ["Beğendiklerim", "Favourites"],
+  hesabim: ["Hesabım", "My account"],
+  katalogEtiketi: ["Katalog", "Catalogue"],
+  sepetEtiketi: ["Sepet", "Basket"],
+  anaSayfaEtiketi: ["Ana sayfa", "Home"],
+  aramaEtiketi: ["Arama", "Search"],
+  favorilereEkle: ["Favorilere ekle", "Add to favourites"],
+  favorilerdenCikar: ["Favorilerden çıkar", "Remove from favourites"],
   yeniCokSatan: ["Yeni & Çok Satan", "New & bestsellers"],
   /*
     HAKKIMIZDA VE SSS'İN YANSIZ VARSAYILANLARI.
