@@ -14,6 +14,7 @@ import {
   getStorefrontProducts,
 } from "@/lib/products";
 import { getBlockedProducts } from "@/lib/engelli-urunler";
+import { ingilizceBindir } from "@/lib/ingilizce-urunler";
 import { getShippingZones } from "@/lib/kargo-bolgeleri";
 import { getSalesRules } from "@/lib/store-settings";
 import { bolgeBul } from "@/lib/kargo-bolgesi";
@@ -144,6 +145,21 @@ export default async function IngilizceAnaSayfa({
 
   const yeni = stokta.slice(0, 10);
 
+  /*
+    İNGİLİZCE AD VE AÇIKLAMA BİNDİRİLİYOR — süzgeçten SONRA.
+
+    Önce bindirip sonra süzmek, gösterilmeyecek otuz ürünün çevirisini
+    de sormak olurdu; süzgeçten sonra listede en çok on kart var.
+
+    Çevirisi olmayan ürün Türkçe adıyla kalıyor: 3.400 ürünün çevirisi
+    kademeli yürüyor ve yarım çeviri, boş bir karttan iyi.
+  */
+  const [indirimliEn, onerilenEn, yeniEn] = await Promise.all([
+    ingilizceBindir(indirimli),
+    ingilizceBindir(onerilen),
+    ingilizceBindir(yeni),
+  ]);
+
   /* Kargo ücreti örneği: "öteki her yer" bölgesi müşterinin
      görebileceği en yüksek olasılık. Tarife yoksa rakam YAZILMIYOR —
      uydurma bir ücret, ödemede başka tutar görmek demek. */
@@ -254,7 +270,7 @@ export default async function IngilizceAnaSayfa({
             note="Current reductions available for international delivery."
             href="/koleksiyon/firsatlar"
             hrefLabel="See all"
-            products={indirimli}
+            products={indirimliEn}
             rail
           />
         </Reveal>
@@ -267,7 +283,7 @@ export default async function IngilizceAnaSayfa({
             note="The pieces our customers choose most often."
             href="/koleksiyon/tumu"
             hrefLabel="See all"
-            products={onerilen}
+            products={onerilenEn}
             rail
           />
         </Reveal>
@@ -280,7 +296,7 @@ export default async function IngilizceAnaSayfa({
             note="Recently added to the collection."
             href="/koleksiyon/tumu"
             hrefLabel="See all"
-            products={yeni}
+            products={yeniEn}
             rail
           />
         </Reveal>
