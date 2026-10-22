@@ -30,6 +30,11 @@ export const SOZLUK = {
   sepeteEkle: ["Sepete ekle", "Add to cart"],
   sepeteEklendi: ["Sepete eklendi", "Added to cart"],
   tukendi: ["Tükendi", "Sold out"],
+  /* Karttan hızlı ekleme: İngilizce sayfada bu üç metin Türkçe
+     sabitti ve kart "Beden seç" diyordu (22.10.2026, canlıda
+     görüldü) — İngilizce bir sayfanın yarısını Türkçe bırakmak. */
+  bedenSecKisa: ["Beden seç", "Choose size"],
+  ekleniyor: ["Ekleniyor…", "Adding…"],
   stoktaYok: ["Şu anda stokta yok", "Currently out of stock"],
   secenekYuklenemedi: ["Seçenekler yüklenemedi", "Options unavailable"],
   secenekYuklenemediAciklama: [

@@ -65,6 +65,31 @@ export function bolgeBul(
 */
 
 /** `arc_storefront_shipping_zones` satırı (sent alanları metin gelebilir). */
+/*
+  "SHIPPING FROM $X" İÇİN EN DÜŞÜK TABAN ÜCRET.
+
+  Önceden İngilizce ana sayfa "öteki her yer" bölgesini okuyup üstüne
+  KÂR PAYI da biniyordu: 45 $ × 1,35 = 60,75 $ ve sayfada
+  "Shipping from $60.75" yazıyordu. İki kez yanlıştı —
+
+  1. Kâr payı MAL BEDELİNİN içinde (ArvoARC kalem birim fiyatına
+     uyguluyor, 20261022190527); kargoya ikinci kez binmiyor. Canlı
+     teklif Japonya için tam 45,00 $ döndürüyor, yani sayfa ödemede
+     alınacaktan 15,75 $ fazlasını söylüyordu.
+  2. "from" ALT SINIR demek, bu yüzden en PAHALI bölge yazılamaz.
+     Avrupa 22 $ ile başlıyor.
+
+  Kâr payı burada bilerek YOK; eklemek, gösterilenle tahsil edilenin
+  ayrılması olurdu — bu depoda bir kez müşteriye ödemede başka tutar
+  gösterdi (17.09.2026).
+*/
+export function enDusukKargoSenti(bolgeler: Bolge[]): number | null {
+  const ucretler = bolgeler
+    .map((b) => b.fee_cents)
+    .filter((n) => Number.isFinite(n) && n > 0);
+  return ucretler.length > 0 ? Math.min(...ucretler) : null;
+}
+
 export type BolgeSatiri = {
   label: string | null;
   countries: string[] | null;

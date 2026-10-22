@@ -17,7 +17,7 @@ import { getBlockedProducts } from "@/lib/engelli-urunler";
 import { ingilizceBindir } from "@/lib/ingilizce-urunler";
 import { getShippingZones } from "@/lib/kargo-bolgeleri";
 import { getSalesRules } from "@/lib/store-settings";
-import { bolgeBul } from "@/lib/kargo-bolgesi";
+import { enDusukKargoSenti } from "@/lib/kargo-bolgesi";
 import { dolarYazisi } from "@/lib/dolar";
 import { enCokTercihEdilen, gonderilebilir } from "@/lib/yurtdisi-vitrin";
 
@@ -160,16 +160,17 @@ export default async function IngilizceAnaSayfa({
     ingilizceBindir(yeni),
   ]);
 
-  /* Kargo ücreti örneği: "öteki her yer" bölgesi müşterinin
-     görebileceği en yüksek olasılık. Tarife yoksa rakam YAZILMIYOR —
-     uydurma bir ücret, ödemede başka tutar görmek demek. */
-  const genelBolge = bolgeBul(bolgeler, null);
-  const ornekKargo =
-    genelBolge && rules.usdRate
-      ? dolarYazisi(
-          Math.ceil(genelBolge.fee_cents * (1 + rules.usdMarginPercent / 100)) / 100,
-        )
-      : null;
+  /*
+    Kargo ücreti örneği: EN DÜŞÜK taban ücret, çünkü satırda "from"
+    yazıyor ve "from" alt sınır demek. Tarife yoksa rakam YAZILMIYOR —
+    uydurma bir ücret, ödemede başka tutar görmek demek.
+
+    Önceden "öteki her yer" bölgesi okunuyor ve üstüne kâr payı da
+    biniyordu: sayfada "Shipping from $60.75" yazıyordu, ödemede 45 $
+    alınıyordu (lib/kargo-bolgesi → enDusukKargoSenti).
+  */
+  const tabanKargoSenti = enDusukKargoSenti(bolgeler);
+  const ornekKargo = tabanKargoSenti ? dolarYazisi(tabanKargoSenti / 100) : null;
 
   return (
     /*

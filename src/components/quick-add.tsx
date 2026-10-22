@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { dilOneki, yoldanDil } from "@/lib/dil-onek";
+import { ceviri, type SozlukAnahtari } from "@/lib/sozluk";
 
 import Link from "next/link";
 import { useContext, useRef, useState } from "react";
@@ -32,13 +33,17 @@ export function QuickAdd({ product }: { product: Product }) {
   const { add } = useContext(CartContext);
   const router = useRouter();
   const yol = usePathname();
+  /* Metinler de yoldan çözülen dile bağlı: önceden yalnızca
+     BAĞLANTI öneki dile bakıyordu, metinler Türkçe sabitti. */
+  const dil = yoldanDil(yol);
+  const t = (anahtar: SozlukAnahtari) => ceviri(anahtar, dil);
   const [durum, setDurum] = useState<"hazir" | "sorguluyor" | "eklendi">("hazir");
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   if (product.available === false) {
     return (
       <button className="btn btn-ghost btn-block" type="button" disabled>
-        Tükendi
+        {t("tukendi")}
       </button>
     );
   }
@@ -46,7 +51,7 @@ export function QuickAdd({ product }: { product: Product }) {
   /* Dil önekini yoldan çıkarıyor: istemci bileşeni olduğu için
      kanca kullanabiliyor ve prop zincirine gerek kalmıyor
      (lib/dil-onek). */
-  const urunSayfasi = `${dilOneki(yoldanDil(yol))}/urun/${product.slug}`;
+  const urunSayfasi = `${dilOneki(dil)}/urun/${product.slug}`;
 
   /*
     Giyimde seçenek sorulmadan karttan ekleme yapılmıyor: bedensiz
@@ -57,7 +62,7 @@ export function QuickAdd({ product }: { product: Product }) {
   if (product.category === "Giyim") {
     return (
       <Link className="btn btn-ghost btn-block" href={urunSayfasi}>
-        Beden seç
+        {t("bedenSecKisa")}
       </Link>
     );
   }
@@ -99,10 +104,10 @@ export function QuickAdd({ product }: { product: Product }) {
       onClick={ekle}
     >
       {durum === "eklendi"
-        ? "Sepete eklendi ✓"
+        ? `${t("sepeteEklendi")} ✓`
         : durum === "sorguluyor"
-          ? "Ekleniyor…"
-          : "Sepete ekle"}
+          ? t("ekleniyor")
+          : t("sepeteEkle")}
     </button>
   );
 }

@@ -8,7 +8,7 @@
 */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { bolgeBul, toBolgeler } from "@/lib/kargo-bolgesi";
+import { bolgeBul, toBolgeler, enDusukKargoSenti } from "@/lib/kargo-bolgesi";
 import { dolarKarsiligi, malBedeli, yurtIci, DEFAULT_SALES_RULES } from "@/lib/order-quote";
 
 const DUNYA = { label: "Dünya", countries: [], fee_cents: 2500, free_over_cents: 0, sira: 9 };
@@ -95,3 +95,29 @@ test("dolar karşılığı çevrimde kâr payı UYGULAMIYOR", () => {
 });
 
 
+
+test('"Shipping from" EN DÜŞÜK taban ücreti yazıyor, kâr payı binmiyor', () => {
+  /*
+    CANLIDA YANLIŞ YAZIYORDU (22.10.2026): İngilizce ana sayfa "öteki
+    her yer" bölgesini okuyup üstüne kâr payı da biniyordu —
+    45 $ × 1,35 = 60,75 $ ve sayfada "Shipping from $60.75" görünüyordu.
+    Ödemede alınan 45 $. İki kez yanlıştı: kâr payı MAL BEDELİNİN
+    içinde, ve "from" alt sınır demek olduğu için en pahalı bölge
+    yazılamaz.
+  */
+  const bolgeler = toBolgeler([AVRUPA, DUNYA]);
+  assert.equal(enDusukKargoSenti(bolgeler), 1500);
+
+  /* Kâr payı EKLENMİYOR: gösterilen ile tahsil edilen ayrılmamalı. */
+  const kargoyaKarPayi = Math.ceil(1500 * (1 + KURALLAR.usdMarginPercent / 100));
+  assert.notEqual(enDusukKargoSenti(bolgeler), kargoyaKarPayi);
+});
+
+test("tarife yoksa rakam yazılmıyor", () => {
+  /* Uydurma bir ücret, ödemede başka tutar görmek demek. */
+  assert.equal(enDusukKargoSenti([]), null);
+  assert.equal(
+    enDusukKargoSenti(toBolgeler([{ ...DUNYA, fee_cents: 0 }])),
+    null,
+  );
+});
