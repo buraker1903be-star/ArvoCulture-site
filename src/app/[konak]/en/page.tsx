@@ -54,19 +54,24 @@ import { enCokTercihEdilen, gonderilebilir } from "@/lib/yurtdisi-vitrin";
   eşi kendi generateMetadata'sında).
 */
 /*
-  ALTMIŞ SANİYE — VE BU ZORUNLU, SÜSLEME DEĞİL.
+  DİNAMİK — VE BU ÖLÇÜLDÜ.
 
-  `[konak]` düzeninde `generateStaticParams` var, yani bu sayfa da
-  saklanıyor. Süre yazılmasaydı sayfa BİR KEZ üretilip öyle kalırdı
-  ve aşağıdaki `notFound()` kalıcı olurdu: yurtdışı modu kapalıyken
-  yapılan bir dağıtımdan sonra kurum sahibi modu panelden açsa bile
-  /en hâlâ 404 verirdi — ve sebebi hiçbir ekranda görünmezdi.
+  Önce `revalidate = 60` yazılmıştı; gerekçe doğruydu ama YETMEDİ.
+  `[konak]` düzeninde `generateStaticParams` var, yani bu sayfa
+  derleme anında üretiliyor; mod o an kapalı olduğu için aşağıdaki
+  `notFound()` çalıştı ve 404 PİŞTİ. Kurum sahibi modu panelden
+  açtıktan sonra canlıda ölçüldü (22.10.2026): Türkçe ana sayfa
+  altmış saniyede yenilenip para birimi seçicisini göstermeye
+  başladı ama /en hâlâ 404 veriyordu — süre 200 dönen bir sayfayı
+  yeniliyor, pişmiş bir 404'ü kurtarmıyor.
 
-  Altmış saniye ürün sayfasıyla aynı ve aynı gerekçeyle: raflardaki
-  fiyat o kadar bayat olabilir, taahhüt eden rakam zaten sepet ve
-  ödeme sayfalarında (onlar dinamik).
+  Dersi şu: DEĞİŞEBİLEN BİR AYARA BAĞLI `notFound()`, saklanan bir
+  sayfada olmaz. Sayfa artık her istekte çiziliyor ve modu taze
+  okuyor. Bedeli küçük: veri çağrılarının kendi önbellekleri duruyor
+  (ayarlar 30 sn, engelli ürünler 5 dk, tarife 30 sn), yani
+  veritabanı yükü değişmiyor — yeniden çizilen yalnızca HTML.
 */
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
